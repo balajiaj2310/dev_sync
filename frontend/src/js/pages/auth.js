@@ -50,7 +50,7 @@ export function initAuthPage() {
 
       try {
         await AuthService.signIn({ email: emailInput.value, password: passInput.value });
-        toastSuccess('Welcome back, Naveen! Redirecting to Overview...', 'Signed In');
+        toastSuccess('Welcome back, Balaji! Redirecting to Overview...', 'Signed In');
         setTimeout(() => navigateTo(ROUTES.OVERVIEW), 600);
       } catch (err) {
         toastDanger(err.message || 'Authentication failed.');

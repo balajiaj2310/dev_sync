@@ -250,7 +250,7 @@ export const MockAPI = {
     if (lower.includes('test') || lower.includes('unit test')) {
       return {
         text: `Here are recommended unit tests for authentication and token validation:`,
-        code: `import pytest\nfrom rest_framework.test import APIClient\n\n@pytest.mark.django_db\ndef test_token_verification_success():\n    client = APIClient()\n    response = client.get('/api/v1/user/profile/', HTTP_AUTHORIZATION='Bearer valid_token')\n    assert response.status_code == 200\n    assert response.data['username'] == 'naveenkumar'`
+        code: `import pytest\nfrom rest_framework.test import APIClient\n\n@pytest.mark.django_db\ndef test_token_verification_success():\n    client = APIClient()\n    response = client.get('/api/v1/user/profile/', HTTP_AUTHORIZATION='Bearer valid_token')\n    assert response.status_code == 200\n    assert response.data['username'] == 'Balajikumar'`
       };
     }
     return {

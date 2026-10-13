@@ -6,14 +6,14 @@
 export const INITIAL_MOCK_DATA = {
   currentUser: {
     id: 'user_1',
-    name: 'Naveen Kumar',
-    username: 'naveenkumar',
-    email: 'naveen@devsync.dev',
+    name: 'Balaji',
+    username: 'Balajikumar',
+    email: 'Balaji@devsync.dev',
     role: 'Developer',
     avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80',
     bio: 'Fullstack engineer & open-source contributor. Building high-performance developer tools.',
     skills: ['Python', 'Django', 'JavaScript', 'PostgreSQL', 'Docker'],
-    website: 'https://naveenkumar.dev',
+    website: 'https://Balajikumar.dev',
     joined: 'Jan 2024',
     stats: {
       repositories: 12,
@@ -201,7 +201,7 @@ export const INITIAL_MOCK_DATA = {
       id: 'pr-36',
       number: 36,
       title: 'Refactor API endpoints',
-      author: 'Naveen Kumar',
+      author: 'Balaji',
       authorAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=64&q=80',
       repository: 'devsync-core',
       labels: ['refactor', 'backend'],
@@ -264,7 +264,7 @@ export const INITIAL_MOCK_DATA = {
       title: 'Improve mobile layout',
       repository: 'chaturya-club',
       labels: ['UI', 'responsive'],
-      author: 'Naveen Kumar',
+      author: 'Balaji',
       authorAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=64&q=80',
       commentsCount: 2,
       updated: '2 days ago',
@@ -289,7 +289,7 @@ export const INITIAL_MOCK_DATA = {
   teamMembers: [
     {
       id: 'member-1',
-      name: 'Naveen Kumar (you)',
+      name: 'Balaji (you)',
       role: 'Owner',
       repositoriesCount: 12,
       contributionsCount: 245,
@@ -408,7 +408,7 @@ export const INITIAL_MOCK_DATA = {
     {
       id: 'msg-2',
       channelId: 'ch-general',
-      author: 'Naveen Kumar',
+      author: 'Balaji',
       avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=64&q=80',
       time: '10:28 AM',
       text: 'Awesome work Priya! I will review PR #42 shortly. The architecture looks clean.'
