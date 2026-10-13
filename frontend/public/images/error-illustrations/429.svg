@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 400" width="520" height="400" fill="none">
+  <defs>
+    <radialGradient id="mintGlow429" cx="50%" cy="50%" r="60%">
+      <stop offset="0%" stop-color="#A8F0D0" stop-opacity="0.35" />
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
+    </radialGradient>
+    <filter id="shadow429" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#111111" flood-opacity="0.08" />
+    </filter>
+  </defs>
+
+  <circle cx="260" cy="220" r="180" fill="url(#mintGlow429)" />
+
+  <!-- Speech bubble -->
+  <g transform="translate(130, 70)">
+    <rect x="0" y="0" width="150" height="52" rx="10" fill="#FFFFFF" stroke="#D8DEDB" stroke-width="1" filter="url(#shadow429)" />
+    <path d="M 75,52 L 70,62 L 85,52 Z" fill="#FFFFFF" stroke="#D8DEDB" stroke-width="1" />
+    <text x="12" y="22" font-family="'Inter', sans-serif" font-size="12" font-weight="700" fill="#111111">Woah!</text>
+    <text x="12" y="38" font-family="'Inter', sans-serif" font-size="11" fill="#626A66">Take a short break and try again.</text>
+  </g>
+
+  <!-- Developer leaning back in office chair relaxing -->
+  <!-- Chair back -->
+  <rect x="180" y="220" width="60" height="150" rx="14" fill="#262626" transform="rotate(-15 180 220)" />
+
+  <!-- Leaning Body -->
+  <path d="M 230,370 C 220,310 240,240 270,225 C 310,240 310,310 290,370 Z" fill="#1A1F1D" transform="rotate(-12 260 300)" />
+  <polygon points="265,270 272,260 279,270 272,280" fill="#86E7BC" />
+
+  <!-- Relaxing Head (hands behind head) -->
+  <circle cx="270" cy="180" r="36" fill="#F8D3B8" />
+  <path d="M 238,180 C 235,145 255,130 280,130 C 305,130 315,150 305,180 C 298,150 285,145 270,145 C 255,150 245,160 238,180 Z" fill="#111111" />
+  <!-- Closed relaxed eyes (arcs) -->
+  <path d="M 252,175 Q 258,170 264,175" stroke="#111111" stroke-width="2.5" fill="none" stroke-linecap="round" />
+  <path d="M 276,175 Q 282,170 288,175" stroke="#111111" stroke-width="2.5" fill="none" stroke-linecap="round" />
+  <path d="M 264,192 Q 270,198 276,192" stroke="#111111" stroke-width="2" fill="none" stroke-linecap="round" />
+
+  <!-- Arms bent behind head relaxing -->
+  <path d="M 240,230 C 215,200 225,160 245,170" stroke="#1A1F1D" stroke-width="18" stroke-linecap="round" fill="none" />
+  <path d="M 290,230 C 315,200 305,160 285,170" stroke="#1A1F1D" stroke-width="18" stroke-linecap="round" fill="none" />
+
+  <!-- Floating Hourglass "Rate Limit Exceeded" Card -->
+  <g transform="translate(360, 115)" filter="url(#shadow429)">
+    <rect x="0" y="0" width="135" height="150" rx="12" fill="#FFFFFF" stroke="#D8DEDB" stroke-width="1.2" />
+    <!-- Hourglass Icon -->
+    <path d="M 52,30 L 82,30 L 68,52 L 82,74 L 52,74 L 66,52 Z" stroke="#A66B14" stroke-width="2.5" fill="#FDF6EB" stroke-linejoin="round" />
+    <line x1="50" y1="30" x2="84" y2="30" stroke="#A66B14" stroke-width="3" stroke-linecap="round" />
+    <line x1="50" y1="74" x2="84" y2="74" stroke="#A66B14" stroke-width="3" stroke-linecap="round" />
+    
+    <text x="67" y="105" font-family="'Space Grotesk', sans-serif" font-size="11" font-weight="700" fill="#A66B14" text-anchor="middle">Rate Limit Exceeded</text>
+    <text x="67" y="125" font-family="'Inter', sans-serif" font-size="10" fill="#626A66" text-anchor="middle">Try again in 60s</text>
+  </g>
+</svg>

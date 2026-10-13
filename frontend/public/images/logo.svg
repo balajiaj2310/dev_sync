@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 36" width="160" height="36" fill="none">
+  <!-- DevSync Geometric Icon -->
+  <g transform="translate(2, 2)">
+    <polygon points="6,6 16,3 26,6 16,14" fill="#A8F0D0" />
+    <polygon points="6,6 16,14 6,22" fill="#86E7BC" />
+    <polygon points="26,6 16,14 26,22" fill="#111111" />
+    <polygon points="6,22 16,14 16,29" fill="#21865B" />
+    <polygon points="26,22 16,14 16,29" fill="#262626" />
+    <polygon points="16,3 26,6 16,14" fill="#E8FBF3" opacity="0.9" />
+  </g>
+  <!-- DEVSYNC Typography -->
+  <text x="38" y="24" font-family="'Space Grotesk', 'Inter', system-ui, sans-serif" font-weight="800" font-size="20" letter-spacing="1.5" fill="#111111">DEVSYNC</text>
+</svg>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DevSync — Developer Collaboration Platform</title>
+  <link rel="icon" type="image/svg+xml" href="../../../public/favicon.svg">
+  <link rel="stylesheet" href="../../assets/css/tokens.css">
+  <link rel="stylesheet" href="../../assets/css/reset.css">
+  <link rel="stylesheet" href="../../assets/css/typography.css">
+  <link rel="stylesheet" href="../../assets/css/global.css">
+  <link rel="stylesheet" href="../../assets/css/utilities.css">
+  <link rel="stylesheet" href="../../assets/css/layout/header.css">
+  <link rel="stylesheet" href="../../assets/css/layout/footer.css">
+  <link rel="stylesheet" href="../../assets/css/layout/responsive.css">
+  <link rel="stylesheet" href="../../assets/css/components/buttons.css">
+  <link rel="stylesheet" href="../../assets/css/components/cards.css">
+  <link rel="stylesheet" href="../../assets/css/components/badges.css">
+  <link rel="stylesheet" href="../../assets/css/components/notifications.css">
+  <link rel="stylesheet" href="../../assets/css/pages/landing.css">
+</head>
+<body data-page="landing">
+  <header class="public-header">
+    <div class="public-header-inner">
+      <a href="home.html" class="header-brand">
+        <img src="../../../public/images/logo.svg" alt="DevSync" />
+      </a>
+      <nav class="public-nav">
+        <a href="home.html" class="nav-link-pill active">Home</a>
+        <a href="explore.html" class="nav-link-pill">Explore</a>
+        <a href="pricing.html" class="nav-link-pill">Pricing</a>
+        <a href="contact.html" class="nav-link-pill">Contact</a>
+      </nav>
+      <div class="public-actions">
+        <button class="btn-icon-search" aria-label="Search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </button>
+        <a href="../auth/sign-in.html" class="btn btn-pill btn-outline">Sign In</a>
+        <a href="../auth/sign-up.html" class="btn btn-pill btn-primary">Get Started &rarr;</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="public-content">
+    <section class="landing-hero mint-underglow">
+      <div class="landing-hero-inner">
+        <div class="hero-content-col">
+          <div class="hero-wordmark-container">
+            <h1 class="hero-wordmark">
+              <svg class="hero-crystal-accent" viewBox="0 0 32 32" fill="none">
+                <polygon points="6,6 16,3 26,6 16,14" fill="#A8F0D0" />
+                <polygon points="6,6 16,14 6,22" fill="#86E7BC" />
+                <polygon points="26,6 16,14 26,22" fill="#111111" />
+                <polygon points="6,22 16,14 16,29" fill="#21865B" />
+              </svg>
+              DEVSYNC
+              <svg class="hero-crystal-accent" viewBox="0 0 32 32" fill="none">
+                <polygon points="6,6 16,3 26,6 16,14" fill="#86E7BC" />
+                <polygon points="26,6 16,14 26,22" fill="#111111" />
+                <polygon points="16,3 26,6 16,14" fill="#E8FBF3" />
+              </svg>
+            </h1>
+          </div>
+
+          <div class="hero-subtitle-row">
+            <span class="hero-subtitle">DEVELOPER COLLABORATION PLATFORM</span>
+            <div class="hero-rule-line"></div>
+          </div>
+
+          <div class="hero-action-block">
+            <div class="hero-pitch-unit">
+              <div class="hero-pitch-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+              </div>
+              <p class="hero-pitch-text">Plan, build, review and ship amazing projects with your team.</p>
+            </div>
+            <div class="hero-buttons">
+              <a href="../auth/sign-up.html" class="btn btn-pill btn-primary btn-lg">Get Started &rarr;</a>
+              <a href="explore.html" class="btn btn-pill btn-outline btn-lg">Explore Projects</a>
+            </div>
+          </div>
+
+          <div class="hero-stats-row">
+            <div class="hero-stat-item">
+              <span class="hero-stat-number">10K+</span>
+              <span class="hero-stat-label">DEVELOPERS</span>
+            </div>
+            <div class="hero-stat-item">
+              <span class="hero-stat-number">5K+</span>
+              <span class="hero-stat-label">PROJECTS</span>
+            </div>
+            <div class="hero-stat-item">
+              <span class="hero-stat-number">50K+</span>
+              <span class="hero-stat-label">COMMITS</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-illustration-col">
+          <img src="../../../public/images/landing-illustration.svg" alt="DevSync Collaboration Engine" />
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="public-footer">
+    <div class="public-footer-inner">
+      <div class="footer-brand">
+        <img src="../../../public/images/logo.svg" alt="DevSync" />
+        <span class="footer-tagline">Build together. Deploy.</span>
+      </div>
+      <div class="footer-links">
+        <a href="home.html" class="footer-link">About</a>
+        <a href="../settings/privacy.html" class="footer-link">Privacy</a>
+        <a href="pricing.html" class="footer-link">Terms</a>
+        <a href="contact.html" class="footer-link">Help</a>
+      </div>
+      <div class="footer-socials">
+        <a href="https://github.com" target="_blank" rel="noopener" class="social-icon-btn" aria-label="GitHub">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+        </a>
+        <a href="https://twitter.com" target="_blank" rel="noopener" class="social-icon-btn" aria-label="Twitter">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/></svg>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="../../js/main.js"></script>
+</body>
+</html>

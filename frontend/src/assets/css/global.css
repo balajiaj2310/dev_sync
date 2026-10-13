@@ -1,0 +1,104 @@
+/**
+ * DevSync Global Styles
+ * Core baseline styles, container widths, scrollbars and selection
+ */
+
+::selection {
+  background-color: var(--color-mint);
+  color: var(--color-primary);
+}
+
+/* Custom Minimal Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: var(--radius-pill);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-border-strong);
+}
+
+/* App Shell Wrapper */
+.app-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--color-surface-subtle);
+}
+
+.app-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  margin-left: var(--sidebar-width);
+  transition: margin-left var(--transition-normal);
+}
+
+.app-content {
+  flex: 1;
+  padding: var(--space-6) var(--space-8);
+  max-width: var(--container-max-width);
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* Public Layout Wrapper */
+.public-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-background);
+}
+
+.public-content {
+  flex: 1;
+  width: 100%;
+}
+
+/* Subtle underglow accent on hero/panels matching references */
+.mint-underglow {
+  position: relative;
+}
+
+.mint-underglow::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, var(--color-mint-strong) 50%, transparent 100%);
+  opacity: 0.8;
+}
+
+/* Glass & Card Surfaces */
+.surface-card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xs);
+}
+
+/* Dividers */
+.divider {
+  height: 1px;
+  background-color: var(--color-border);
+  border: none;
+  margin: var(--space-4) 0;
+}
+
+.divider-subtle {
+  height: 1px;
+  background-color: var(--color-border);
+  border: none;
+  opacity: 0.6;
+}

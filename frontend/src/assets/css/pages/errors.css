@@ -1,0 +1,87 @@
+/**
+ * DevSync Custom Error Page Styles
+ * Exact visual fidelity to Reference Image 3 (401, 403, 404, 405, 429, 500)
+ */
+
+.error-page-wrapper {
+  min-height: calc(100vh - var(--header-public-height) - 100px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-10) var(--space-6);
+  background-color: var(--color-background);
+}
+
+.error-container-inner {
+  max-width: var(--container-max-width);
+  width: 100%;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: var(--space-10);
+}
+
+.error-content-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.error-number {
+  font-family: var(--font-heading);
+  font-size: clamp(4.5rem, 10vw, 8.5rem);
+  font-weight: 800;
+  line-height: 0.95;
+  color: var(--color-primary);
+  margin-bottom: var(--space-2);
+  letter-spacing: -0.03em;
+}
+
+.error-title {
+  font-family: var(--font-heading);
+  font-size: clamp(24px, 3.2vw, 36px);
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: var(--space-3);
+  letter-spacing: -0.01em;
+}
+
+.error-desc {
+  font-size: 15px;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+  max-width: 440px;
+  margin-bottom: var(--space-8);
+}
+
+.error-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.error-illustration-col {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.error-illustration-col img {
+  max-width: 500px;
+  width: 100%;
+  height: auto;
+}
+
+@media (max-width: 991.98px) {
+  .error-container-inner {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+  .error-content-col {
+    align-items: center;
+  }
+  .error-actions {
+    justify-content: center;
+  }
+}

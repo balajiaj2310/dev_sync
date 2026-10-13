@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DevSync — Developer Collaboration Platform</title>
+  <link rel="icon" type="image/svg+xml" href="../public/favicon.svg">
+  <link rel="stylesheet" href="assets/css/tokens.css">
+  <link rel="stylesheet" href="assets/css/reset.css">
+  <link rel="stylesheet" href="assets/css/typography.css">
+  <link rel="stylesheet" href="assets/css/global.css">
+  <link rel="stylesheet" href="assets/css/utilities.css">
+  <link rel="stylesheet" href="assets/css/layout/header.css">
+  <link rel="stylesheet" href="assets/css/layout/footer.css">
+  <link rel="stylesheet" href="assets/css/layout/responsive.css">
+  <link rel="stylesheet" href="assets/css/components/buttons.css">
+  <link rel="stylesheet" href="assets/css/components/cards.css">
+  <link rel="stylesheet" href="assets/css/components/badges.css">
+  <link rel="stylesheet" href="assets/css/components/notifications.css">
+  <link rel="stylesheet" href="assets/css/pages/landing.css">
+</head>
+<body data-page="landing">
+  <!-- Shared Public Header (Image 2) -->
+  <header class="public-header">
+    <div class="public-header-inner">
+      <a href="index.html" class="header-brand">
+        <img src="../public/images/logo.svg" alt="DevSync" />
+      </a>
+      <nav class="public-nav">
+        <a href="pages/public/home.html" class="nav-link-pill active">Home</a>
+        <a href="pages/public/explore.html" class="nav-link-pill">Explore</a>
+        <a href="pages/public/pricing.html" class="nav-link-pill">Pricing</a>
+        <a href="pages/public/contact.html" class="nav-link-pill">Contact</a>
+      </nav>
+      <div class="public-actions">
+        <button class="btn-icon-search" aria-label="Search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </button>
+        <a href="pages/auth/sign-in.html" class="btn btn-pill btn-outline">Sign In</a>
+        <a href="pages/auth/sign-up.html" class="btn btn-pill btn-primary">Get Started &rarr;</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section (Exact Reproduction of Image 2) -->
+  <main class="public-content">
+    <section class="landing-hero mint-underglow">
+      <div class="landing-hero-inner">
+        <div class="hero-content-col">
+          <!-- Wordmark with geometric crystal accent -->
+          <div class="hero-wordmark-container">
+            <h1 class="hero-wordmark">
+              <svg class="hero-crystal-accent" viewBox="0 0 32 32" fill="none">
+                <polygon points="6,6 16,3 26,6 16,14" fill="#A8F0D0" />
+                <polygon points="6,6 16,14 6,22" fill="#86E7BC" />
+                <polygon points="26,6 16,14 26,22" fill="#111111" />
+                <polygon points="6,22 16,14 16,29" fill="#21865B" />
+              </svg>
+              DEVSYNC
+              <svg class="hero-crystal-accent" viewBox="0 0 32 32" fill="none">
+                <polygon points="6,6 16,3 26,6 16,14" fill="#86E7BC" />
+                <polygon points="26,6 16,14 26,22" fill="#111111" />
+                <polygon points="16,3 26,6 16,14" fill="#E8FBF3" />
+              </svg>
+            </h1>
+          </div>
+
+          <!-- Subtitle row with rule line and endpoint -->
+          <div class="hero-subtitle-row">
+            <span class="hero-subtitle">DEVELOPER COLLABORATION PLATFORM</span>
+            <div class="hero-rule-line"></div>
+          </div>
+
+          <!-- Pitch & Action Block -->
+          <div class="hero-action-block">
+            <div class="hero-pitch-unit">
+              <div class="hero-pitch-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+              </div>
+              <p class="hero-pitch-text">Plan, build, review and ship amazing projects with your team.</p>
+            </div>
+            <div class="hero-buttons">
+              <a href="pages/auth/sign-up.html" class="btn btn-pill btn-primary btn-lg">Get Started &rarr;</a>
+              <a href="pages/public/explore.html" class="btn btn-pill btn-outline btn-lg">Explore Projects</a>
+            </div>
+          </div>
+
+          <!-- Three stats row matching reference -->
+          <div class="hero-stats-row">
+            <div class="hero-stat-item">
+              <span class="hero-stat-number">10K+</span>
+              <span class="hero-stat-label">DEVELOPERS</span>
+            </div>
+            <div class="hero-stat-item">
+              <span class="hero-stat-number">5K+</span>
+              <span class="hero-stat-label">PROJECTS</span>
+            </div>
+            <div class="hero-stat-item">
+              <span class="hero-stat-number">50K+</span>
+              <span class="hero-stat-label">COMMITS</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Geometric Grid Illustration (Image 2) -->
+        <div class="hero-illustration-col">
+          <img src="../public/images/landing-illustration.svg" alt="DevSync Collaboration Engine" />
+        </div>
+      </div>
+    </section>
+
+    <!-- Platform Capabilities Section -->
+    <section class="landing-section">
+      <div class="landing-section-header">
+        <div class="landing-section-tag">Core Collaboration Engine</div>
+        <h2 class="font-heading" style="font-size: 28px; margin-bottom: 12px;">Engineered for modern software teams</h2>
+        <p class="text-secondary" style="font-size: 15px;">Unified repositories, pull requests, issue tracking, community discussions, and AI-driven code assistance.</p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon-box">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          </div>
+          <h3 class="text-card-title mb-2">Modern Repositories</h3>
+          <p class="text-secondary" style="font-size: 13.5px; line-height: 1.5;">Fast branch switching, monospace commit views, clean file navigation, and native pull request diffing.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-box">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <h3 class="text-card-title mb-2">Social Developer Network</h3>
+          <p class="text-secondary" style="font-size: 13.5px; line-height: 1.5;">Discover skilled developers, establish verified peer connections, and build high-impact engineering squads.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-box">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          </div>
+          <h3 class="text-card-title mb-2">AI Coding Assistant</h3>
+          <p class="text-secondary" style="font-size: 13.5px; line-height: 1.5;">Integrated context-aware assistant for rapid code explanations, bug debugging, test generation, and review summaries.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Shared Public Footer -->
+  <footer class="public-footer">
+    <div class="public-footer-inner">
+      <div class="footer-brand">
+        <img src="../public/images/logo.svg" alt="DevSync" />
+        <span class="footer-tagline">Build together. Deploy.</span>
+      </div>
+      <div class="footer-links">
+        <a href="pages/public/home.html" class="footer-link">About</a>
+        <a href="pages/settings/privacy.html" class="footer-link">Privacy</a>
+        <a href="pages/public/pricing.html" class="footer-link">Terms</a>
+        <a href="pages/public/contact.html" class="footer-link">Help</a>
+      </div>
+      <div class="footer-socials">
+        <a href="https://github.com" target="_blank" rel="noopener" class="social-icon-btn" aria-label="GitHub">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+        </a>
+        <a href="https://twitter.com" target="_blank" rel="noopener" class="social-icon-btn" aria-label="Twitter">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/></svg>
+        </a>
+        <a href="https://linkedin.com" target="_blank" rel="noopener" class="social-icon-btn" aria-label="LinkedIn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+        </a>
+        <a href="https://discord.com" target="_blank" rel="noopener" class="social-icon-btn" aria-label="Discord">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6h0a14.5 14.5 0 0 0-4-1.2 12.6 12.6 0 0 0-.6 1.2 13.9 13.9 0 0 0-4.8 0 12.6 12.6 0 0 0-.6-1.2A14.5 14.5 0 0 0 6 6a15.8 15.8 0 0 0-2 10.5 14.2 14.2 0 0 0 4.4 2.2 10.7 10.7 0 0 0 .9-1.5 9.3 9.3 0 0 1-1.5-.7l.3-.2a10.9 10.9 0 0 0 9.8 0l.3.2a9.3 9.3 0 0 1-1.5.7 10.7 10.7 0 0 0 .9 1.5 14.2 14.2 0 0 0 4.4-2.2A15.8 15.8 0 0 0 18 6z"/></svg>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

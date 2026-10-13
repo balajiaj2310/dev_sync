@@ -1,0 +1,74 @@
+/**
+ * DevSync Dropdown System
+ * Profile menus, action selectors, filter menus
+ */
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 200px;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-2) 0;
+  z-index: var(--z-dropdown);
+  display: none;
+  flex-direction: column;
+}
+
+.dropdown-menu.show {
+  display: flex;
+}
+
+.dropdown-menu.dropdown-menu-left {
+  right: auto;
+  left: 0;
+}
+
+.dropdown-header {
+  padding: var(--space-2) var(--space-4);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 8px var(--space-4);
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  text-decoration: none;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  transition: background-color var(--transition-fast);
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background-color: var(--color-surface-subtle);
+  color: var(--color-primary);
+}
+
+.dropdown-item.text-danger:hover {
+  background-color: #FEF2F2;
+  color: var(--color-danger);
+}
+
+.dropdown-divider {
+  height: 1px;
+  background-color: var(--color-border);
+  margin: var(--space-2) 0;
+}

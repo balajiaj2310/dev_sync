@@ -1,0 +1,48 @@
+/**
+ * DevSync Teams Styles
+ * Exact visual fidelity to Reference Image 1 (Team Members)
+ */
+
+.team-metrics-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+.member-user-cell {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.member-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.member-name {
+  font-weight: 600;
+  font-size: 13.5px;
+  color: var(--color-text-primary);
+}
+
+.member-you-badge {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  font-weight: 400;
+}
+
+@media (max-width: 991.98px) {
+  .team-metrics-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 575.98px) {
+  .team-metrics-row {
+    grid-template-columns: 1fr;
+  }
+}

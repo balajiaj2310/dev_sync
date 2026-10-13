@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="40" height="40" fill="none">
+  <!-- DevSync Geometric Crystal / Prism Icon -->
+  <polygon points="8,8 20,4 32,8 20,18" fill="#A8F0D0" />
+  <polygon points="8,8 20,18 8,28" fill="#86E7BC" />
+  <polygon points="32,8 20,18 32,28" fill="#111111" />
+  <polygon points="8,28 20,18 20,36" fill="#21865B" />
+  <polygon points="32,28 20,18 20,36" fill="#262626" />
+  <polygon points="20,4 32,8 20,18" fill="#E8FBF3" opacity="0.9" />
+  <!-- Crisp highlight line -->
+  <line x1="20" y1="4" x2="20" y2="36" stroke="#FFFFFF" stroke-width="1" opacity="0.4" />
+</svg>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notifications — DevSync</title>
+  <link rel="icon" type="image/svg+xml" href="../../public/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../../assets/css/tokens.css">
+  <link rel="stylesheet" href="../../assets/css/reset.css">
+  <link rel="stylesheet" href="../../assets/css/typography.css">
+  <link rel="stylesheet" href="../../assets/css/global.css">
+  <link rel="stylesheet" href="../../assets/css/layout/header.css">
+  <link rel="stylesheet" href="../../assets/css/layout/sidebar.css">
+  <link rel="stylesheet" href="../../assets/css/components/buttons.css">
+  <link rel="stylesheet" href="../../assets/css/components/cards.css">
+  <link rel="stylesheet" href="../../assets/css/components/badges.css">
+  <link rel="stylesheet" href="../../assets/css/components/dropdowns.css">
+  <link rel="stylesheet" href="../../assets/css/components/empty-states.css">
+  <link rel="stylesheet" href="../../assets/css/components/notifications.css">
+  <link rel="stylesheet" href="../../assets/css/pages/notifications.css">
+  <link rel="stylesheet" href="../../assets/css/layout/responsive.css">
+</head>
+<body data-page="notifications">
+  <div class="app-layout">
+    <div id="sidebar-container"></div>
+    <div class="main-content-wrapper">
+      <div id="header-container"></div>
+      
+      <main class="page-body">
+        <div class="page-header d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+          <div>
+            <h1 class="page-title mb-1">Notifications</h1>
+            <p class="page-subtitle text-muted mb-0">Stay up to date with repository events, pull requests, and friend connections.</p>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <button class="btn btn-secondary btn-sm" id="btn-mark-all-read">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              Mark all as read
+            </button>
+            <a href="../settings/preferences.html" class="btn btn-secondary btn-sm">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+              Settings
+            </a>
+          </div>
+        </div>
+
+        <div class="card p-0 mb-4">
+          <div class="notifications-tabs-header d-flex border-bottom px-3 pt-2">
+            <button class="nav-tab active" data-filter="all">All <span class="badge badge-mint ms-1" id="badge-all-count">4</span></button>
+            <button class="nav-tab" data-filter="unread">Unread <span class="badge badge-subtle ms-1" id="badge-unread-count">2</span></button>
+            <button class="nav-tab" data-filter="mentions">Mentions</button>
+            <button class="nav-tab" data-filter="requests">Connection Requests</button>
+          </div>
+
+          <div class="notifications-list" id="notifications-container">
+            <!-- Notifications injected dynamically via notifications.js -->
+            <div class="p-4 text-center text-muted">
+              <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+              Loading notifications...
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <div id="toast-container" class="toast-container position-fixed bottom-0 end-0 p-3"></div>
+  <script type="module" src="../../src/js/main.js"></script>
+</body>
+</html>

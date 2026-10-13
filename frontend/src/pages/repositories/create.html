@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create a New Repository — DevSync</title>
+  <link rel="icon" type="image/svg+xml" href="../../../public/favicon.svg">
+  <link rel="stylesheet" href="../../assets/css/tokens.css">
+  <link rel="stylesheet" href="../../assets/css/reset.css">
+  <link rel="stylesheet" href="../../assets/css/typography.css">
+  <link rel="stylesheet" href="../../assets/css/global.css">
+  <link rel="stylesheet" href="../../assets/css/utilities.css">
+  <link rel="stylesheet" href="../../assets/css/layout/header.css">
+  <link rel="stylesheet" href="../../assets/css/layout/sidebar.css">
+  <link rel="stylesheet" href="../../assets/css/layout/responsive.css">
+  <link rel="stylesheet" href="../../assets/css/components/buttons.css">
+  <link rel="stylesheet" href="../../assets/css/components/cards.css">
+  <link rel="stylesheet" href="../../assets/css/components/forms.css">
+  <link rel="stylesheet" href="../../assets/css/components/badges.css">
+  <link rel="stylesheet" href="../../assets/css/components/dropdowns.css">
+  <link rel="stylesheet" href="../../assets/css/components/notifications.css">
+  <link rel="stylesheet" href="../../assets/css/pages/repositories.css">
+</head>
+<body data-page="repositories">
+  <div class="app-container">
+    <aside class="app-sidebar">
+      <div class="sidebar-header">
+        <a href="../dashboard/overview.html" class="sidebar-logo">
+          <img src="../../../public/images/logo.svg" alt="DevSync" />
+        </a>
+      </div>
+      <nav class="sidebar-nav-container">
+        <a href="../dashboard/overview.html" class="sidebar-link">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          <span class="sidebar-text">Overview</span>
+        </a>
+        <a href="list.html" class="sidebar-link active">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          <span class="sidebar-text">Repositories</span>
+        </a>
+        <a href="../pull-requests/list.html" class="sidebar-link">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 0 1 2 2v7"/><line x1="6" y1="9" x2="6" y2="21"/></svg>
+          <span class="sidebar-text">Pull Requests</span>
+          <span class="sidebar-badge">3</span>
+        </a>
+        <a href="../issues/list.html" class="sidebar-link">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span class="sidebar-text">Issues</span>
+          <span class="sidebar-badge">12</span>
+        </a>
+        <a href="../teams/members.html" class="sidebar-link">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <span class="sidebar-text">Teams</span>
+        </a>
+        <a href="../developers/discover.html" class="sidebar-link">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m9.17 14.83-4.24 4.24"/></svg>
+          <span class="sidebar-text">Developers</span>
+        </a>
+        <a href="../community/index.html" class="sidebar-link">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <span class="sidebar-text">Discussions</span>
+        </a>
+        <a href="../analytics/index.html" class="sidebar-link">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          <span class="sidebar-text">Analytics</span>
+        </a>
+        <div class="sidebar-divider"></div>
+        <a href="../assistant/index.html" class="sidebar-link">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <span class="sidebar-text">AI Assistant</span>
+        </a>
+        <a href="../settings/account.html" class="sidebar-link">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <span class="sidebar-text">Settings</span>
+        </a>
+      </nav>
+    </aside>
+
+    <div class="app-main">
+      <header class="app-topbar">
+        <div class="topbar-left">
+          <button class="mobile-menu-toggle" aria-label="Toggle navigation drawer">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
+          <div class="topbar-search-box">
+            <span class="topbar-search-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </span>
+            <input type="text" class="topbar-search-input" placeholder="Search repositories, issues, teams..." />
+          </div>
+        </div>
+        <div class="topbar-right">
+          <a href="../notifications/index.html" class="topbar-icon-btn" aria-label="Notifications">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          </a>
+          <div class="dropdown">
+            <button class="user-profile-btn" data-dropdown-toggle>
+              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" alt="Naveen Kumar" class="user-avatar" />
+              <div class="user-info">
+                <span class="user-name">Naveen Kumar</span>
+                <span class="user-role">Developer</span>
+              </div>
+            </button>
+            <div class="dropdown-menu profile-dropdown-menu">
+              <a href="../developers/profile.html" class="dropdown-item">View Profile</a>
+              <a href="../profile/edit.html" class="dropdown-item">Edit Profile</a>
+              <a href="../settings/account.html" class="dropdown-item">Settings</a>
+              <div class="dropdown-divider"></div>
+              <button class="dropdown-item text-danger" data-action="sign-out">Sign Out</button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main class="app-content">
+        <div style="max-width: 680px; margin: 0 auto;">
+          <div class="mb-6">
+            <h1 class="text-page-title mb-1">Create a new repository</h1>
+            <p class="text-secondary" style="font-size: 14px;">A repository contains all project files, revision history, and collaboration discussions.</p>
+          </div>
+
+          <div class="card">
+            <form id="createRepoForm">
+              <div class="form-group">
+                <label class="form-label" for="repoName">Repository Name</label>
+                <input type="text" id="repoName" class="form-control" placeholder="my-awesome-service" required />
+                <span class="text-helper">Great repository names are short and memorable.</span>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="repoDescription">Description <span class="optional">(optional)</span></label>
+                <textarea id="repoDescription" class="form-control" placeholder="Brief description of the service and responsibilities..." rows="3"></textarea>
+              </div>
+
+              <div class="form-group mb-4">
+                <label class="form-label">Visibility</label>
+                <div class="d-flex flex-column gap-3 mt-1">
+                  <label class="form-check">
+                    <input type="radio" name="visibility" value="Public" class="form-check-input" checked />
+                    <div>
+                      <div style="font-weight: 600;">Public</div>
+                      <div class="text-helper">Anyone on the internet can view this repository. You choose who can commit.</div>
+                    </div>
+                  </label>
+                  <label class="form-check">
+                    <input type="radio" name="visibility" value="Private" class="form-check-input" />
+                    <div>
+                      <div style="font-weight: 600;">Private</div>
+                      <div class="text-helper">You choose who can see and commit to this repository.</div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              <div class="divider"></div>
+
+              <div class="form-group mb-6">
+                <label class="form-check">
+                  <input type="checkbox" id="initReadme" class="form-check-input" checked />
+                  <div>
+                    <span style="font-weight: 600;">Initialize this repository with a README</span>
+                    <div class="text-helper">This lets you immediately clone the repository to your computer.</div>
+                  </div>
+                </label>
+              </div>
+
+              <div class="d-flex align-items-center justify-content-end gap-3">
+                <a href="list.html" class="btn btn-outline btn-pill">Cancel</a>
+                <button type="submit" class="btn btn-primary btn-pill">Create Repository &rarr;</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script type="module" src="../../js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pricing — DevSync</title>
+  <link rel="icon" type="image/svg+xml" href="../../../public/favicon.svg">
+  <link rel="stylesheet" href="../../assets/css/tokens.css">
+  <link rel="stylesheet" href="../../assets/css/reset.css">
+  <link rel="stylesheet" href="../../assets/css/typography.css">
+  <link rel="stylesheet" href="../../assets/css/global.css">
+  <link rel="stylesheet" href="../../assets/css/utilities.css">
+  <link rel="stylesheet" href="../../assets/css/layout/header.css">
+  <link rel="stylesheet" href="../../assets/css/layout/footer.css">
+  <link rel="stylesheet" href="../../assets/css/layout/responsive.css">
+  <link rel="stylesheet" href="../../assets/css/components/buttons.css">
+  <link rel="stylesheet" href="../../assets/css/components/cards.css">
+  <link rel="stylesheet" href="../../assets/css/components/badges.css">
+  <link rel="stylesheet" href="../../assets/css/components/notifications.css">
+</head>
+<body data-page="pricing">
+  <header class="public-header">
+    <div class="public-header-inner">
+      <a href="home.html" class="header-brand">
+        <img src="../../../public/images/logo.svg" alt="DevSync" />
+      </a>
+      <nav class="public-nav">
+        <a href="home.html" class="nav-link-pill">Home</a>
+        <a href="explore.html" class="nav-link-pill">Explore</a>
+        <a href="pricing.html" class="nav-link-pill active">Pricing</a>
+        <a href="contact.html" class="nav-link-pill">Contact</a>
+      </nav>
+      <div class="public-actions">
+        <a href="../auth/sign-in.html" class="btn btn-pill btn-outline">Sign In</a>
+        <a href="../auth/sign-up.html" class="btn btn-pill btn-primary">Get Started &rarr;</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="public-content py-6" style="padding: 60px 0;">
+    <div style="max-width: 960px; margin: 0 auto; padding: 0 var(--space-6); text-align: center;">
+      <h1 class="font-heading" style="font-size: 32px; margin-bottom: 8px;">Simple, transparent developer tiers</h1>
+      <p class="text-secondary" style="font-size: 15px; margin-bottom: 48px;">No hidden per-seat traps. Built for individuals and engineering teams alike.</p>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--space-6); text-align: left;">
+        <!-- Community Tier -->
+        <div class="card" style="display: flex; flex-direction: column;">
+          <h3 class="font-heading" style="font-size: 20px; margin-bottom: 4px;">Developer</h3>
+          <p class="text-secondary" style="font-size: 13px; margin-bottom: 24px;">For individual developers and open source projects.</p>
+          <div style="font-family: var(--font-heading); font-size: 36px; font-weight: 800; margin-bottom: 24px;">$0 <span style="font-size: 14px; font-weight: 500; color: var(--color-text-secondary);">/ forever</span></div>
+          <ul style="display: flex; flex-direction: column; gap: 12px; font-size: 13.5px; margin-bottom: 32px; flex: 1;">
+            <li>&check; Unlimited public repositories</li>
+            <li>&check; 3 private repositories</li>
+            <li>&check; Community Discord channels</li>
+            <li>&check; Basic AI coding assistant</li>
+          </ul>
+          <a href="../auth/sign-up.html" class="btn btn-outline btn-pill w-100">Get Started Free</a>
+        </div>
+
+        <!-- Pro Team Tier -->
+        <div class="card" style="border: 2px solid var(--color-mint-strong); display: flex; flex-direction: column; position: relative;">
+          <span class="badge badge-public" style="position: absolute; top: -12px; right: 20px;">RECOMMENDED</span>
+          <h3 class="font-heading" style="font-size: 20px; margin-bottom: 4px;">Team</h3>
+          <p class="text-secondary" style="font-size: 13px; margin-bottom: 24px;">For fast-shipping squads and startup engineering teams.</p>
+          <div style="font-family: var(--font-heading); font-size: 36px; font-weight: 800; margin-bottom: 24px;">$12 <span style="font-size: 14px; font-weight: 500; color: var(--color-text-secondary);">/ user / mo</span></div>
+          <ul style="display: flex; flex-direction: column; gap: 12px; font-size: 13.5px; margin-bottom: 32px; flex: 1;">
+            <li>&check; Unlimited public & private repositories</li>
+            <li>&check; Advanced branch protection rules</li>
+            <li>&check; Team velocity analytics & heatmaps</li>
+            <li>&check; Priority AI context assistant</li>
+            <li>&check; Custom reviewer workflows</li>
+          </ul>
+          <a href="../auth/sign-up.html" class="btn btn-primary btn-pill w-100">Start 14-Day Trial</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="public-footer">
+    <div class="public-footer-inner">
+      <div class="footer-brand">
+        <img src="../../../public/images/logo.svg" alt="DevSync" />
+        <span class="footer-tagline">Build together. Deploy.</span>
+      </div>
+      <div class="footer-links">
+        <a href="home.html" class="footer-link">About</a>
+        <a href="../settings/privacy.html" class="footer-link">Privacy</a>
+        <a href="pricing.html" class="footer-link">Terms</a>
+        <a href="contact.html" class="footer-link">Help</a>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="../../js/main.js"></script>
+</body>
+</html>

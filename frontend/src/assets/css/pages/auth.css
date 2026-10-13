@@ -1,0 +1,97 @@
+/**
+ * DevSync Authentication Styles
+ * Clean, distraction-free forms for Sign In, Sign Up, Forgot & Reset Password
+ */
+
+.auth-wrapper {
+  min-height: calc(100vh - var(--header-public-height) - 100px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-8) var(--space-4);
+  background-color: var(--color-surface-subtle);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 440px;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-8);
+  box-shadow: var(--shadow-sm);
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: var(--space-6);
+}
+
+.auth-logo {
+  display: inline-flex;
+  margin-bottom: var(--space-4);
+}
+
+.auth-title {
+  font-family: var(--font-heading);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-1);
+}
+
+.auth-subtitle {
+  font-size: 13.5px;
+  color: var(--color-text-secondary);
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.auth-footer {
+  margin-top: var(--space-6);
+  text-align: center;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  border-top: 1px solid var(--color-border);
+  padding-top: var(--space-4);
+}
+
+.auth-link {
+  color: var(--color-primary);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.auth-link:hover {
+  color: var(--color-focus);
+}
+
+.auth-alert {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  margin-bottom: var(--space-4);
+  display: none;
+}
+
+.auth-alert.show {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.auth-alert-danger {
+  background-color: #FEF2F2;
+  color: var(--color-danger);
+  border: 1px solid #FECACA;
+}
+
+.auth-alert-success {
+  background-color: #ECFDF5;
+  color: var(--color-success);
+  border: 1px solid #A7F3D0;
+}

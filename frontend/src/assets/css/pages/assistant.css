@@ -1,0 +1,128 @@
+/**
+ * DevSync AI Assistant Styles
+ * Chat interface, prompt chips, syntax highlighting block and history
+ */
+
+.assistant-layout {
+  display: flex;
+  height: calc(100vh - var(--topbar-height) - 48px);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+
+.assistant-history-sidebar {
+  width: 260px;
+  background-color: var(--color-surface-subtle);
+  border-right: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+}
+
+.assistant-main-chat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-surface);
+}
+
+.assistant-header {
+  padding: var(--space-4) var(--space-6);
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.assistant-messages-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+/* Prompt suggestions pills */
+.prompt-chips-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+  max-width: 600px;
+}
+
+.prompt-chip {
+  padding: 10px 14px;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  font-size: 13px;
+  color: var(--color-text-primary);
+  text-align: left;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.prompt-chip:hover {
+  background-color: var(--color-mint-soft);
+  border-color: var(--color-mint);
+  color: var(--color-focus);
+}
+
+/* Message Bubbles */
+.assistant-bubble-user {
+  align-self: flex-end;
+  max-width: 70%;
+  background-color: var(--color-primary);
+  color: #FFFFFF;
+  padding: var(--space-4) var(--space-5);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 var(--radius-lg);
+  font-size: 14px;
+}
+
+.assistant-bubble-ai {
+  align-self: flex-start;
+  max-width: 85%;
+  background-color: var(--color-surface-subtle);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
+  padding: var(--space-5);
+  border-radius: var(--radius-lg) var(--radius-lg) var(--radius-lg) 0;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.ai-code-block {
+  background-color: #111111;
+  color: #86E7BC;
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  margin: var(--space-3) 0;
+  overflow-x: auto;
+  position: relative;
+}
+
+.ai-code-copy-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 3px 8px;
+  font-size: 11px;
+  background-color: #262626;
+  color: #FFFFFF;
+  border-radius: var(--radius-xs);
+  border: 1px solid #444444;
+}
+
+@media (max-width: 991.98px) {
+  .assistant-history-sidebar {
+    display: none;
+  }
+}

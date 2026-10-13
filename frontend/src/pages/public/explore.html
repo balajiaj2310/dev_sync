@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Explore Repositories — DevSync</title>
+  <link rel="icon" type="image/svg+xml" href="../../../public/favicon.svg">
+  <link rel="stylesheet" href="../../assets/css/tokens.css">
+  <link rel="stylesheet" href="../../assets/css/reset.css">
+  <link rel="stylesheet" href="../../assets/css/typography.css">
+  <link rel="stylesheet" href="../../assets/css/global.css">
+  <link rel="stylesheet" href="../../assets/css/utilities.css">
+  <link rel="stylesheet" href="../../assets/css/layout/header.css">
+  <link rel="stylesheet" href="../../assets/css/layout/footer.css">
+  <link rel="stylesheet" href="../../assets/css/layout/responsive.css">
+  <link rel="stylesheet" href="../../assets/css/components/buttons.css">
+  <link rel="stylesheet" href="../../assets/css/components/cards.css">
+  <link rel="stylesheet" href="../../assets/css/components/tables.css">
+  <link rel="stylesheet" href="../../assets/css/components/badges.css">
+  <link rel="stylesheet" href="../../assets/css/components/forms.css">
+  <link rel="stylesheet" href="../../assets/css/components/notifications.css">
+  <link rel="stylesheet" href="../../assets/css/pages/repositories.css">
+</head>
+<body data-page="repositories">
+  <header class="public-header">
+    <div class="public-header-inner">
+      <a href="home.html" class="header-brand">
+        <img src="../../../public/images/logo.svg" alt="DevSync" />
+      </a>
+      <nav class="public-nav">
+        <a href="home.html" class="nav-link-pill">Home</a>
+        <a href="explore.html" class="nav-link-pill active">Explore</a>
+        <a href="pricing.html" class="nav-link-pill">Pricing</a>
+        <a href="contact.html" class="nav-link-pill">Contact</a>
+      </nav>
+      <div class="public-actions">
+        <a href="../auth/sign-in.html" class="btn btn-pill btn-outline">Sign In</a>
+        <a href="../auth/sign-up.html" class="btn btn-pill btn-primary">Get Started &rarr;</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="public-content py-6" style="padding: 40px 0;">
+    <div class="container" style="max-width: var(--container-max-width); margin: 0 auto; padding: 0 var(--space-6);">
+      <div class="page-toolbar">
+        <div>
+          <h1 class="text-page-title mb-1">Explore Open Source</h1>
+          <p class="text-secondary" style="font-size: 14px;">Discover trending repositories, developer projects, and open collaborations.</p>
+        </div>
+      </div>
+
+      <div class="filter-bar">
+        <input type="text" id="repoSearchInput" class="form-control search-filter-input" placeholder="Search public repositories..." />
+        <select id="repoLanguageFilter" class="form-select" style="width: 170px;">
+          <option value="All Languages">All Languages</option>
+          <option value="Python">Python</option>
+          <option value="Django">Django</option>
+          <option value="JavaScript">JavaScript</option>
+          <option value="TypeScript">TypeScript</option>
+          <option value="Flask">Flask</option>
+        </select>
+        <select id="repoSortFilter" class="form-select" style="width: 180px;">
+          <option value="stars">Sort: Most Stars</option>
+          <option value="updated">Sort: Recently Updated</option>
+        </select>
+      </div>
+
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Description</th>
+              <th>Language</th>
+              <th>Stars</th>
+              <th>Forks</th>
+              <th>Updated</th>
+              <th>Visibility</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="repoTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <footer class="public-footer">
+    <div class="public-footer-inner">
+      <div class="footer-brand">
+        <img src="../../../public/images/logo.svg" alt="DevSync" />
+        <span class="footer-tagline">Build together. Deploy.</span>
+      </div>
+      <div class="footer-links">
+        <a href="home.html" class="footer-link">About</a>
+        <a href="../settings/privacy.html" class="footer-link">Privacy</a>
+        <a href="pricing.html" class="footer-link">Terms</a>
+        <a href="contact.html" class="footer-link">Help</a>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="../../js/main.js"></script>
+</body>
+</html>

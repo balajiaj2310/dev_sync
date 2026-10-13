@@ -1,0 +1,143 @@
+/**
+ * DevSync Button System
+ * Minimalist, high contrast, production-quality buttons
+ */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.2;
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.btn:disabled, .btn.disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Primary Button (Solid Black) */
+.btn-primary {
+  background-color: var(--color-primary);
+  color: #FFFFFF !important;
+  border-color: var(--color-primary);
+}
+
+.btn-primary:hover {
+  background-color: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+}
+
+/* Secondary / Outlined Button */
+.btn-secondary, .btn-outline {
+  background-color: var(--color-surface);
+  color: var(--color-text-primary) !important;
+  border-color: var(--color-border);
+}
+
+.btn-secondary:hover, .btn-outline:hover {
+  background-color: var(--color-surface-subtle);
+  border-color: var(--color-border-strong);
+}
+
+/* Outline Dark (Black Border) */
+.btn-outline-dark {
+  background-color: transparent;
+  color: var(--color-primary) !important;
+  border-color: var(--color-primary);
+}
+
+.btn-outline-dark:hover {
+  background-color: var(--color-surface-subtle);
+}
+
+/* Mint Highlight Button */
+.btn-mint {
+  background-color: var(--color-mint);
+  color: var(--color-primary) !important;
+  border-color: var(--color-mint-strong);
+}
+
+.btn-mint:hover {
+  background-color: var(--color-mint-strong);
+}
+
+/* Danger Button */
+.btn-danger {
+  background-color: var(--color-danger);
+  color: #FFFFFF !important;
+  border-color: var(--color-danger);
+}
+
+.btn-danger:hover {
+  background-color: #A82E2E;
+}
+
+/* Ghost / Flat Button */
+.btn-ghost {
+  background-color: transparent;
+  color: var(--color-text-primary);
+  border-color: transparent;
+}
+
+.btn-ghost:hover {
+  background-color: var(--color-surface-subtle);
+}
+
+/* Sizes */
+.btn-sm {
+  padding: 5px 12px;
+  font-size: 12px;
+  border-radius: var(--radius-sm);
+}
+
+.btn-lg {
+  padding: 12px 24px;
+  font-size: 15px;
+  border-radius: var(--radius-md);
+}
+
+.btn-pill {
+  border-radius: var(--radius-pill);
+}
+
+.btn-icon {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: var(--radius-md);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Spinner inside button */
+.btn-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #FFFFFF;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+.btn-outline .btn-spinner {
+  border-color: rgba(17, 17, 17, 0.2);
+  border-top-color: var(--color-primary);
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

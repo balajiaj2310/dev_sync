@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Commits — devsync-core — DevSync</title>
+  <link rel="icon" type="image/svg+xml" href="../../../public/favicon.svg">
+  <link rel="stylesheet" href="../../assets/css/tokens.css">
+  <link rel="stylesheet" href="../../assets/css/reset.css">
+  <link rel="stylesheet" href="../../assets/css/typography.css">
+  <link rel="stylesheet" href="../../assets/css/global.css">
+  <link rel="stylesheet" href="../../assets/css/utilities.css">
+  <link rel="stylesheet" href="../../assets/css/layout/header.css">
+  <link rel="stylesheet" href="../../assets/css/layout/sidebar.css">
+  <link rel="stylesheet" href="../../assets/css/layout/responsive.css">
+  <link rel="stylesheet" href="../../assets/css/components/buttons.css">
+  <link rel="stylesheet" href="../../assets/css/components/cards.css">
+  <link rel="stylesheet" href="../../assets/css/components/badges.css">
+  <link rel="stylesheet" href="../../assets/css/components/dropdowns.css">
+  <link rel="stylesheet" href="../../assets/css/components/notifications.css">
+  <link rel="stylesheet" href="../../assets/css/pages/repositories.css">
+</head>
+<body data-page="repositories">
+  <div class="app-container">
+    <aside class="app-sidebar">
+      <div class="sidebar-header">
+        <a href="../dashboard/overview.html" class="sidebar-logo">
+          <img src="../../../public/images/logo.svg" alt="DevSync" />
+        </a>
+      </div>
+      <nav class="sidebar-nav-container">
+        <a href="../dashboard/overview.html" class="sidebar-link">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          <span class="sidebar-text">Overview</span>
+        </a>
+        <a href="list.html" class="sidebar-link active">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          <span class="sidebar-text">Repositories</span>
+        </a>
+        <a href="../pull-requests/list.html" class="sidebar-link"><svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 0 1 2 2v7"/><line x1="6" y1="9" x2="6" y2="21"/></svg><span class="sidebar-text">Pull Requests</span></a>
+        <a href="../issues/list.html" class="sidebar-link"><svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span class="sidebar-text">Issues</span></a>
+        <a href="../teams/members.html" class="sidebar-link"><svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><span class="sidebar-text">Teams</span></a>
+        <a href="../developers/discover.html" class="sidebar-link"><svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/></svg><span class="sidebar-text">Developers</span></a>
+        <a href="../community/index.html" class="sidebar-link"><svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span class="sidebar-text">Discussions</span></a>
+        <a href="../analytics/index.html" class="sidebar-link"><svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span class="sidebar-text">Analytics</span></a>
+        <div class="sidebar-divider"></div>
+        <a href="../assistant/index.html" class="sidebar-link"><svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span class="sidebar-text">AI Assistant</span></a>
+        <a href="../settings/account.html" class="sidebar-link"><svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span class="sidebar-text">Settings</span></a>
+      </nav>
+    </aside>
+
+    <div class="app-main">
+      <header class="app-topbar">
+        <div class="topbar-left">
+          <button class="mobile-menu-toggle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+          <div class="topbar-search-box">
+            <input type="text" class="topbar-search-input" placeholder="Search commits..." />
+          </div>
+        </div>
+        <div class="topbar-right">
+          <a href="../notifications/index.html" class="topbar-icon-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></a>
+          <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" alt="Naveen" class="user-avatar" />
+        </div>
+      </header>
+
+      <main class="app-content">
+        <div class="repo-header mb-4">
+          <div class="repo-breadcrumbs">
+            <a href="detail.html">devsync-core</a> / <strong>Commits</strong>
+          </div>
+        </div>
+
+        <div class="card p-0" style="overflow: hidden;">
+          <div class="p-4" style="border-bottom: 1px solid var(--color-border); background-color: var(--color-surface-subtle); font-weight: 600; font-size: 13px;">
+            Commits on main
+          </div>
+
+          <div class="file-row">
+            <div class="d-flex align-items-center gap-3">
+              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=64&q=80" style="width: 28px; height: 28px; border-radius: 50%;" alt="Naveen" />
+              <div>
+                <div style="font-weight: 600; font-size: 13.5px;">Refactor API endpoints and serializers</div>
+                <div class="text-secondary" style="font-size: 11.5px;">Naveen Kumar committed 2 hours ago</div>
+              </div>
+            </div>
+            <span></span>
+            <div class="text-right">
+              <span class="repo-pill">e4f912a</span>
+            </div>
+          </div>
+
+          <div class="file-row">
+            <div class="d-flex align-items-center gap-3">
+              <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=64&q=80" style="width: 28px; height: 28px; border-radius: 50%;" alt="Karthik" />
+              <div>
+                <div style="font-weight: 600; font-size: 13.5px;">Optimize database query indexing on repository relations</div>
+                <div class="text-secondary" style="font-size: 11.5px;">Karthik committed 1 day ago</div>
+              </div>
+            </div>
+            <span></span>
+            <div class="text-right">
+              <span class="repo-pill">8b22a10</span>
+            </div>
+          </div>
+
+          <div class="file-row">
+            <div class="d-flex align-items-center gap-3">
+              <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=64&q=80" style="width: 28px; height: 28px; border-radius: 50%;" alt="Priya" />
+              <div>
+                <div style="font-weight: 600; font-size: 13.5px;">Configure Google OAuth2 token verification adapter</div>
+                <div class="text-secondary" style="font-size: 11.5px;">Priya S committed 2 days ago</div>
+              </div>
+            </div>
+            <span></span>
+            <div class="text-right">
+              <span class="repo-pill">c109df3</span>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script type="module" src="../../js/main.js"></script>
+</body>
+</html>

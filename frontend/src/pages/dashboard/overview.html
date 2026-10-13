@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Overview — DevSync</title>
+  <link rel="icon" type="image/svg+xml" href="../../../public/favicon.svg">
+  <link rel="stylesheet" href="../../assets/css/tokens.css">
+  <link rel="stylesheet" href="../../assets/css/reset.css">
+  <link rel="stylesheet" href="../../assets/css/typography.css">
+  <link rel="stylesheet" href="../../assets/css/global.css">
+  <link rel="stylesheet" href="../../assets/css/utilities.css">
+  <link rel="stylesheet" href="../../assets/css/layout/header.css">
+  <link rel="stylesheet" href="../../assets/css/layout/sidebar.css">
+  <link rel="stylesheet" href="../../assets/css/layout/responsive.css">
+  <link rel="stylesheet" href="../../assets/css/components/buttons.css">
+  <link rel="stylesheet" href="../../assets/css/components/cards.css">
+  <link rel="stylesheet" href="../../assets/css/components/tables.css">
+  <link rel="stylesheet" href="../../assets/css/components/forms.css">
+  <link rel="stylesheet" href="../../assets/css/components/modals.css">
+  <link rel="stylesheet" href="../../assets/css/components/badges.css">
+  <link rel="stylesheet" href="../../assets/css/components/dropdowns.css">
+  <link rel="stylesheet" href="../../assets/css/components/notifications.css">
+  <link rel="stylesheet" href="../../assets/css/pages/dashboard.css">
+  <link rel="stylesheet" href="../../assets/css/pages/repositories.css">
+  <link rel="stylesheet" href="../../assets/css/pages/pull-requests.css">
+</head>
+<body data-page="dashboard">
+  <div class="app-container">
+    <!-- Authenticated Sidebar (Image 1) -->
+    <aside class="app-sidebar">
+      <div class="sidebar-header">
+        <a href="overview.html" class="sidebar-logo">
+          <img src="../../../public/images/logo.svg" alt="DevSync" />
+        </a>
+      </div>
+
+      <nav class="sidebar-nav-container">
+        <a href="overview.html" class="sidebar-link active">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          <span class="sidebar-text">Overview</span>
+        </a>
+
+        <a href="../repositories/list.html" class="sidebar-link">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          <span class="sidebar-text">Repositories</span>
+        </a>
+
+        <a href="../pull-requests/list.html" class="sidebar-link">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 0 1 2 2v7"/><line x1="6" y1="9" x2="6" y2="21"/></svg>
+          <span class="sidebar-text">Pull Requests</span>
+          <span class="sidebar-badge">3</span>
+        </a>
+
+        <a href="../issues/list.html" class="sidebar-link">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span class="sidebar-text">Issues</span>
+          <span class="sidebar-badge">12</span>
+        </a>
+
+        <a href="../teams/members.html" class="sidebar-link">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <span class="sidebar-text">Teams</span>
+        </a>
+
+        <a href="../developers/discover.html" class="sidebar-link">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m9.17 14.83-4.24 4.24"/></svg>
+          <span class="sidebar-text">Developers</span>
+        </a>
+
+        <a href="../community/index.html" class="sidebar-link">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <span class="sidebar-text">Discussions</span>
+        </a>
+
+        <a href="../analytics/index.html" class="sidebar-link">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          <span class="sidebar-text">Analytics</span>
+        </a>
+
+        <div class="sidebar-divider"></div>
+
+        <a href="../assistant/index.html" class="sidebar-link">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <span class="sidebar-text">AI Assistant</span>
+        </a>
+
+        <a href="../settings/account.html" class="sidebar-link">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <span class="sidebar-text">Settings</span>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="app-main">
+      <!-- Authenticated Topbar (Image 1) -->
+      <header class="app-topbar">
+        <div class="topbar-left">
+          <button class="mobile-menu-toggle" aria-label="Toggle navigation drawer">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
+          <div class="topbar-search-box">
+            <span class="topbar-search-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </span>
+            <input type="text" class="topbar-search-input" placeholder="Search repositories, issues, teams..." />
+            <span class="topbar-shortcut-badge">Ctrl K</span>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <!-- Notification Bell -->
+          <a href="../notifications/index.html" class="topbar-icon-btn" aria-label="Notifications">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <span class="badge-notification-dot"></span>
+          </a>
+
+          <!-- User Profile Dropdown -->
+          <div class="dropdown">
+            <button class="user-profile-btn" data-dropdown-toggle>
+              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" alt="Naveen Kumar" class="user-avatar" />
+              <div class="user-info">
+                <span class="user-name">Naveen Kumar</span>
+                <span class="user-role">Developer</span>
+              </div>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="dropdown-menu profile-dropdown-menu">
+              <div class="dropdown-header">Signed in as @naveenkumar</div>
+              <a href="../developers/profile.html" class="dropdown-item">View Profile</a>
+              <a href="../profile/edit.html" class="dropdown-item">Edit Profile</a>
+              <a href="../settings/account.html" class="dropdown-item">Settings</a>
+              <div class="dropdown-divider"></div>
+              <button class="dropdown-item text-danger" data-action="sign-out">Sign Out</button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- App Body Content -->
+      <main class="app-content">
+        <!-- Dashboard Hero Banner (Image 1) -->
+        <div class="dashboard-hero-banner mint-underglow">
+          <div class="dashboard-hero-left">
+            <span class="dashboard-welcome-tag">WELCOME BACK, NAVEEN</span>
+            <h1 class="dashboard-hero-title">Build together.<br />Ship faster.</h1>
+            <p class="dashboard-hero-desc">A modern developer collaboration platform to plan, build, review and deploy amazing projects with your team.</p>
+            <div class="dashboard-hero-actions">
+              <button id="btnNewRepo" class="btn btn-primary btn-pill">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                New Repository
+              </button>
+              <button id="btnInviteTeam" class="btn btn-outline btn-pill">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+                Invite Team
+              </button>
+            </div>
+          </div>
+
+          <div class="dashboard-hero-graphic">
+            <img src="../../../public/images/landing-illustration.svg" alt="DevSync Graphics" />
+          </div>
+        </div>
+
+        <!-- 4 Metric Cards Row (Image 1) -->
+        <div class="metrics-row">
+          <div class="metric-card cursor-pointer" id="metricRepos">
+            <div class="metric-card-left">
+              <div class="metric-icon-box">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+              </div>
+              <div class="metric-value-box">
+                <span class="metric-value">12</span>
+                <span class="metric-label">Repositories</span>
+              </div>
+            </div>
+            <span class="metric-badge-trend trend-up">&uarr; 20%</span>
+          </div>
+
+          <div class="metric-card cursor-pointer" id="metricPRs">
+            <div class="metric-card-left">
+              <div class="metric-icon-box">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 0 1 2 2v7"/><line x1="6" y1="9" x2="6" y2="21"/></svg>
+              </div>
+              <div class="metric-value-box">
+                <span class="metric-value">8</span>
+                <span class="metric-label">Pull Requests</span>
+              </div>
+            </div>
+            <span class="metric-badge-trend trend-up">&uarr; 14%</span>
+          </div>
+
+          <div class="metric-card cursor-pointer" id="metricIssues">
+            <div class="metric-card-left">
+              <div class="metric-icon-box">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              </div>
+              <div class="metric-value-box">
+                <span class="metric-value">24</span>
+                <span class="metric-label">Issues</span>
+              </div>
+            </div>
+            <span class="metric-badge-trend trend-down">&darr; 6%</span>
+          </div>
+
+          <div class="metric-card cursor-pointer" id="metricTeam">
+            <div class="metric-card-left">
+              <div class="metric-icon-box">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </div>
+              <div class="metric-value-box">
+                <span class="metric-value">6</span>
+                <span class="metric-label">Team Members</span>
+              </div>
+            </div>
+            <span class="metric-badge-trend trend-up">&uarr; 33%</span>
+          </div>
+        </div>
+
+        <!-- 2-Column Content Grid -->
+        <div class="dashboard-grid-two-col">
+          <!-- Left Column: Repositories & Pull Requests -->
+          <div class="d-flex flex-column gap-6">
+            <!-- Recent Repositories Section -->
+            <div class="dashboard-section">
+              <div class="section-header-compact">
+                <h3 class="section-title-compact">Recent Repositories</h3>
+                <a href="../repositories/list.html" class="btn btn-ghost btn-sm">View All &rarr;</a>
+              </div>
+              <div class="table-responsive" style="border: none;">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Language</th>
+                      <th>Stars</th>
+                      <th>Updated</th>
+                      <th>Visibility</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <a href="../repositories/detail.html?repo=devsync-core" class="table-repo-name">devsync-core</a>
+                      </td>
+                      <td>
+                        <span class="lang-indicator"><span class="lang-dot" style="background-color: #3572A5;"></span>Python</span>
+                      </td>
+                      <td>28</td>
+                      <td class="text-secondary">2 hours ago</td>
+                      <td><span class="badge badge-private">Private</span></td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <a href="../repositories/detail.html?repo=campus-connect" class="table-repo-name">campus-connect</a>
+                      </td>
+                      <td>
+                        <span class="lang-indicator"><span class="lang-dot" style="background-color: #092E20;"></span>Django</span>
+                      </td>
+                      <td>18</td>
+                      <td class="text-secondary">5 hours ago</td>
+                      <td><span class="badge badge-public">Public</span></td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <a href="../repositories/detail.html?repo=portfolio-site" class="table-repo-name">portfolio-site</a>
+                      </td>
+                      <td>
+                        <span class="lang-indicator"><span class="lang-dot" style="background-color: #F7DF1E;"></span>JavaScript</span>
+                      </td>
+                      <td>12</td>
+                      <td class="text-secondary">1 day ago</td>
+                      <td><span class="badge badge-public">Public</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Recent Pull Requests Section -->
+            <div class="dashboard-section">
+              <div class="section-header-compact">
+                <h3 class="section-title-compact">Active Pull Requests</h3>
+                <a href="../pull-requests/list.html" class="btn btn-ghost btn-sm">View All &rarr;</a>
+              </div>
+              <div class="pr-list-container" style="border: none; border-radius: 0;">
+                <div class="pr-list-item">
+                  <div class="pr-item-left">
+                    <span class="pr-icon-indicator open">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 0 1 2 2v7"/><line x1="6" y1="9" x2="6" y2="21"/></svg>
+                    </span>
+                    <div class="pr-content">
+                      <div class="pr-title-row">
+                        <a href="../pull-requests/detail.html?id=42" class="pr-title">Add user authentication with Google OAuth</a>
+                        <span class="tag-label tag-enhancement">enhancement</span>
+                        <span class="repo-pill">campus-connect</span>
+                      </div>
+                      <div class="pr-meta">#42 opened 2 hours ago by Priya</div>
+                    </div>
+                  </div>
+                  <span class="badge badge-status-open">Open</span>
+                </div>
+
+                <div class="pr-list-item">
+                  <div class="pr-item-left">
+                    <span class="pr-icon-indicator open">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 0 1 2 2v7"/><line x1="6" y1="9" x2="6" y2="21"/></svg>
+                    </span>
+                    <div class="pr-content">
+                      <div class="pr-title-row">
+                        <a href="../pull-requests/detail.html?id=41" class="pr-title">Fix navbar responsive issue on mobile</a>
+                        <span class="tag-label tag-bug">bug</span>
+                        <span class="repo-pill">portfolio-site</span>
+                      </div>
+                      <div class="pr-meta">#41 opened 5 hours ago by Arjun</div>
+                    </div>
+                  </div>
+                  <span class="badge badge-status-open">Open</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Team Activity Feed -->
+          <div class="d-flex flex-column gap-6">
+            <div class="dashboard-section">
+              <div class="section-header-compact">
+                <h3 class="section-title-compact">Team Activity</h3>
+                <a href="../teams/members.html" class="btn btn-ghost btn-sm">Team &rarr;</a>
+              </div>
+              <div class="p-0">
+                <div class="activity-item">
+                  <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=64&q=80" alt="Priya" class="activity-avatar" />
+                  <div>
+                    <div class="activity-text"><strong>Priya S</strong> opened pull request #42 in <code>campus-connect</code></div>
+                    <div class="activity-time">2 hours ago</div>
+                  </div>
+                </div>
+
+                <div class="activity-item">
+                  <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=64&q=80" alt="Arjun" class="activity-avatar" />
+                  <div>
+                    <div class="activity-text"><strong>Arjun</strong> committed to <code>fix/mobile-navbar</code></div>
+                    <div class="activity-time">5 hours ago</div>
+                  </div>
+                </div>
+
+                <div class="activity-item">
+                  <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=64&q=80" alt="Karthik" class="activity-avatar" />
+                  <div>
+                    <div class="activity-text"><strong>Karthik</strong> requested review on #39: Database schema indexes</div>
+                    <div class="activity-time">1 day ago</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick AI Assistant Banner -->
+            <div class="card" style="background-color: var(--color-mint-soft); border-color: var(--color-mint);">
+              <div class="d-flex align-items-center gap-3 mb-2">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--color-focus)" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                <h4 class="font-heading" style="font-size: 15px; margin: 0;">AI Coding Assistant</h4>
+              </div>
+              <p style="font-size: 12.5px; color: var(--color-text-secondary); margin-bottom: 12px;">Need help reviewing PR #42 or debugging Django CSRF?</p>
+              <a href="../assistant/index.html" class="btn btn-mint btn-sm w-100">Launch Assistant &rarr;</a>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Accessible Invite Team Modal -->
+  <div class="modal-backdrop" id="inviteTeamModal" role="dialog" aria-modal="true" aria-labelledby="inviteTeamModalTitle">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title" id="inviteTeamModalTitle">Invite Team Member</h3>
+        <button class="modal-close-btn" data-modal-close aria-label="Close dialog">&times;</button>
+      </div>
+      <form id="inviteTeamForm">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label" for="inviteEmail">Member Email Address</label>
+            <input type="email" id="inviteEmail" class="form-control" placeholder="colleague@company.com" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="inviteRole">Project Role</label>
+            <select id="inviteRole" class="form-select">
+              <option value="Developer">Developer (Read/Write)</option>
+              <option value="Maintainer">Maintainer (Admin/Review)</option>
+              <option value="Viewer">Viewer (Read-Only)</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline btn-pill" data-modal-close>Cancel</button>
+          <button type="submit" class="btn btn-primary btn-pill">Send Invitation &rarr;</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script type="module" src="../../js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 400" width="520" height="400" fill="none">
+  <defs>
+    <radialGradient id="mintGlow405" cx="50%" cy="50%" r="60%">
+      <stop offset="0%" stop-color="#A8F0D0" stop-opacity="0.35" />
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
+    </radialGradient>
+    <filter id="shadow405" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#111111" flood-opacity="0.08" />
+    </filter>
+  </defs>
+
+  <circle cx="260" cy="220" r="180" fill="url(#mintGlow405)" />
+
+  <!-- Speech bubble -->
+  <g transform="translate(130, 80)">
+    <rect x="0" y="0" width="140" height="52" rx="10" fill="#FFFFFF" stroke="#D8DEDB" stroke-width="1" filter="url(#shadow405)" />
+    <path d="M 70,52 L 65,62 L 80,52 Z" fill="#FFFFFF" stroke="#D8DEDB" stroke-width="1" />
+    <text x="12" y="22" font-family="'Inter', sans-serif" font-size="12" font-weight="700" fill="#111111">Hmm...</text>
+    <text x="12" y="38" font-family="'Inter', sans-serif" font-size="11" fill="#626A66">This method is not allowed.</text>
+  </g>
+
+  <!-- Developer Character shrugging with open hands -->
+  <path d="M 200,380 C 190,320 200,240 245,215 C 290,240 300,320 290,380 Z" fill="#1A1F1D" />
+  <polygon points="245,260 252,250 259,260 252,270" fill="#86E7BC" />
+
+  <!-- Head with tilted smile -->
+  <rect x="236" y="195" width="18" height="25" rx="5" fill="#F8D3B8" />
+  <circle cx="245" cy="165" r="38" fill="#F8D3B8" />
+  <path d="M 210,165 C 208,130 230,115 255,115 C 280,115 292,135 282,165 C 275,135 260,130 245,135 C 230,140 220,150 210,165 Z" fill="#111111" />
+  <!-- Glasses -->
+  <rect x="222" y="152" width="20" height="15" rx="4" fill="none" stroke="#111111" stroke-width="2.5" />
+  <rect x="248" y="152" width="20" height="15" rx="4" fill="none" stroke="#111111" stroke-width="2.5" />
+  <line x1="242" y1="159" x2="248" y2="159" stroke="#111111" stroke-width="2.5" />
+  <circle cx="232" cy="159" r="2.5" fill="#111111" />
+  <circle cx="258" cy="159" r="2.5" fill="#111111" />
+  <path d="M 238,183 Q 248,187 254,180" stroke="#111111" stroke-width="2" fill="none" stroke-linecap="round" />
+
+  <!-- Shrugging Arms left & right -->
+  <!-- Left arm -->
+  <path d="M 215,240 C 180,240 165,220 150,210" stroke="#1A1F1D" stroke-width="20" stroke-linecap="round" fill="none" />
+  <circle cx="145" cy="208" r="8" fill="#F8D3B8" />
+  <!-- Right arm -->
+  <path d="M 275,240 C 310,240 325,220 340,210" stroke="#1A1F1D" stroke-width="20" stroke-linecap="round" fill="none" />
+  <circle cx="345" cy="208" r="8" fill="#F8D3B8" />
+
+  <!-- Floating Methods Card: GET / POST / PUT / DELETE -->
+  <g transform="translate(360, 115)" filter="url(#shadow405)">
+    <rect x="0" y="0" width="130" height="150" rx="12" fill="#1A1F1D" stroke="#D8DEDB" stroke-width="1.2" />
+    <text x="18" y="32" font-family="'JetBrains Mono', monospace" font-size="12" font-weight="700" fill="#86E7BC">GET</text>
+    <path d="M 95,28 L 100,33 L 110,22" stroke="#86E7BC" stroke-width="2.5" fill="none" stroke-linecap="round" />
+
+    <text x="18" y="66" font-family="'JetBrains Mono', monospace" font-size="12" font-weight="700" fill="#C03939">POST</text>
+    <path d="M 96,58 L 106,68 M 106,58 L 96,68" stroke="#C03939" stroke-width="2.5" stroke-linecap="round" />
+
+    <text x="18" y="100" font-family="'JetBrains Mono', monospace" font-size="12" font-weight="700" fill="#C03939">PUT</text>
+    <path d="M 96,92 L 106,102 M 106,92 L 96,102" stroke="#C03939" stroke-width="2.5" stroke-linecap="round" />
+
+    <text x="18" y="134" font-family="'JetBrains Mono', monospace" font-size="12" font-weight="700" fill="#C03939">DELETE</text>
+    <path d="M 96,126 L 106,136 M 106,126 L 96,136" stroke="#C03939" stroke-width="2.5" stroke-linecap="round" />
+  </g>
+</svg>

@@ -1,0 +1,210 @@
+/**
+ * DevSync Community Styles
+ * Discord-inspired developer chat in white & mint design system
+ */
+
+.community-layout {
+  display: flex;
+  height: calc(100vh - var(--topbar-height) - 48px);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+
+/* Channel Sidebar */
+.community-channels {
+  width: 240px;
+  background-color: var(--color-surface-subtle);
+  border-right: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+}
+
+.channel-header {
+  padding: var(--space-4) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+  font-family: var(--font-heading);
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.channel-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.channel-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 8px var(--space-3);
+  border-radius: var(--radius-md);
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-decoration: none;
+}
+
+.channel-item:hover {
+  background-color: #EEF4F0;
+  color: var(--color-text-primary);
+}
+
+.channel-item.active {
+  background-color: var(--color-mint);
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.channel-unread-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--color-focus);
+  margin-left: auto;
+}
+
+/* Main Chat Area */
+.community-chat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-surface);
+}
+
+.chat-header {
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.chat-channel-name {
+  font-family: var(--font-heading);
+  font-size: 15px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.chat-message-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.chat-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.chat-msg-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.chat-meta {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+
+.chat-author {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--color-text-primary);
+}
+
+.chat-time {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+}
+
+.chat-text {
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: var(--color-text-primary);
+}
+
+/* Chat Input Bar */
+.chat-input-bar {
+  padding: var(--space-4) var(--space-5);
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  background-color: var(--color-surface-subtle);
+}
+
+.chat-input-field {
+  flex: 1;
+  height: 42px;
+  padding: 0 var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  font-size: 13.5px;
+  background-color: var(--color-surface);
+}
+
+.chat-input-field:focus {
+  outline: none;
+  border-color: var(--color-focus);
+}
+
+/* Members Panel */
+.community-members {
+  width: 200px;
+  background-color: var(--color-surface-subtle);
+  border-left: 1px solid var(--color-border);
+  padding: var(--space-4) var(--space-3);
+  overflow-y: auto;
+}
+
+.member-category-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-2);
+}
+
+@media (max-width: 991.98px) {
+  .community-members {
+    display: none;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .community-channels {
+    width: 60px;
+  }
+  .channel-item span {
+    display: none;
+  }
+}

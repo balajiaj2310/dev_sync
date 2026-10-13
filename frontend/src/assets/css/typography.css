@@ -1,0 +1,107 @@
+/**
+ * DevSync Typography System
+ * Space Grotesk (Headings), Inter (Body/UI), JetBrains Mono (Code)
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@600;700;800&display=swap');
+
+h1, h2, h3, h4, h5, h6,
+.font-heading {
+  font-family: var(--font-heading);
+  color: var(--color-text-primary);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+body, p, input, button, select, textarea,
+.font-body {
+  font-family: var(--font-body);
+  letter-spacing: -0.01em;
+}
+
+code, pre, kbd, samp,
+.font-mono {
+  font-family: var(--font-mono);
+  font-size: var(--text-code);
+}
+
+/* Specific Design System Typographic Classes */
+.text-hero-wordmark {
+  font-family: var(--font-heading);
+  font-size: var(--text-hero);
+  font-weight: 800;
+  line-height: 0.95;
+  letter-spacing: 0.02em;
+  color: var(--color-primary);
+  text-transform: uppercase;
+}
+
+.text-hero-sub {
+  font-family: var(--font-heading);
+  font-size: var(--text-hero-sub);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+}
+
+.text-page-title {
+  font-family: var(--font-heading);
+  font-size: var(--text-page-title);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.text-section-title {
+  font-family: var(--font-heading);
+  font-size: var(--text-section-title);
+  font-weight: 700;
+}
+
+.text-card-title {
+  font-family: var(--font-heading);
+  font-size: var(--text-card-title);
+  font-weight: 600;
+}
+
+.text-metric {
+  font-family: var(--font-heading);
+  font-size: var(--text-metric);
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.text-table {
+  font-size: var(--text-table);
+}
+
+.text-metadata {
+  font-size: var(--text-caption);
+  color: var(--color-text-secondary);
+}
+
+.text-helper {
+  font-size: var(--text-small);
+  color: var(--color-text-secondary);
+}
+
+.text-secondary {
+  color: var(--color-text-secondary) !important;
+}
+
+.text-mint {
+  color: var(--color-mint-strong) !important;
+}
+
+.text-danger {
+  color: var(--color-danger) !important;
+}
+
+.text-success {
+  color: var(--color-success) !important;
+}
+
+.text-warning {
+  color: var(--color-warning) !important;
+}

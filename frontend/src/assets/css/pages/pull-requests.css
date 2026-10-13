@@ -1,0 +1,140 @@
+/**
+ * DevSync Pull Requests Styles
+ * Exact visual fidelity to Reference Image 1
+ */
+
+.pr-filter-tabs {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.pr-tab-btn {
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.pr-tab-btn:hover {
+  background-color: var(--color-surface-subtle);
+  color: var(--color-primary);
+}
+
+.pr-tab-btn.active {
+  background-color: var(--color-mint);
+  color: var(--color-primary);
+  border-color: var(--color-mint-strong);
+}
+
+.pr-list-container {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.pr-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+  gap: var(--space-4);
+  transition: background-color var(--transition-fast);
+}
+
+.pr-list-item:last-child {
+  border-bottom: none;
+}
+
+.pr-list-item:hover {
+  background-color: var(--color-surface-subtle);
+}
+
+.pr-item-left {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  flex: 1;
+}
+
+.pr-icon-indicator {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.pr-icon-indicator.open { color: var(--color-success); }
+.pr-icon-indicator.merged { color: #6C44C4; }
+.pr-icon-indicator.closed { color: var(--color-danger); }
+
+.pr-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pr-title-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.pr-title {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--color-text-primary);
+  text-decoration: none;
+}
+
+.pr-title:hover {
+  color: var(--color-focus);
+}
+
+.pr-meta {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.pr-item-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex-shrink: 0;
+}
+
+/* Avatar Stack for reviewers */
+.avatar-stack {
+  display: flex;
+  align-items: center;
+}
+
+.avatar-stack img {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid var(--color-surface);
+  margin-left: -8px;
+}
+
+.avatar-stack img:first-child {
+  margin-left: 0;
+}

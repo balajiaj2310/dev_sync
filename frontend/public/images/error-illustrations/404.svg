@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 400" width="520" height="400" fill="none">
+  <defs>
+    <radialGradient id="mintGlow404" cx="50%" cy="50%" r="60%">
+      <stop offset="0%" stop-color="#A8F0D0" stop-opacity="0.35" />
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
+    </radialGradient>
+    <filter id="shadow404" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#111111" flood-opacity="0.08" />
+    </filter>
+  </defs>
+
+  <circle cx="260" cy="220" r="180" fill="url(#mintGlow404)" />
+
+  <!-- Question Marks floating -->
+  <text x="210" y="110" font-family="'Space Grotesk', sans-serif" font-size="32" font-weight="700" fill="#3568A8">?</text>
+  <text x="360" y="90" font-family="'Space Grotesk', sans-serif" font-size="24" font-weight="700" fill="#86E7BC">?</text>
+
+  <!-- Speech bubble -->
+  <g transform="translate(140, 80)">
+    <rect x="0" y="0" width="130" height="52" rx="10" fill="#FFFFFF" stroke="#D8DEDB" stroke-width="1" filter="url(#shadow404)" />
+    <path d="M 65,52 L 60,62 L 75,52 Z" fill="#FFFFFF" stroke="#D8DEDB" stroke-width="1" />
+    <text x="12" y="22" font-family="'Inter', sans-serif" font-size="12" font-weight="700" fill="#111111">Hmm...</text>
+    <text x="12" y="38" font-family="'Inter', sans-serif" font-size="11" fill="#626A66">I can't find this page!</text>
+  </g>
+
+  <!-- Developer sitting cross-legged with laptop -->
+  <!-- Legs crossed -->
+  <path d="M 180,350 C 180,330 230,320 270,320 C 310,320 360,330 360,350 C 350,375 190,375 180,350 Z" fill="#262626" />
+  <!-- White sneakers -->
+  <rect x="180" y="350" width="40" height="20" rx="8" fill="#FFFFFF" stroke="#D8DEDB" stroke-width="1.5" />
+  <rect x="320" y="350" width="40" height="20" rx="8" fill="#FFFFFF" stroke="#D8DEDB" stroke-width="1.5" />
+
+  <!-- Body -->
+  <path d="M 220,330 C 215,280 230,230 270,225 C 310,230 325,280 320,330 Z" fill="#1A1F1D" />
+  <polygon points="270,265 276,256 282,265 276,274" fill="#86E7BC" />
+
+  <!-- Head with hand on chin -->
+  <rect x="262" y="200" width="16" height="20" rx="5" fill="#F8D3B8" />
+  <circle cx="270" cy="170" r="36" fill="#F8D3B8" />
+  <!-- Hair -->
+  <path d="M 238,170 C 235,135 255,120 280,120 C 305,120 315,140 305,170 C 298,140 285,135 270,135 C 255,140 245,150 238,170 Z" fill="#111111" />
+  <!-- Glasses -->
+  <rect x="248" y="158" width="18" height="14" rx="4" fill="none" stroke="#111111" stroke-width="2.5" />
+  <rect x="272" y="158" width="18" height="14" rx="4" fill="none" stroke="#111111" stroke-width="2.5" />
+  <line x1="266" y1="165" x2="272" y2="165" stroke="#111111" stroke-width="2.5" />
+  <circle cx="257" cy="165" r="2.5" fill="#111111" />
+  <circle cx="281" cy="165" r="2.5" fill="#111111" />
+  
+  <!-- Hand on chin thinking -->
+  <circle cx="286" cy="192" r="8" fill="#F8D3B8" />
+  <path d="M 305,270 C 315,245 305,210 290,195" stroke="#1A1F1D" stroke-width="18" stroke-linecap="round" fill="none" />
+
+  <!-- Laptop on lap -->
+  <path d="M 240,300 L 300,300 L 310,315 L 230,315 Z" fill="#D8DEDB" />
+  <rect x="245" y="260" width="50" height="38" rx="4" fill="#111111" />
+  <polygon points="270,278 274,272 278,278 274,284" fill="#86E7BC" />
+
+  <!-- Floating broken file card on right -->
+  <g transform="translate(370, 115)" filter="url(#shadow404)">
+    <rect x="0" y="0" width="115" height="135" rx="10" fill="#FFFFFF" stroke="#D8DEDB" stroke-width="1.2" />
+    <path d="M 35,35 L 75,35 L 85,45 L 85,95 L 35,95 Z" fill="#F7FAF8" stroke="#D8DEDB" stroke-width="1.5" />
+    <!-- Sad face on file -->
+    <circle cx="52" cy="62" r="2.5" fill="#626A66" />
+    <circle cx="68" cy="62" r="2.5" fill="#626A66" />
+    <path d="M 54,78 Q 60,72 66,78" stroke="#626A66" stroke-width="2" fill="none" stroke-linecap="round" />
+    <text x="58" y="115" font-family="'Space Grotesk', sans-serif" font-size="10" font-weight="700" fill="#626A66" text-anchor="middle">FILE_NOT_FOUND</text>
+  </g>
+</svg>

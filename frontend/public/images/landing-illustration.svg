@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 380" width="340" height="380" fill="none">
+  <defs>
+    <radialGradient id="mintGlow" cx="60%" cy="50%" r="55%">
+      <stop offset="0%" stop-color="#A8F0D0" stop-opacity="0.85" />
+      <stop offset="50%" stop-color="#86E7BC" stop-opacity="0.45" />
+      <stop offset="85%" stop-color="#E8FBF3" stop-opacity="0.15" />
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
+    </radialGradient>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M 32 0 L 0 0 0 32" fill="none" stroke="#D8DEDB" stroke-width="0.8" opacity="0.6" />
+    </pattern>
+    <linearGradient id="crystalGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E8FBF3" />
+      <stop offset="50%" stop-color="#A8F0D0" />
+      <stop offset="100%" stop-color="#21865B" />
+    </linearGradient>
+  </defs>
+
+  <!-- Outer Card Frame with subtle rounded border -->
+  <rect x="10" y="10" width="320" height="360" rx="16" fill="#FFFFFF" stroke="#D8DEDB" stroke-width="1.2" />
+
+  <!-- Mint Glow Aura -->
+  <rect x="11" y="11" width="318" height="358" rx="15" fill="url(#mintGlow)" />
+
+  <!-- Tech Grid Overlay -->
+  <rect x="11" y="11" width="318" height="358" rx="15" fill="url(#grid)" />
+
+  <!-- Decorative 4-point Sparkle / Star 1 (Top Right) -->
+  <g transform="translate(240, 90)">
+    <path d="M 0,-18 Q 0,0 18,0 Q 0,0 0,18 Q 0,0 -18,0 Q 0,0 0,-18 Z" fill="#111111" />
+  </g>
+
+  <!-- Decorative Navigation Chevron / Pointer 2 (Lower Right) -->
+  <g transform="translate(245, 230)">
+    <path d="M 0,0 L -18,22 L -6,14 L -12,28 L -4,28 L 2,12 L 10,18 Z" fill="#111111" transform="rotate(-30)" />
+  </g>
+
+  <!-- Small floating crystal facet in top-left -->
+  <g transform="translate(60, 70)">
+    <polygon points="0,0 14,-10 28,0 14,14" fill="#86E7BC" opacity="0.8" />
+    <polygon points="0,0 14,14 6,24" fill="#21865B" opacity="0.7" />
+    <polygon points="28,0 14,14 22,24" fill="#111111" opacity="0.8" />
+  </g>
+
+  <!-- Flow line with endpoint -->
+  <path d="M 40,290 L 220,290" stroke="#111111" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.4" />
+  <circle cx="220" cy="290" r="3" fill="#111111" />
+
+  <!-- Code/Keyword tags -->
+  <g font-family="'Space Grotesk', system-ui, sans-serif" font-size="11" font-weight="700" letter-spacing="1.5" fill="#626A66" opacity="0.8">
+    <text x="45" y="160">IDEAS</text>
+    <text x="45" y="185">CODE</text>
+    <text x="45" y="210">COLLABORATE</text>
+    <text x="45" y="235">DEPLOY</text>
+  </g>
+</svg>
