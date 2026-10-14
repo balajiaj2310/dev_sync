@@ -51,7 +51,10 @@ function enforceRouteGuards() {
   // 2. Authenticated users visiting login/signup redirected to target or dashboard
   if (isAuth && pageId === 'auth') {
     const urlParams = new URLSearchParams(window.location.search);
-    const destination = urlParams.get('redirect') || ROUTES.OVERVIEW;
+    let destination = urlParams.get('redirect');
+    if (!destination || destination.includes('sign-in') || destination.includes('login') || destination.includes('sign-up')) {
+      destination = ROUTES.OVERVIEW;
+    }
     window.location.replace(destination);
     return false;
   }

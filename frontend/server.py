@@ -659,8 +659,15 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
             self.handle_ai_chat()
             return
 
-        # Authentication Login Endpoint (POST /api/v1/auth/login, /auth/token/, /api/auth/token/, /api/auth/login)
-        if path in ('/api/v1/auth/login', '/auth/token/', '/auth/token', '/api/auth/token/', '/api/auth/token', '/api/auth/login', '/api/v1/auth/token/'):
+        # Authentication Login Endpoint (POST /api/v1/auth/login, /api/v1/auth/token, /auth/token, /api/auth/login)
+        login_paths = (
+            '/api/v1/auth/login', '/api/v1/auth/token',
+            '/api/v1/login', '/api/v1/token',
+            '/api/auth/login', '/api/auth/token',
+            '/auth/login', '/auth/token',
+            '/login', '/token'
+        )
+        if path in login_paths:
             length = int(self.headers.get('Content-Length', 0))
             post_data = self.rfile.read(length) if length > 0 else b'{}'
             try:

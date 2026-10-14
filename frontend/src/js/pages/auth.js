@@ -68,10 +68,14 @@ export function initAuthPage() {
 
         // Honor ?redirect= parameter or default to Overview
         const urlParams = new URLSearchParams(window.location.search);
-        const destination = urlParams.get('redirect') || ROUTES.OVERVIEW;
+        let destination = urlParams.get('redirect');
+        if (!destination || destination.includes('sign-in') || destination.includes('login') || destination.includes('sign-up')) {
+          destination = ROUTES.OVERVIEW;
+        }
+
         setTimeout(() => {
-          window.location.href = destination;
-        }, 500);
+          window.location.replace(destination);
+        }, 300);
       } catch (err) {
         toastDanger(err.message || 'Invalid email or password. Please verify your credentials and try again.');
         submitBtn.disabled = false;
