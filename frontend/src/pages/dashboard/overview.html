@@ -24,8 +24,9 @@
   <link rel="stylesheet" href="../../assets/css/pages/dashboard.css">
   <link rel="stylesheet" href="../../assets/css/pages/repositories.css">
   <link rel="stylesheet" href="../../assets/css/pages/pull-requests.css">
+  <link rel="stylesheet" href="../../assets/css/devsync-ai.css">
 </head>
-<body data-page="dashboard">
+<body data-page="dashboard" data-authenticated="true">
   <div class="app-container">
     <!-- Authenticated Sidebar (Image 1) -->
     <aside class="app-sidebar">
@@ -401,6 +402,17 @@
     </div>
   </div>
 
+  <!-- DevSync Floating AI Assistant Widget -->
+  <script>
+    window.DEVSYNC_AI_CONFIG = {
+      endpoint: "/api/ai/chat",
+      getAuthHeaders: () => {
+        const token = window.DevSyncAuth?.getAccessToken?.() || localStorage.getItem('devsync_auth_token');
+        return token ? { Authorization: `Bearer ${token}` } : {};
+      }
+    };
+  </script>
+  <script defer src="../../js/devsync-ai.js"></script>
   <script type="module" src="../../js/main.js"></script>
 </body>
 </html>

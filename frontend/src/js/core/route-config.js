@@ -1,66 +1,92 @@
 /**
  * DevSync Route Configuration
- * Centralized mapping for all public, auth, app, and error routes
+ * Centralized mapping for all public, auth, app, and error routes.
+ * Automatically resolves base path dynamically based on runtime location,
+ * eliminating the previous redirect bug between /frontend/src and /src.
  */
 
+export function getBasePath() {
+  if (typeof window !== 'undefined' && window.location) {
+    const p = window.location.pathname;
+    if (p.includes('/frontend/src/')) {
+      return '/frontend/src/pages';
+    }
+    if (p.includes('/src/')) {
+      return '/src/pages';
+    }
+  }
+  return '/src/pages';
+}
+
+export function getPublicAssetPath(assetRelativePath) {
+  if (typeof window !== 'undefined' && window.location) {
+    const p = window.location.pathname;
+    const prefix = p.includes('/frontend/src/') ? '/frontend/public/' : '/public/';
+    return `${prefix}${assetRelativePath.replace(/^\//, '')}`;
+  }
+  return `/public/${assetRelativePath.replace(/^\//, '')}`;
+}
+
 export const ROUTES = {
+  get BASE() { return getBasePath(); },
+
   // Public
-  HOME: '/frontend/src/pages/public/home.html',
-  EXPLORE: '/frontend/src/pages/public/explore.html',
-  PRICING: '/frontend/src/pages/public/pricing.html',
-  CONTACT: '/frontend/src/pages/public/contact.html',
+  get HOME() { return `${getBasePath()}/public/home.html`; },
+  get EXPLORE() { return `${getBasePath()}/public/explore.html`; },
+  get PRICING() { return `${getBasePath()}/public/pricing.html`; },
+  get CONTACT() { return `${getBasePath()}/public/contact.html`; },
 
   // Auth
-  SIGN_IN: '/frontend/src/pages/auth/sign-in.html',
-  SIGN_UP: '/frontend/src/pages/auth/sign-up.html',
-  FORGOT_PASSWORD: '/frontend/src/pages/auth/forgot-password.html',
-  RESET_PASSWORD: '/frontend/src/pages/auth/reset-password.html',
+  get SIGN_IN() { return `${getBasePath()}/auth/sign-in.html`; },
+  get SIGN_UP() { return `${getBasePath()}/auth/sign-up.html`; },
+  get FORGOT_PASSWORD() { return `${getBasePath()}/auth/forgot-password.html`; },
+  get RESET_PASSWORD() { return `${getBasePath()}/auth/reset-password.html`; },
 
   // Dashboard & Apps
-  OVERVIEW: '/frontend/src/pages/dashboard/overview.html',
+  get OVERVIEW() { return `${getBasePath()}/dashboard/overview.html`; },
 
-  REPOSITORIES: '/frontend/src/pages/repositories/list.html',
-  REPOSITORY_DETAIL: '/frontend/src/pages/repositories/detail.html',
-  REPOSITORY_CREATE: '/frontend/src/pages/repositories/create.html',
-  REPOSITORY_FILES: '/frontend/src/pages/repositories/files.html',
-  REPOSITORY_COMMITS: '/frontend/src/pages/repositories/commits.html',
-  REPOSITORY_BRANCHES: '/frontend/src/pages/repositories/branches.html',
+  get REPOSITORIES() { return `${getBasePath()}/repositories/list.html`; },
+  get REPOSITORY_DETAIL() { return `${getBasePath()}/repositories/detail.html`; },
+  get REPOSITORY_CREATE() { return `${getBasePath()}/repositories/create.html`; },
+  get REPOSITORY_FILES() { return `${getBasePath()}/repositories/files.html`; },
+  get REPOSITORY_COMMITS() { return `${getBasePath()}/repositories/commits.html`; },
+  get REPOSITORY_BRANCHES() { return `${getBasePath()}/repositories/branches.html`; },
 
-  PULL_REQUESTS: '/frontend/src/pages/pull-requests/list.html',
-  PULL_REQUEST_DETAIL: '/frontend/src/pages/pull-requests/detail.html',
-  PULL_REQUEST_CREATE: '/frontend/src/pages/pull-requests/create.html',
+  get PULL_REQUESTS() { return `${getBasePath()}/pull-requests/list.html`; },
+  get PULL_REQUEST_DETAIL() { return `${getBasePath()}/pull-requests/detail.html`; },
+  get PULL_REQUEST_CREATE() { return `${getBasePath()}/pull-requests/create.html`; },
 
-  ISSUES: '/frontend/src/pages/issues/list.html',
-  ISSUE_DETAIL: '/frontend/src/pages/issues/detail.html',
-  ISSUE_CREATE: '/frontend/src/pages/issues/create.html',
+  get ISSUES() { return `${getBasePath()}/issues/list.html`; },
+  get ISSUE_DETAIL() { return `${getBasePath()}/issues/detail.html`; },
+  get ISSUE_CREATE() { return `${getBasePath()}/issues/create.html`; },
 
-  TEAMS: '/frontend/src/pages/teams/list.html',
-  TEAM_DETAIL: '/frontend/src/pages/teams/detail.html',
-  TEAM_MEMBERS: '/frontend/src/pages/teams/members.html',
+  get TEAMS() { return `${getBasePath()}/teams/list.html`; },
+  get TEAM_DETAIL() { return `${getBasePath()}/teams/detail.html`; },
+  get TEAM_MEMBERS() { return `${getBasePath()}/teams/members.html`; },
 
-  DEVELOPERS: '/frontend/src/pages/developers/discover.html',
-  DEVELOPER_PROFILE: '/frontend/src/pages/developers/profile.html',
-  CONNECTIONS: '/frontend/src/pages/developers/connections.html',
+  get DEVELOPERS() { return `${getBasePath()}/developers/discover.html`; },
+  get DEVELOPER_PROFILE() { return `${getBasePath()}/developers/profile.html`; },
+  get CONNECTIONS() { return `${getBasePath()}/developers/connections.html`; },
 
-  COMMUNITY: '/frontend/src/pages/community/index.html',
-  COMMUNITY_CHANNEL: '/frontend/src/pages/community/channel.html',
+  get COMMUNITY() { return `${getBasePath()}/community/index.html`; },
+  get COMMUNITY_CHANNEL() { return `${getBasePath()}/community/channel.html`; },
 
-  ASSISTANT: '/frontend/src/pages/assistant/index.html',
-  ANALYTICS: '/frontend/src/pages/analytics/index.html',
-  PROFILE_EDIT: '/frontend/src/pages/profile/edit.html',
-  NOTIFICATIONS: '/frontend/src/pages/notifications/index.html',
+  get ASSISTANT() { return `${getBasePath()}/assistant/index.html`; },
+  get ANALYTICS() { return `${getBasePath()}/analytics/index.html`; },
+  get PROFILE_EDIT() { return `${getBasePath()}/profile/edit.html`; },
+  get NOTIFICATIONS() { return `${getBasePath()}/notifications/index.html`; },
 
-  SETTINGS_ACCOUNT: '/frontend/src/pages/settings/account.html',
-  SETTINGS_PRIVACY: '/frontend/src/pages/settings/privacy.html',
-  SETTINGS_PREFERENCES: '/frontend/src/pages/settings/preferences.html',
+  get SETTINGS_ACCOUNT() { return `${getBasePath()}/settings/account.html`; },
+  get SETTINGS_PRIVACY() { return `${getBasePath()}/settings/privacy.html`; },
+  get SETTINGS_PREFERENCES() { return `${getBasePath()}/settings/preferences.html`; },
 
   // Errors
-  ERROR_401: '/frontend/src/pages/errors/401.html',
-  ERROR_403: '/frontend/src/pages/errors/403.html',
-  ERROR_404: '/frontend/src/pages/errors/404.html',
-  ERROR_405: '/frontend/src/pages/errors/405.html',
-  ERROR_429: '/frontend/src/pages/errors/429.html',
-  ERROR_500: '/frontend/src/pages/errors/500.html'
+  get ERROR_401() { return `${getBasePath()}/errors/401.html`; },
+  get ERROR_403() { return `${getBasePath()}/errors/403.html`; },
+  get ERROR_404() { return `${getBasePath()}/errors/404.html`; },
+  get ERROR_405() { return `${getBasePath()}/errors/405.html`; },
+  get ERROR_429() { return `${getBasePath()}/errors/429.html`; },
+  get ERROR_500() { return `${getBasePath()}/errors/500.html`; }
 };
 
 export function navigateTo(route) {

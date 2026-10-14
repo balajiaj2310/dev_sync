@@ -19,8 +19,9 @@
   <link rel="stylesheet" href="../../assets/css/components/dropdowns.css">
   <link rel="stylesheet" href="../../assets/css/components/notifications.css">
   <link rel="stylesheet" href="../../assets/css/pages/community.css">
+  <link rel="stylesheet" href="../../assets/css/devsync-ai.css">
 </head>
-<body data-page="community">
+<body data-authenticated="true" data-page="community">
   <div class="app-container">
     <aside class="app-sidebar">
       <div class="sidebar-header">
@@ -132,5 +133,16 @@
   </div>
 
   <script type="module" src="../../js/main.js"></script>
+  <!-- DevSync Floating AI Assistant Widget -->
+  <script>
+    window.DEVSYNC_AI_CONFIG = {
+      endpoint: "/api/ai/chat",
+      getAuthHeaders: () => {
+        const token = window.DevSyncAuth?.getAccessToken?.() || localStorage.getItem('devsync_auth_token');
+        return token ? { Authorization: `Bearer ${token}` } : {};
+      }
+    };
+  </script>
+  <script defer src="../../js/devsync-ai.js"></script>
 </body>
 </html>

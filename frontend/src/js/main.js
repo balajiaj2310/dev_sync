@@ -25,6 +25,11 @@ import { initProfilePage } from './pages/profile.js';
 import { initNotificationsPage } from './pages/notifications.js';
 import { initSettingsPage } from './pages/settings.js';
 
+// Expose DevSyncAuth global helper for authenticated components and widgets
+window.DevSyncAuth = window.DevSyncAuth || {
+  getAccessToken: () => localStorage.getItem('devsync_auth_token') || 'mock_jwt_token_demo_mode'
+};
+
 document.addEventListener('DOMContentLoaded', () => {
   // Initialize Global Shared Components
   initHeader();
