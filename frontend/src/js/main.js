@@ -48,15 +48,16 @@ function enforceRouteGuards() {
     return false;
   }
 
-  // 2. Authenticated users visiting login/signup redirected to target or dashboard
+  // 2. Authenticated users visiting login/signup: do not force redirect if explicitly on auth page
   if (isAuth && pageId === 'auth') {
     const urlParams = new URLSearchParams(window.location.search);
-    let destination = urlParams.get('redirect');
-    if (!destination || destination.includes('sign-in') || destination.includes('login') || destination.includes('sign-up')) {
-      destination = ROUTES.OVERVIEW;
+    const explicitRedirect = urlParams.get('redirect');
+    if (explicitRedirect && !explicitRedirect.includes('sign-in') && !explicitRedirect.includes('login') && !explicitRedirect.includes('sign-up')) {
+      window.location.replace(explicitRedirect);
+      return false;
     }
-    window.location.replace(destination);
-    return false;
+    // Allow viewing and testing login page
+    return true;
   }
 
   return true;

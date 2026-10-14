@@ -10,88 +10,365 @@
   <link rel="stylesheet" href="../../assets/css/typography.css">
   <link rel="stylesheet" href="../../assets/css/global.css">
   <link rel="stylesheet" href="../../assets/css/utilities.css">
-  <link rel="stylesheet" href="../../assets/css/layout/header.css">
-  <link rel="stylesheet" href="../../assets/css/layout/footer.css">
-  <link rel="stylesheet" href="../../assets/css/layout/responsive.css">
-  <link rel="stylesheet" href="../../assets/css/components/buttons.css">
-  <link rel="stylesheet" href="../../assets/css/components/forms.css">
-  <link rel="stylesheet" href="../../assets/css/components/cards.css">
   <link rel="stylesheet" href="../../assets/css/components/notifications.css">
   <link rel="stylesheet" href="../../assets/css/pages/auth.css">
 </head>
 <body data-page="auth">
-  <header class="public-header">
-    <div class="public-header-inner">
-      <a href="../public/home.html" class="header-brand">
-        <img src="../../../public/images/logo.svg" alt="DevSync" />
-      </a>
-      <div class="public-actions">
-        <span class="text-secondary" style="font-size: 13.5px;">Don't have an account?</span>
-        <a href="sign-up.html" class="btn btn-pill btn-outline btn-sm">Sign Up</a>
-      </div>
+
+  <!-- Abstract Background Vector Decorations (Behind content, pointer-events: none) -->
+  <div class="auth-decorations-container" aria-hidden="true">
+    
+    <!-- Organic Flowing Gradient Waves -->
+    <svg class="auth-bg-wave-svg" viewBox="0 0 1440 900" fill="none" preserveAspectRatio="none">
+      <defs>
+        <!-- Mint / Teal Ambient Gradient -->
+        <linearGradient id="mintWaveGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#2DD4BF" stop-opacity="0.28" />
+          <stop offset="60%" stop-color="#A7F3D0" stop-opacity="0.22" />
+          <stop offset="100%" stop-color="#ECFDF5" stop-opacity="0" />
+        </linearGradient>
+
+        <!-- Lavender / Periwinkle Ambient Gradient -->
+        <linearGradient id="lavenderWaveGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#E0E7FF" stop-opacity="0" />
+          <stop offset="35%" stop-color="#C4B5FD" stop-opacity="0.32" />
+          <stop offset="70%" stop-color="#A78BFA" stop-opacity="0.28" />
+          <stop offset="100%" stop-color="#93C5FD" stop-opacity="0.35" />
+        </linearGradient>
+
+        <!-- Translucent Cube Gradients -->
+        <linearGradient id="cubeTopGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.95" />
+          <stop offset="100%" stop-color="#E0F2FE" stop-opacity="0.75" />
+        </linearGradient>
+
+        <linearGradient id="cubeLeftGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#BAE6FD" stop-opacity="0.65" />
+          <stop offset="100%" stop-color="#C7D2FE" stop-opacity="0.45" />
+        </linearGradient>
+
+        <linearGradient id="cubeRightGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#93C5FD" stop-opacity="0.75" />
+          <stop offset="100%" stop-color="#A5B4FC" stop-opacity="0.55" />
+        </linearGradient>
+
+        <!-- Dotted Pattern Definition -->
+        <pattern id="dotPatternCyan" x="0" y="0" width="16" height="16" patternUnits="userSpaceOnUse">
+          <circle cx="2" cy="2" r="1.75" fill="#38BDF8" fill-opacity="0.5" />
+        </pattern>
+        <pattern id="dotPatternMint" x="0" y="0" width="16" height="16" patternUnits="userSpaceOnUse">
+          <circle cx="2" cy="2" r="1.75" fill="#34D399" fill-opacity="0.45" />
+        </pattern>
+      </defs>
+
+      <!-- Smooth Mint Organic Wave (Top Center to Right) -->
+      <path d="M680,-40 C760,80 820,120 780,260 C740,400 900,480 1020,440 C1140,400 1320,520 1480,480 L1480,-40 Z" fill="url(#mintWaveGrad)" />
+
+      <!-- Smooth Lavender / Periwinkle Organic Wave (Bottom sweeping across) -->
+      <path d="M-60,780 C180,680 340,780 520,740 C700,700 840,860 1060,840 C1280,820 1380,890 1500,920 L1500,960 L-60,960 Z" fill="url(#lavenderWaveGrad)" />
+      
+      <!-- Connecting Organic Cyan Path -->
+      <path d="M440,70 C470,120 480,180 530,220 C580,260 620,290 640,360" stroke="#38BDF8" stroke-width="1.5" stroke-dasharray="4 4" stroke-opacity="0.45" fill="none" />
+    </svg>
+
+    <!-- Translucent 3D Isometric Floating Cubes -->
+    <!-- Cube 1: Top-Left (above hero title) -->
+    <div class="floating-cube cube-top-left">
+      <svg viewBox="-32 -32 64 64" width="60" height="60">
+        <polygon points="0,-24 21,-12 0,0 -21,-12" fill="url(#cubeTopGrad)" stroke="#93C5FD" stroke-width="1.2" stroke-linejoin="round" />
+        <polygon points="-21,-12 0,0 0,24 -21,12" fill="url(#cubeLeftGrad)" stroke="#93C5FD" stroke-width="1.2" stroke-linejoin="round" />
+        <polygon points="0,0 21,-12 21,12 0,24" fill="url(#cubeRightGrad)" stroke="#93C5FD" stroke-width="1.2" stroke-linejoin="round" />
+      </svg>
+    </div>
+
+    <!-- Cube 2: Top-Center (above wave / near card top) -->
+    <div class="floating-cube cube-top-center">
+      <svg viewBox="-32 -32 64 64" width="52" height="52">
+        <polygon points="0,-22 19,-11 0,0 -19,-11" fill="url(#cubeTopGrad)" stroke="#BAE6FD" stroke-width="1" stroke-linejoin="round" />
+        <polygon points="-19,-11 0,0 0,22 -19,11" fill="url(#cubeLeftGrad)" stroke="#BAE6FD" stroke-width="1" stroke-linejoin="round" />
+        <polygon points="0,0 19,-11 19,11 0,22" fill="url(#cubeRightGrad)" stroke="#BAE6FD" stroke-width="1" stroke-linejoin="round" />
+      </svg>
+    </div>
+
+    <!-- Cube 3: Middle Gap (between hero text/features and login card) -->
+    <div class="floating-cube cube-mid-gap">
+      <svg viewBox="-36 -36 72 72" width="72" height="72">
+        <polygon points="0,-28 25,-14 0,0 -25,-14" fill="url(#cubeTopGrad)" stroke="#93C5FD" stroke-width="1.4" stroke-linejoin="round" />
+        <polygon points="-25,-14 0,0 0,28 -25,14" fill="url(#cubeLeftGrad)" stroke="#93C5FD" stroke-width="1.4" stroke-linejoin="round" />
+        <polygon points="0,0 25,-14 25,14 0,28" fill="url(#cubeRightGrad)" stroke="#93C5FD" stroke-width="1.4" stroke-linejoin="round" />
+      </svg>
+    </div>
+
+    <!-- Cube 4: Lower-Center (below features) -->
+    <div class="floating-cube cube-lower-center">
+      <svg viewBox="-32 -32 64 64" width="62" height="62">
+        <polygon points="0,-25 22,-12.5 0,0 -22,-12.5" fill="url(#cubeTopGrad)" stroke="#C4B5FD" stroke-width="1.2" stroke-linejoin="round" />
+        <polygon points="-22,-12.5 0,0 0,25 -22,12.5" fill="url(#cubeLeftGrad)" stroke="#C4B5FD" stroke-width="1.2" stroke-linejoin="round" />
+        <polygon points="0,0 22,-12.5 22,12.5 0,25" fill="url(#cubeRightGrad)" stroke="#C4B5FD" stroke-width="1.2" stroke-linejoin="round" />
+      </svg>
+    </div>
+
+    <!-- Dot Matrix 1: Top Center-Left with Cyan Connecting Node -->
+    <div class="dot-matrix dot-matrix-top">
+      <div class="dot-node-pin"></div>
+      <svg width="84" height="84">
+        <rect width="84" height="84" fill="url(#dotPatternCyan)" />
+      </svg>
+    </div>
+
+    <!-- Dot Matrix 2: Mid Right Gap (between features and card) -->
+    <div class="dot-matrix dot-matrix-mid">
+      <svg width="96" height="84">
+        <rect width="96" height="84" fill="url(#dotPatternCyan)" />
+      </svg>
+    </div>
+
+    <!-- Dot Matrix 3: Bottom Left Corner -->
+    <div class="dot-matrix dot-matrix-bottom">
+      <svg width="112" height="96">
+        <rect width="112" height="96" fill="url(#dotPatternMint)" />
+      </svg>
+    </div>
+
+  </div>
+
+  <!-- Page Header Row: Top Right Action Link -->
+  <header class="auth-top-bar">
+    <div class="auth-top-action">
+      <span class="auth-top-action-text">New to DevSync?</span>
+      <a href="sign-up.html" class="auth-top-action-link" id="topCreateAccountLink">Create an account</a>
     </div>
   </header>
 
-  <main class="auth-wrapper">
-    <div class="auth-card">
-      <div class="auth-header">
-        <a href="../public/home.html" class="auth-logo">
-          <img src="../../../public/images/logo-icon.svg" width="36" height="36" alt="DevSync" />
-        </a>
-        <h1 class="auth-title">Welcome back to DevSync</h1>
-        <p class="auth-subtitle">Sign in to collaborate on your repositories and team projects.</p>
-      </div>
+  <!-- Main Unified Layout: Balanced 2-Column Grid -->
+  <main class="auth-layout-wrap">
+    <div class="auth-stage-grid">
 
-      <form id="signInForm" class="auth-form" onsubmit="event.preventDefault(); return false;" novalidate>
-        <div class="form-group">
-          <label class="form-label" for="email">Email Address</label>
-          <input type="email" id="email" class="form-control" placeholder="Balaji@devsync.dev" value="Balaji@devsync.dev" required autocomplete="username" />
+      <!-- LEFT COLUMN: DEVSYNC HERO & FEATURES -->
+      <section class="auth-hero-col" aria-label="DevSync Platform Overview">
+        
+        <!-- DevSync Brand Identity -->
+        <div class="hero-brand-row">
+          <img src="../../../public/images/logo-icon.svg" width="36" height="36" alt="DevSync Logo" class="hero-brand-icon" />
+          <span class="hero-brand-name">DEVSYNC</span>
         </div>
 
-        <div class="form-group">
-          <div class="form-label">
-            <span>Password</span>
-            <a href="forgot-password.html" class="auth-link" style="font-size: 11.5px; font-weight: 500;">Forgot password?</a>
+        <!-- Pill Badge -->
+        <div class="hero-pill-badge">
+          <span>DEVELOPER COLLABORATION PLATFORM</span>
+        </div>
+
+        <!-- Main Heading with Teal Gradient 'Grow' -->
+        <h1 class="hero-main-heading">
+          Build Together<br>
+          <span class="gradient-text-grow">Grow</span> Further
+        </h1>
+
+        <!-- Supporting Text -->
+        <p class="hero-subtext">
+          Connect with developers, collaborate on projects, share ideas and build amazing things together.
+        </p>
+
+        <!-- 3 Feature Highlight Rows -->
+        <div class="hero-features-list">
+          
+          <!-- Feature 1: Collaborate -->
+          <div class="hero-feature-row">
+            <div class="feature-icon-box icon-box-blue" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+            </div>
+            <div class="feature-content">
+              <h3 class="feature-title">Collaborate</h3>
+              <p class="feature-desc">Work with developers worldwide</p>
+            </div>
           </div>
-          <div class="password-input-wrapper">
-            <input type="password" id="password" class="form-control" placeholder="••••••••" value="demo12345" required autocomplete="current-password" />
-            <button type="button" class="password-toggle-btn" aria-label="Toggle password visibility">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+
+          <!-- Feature 2: Build Projects -->
+          <div class="hero-feature-row">
+            <div class="feature-icon-box icon-box-mint" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="16 18 22 12 16 6"></polyline>
+                <polyline points="8 6 2 12 8 18"></polyline>
+              </svg>
+            </div>
+            <div class="feature-content">
+              <h3 class="feature-title">Build Projects</h3>
+              <p class="feature-desc">Showcase your work and get feedback</p>
+            </div>
+          </div>
+
+          <!-- Feature 3: Grow Together -->
+          <div class="hero-feature-row">
+            <div class="feature-icon-box icon-box-purple" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="20" x2="18" y2="10"></line>
+                <line x1="12" y1="20" x2="12" y2="4"></line>
+                <line x1="6" y1="20" x2="6" y2="14"></line>
+              </svg>
+            </div>
+            <div class="feature-content">
+              <h3 class="feature-title">Grow Together</h3>
+              <p class="feature-desc">Learn, share and advance your skills</p>
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- RIGHT COLUMN: AUTHENTICATION CARD -->
+      <section class="auth-card-col" aria-label="Sign in to your DevSync account">
+        <div class="auth-card-panel">
+          
+          <!-- Card Brand Header -->
+          <div class="auth-card-header">
+            <div class="card-brand-badge">
+              <img src="../../../public/images/logo-icon.svg" width="26" height="26" alt="DevSync" class="card-brand-img" />
+              <span class="card-brand-title">DEVSYNC</span>
+            </div>
+            <h2 class="card-heading" id="authCardTitle">Welcome Back &#128075;</h2>
+            <p class="card-subheading" id="authCardSubtitle">Sign in to your account and continue building with the community.</p>
+          </div>
+
+          <!-- Tabs: Sign In / Create Account -->
+          <div class="auth-tabs-row" role="tablist">
+            <button type="button" class="auth-tab active" id="tabSignIn" role="tab" aria-selected="true" aria-controls="signInForm">Sign In</button>
+            <button type="button" class="auth-tab" id="tabSignUp" role="tab" aria-selected="false" aria-controls="signInForm">Create Account</button>
+          </div>
+
+          <!-- Google Sign-In Button -->
+          <button type="button" class="btn-google-sign-in" id="googleSignInBtn" aria-label="Sign in with Google">
+            <svg viewBox="0 0 24 24" width="20" height="20" class="google-icon" aria-hidden="true">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+            </svg>
+            <span>Sign in with Google</span>
+          </button>
+
+          <!-- Divider -->
+          <div class="auth-card-divider" role="separator">OR</div>
+
+          <!-- Auth Form -->
+          <form id="signInForm" novalidate>
+            
+            <!-- Full Name (Only for Create Account mode) -->
+            <div class="form-field-group" id="groupFullName" style="display: none;">
+              <label class="form-field-label" for="name">Full Name</label>
+              <div class="form-input-container">
+                <span class="field-icon-left" aria-hidden="true">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
+                </span>
+                <input type="text" id="name" class="form-text-input" placeholder="Enter your full name" autocomplete="name" />
+              </div>
+            </div>
+
+            <!-- Email or Username Input -->
+            <div class="form-field-group">
+              <label class="form-field-label" for="email" id="labelIdentifier">Email or Username</label>
+              <div class="form-input-container">
+                <span class="field-icon-left" aria-hidden="true">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+                  </svg>
+                </span>
+                <input type="text" id="email" class="form-text-input" placeholder="Enter your email or username" value="balaji@devsync.dev" required autocomplete="username" />
+              </div>
+            </div>
+
+            <!-- Password Input -->
+            <div class="form-field-group">
+              <div class="form-field-label-row">
+                <label class="form-field-label" for="password">Password</label>
+                <a href="forgot-password.html" class="link-forgot-password" id="linkForgotPassword">Forgot password?</a>
+              </div>
+              <div class="form-input-container">
+                <span class="field-icon-left" aria-hidden="true">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                  </svg>
+                </span>
+                <input type="password" id="password" class="form-text-input" placeholder="Enter your password" value="demo12345" required autocomplete="current-password" />
+                <button type="button" class="btn-password-toggle" id="passwordToggleBtn" aria-label="Toggle password visibility">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Remember Me & Keep Me Signed In -->
+            <div class="form-options-row" id="rowRememberMe">
+              <label class="checkbox-wrapper" for="rememberMe">
+                <input type="checkbox" id="rememberMe" class="styled-checkbox" checked />
+                <span class="checkbox-text">Remember me</span>
+              </label>
+              <span class="keep-signed-text">Keep me signed in</span>
+            </div>
+
+            <!-- Submit Primary Button -->
+            <button type="submit" id="signInSubmitBtn" class="btn-submit-gradient">
+              <span id="btnSubmitText">Sign In &rarr;</span>
             </button>
+          </form>
+
+          <!-- Terms of Service & Privacy Policy -->
+          <p class="card-legal-footer">
+            By signing in, you agree to our <a href="../public/pricing.html">Terms of Service</a> and <a href="../settings/privacy.html">Privacy Policy</a>.
+          </p>
+
+          <!-- Test Credentials Box -->
+          <div class="test-credentials-panel">
+            Test credentials: <strong>balaji@devsync.dev</strong> or<br>
+            <strong>naveen3438@devsync.dev</strong> &bull; password: <strong>demo12345</strong>
           </div>
+
         </div>
+      </section>
 
-        <div class="form-check mb-4">
-          <input type="checkbox" id="rememberMe" class="form-check-input" checked />
-          <label for="rememberMe">Remember this browser for 30 days</label>
-        </div>
-
-        <button type="submit" id="signInSubmitBtn" class="btn btn-primary btn-pill w-100 btn-lg">Sign In &rarr;</button>
-      </form>
-
-      <div class="auth-footer">
-        <p>Test credentials: <strong>balaji@devsync.dev</strong> or <strong>naveen3438@devsync.dev</strong> &bull; password: <strong>demo12345</strong></p>
-      </div>
     </div>
   </main>
 
-  <footer class="public-footer">
-    <div class="public-footer-inner">
-      <div class="footer-brand">
-        <img src="../../../public/images/logo.svg" alt="DevSync" />
+  <!-- Google OAuth Configuration Help Modal (Dev Mode) -->
+  <div class="auth-modal-backdrop" id="googleSetupModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="auth-modal-box">
+      <div class="auth-modal-header">
+        <h3 id="modalTitle">Google OAuth Setup Required</h3>
+        <button type="button" class="auth-modal-close" id="closeGoogleModalBtn" aria-label="Close dialog">&times;</button>
       </div>
-      <div class="footer-links">
-        <a href="../public/home.html" class="footer-link">About</a>
-        <a href="../settings/privacy.html" class="footer-link">Privacy</a>
-        <a href="../public/pricing.html" class="footer-link">Terms</a>
+      <p style="font-size: 13.5px; color: #475569; line-height: 1.5;">
+        Google Sign-In is equipped with real server verification at <code>/api/v1/auth/google</code>. To activate real Google OAuth in your local environment:
+      </p>
+      <ol style="font-size: 13px; color: #334155; line-height: 1.6; padding-left: 20px;">
+        <li>Create an OAuth 2.0 Client ID in the <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener" style="color: #0D9488;">Google Cloud Console</a>.</li>
+        <li>Add <code>http://localhost:8000</code> to Authorized JavaScript origins.</li>
+        <li>Set your Client ID in your terminal or <code>.env</code> file:</li>
+      </ol>
+      <div class="auth-modal-code">export GOOGLE_CLIENT_ID="YOUR_CLIENT_ID.apps.googleusercontent.com"</div>
+      <p style="font-size: 12px; color: #64748B;">
+        Then restart <code>server.py</code>. The frontend will immediately enable real Google Identity Services authentication without mock or fake success.
+      </p>
+      <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
+        <button type="button" class="btn-submit-gradient" id="dismissGoogleModalBtn" style="width: auto; padding: 8px 20px; font-size: 13px;">Got it</button>
       </div>
     </div>
-  </footer>
+  </div>
 
   <script type="module">
     import { initAuthPage } from '../../js/pages/auth.js';
     initAuthPage();
   </script>
-  <script type="module" src="../../js/main.js"></script>
 </body>
 </html>

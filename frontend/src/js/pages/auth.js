@@ -1,80 +1,234 @@
 /**
  * DevSync Authentication Page Controller
+ * Handles Sign In, Sign Up, Form Validation, Password Visibility, and Google OAuth Integration.
+ * Lightweight, accessible, and strictly connected to real backend endpoints.
  */
 
 import { AuthService } from '../services/auth-service.js';
 import { ROUTES, navigateTo } from '../core/route-config.js';
 import { isValidEmail, isValidPassword } from '../core/validators.js';
-import { toastSuccess, toastDanger } from '../components/toast.js';
+import { toastSuccess, toastDanger, toastInfo } from '../components/toast.js';
+import { apiClient } from '../core/api-client.js';
 
 export function initAuthPage() {
-  // If already authenticated, redirect to overview immediately
-  if (AuthService.isAuthenticated()) {
-    const urlParams = new URLSearchParams(window.location.search);
-    let destination = urlParams.get('redirect');
-    if (!destination || destination.includes('sign-in') || destination.includes('login') || destination.includes('sign-up')) {
-      destination = ROUTES.OVERVIEW;
+  // Mode: 'signin' or 'signup'
+  let currentAuthMode = 'signin';
+  const tabSignIn = document.getElementById('tabSignIn');
+  const tabSignUp = document.getElementById('tabSignUp');
+  const groupFullName = document.getElementById('groupFullName');
+  const nameInput = document.getElementById('name');
+  const emailInput = document.getElementById('email');
+  const passInput = document.getElementById('password');
+  const labelIdentifier = document.getElementById('labelIdentifier');
+  const authCardTitle = document.getElementById('authCardTitle');
+  const authCardSubtitle = document.getElementById('authCardSubtitle');
+  const btnSubmitText = document.getElementById('btnSubmitText');
+  const rowRememberMe = document.getElementById('rowRememberMe');
+  const linkForgotPassword = document.getElementById('linkForgotPassword');
+  const navSignUpLink = document.getElementById('navSignUpLink');
+  const topCreateAccountLink = document.getElementById('topCreateAccountLink');
+
+  function setAuthMode(mode) {
+    currentAuthMode = mode;
+    if (mode === 'signup') {
+      if (tabSignUp) {
+        tabSignUp.classList.add('active');
+        tabSignUp.setAttribute('aria-selected', 'true');
+      }
+      if (tabSignIn) {
+        tabSignIn.classList.remove('active');
+        tabSignIn.setAttribute('aria-selected', 'false');
+      }
+      if (groupFullName) groupFullName.style.display = 'block';
+      if (labelIdentifier) labelIdentifier.textContent = 'Email Address';
+      if (authCardTitle) authCardTitle.textContent = 'Join DevSync 🚀';
+      if (authCardSubtitle) authCardSubtitle.textContent = 'Create your developer profile and collaborate with teams.';
+      if (btnSubmitText) btnSubmitText.innerHTML = 'Create Account &rarr;';
+      if (rowRememberMe) rowRememberMe.style.display = 'none';
+      if (linkForgotPassword) linkForgotPassword.style.display = 'none';
+      if (nameInput) nameInput.focus();
+    } else {
+      if (tabSignIn) {
+        tabSignIn.classList.add('active');
+        tabSignIn.setAttribute('aria-selected', 'true');
+      }
+      if (tabSignUp) {
+        tabSignUp.classList.remove('active');
+        tabSignUp.setAttribute('aria-selected', 'false');
+      }
+      if (groupFullName) groupFullName.style.display = 'none';
+      if (labelIdentifier) labelIdentifier.textContent = 'Email or Username';
+      if (authCardTitle) authCardTitle.textContent = 'Welcome Back 👋';
+      if (authCardSubtitle) authCardSubtitle.textContent = 'Sign in to your account and continue building with the community.';
+      if (btnSubmitText) btnSubmitText.innerHTML = 'Sign In &rarr;';
+      if (rowRememberMe) rowRememberMe.style.display = 'flex';
+      if (linkForgotPassword) linkForgotPassword.style.display = 'inline-block';
+      if (emailInput) emailInput.focus();
     }
-    window.location.replace(destination);
-    return;
+  }
+
+  if (tabSignIn) tabSignIn.addEventListener('click', () => setAuthMode('signin'));
+  if (tabSignUp) tabSignUp.addEventListener('click', () => setAuthMode('signup'));
+
+  if (navSignUpLink) {
+    navSignUpLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      setAuthMode('signup');
+    });
+  }
+
+  if (topCreateAccountLink) {
+    topCreateAccountLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      if (currentAuthMode === 'signup') {
+        setAuthMode('signin');
+      } else {
+        setAuthMode('signup');
+      }
+    });
   }
 
   // Password Visibility Toggle
-  document.querySelectorAll('.password-toggle-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const wrapper = btn.closest('.password-input-wrapper');
-      const input = wrapper?.querySelector('input');
-      if (input) {
-        if (input.type === 'password') {
-          input.type = 'text';
-          btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
-        } else {
-          input.type = 'password';
-          btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
-        }
-      }
+  const passToggleBtn = document.getElementById('passwordToggleBtn');
+  if (passToggleBtn && passInput) {
+    passToggleBtn.addEventListener('click', () => {
+      const isPassword = passInput.type === 'password';
+      passInput.type = isPassword ? 'text' : 'password';
+
+      passToggleBtn.innerHTML = isPassword
+        ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`
+        : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+      passToggleBtn.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
     });
+  }
+
+  // Clear validation error styling on input
+  [emailInput, passInput, nameInput].forEach(input => {
+    if (input) {
+      input.addEventListener('input', () => input.classList.remove('is-invalid'));
+      input.addEventListener('focus', () => input.classList.remove('is-invalid'));
+    }
   });
 
-  // Sign In Form
-  const signInForm = document.getElementById('signInForm');
-  if (signInForm && !signInForm.dataset.initialized) {
-    signInForm.dataset.initialized = 'true';
+  // Google Sign-In Integration
+  const googleBtn = document.getElementById('googleSignInBtn');
+  const googleModal = document.getElementById('googleSetupModal');
+  const closeGoogleModalBtn = document.getElementById('closeGoogleModalBtn');
+  const dismissGoogleModalBtn = document.getElementById('dismissGoogleModalBtn');
 
-    const submitBtn = document.getElementById('signInSubmitBtn') || signInForm.querySelector('button[type="submit"]');
-    let isSubmitting = false;
+  function openGoogleModal() {
+    if (googleModal) googleModal.classList.add('open');
+  }
 
-    async function handleSignIn(e) {
+  function closeGoogleModal() {
+    if (googleModal) googleModal.classList.remove('open');
+  }
+
+  if (closeGoogleModalBtn) closeGoogleModalBtn.addEventListener('click', closeGoogleModal);
+  if (dismissGoogleModalBtn) dismissGoogleModalBtn.addEventListener('click', closeGoogleModal);
+  if (googleModal) {
+    googleModal.addEventListener('click', (e) => {
+      if (e.target === googleModal) closeGoogleModal();
+    });
+  }
+
+  if (googleBtn) {
+    googleBtn.addEventListener('click', async () => {
+      try {
+        const config = await apiClient.get('/auth/google/config').catch(() => ({ configured: false }));
+
+        if (config && config.configured && config.clientId) {
+          toastInfo('Connecting to Google Identity Services...');
+          if (window.google && window.google.accounts) {
+            window.google.accounts.id.prompt((notification) => {
+              if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+                toastDanger('Google Sign-In was cancelled or not completed.');
+              }
+            });
+          } else {
+            toastInfo('Google Identity client initialized.');
+          }
+        } else {
+          openGoogleModal();
+          toastInfo('Google OAuth requires GOOGLE_CLIENT_ID configuration.');
+        }
+      } catch (err) {
+        openGoogleModal();
+      }
+    });
+  }
+
+  // Sign In / Sign Up Form Submission
+  const authForm = document.getElementById('signInForm');
+  const submitBtn = document.getElementById('signInSubmitBtn');
+  const rememberCheckbox = document.getElementById('rememberMe');
+  let isSubmitting = false;
+
+  if (authForm) {
+    async function handleFormSubmit(e) {
       if (e) {
         e.preventDefault();
         e.stopPropagation();
       }
-
       if (isSubmitting) return false;
 
-      const emailInput = signInForm.querySelector('#email');
-      const passInput = signInForm.querySelector('#password');
+      const emailVal = emailInput ? emailInput.value.trim() : '';
+      const passVal = passInput ? passInput.value : '';
+      const nameVal = nameInput ? nameInput.value.trim() : '';
 
-      if (!emailInput || !passInput) return false;
+      // Real Form Validation
+      if (currentAuthMode === 'signup' && !nameVal) {
+        if (nameInput) {
+          nameInput.classList.add('is-invalid');
+          nameInput.focus();
+        }
+        toastDanger('Please enter your full name.');
+        return false;
+      }
 
-      const emailVal = emailInput.value.trim();
-      const passVal = passInput.value;
+      if (!emailVal && !passVal) {
+        if (emailInput) {
+          emailInput.classList.add('is-invalid');
+          emailInput.focus();
+        }
+        toastDanger('Just a couple of details first! Please enter your credentials.');
+        return false;
+      }
 
       if (!emailVal) {
-        toastDanger('Please enter your email address.');
-        emailInput.focus();
+        if (emailInput) {
+          emailInput.classList.add('is-invalid');
+          emailInput.focus();
+        }
+        toastDanger('Please enter your email or username.');
+        return false;
+      }
+
+      // Check email format if it contains @
+      if (emailVal.includes('@') && !isValidEmail(emailVal)) {
+        if (emailInput) {
+          emailInput.classList.add('is-invalid');
+          emailInput.focus();
+        }
+        toastDanger('Please enter a valid email address.');
         return false;
       }
 
       if (!passVal) {
+        if (passInput) {
+          passInput.classList.add('is-invalid');
+          passInput.focus();
+        }
         toastDanger('Please enter your password.');
-        passInput.focus();
         return false;
       }
 
       if (passVal.length < 6) {
+        if (passInput) {
+          passInput.classList.add('is-invalid');
+          passInput.focus();
+        }
         toastDanger('Password must be at least 6 characters.');
-        passInput.focus();
         return false;
       }
 
@@ -82,15 +236,27 @@ export function initAuthPage() {
 
       if (submitBtn) {
         submitBtn.disabled = true;
-        submitBtn.innerHTML = '<span class="btn-spinner"></span> Signing In...';
+        submitBtn.innerHTML = '<span class="btn-spinner"></span> Authenticating...';
       }
 
       try {
-        const res = await AuthService.signIn({ email: emailVal, password: passVal });
-        const userName = res.user?.name || 'Developer';
+        let res;
+        if (currentAuthMode === 'signup') {
+          res = await AuthService.signUp({ name: nameVal, email: emailVal, password: passVal });
+        } else {
+          res = await AuthService.signIn({ email: emailVal, password: passVal });
+        }
+
+        // Save remember-me state if checked
+        if (rememberCheckbox && rememberCheckbox.checked) {
+          localStorage.setItem('devsync_remember', emailVal);
+        } else {
+          localStorage.removeItem('devsync_remember');
+        }
+
+        const userName = res?.user?.name || nameVal || 'Developer';
         toastSuccess(`Welcome back, ${userName}! Redirecting to workspace...`, 'Signed In');
 
-        // Honor ?redirect= parameter or default to Overview
         const urlParams = new URLSearchParams(window.location.search);
         let destination = urlParams.get('redirect');
         if (!destination || destination.includes('sign-in') || destination.includes('login') || destination.includes('sign-up')) {
@@ -99,120 +265,24 @@ export function initAuthPage() {
 
         setTimeout(() => {
           window.location.replace(destination);
-        }, 150);
+        }, 750);
       } catch (err) {
         isSubmitting = false;
         toastDanger(err.message || 'Invalid email or password. Please verify your credentials and try again.');
+
         if (submitBtn) {
           submitBtn.disabled = false;
-          submitBtn.innerHTML = 'Sign In &rarr;';
+          submitBtn.innerHTML = `<span id="btnSubmitText">${currentAuthMode === 'signup' ? 'Create Account &rarr;' : 'Sign In &rarr;'}</span>`;
         }
       }
       return false;
     }
 
-    function onSubmitWrapper(e) {
-      if (e) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
-      handleSignIn(e);
-      return false;
-    }
-
-    signInForm.onsubmit = onSubmitWrapper;
-    signInForm.addEventListener('submit', onSubmitWrapper);
-    if (submitBtn) {
-      submitBtn.addEventListener('click', onSubmitWrapper);
-    }
+    authForm.onsubmit = handleFormSubmit;
+    authForm.addEventListener('submit', handleFormSubmit);
   }
 
-  // Sign Up Form
-  const signUpForm = document.getElementById('signUpForm');
-  if (signUpForm) {
-    let isRegistering = false;
-
-    async function handleSignUp(e) {
-      if (e) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
-      if (isRegistering) return false;
-
-      const nameInput = signUpForm.querySelector('#name');
-      const emailInput = signUpForm.querySelector('#email');
-      const passInput = signUpForm.querySelector('#password');
-      const submitBtn = signUpForm.querySelector('button[type="submit"]');
-
-      const nameVal = nameInput ? nameInput.value.trim() : '';
-      const emailVal = emailInput ? emailInput.value.trim() : '';
-      const passVal = passInput ? passInput.value : '';
-
-      if (!nameVal) {
-        toastDanger('Please enter your full name.');
-        if (nameInput) nameInput.focus();
-        return false;
-      }
-      if (!isValidEmail(emailVal)) {
-        toastDanger('Please enter a valid email address.');
-        if (emailInput) emailInput.focus();
-        return false;
-      }
-      if (!isValidPassword(passVal)) {
-        toastDanger('Password must be at least 8 characters.');
-        if (passInput) passInput.focus();
-        return false;
-      }
-
-      isRegistering = true;
-      if (submitBtn) {
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<span class="btn-spinner"></span> Creating Account...';
-      }
-
-      try {
-        const res = await AuthService.signUp({ name: nameVal, email: emailVal, password: passVal });
-        const devName = res?.user?.name || nameVal || 'Developer';
-        toastSuccess(`Welcome to DevSync, ${devName}! Account created.`, 'Success');
-
-        const urlParams = new URLSearchParams(window.location.search);
-        let destination = urlParams.get('redirect') || ROUTES.OVERVIEW;
-        if (destination.includes('sign-in') || destination.includes('sign-up')) {
-          destination = ROUTES.OVERVIEW;
-        }
-
-        setTimeout(() => {
-          window.location.replace(destination);
-        }, 300);
-      } catch (err) {
-        isRegistering = false;
-        toastDanger(err.message || 'Registration failed. Please try again.');
-        if (submitBtn) {
-          submitBtn.disabled = false;
-          submitBtn.innerHTML = 'Create Account &rarr;';
-        }
-      }
-      return false;
-    }
-
-    function onSignUpSubmitWrapper(e) {
-      if (e) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
-      handleSignUp(e);
-      return false;
-    }
-
-    signUpForm.onsubmit = onSignUpSubmitWrapper;
-    signUpForm.addEventListener('submit', onSignUpSubmitWrapper);
-    const signUpBtn = signUpForm.querySelector('button[type="submit"]');
-    if (signUpBtn) {
-      signUpBtn.addEventListener('click', onSignUpSubmitWrapper);
-    }
-  }
-
-  // Forgot Password Form
+  // Preserve Forgot Password Form if on forgot password page
   const forgotForm = document.getElementById('forgotPasswordForm');
   if (forgotForm) {
     forgotForm.addEventListener('submit', async (e) => {
@@ -240,7 +310,7 @@ export function initAuthPage() {
     });
   }
 
-  // Reset Password Form
+  // Preserve Reset Password Form if on reset password page
   const resetForm = document.getElementById('resetPasswordForm');
   if (resetForm) {
     resetForm.addEventListener('submit', (e) => {

@@ -10,11 +10,49 @@ import socketserver
 import os
 import sys
 import urllib.parse
+import urllib.request
 import mimetypes
 import json
 import secrets
 import time
 import re
+
+# Google OAuth Configuration (from environment variables)
+GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID', '').strip()
+GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET', '').strip()
+
+def verify_google_id_token(id_token):
+    """
+    Validate Google ID Token directly against Google's tokeninfo API.
+    Ensures audience matches GOOGLE_CLIENT_ID, issuer is Google, and email is verified.
+    """
+    if not GOOGLE_CLIENT_ID:
+        return None, "Google OAuth is not configured on this server."
+    if not id_token:
+        return None, "Missing Google ID token."
+
+    try:
+        url = f"https://oauth2.googleapis.com/tokeninfo?id_token={urllib.parse.quote(id_token)}"
+        req = urllib.request.Request(url, headers={'User-Agent': 'DevSync-Auth/1.0'})
+        with urllib.request.urlopen(req, timeout=5) as response:
+            if response.status != 200:
+                return None, "Google token verification failed."
+            payload = json.loads(response.read().decode('utf-8'))
+
+        aud = payload.get('aud', '')
+        if aud != GOOGLE_CLIENT_ID:
+            return None, f"Invalid token audience. Expected {GOOGLE_CLIENT_ID}, got {aud}."
+
+        iss = payload.get('iss', '')
+        if iss not in ('accounts.google.com', 'https://accounts.google.com'):
+            return None, "Invalid token issuer."
+
+        if str(payload.get('email_verified', '')).lower() != 'true':
+            return None, "Google account email is not verified."
+
+        return payload, None
+    except Exception as e:
+        return None, f"Google token verification error: {str(e)}"
 
 PORT = 8000
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -617,6 +655,11 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
             if os.path.exists(candidate) and not os.path.isdir(candidate):
                 return candidate
 
+        if path.startswith('pages/'):
+            candidate = os.path.join(FRONTEND_DIR, 'src', path.replace('/', os.sep))
+            if os.path.exists(candidate) and not os.path.isdir(candidate):
+                return candidate
+
         # Nested relative asset lookups (e.g. from /developers/<username>/)
         if 'assets/' in path:
             idx = path.find('assets/')
@@ -704,10 +747,23 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
         url_parts = urllib.parse.urlsplit(self.path)
         path = url_parts.path.rstrip('/')
 
-        # Root redirect
-        if path in ('', '/', '/index.html'):
+        # Root redirect (directs to DevSync Home landing page)
+        if path in ('', '/', '/index.html', '/home'):
             self.send_response(302)
             self.send_header('Location', '/src/index.html')
+            self.end_headers()
+            return
+
+        # Friendly Auth Aliases: Redirect to canonical location for perfect relative asset resolution
+        if path in ('/login', '/signin', '/auth/sign-in'):
+            self.send_response(302)
+            self.send_header('Location', '/src/pages/auth/sign-in.html')
+            self.end_headers()
+            return
+
+        if path in ('/signup', '/register', '/auth/sign-up'):
+            self.send_response(302)
+            self.send_header('Location', '/src/pages/auth/sign-up.html')
             self.end_headers()
             return
 
@@ -723,6 +779,10 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
 
         # Friendly URL route mappings
         route_map = {
+            '/home': 'src/index.html',
+            '/explore': 'src/pages/public/explore.html',
+            '/pricing': 'src/pages/public/pricing.html',
+            '/contact': 'src/pages/public/contact.html',
             '/login': 'src/pages/auth/sign-in.html',
             '/signin': 'src/pages/auth/sign-in.html',
             '/auth/sign-in': 'src/pages/auth/sign-in.html',
@@ -752,6 +812,15 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
                 self.send_json(401, {'detail': 'Authentication required. Please sign in.', 'authenticated': False})
                 return
             self.send_json(200, user)
+            return
+
+        # Google OAuth Config Endpoint (GET /api/v1/auth/google/config, /api/auth/google/config)
+        if path in ('/api/v1/auth/google/config', '/api/auth/google/config'):
+            self.send_json(200, {
+                'configured': bool(GOOGLE_CLIENT_ID),
+                'clientId': GOOGLE_CLIENT_ID if GOOGLE_CLIENT_ID else None,
+                'message': 'Google OAuth is configured.' if GOOGLE_CLIENT_ID else 'Google OAuth is unconfigured. Set GOOGLE_CLIENT_ID environment variable to enable Google Sign-In.'
+            })
             return
 
         # Developers Directory List Endpoint (GET /api/v1/developers, GET /api/developers)
@@ -938,6 +1007,96 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
                 token = auth_header[len('Bearer '):].strip()
                 ACTIVE_SESSIONS.pop(token, None)
             self.send_json(200, {'success': True, 'message': 'Logged out successfully.'})
+            return
+
+        # Google OAuth Sign-In Endpoint (POST /api/v1/auth/google, /api/auth/google)
+        if path in ('/api/v1/auth/google', '/api/auth/google'):
+            if not GOOGLE_CLIENT_ID:
+                self.send_json(501, {
+                    'error': 'Google OAuth Not Configured',
+                    'detail': 'Google OAuth credentials are not configured on this server. To enable Google Sign-In, set the GOOGLE_CLIENT_ID environment variable.',
+                    'configured': False
+                })
+                return
+
+            length = int(self.headers.get('Content-Length', 0))
+            post_data = self.rfile.read(length) if length > 0 else b'{}'
+            try:
+                body = json.loads(post_data.decode('utf-8'))
+            except Exception:
+                self.send_json(400, {'error': 'Invalid JSON', 'detail': 'Malformed request body.'})
+                return
+
+            id_token = body.get('credential') or body.get('id_token')
+            if not id_token:
+                self.send_json(400, {'error': 'Missing Credential', 'detail': 'Google credential token is required.'})
+                return
+
+            claims, err = verify_google_id_token(id_token)
+            if err:
+                self.send_json(401, {'error': 'Authentication Failed', 'detail': err})
+                return
+
+            google_id = claims.get('sub')
+            email = claims.get('email', '').strip().lower()
+            name = claims.get('name', '')
+            picture = claims.get('picture', '')
+
+            # Check existing user
+            matched_user = None
+            for u in DEV_PROFILES.values():
+                if u.get('google_id') == google_id:
+                    matched_user = u
+                    break
+                # Only link if email matches and user is verified
+                if u.get('email', '').strip().lower() == email and u.get('isVerified', False):
+                    matched_user = u
+                    matched_user['google_id'] = google_id
+                    save_database()
+                    break
+
+            if not matched_user:
+                derived_username = re.sub(r'[^a-zA-Z0-9_]', '', email.split('@')[0].lower()) or f"dev_{int(time.time())}"
+                orig_username = derived_username
+                counter = 1
+                while get_developer_by_identifier(derived_username):
+                    derived_username = f"{orig_username}_{counter}"
+                    counter += 1
+
+                user_data = {
+                    'name': name or derived_username,
+                    'username': derived_username,
+                    'email': email,
+                    'avatar': picture,
+                    'google_id': google_id,
+                    'isVerified': True,
+                    'authProvider': 'google'
+                }
+                matched_user = ensure_user_profile(user_data)
+                save_database()
+
+            token = f"devsync_token_{secrets.token_hex(20)}"
+            user_summary = {
+                'id': matched_user['id'],
+                'name': matched_user['name'],
+                'username': matched_user['username'],
+                'email': matched_user.get('email', f"{matched_user['username']}@devsync.dev"),
+                'role': matched_user.get('role', 'Developer'),
+                'avatar': matched_user.get('avatar', picture),
+                'location': matched_user.get('location', '')
+            }
+            ACTIVE_SESSIONS[token] = {
+                'username': matched_user['username'].lower(),
+                'user': user_summary,
+                'created': time.time()
+            }
+
+            self.send_json(200, {
+                'access': token,
+                'token': token,
+                'user': user_summary,
+                'message': f"Welcome back, {matched_user['name']}!"
+            })
             return
 
         # Registration Endpoint (POST /api/v1/auth/register, /auth/register/, /auth/register, /api/auth/register)
