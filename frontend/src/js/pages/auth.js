@@ -8,6 +8,17 @@ import { isValidEmail, isValidPassword } from '../core/validators.js';
 import { toastSuccess, toastDanger } from '../components/toast.js';
 
 export function initAuthPage() {
+  // If already authenticated, redirect to overview immediately
+  if (AuthService.isAuthenticated()) {
+    const urlParams = new URLSearchParams(window.location.search);
+    let destination = urlParams.get('redirect');
+    if (!destination || destination.includes('sign-in') || destination.includes('login') || destination.includes('sign-up')) {
+      destination = ROUTES.OVERVIEW;
+    }
+    window.location.replace(destination);
+    return;
+  }
+
   // Password Visibility Toggle
   document.querySelectorAll('.password-toggle-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -27,12 +38,24 @@ export function initAuthPage() {
 
   // Sign In Form
   const signInForm = document.getElementById('signInForm');
-  if (signInForm) {
-    signInForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
+  if (signInForm && !signInForm.dataset.initialized) {
+    signInForm.dataset.initialized = 'true';
+
+    const submitBtn = document.getElementById('signInSubmitBtn') || signInForm.querySelector('button[type="submit"]');
+    let isSubmitting = false;
+
+    async function handleSignIn(e) {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+
+      if (isSubmitting) return false;
+
       const emailInput = signInForm.querySelector('#email');
       const passInput = signInForm.querySelector('#password');
-      const submitBtn = signInForm.querySelector('button[type="submit"]');
+
+      if (!emailInput || !passInput) return false;
 
       const emailVal = emailInput.value.trim();
       const passVal = passInput.value;
@@ -40,26 +63,27 @@ export function initAuthPage() {
       if (!emailVal) {
         toastDanger('Please enter your email address.');
         emailInput.focus();
-        return;
+        return false;
       }
-      if (!isValidEmail(emailVal)) {
-        toastDanger('Please enter a valid email address.');
-        emailInput.focus();
-        return;
-      }
+
       if (!passVal) {
         toastDanger('Please enter your password.');
         passInput.focus();
-        return;
+        return false;
       }
+
       if (passVal.length < 6) {
         toastDanger('Password must be at least 6 characters.');
         passInput.focus();
-        return;
+        return false;
       }
 
-      submitBtn.disabled = true;
-      submitBtn.innerHTML = '<span class="btn-spinner"></span> Signing In...';
+      isSubmitting = true;
+
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="btn-spinner"></span> Signing In...';
+      }
 
       try {
         const res = await AuthService.signIn({ email: emailVal, password: passVal });
@@ -75,13 +99,32 @@ export function initAuthPage() {
 
         setTimeout(() => {
           window.location.replace(destination);
-        }, 300);
+        }, 150);
       } catch (err) {
+        isSubmitting = false;
         toastDanger(err.message || 'Invalid email or password. Please verify your credentials and try again.');
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = 'Sign In &rarr;';
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = 'Sign In &rarr;';
+        }
       }
-    });
+      return false;
+    }
+
+    function onSubmitWrapper(e) {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      handleSignIn(e);
+      return false;
+    }
+
+    signInForm.onsubmit = onSubmitWrapper;
+    signInForm.addEventListener('submit', onSubmitWrapper);
+    if (submitBtn) {
+      submitBtn.addEventListener('click', onSubmitWrapper);
+    }
   }
 
   // Sign Up Form
