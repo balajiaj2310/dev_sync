@@ -18,6 +18,7 @@ import { initPullRequestsPage } from './pages/pull-requests.js';
 import { initIssuesPage } from './pages/issues.js';
 import { initTeamsPage } from './pages/teams.js';
 import { initDevelopersPage } from './pages/developers.js';
+import { initDeveloperProfilePage } from './pages/developer-profile.js';
 import { initCommunityPage } from './pages/community.js';
 import { initAssistantPage } from './pages/assistant.js';
 import { initAnalyticsPage } from './pages/analytics.js';
@@ -66,8 +67,15 @@ document.addEventListener('DOMContentLoaded', () => {
     case 'teams':
       initTeamsPage();
       break;
+    case 'developer-profile':
+      initDeveloperProfilePage();
+      break;
     case 'developers':
-      initDevelopersPage();
+      if (document.getElementById('devProfileRoot')) {
+        initDeveloperProfilePage();
+      } else {
+        initDevelopersPage();
+      }
       break;
     case 'community':
       initCommunityPage();

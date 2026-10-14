@@ -35,8 +35,10 @@ export async function initDevelopersPage() {
 
       return `
         <div class="developer-card" data-dev-id="${dev.id}">
-          <img src="${dev.avatar}" alt="${dev.name}" class="dev-avatar-lg" />
-          <div class="dev-name">${dev.name}</div>
+          <a href="${ROUTES.DEVELOPER_PROFILE}?user=${dev.username}" style="text-decoration: none; display: block;">
+            <img src="${dev.avatar}" alt="${dev.name}" class="dev-avatar-lg" />
+          </a>
+          <a href="${ROUTES.DEVELOPER_PROFILE}?user=${dev.username}" class="dev-name" style="text-decoration: none; color: inherit;">${dev.name}</a>
           <div class="dev-handle">@${dev.username}</div>
           <div class="dev-bio">${dev.bio}</div>
           <div class="dev-skills-wrap">

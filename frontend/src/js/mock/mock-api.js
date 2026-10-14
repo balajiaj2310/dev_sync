@@ -5,8 +5,26 @@
 
 import { INITIAL_MOCK_DATA } from './mock-data.js';
 
-// Deep clone to establish mutable session state
-let mockStore = JSON.parse(JSON.stringify(INITIAL_MOCK_DATA));
+// Load persistent mock store from localStorage if available
+function loadStore() {
+  try {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      const saved = window.localStorage.getItem('devsync_mock_store');
+      if (saved) return JSON.parse(saved);
+    }
+  } catch (e) {}
+  return JSON.parse(JSON.stringify(INITIAL_MOCK_DATA));
+}
+
+let mockStore = loadStore();
+
+export function saveStore() {
+  try {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      window.localStorage.setItem('devsync_mock_store', JSON.stringify(mockStore));
+    }
+  } catch (e) {}
+}
 
 const delay = (ms = 180) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -20,6 +38,7 @@ export const MockAPI = {
   async updateProfile(updates) {
     await delay();
     mockStore.currentUser = { ...mockStore.currentUser, ...updates };
+    saveStore();
     return { ...mockStore.currentUser };
   },
 
@@ -196,11 +215,78 @@ export const MockAPI = {
 
   async updateConnectionState(developerId, newState) {
     await delay(120);
-    const dev = mockStore.developers.find(d => d.id === developerId);
+    const dev = mockStore.developers.find(d => d.id === developerId || d.username === developerId);
     if (dev) {
       dev.connectionState = newState;
+      saveStore();
     }
     return dev;
+  },
+
+  async getDeveloperByUsername(username) {
+    await delay();
+    if (!username || username.toLowerCase() === mockStore.currentUser.username.toLowerCase()) {
+      return { ...mockStore.currentUser };
+    }
+    const u = username.toLowerCase();
+    const found = mockStore.developers.find(d => d.username.toLowerCase() === u);
+    if (found) {
+      // Provide fallback structure if any key is missing
+      return {
+        ...mockStore.currentUser,
+        ...found,
+        projects: found.projects || mockStore.currentUser.projects.filter(p => p.visibility === 'Public'),
+        pinnedProjects: found.pinnedProjects || ['repo-chaturya', 'repo-portfolio'],
+        skills: (found.skills || []).map(s => typeof s === 'string' ? { name: s, category: 'General', color: 'blue' } : s)
+      };
+    }
+    return null;
+  },
+
+  async updateDeveloperProfile(username, updates) {
+    await delay();
+    if (!username || username.toLowerCase() === mockStore.currentUser.username.toLowerCase()) {
+      mockStore.currentUser = { ...mockStore.currentUser, ...updates };
+      // Also sync into developers array if present
+      const inDev = mockStore.developers.find(d => d.username.toLowerCase() === mockStore.currentUser.username.toLowerCase());
+      if (inDev) Object.assign(inDev, updates);
+      saveStore();
+      return { ...mockStore.currentUser };
+    }
+    const target = mockStore.developers.find(d => d.username.toLowerCase() === username.toLowerCase());
+    if (target) {
+      Object.assign(target, updates);
+      saveStore();
+      return { ...target };
+    }
+    return null;
+  },
+
+  async togglePinnedProject(username, projectId) {
+    await delay();
+    const dev = await this.getDeveloperByUsername(username);
+    if (!dev) return null;
+    let pinned = dev.pinnedProjects || [];
+    if (pinned.includes(projectId)) {
+      pinned = pinned.filter(id => id !== projectId);
+    } else {
+      pinned = [...pinned, projectId];
+    }
+    return await this.updateDeveloperProfile(dev.username, { pinnedProjects: pinned });
+  },
+
+  async toggleFollow(username) {
+    await delay();
+    const dev = await this.getDeveloperByUsername(username);
+    if (!dev) return null;
+    const isFollowing = !dev.isFollowing;
+    const currentFollowers = dev.stats?.followers || 24;
+    const followers = isFollowing ? currentFollowers + 1 : Math.max(0, currentFollowers - 1);
+    const updated = await this.updateDeveloperProfile(dev.username, {
+      isFollowing,
+      stats: { ...(dev.stats || {}), followers }
+    });
+    return { isFollowing, followers: updated.stats.followers };
   },
 
   // Community

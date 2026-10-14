@@ -5,23 +5,270 @@
 
 export const INITIAL_MOCK_DATA = {
   currentUser: {
-    id: 'user_1',
-    name: 'Balaji',
-    username: 'Balajikumar',
-    email: 'Balaji@devsync.dev',
+    id: 'user_naveen',
+    name: 'Naveen Kumar D',
+    username: 'naveen3438',
+    email: 'naveen@devsync.dev',
     role: 'Developer',
-    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80',
-    bio: 'Fullstack engineer & open-source contributor. Building high-performance developer tools.',
-    skills: ['Python', 'Django', 'JavaScript', 'PostgreSQL', 'Docker'],
-    website: 'https://Balajikumar.dev',
-    joined: 'Jan 2024',
+    isVerified: true,
+    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80',
+    headline: 'BCA student and passionate developer focused on building meaningful web applications and exploring new technologies. Interested in full-stack development, open source and developer communities.',
+    bio: "I'm a BCA student at Bengaluru City University with a strong interest in web development, backend systems and developer tools. I enjoy building real world projects, learning new technologies and collaborating with other developers. Currently exploring Django, Flask and cloud deployment. My goal is to work on impactful projects and contribute to open source.",
+    location: 'Bengaluru, India',
+    website: 'https://naveenkumar.dev',
+    social: {
+      github: 'https://github.com/naveen3438',
+      linkedin: 'https://linkedin.com/in/naveen-kumar',
+      instagram: 'https://instagram.com/naveen.dev'
+    },
+    collaborationStatus: 'Available for collaboration',
+    collaborationStatusType: 'available',
+    openToInvitations: true,
+    education: {
+      degree: 'BCA Student',
+      institution: 'Bengaluru City University',
+      location: 'Bengaluru, India',
+      field: 'Computer Applications',
+      timeline: '2022 - 2025'
+    },
+    experience: [
+      {
+        role: 'Full Stack Intern',
+        organization: 'Chaturya Tech Club',
+        timeline: '2023 - Present',
+        description: 'Building event registration portals and student developer community platforms with Django.'
+      }
+    ],
     stats: {
-      repositories: 12,
-      pullRequests: 8,
-      issues: 24,
-      teamMembers: 6,
-      contributionsThisYear: 642
-    }
+      followers: 24,
+      following: 18,
+      projects: 5,
+      teams: 2,
+      repositoriesCount: 12,
+      contributionsCount: 48,
+      pullRequestsCount: 8,
+      issuesCount: 24
+    },
+    skills: [
+      { name: 'Python', category: 'Backend', color: 'blue' },
+      { name: 'Django', category: 'Backend', color: 'mint' },
+      { name: 'Flask', category: 'Backend', color: 'blue' },
+      { name: 'Java', category: 'Backend', color: 'blue' },
+      { name: 'JavaScript', category: 'Frontend', color: 'amber' },
+      { name: 'HTML', category: 'Frontend', color: 'rose' },
+      { name: 'CSS', category: 'Frontend', color: 'purple' },
+      { name: 'MySQL', category: 'Database', color: 'cyan' },
+      { name: 'Git', category: 'Tool', color: 'neutral' },
+      { name: 'GitHub', category: 'Tool', color: 'neutral' },
+      { name: 'Bootstrap', category: 'Frontend', color: 'purple' },
+      { name: 'SQL', category: 'Database', color: 'cyan' }
+    ],
+    pinnedProjects: ['repo-chaturya', 'repo-college', 'repo-portfolio'],
+    projects: [
+      {
+        id: 'repo-chaturya',
+        name: 'chaturyanew',
+        description: 'Student developers club website built with Django. Event registrations, workshops and community features.',
+        tags: [
+          { name: 'Python', color: 'blue' },
+          { name: 'Django', color: 'mint' },
+          { name: 'Bootstrap', color: 'purple' }
+        ],
+        stars: 28,
+        forks: 6,
+        updated: 'Updated 2 days ago',
+        visibility: 'Public',
+        iconBg: '#10B981',
+        iconType: 'club',
+        relationship: 'Owner'
+      },
+      {
+        id: 'repo-college',
+        name: 'college-portal',
+        description: 'Multi-tenant college website for Seshadripuram with admissions, dashboard and student portal.',
+        tags: [
+          { name: 'Flask', color: 'blue' },
+          { name: 'SQLite', color: 'blue' },
+          { name: 'Bootstrap', color: 'purple' }
+        ],
+        stars: 15,
+        forks: 4,
+        updated: 'Updated 1 week ago',
+        visibility: 'Private',
+        iconBg: '#6366F1',
+        iconType: 'college',
+        relationship: 'Owner'
+      },
+      {
+        id: 'repo-portfolio',
+        name: 'portfolio-site',
+        description: 'Personal portfolio website with modern UI and responsive design.',
+        tags: [
+          { name: 'JavaScript', color: 'amber' },
+          { name: 'HTML', color: 'rose' },
+          { name: 'CSS', color: 'purple' }
+        ],
+        stars: 12,
+        forks: 3,
+        updated: 'Updated 3 weeks ago',
+        visibility: 'Public',
+        iconBg: '#1E293B',
+        iconType: 'web',
+        relationship: 'Owner'
+      },
+      {
+        id: 'repo-devsync',
+        name: 'DevSync Core',
+        description: 'Main platform for developer collaboration with repositories, teams and discussions.',
+        tags: [
+          { name: 'Python', color: 'blue' },
+          { name: 'Django', color: 'mint' },
+          { name: 'PostgreSQL', color: 'cyan' }
+        ],
+        stars: 42,
+        forks: 11,
+        updated: 'Updated 5 days ago',
+        visibility: 'Public',
+        iconBg: '#0D9488',
+        iconType: 'core',
+        relationship: 'Contributor'
+      },
+      {
+        id: 'repo-events',
+        name: 'Event Management',
+        description: 'Cultural and technical event management system for college.',
+        tags: [
+          { name: 'Python', color: 'blue' },
+          { name: 'Flask', color: 'blue' },
+          { name: 'Bootstrap', color: 'purple' }
+        ],
+        stars: 18,
+        forks: 7,
+        updated: 'Updated 2 weeks ago',
+        visibility: 'Public',
+        iconBg: '#10B981',
+        iconType: 'event',
+        relationship: 'Owner'
+      },
+      {
+        id: 'repo-ai',
+        name: 'AI Chatbot',
+        description: 'Floating AI assistant for DevSync to help developers with coding and debugging.',
+        tags: [
+          { name: 'JavaScript', color: 'amber' },
+          { name: 'Python', color: 'blue' },
+          { name: 'API', color: 'cyan' }
+        ],
+        stars: 25,
+        forks: 9,
+        updated: 'Updated 1 week ago',
+        visibility: 'Public',
+        iconBg: '#8B5CF6',
+        iconType: 'ai',
+        relationship: 'Contributor'
+      }
+    ],
+    achievements: [
+      {
+        id: 'ach-1',
+        title: 'First Project',
+        description: 'Created your first public project',
+        color: 'green',
+        icon: 'shield-check',
+        date: 'Jan 2024'
+      },
+      {
+        id: 'ach-2',
+        title: 'Collaborator',
+        description: 'Worked with 5+ developers',
+        color: 'blue',
+        icon: 'shield-users',
+        date: 'Mar 2024'
+      },
+      {
+        id: 'ach-3',
+        title: 'Consistent',
+        description: 'Active for 30+ days',
+        color: 'purple',
+        icon: 'shield-zap',
+        date: 'May 2024'
+      }
+    ],
+    activities: [
+      {
+        id: 'act-1',
+        type: 'project_updated',
+        title: 'Updated chaturyanew',
+        description: 'Pushed 4 commits to main: Added registration endpoint with QR code verification.',
+        time: '2 days ago',
+        project: 'chaturyanew'
+      },
+      {
+        id: 'act-2',
+        type: 'milestone_completed',
+        title: 'Milestone Completed in DevSync Core',
+        description: 'Completed Milestone: Developer Public Profile System & AI Assistant integration.',
+        time: '5 days ago',
+        project: 'DevSync Core'
+      },
+      {
+        id: 'act-3',
+        type: 'team_joined',
+        title: 'Joined Chaturya Developers team',
+        description: 'Accepted invitation to collaborate on open source student developer projects.',
+        time: '1 week ago',
+        team: 'Chaturya Developers'
+      },
+      {
+        id: 'act-4',
+        type: 'project_created',
+        title: 'Created repository AI Chatbot',
+        description: 'Initialized repository with vanilla JS floating assistant widget and documentation.',
+        time: '2 weeks ago',
+        project: 'AI Chatbot'
+      }
+    ],
+    teams: [
+      {
+        id: 'team-chaturya',
+        name: 'Chaturya Developers',
+        role: 'Lead Maintainer',
+        membersCount: 8,
+        avatar: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=64&q=80',
+        description: 'Student developers club and open-source project incubator.'
+      },
+      {
+        id: 'team-devsync',
+        name: 'DevSync Core Team',
+        role: 'Core Contributor',
+        membersCount: 14,
+        avatar: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=64&q=80',
+        description: 'Engineers building the DevSync collaboration and productivity platform.'
+      }
+    ],
+    collaborators: [
+      {
+        name: 'Priya S',
+        username: 'priyas',
+        avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=64&q=80',
+        role: 'Fullstack Developer',
+        sharedProjectsCount: 3
+      },
+      {
+        name: 'Ananya Roy',
+        username: 'ananyaroy',
+        avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=64&q=80',
+        role: 'Cloud Engineer',
+        sharedProjectsCount: 2
+      },
+      {
+        name: 'Vikram Rao',
+        username: 'vikramrao',
+        avatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=64&q=80',
+        role: 'ML Engineer',
+        sharedProjectsCount: 2
+      }
+    ]
   },
 
   overviewMetrics: {
@@ -290,6 +537,7 @@ export const INITIAL_MOCK_DATA = {
     {
       id: 'member-1',
       name: 'Balaji (you)',
+      username: 'Balajikumar',
       role: 'Owner',
       repositoriesCount: 12,
       contributionsCount: 245,
@@ -300,6 +548,7 @@ export const INITIAL_MOCK_DATA = {
     {
       id: 'member-2',
       name: 'Priya S',
+      username: 'priyas',
       role: 'Developer',
       repositoriesCount: 8,
       contributionsCount: 132,
@@ -310,6 +559,7 @@ export const INITIAL_MOCK_DATA = {
     {
       id: 'member-3',
       name: 'Arjun',
+      username: 'arjun',
       role: 'Developer',
       repositoriesCount: 6,
       contributionsCount: 98,
@@ -320,6 +570,7 @@ export const INITIAL_MOCK_DATA = {
     {
       id: 'member-4',
       name: 'Sneha',
+      username: 'sneha',
       role: 'Developer',
       repositoriesCount: 5,
       contributionsCount: 76,
@@ -330,6 +581,7 @@ export const INITIAL_MOCK_DATA = {
     {
       id: 'member-5',
       name: 'Karthik',
+      username: 'karthik',
       role: 'Developer',
       repositoriesCount: 7,
       contributionsCount: 114,
@@ -340,6 +592,7 @@ export const INITIAL_MOCK_DATA = {
     {
       id: 'member-6',
       name: 'Rohan',
+      username: 'rohan',
       role: 'Designer',
       repositoriesCount: 4,
       contributionsCount: 52,
@@ -350,6 +603,50 @@ export const INITIAL_MOCK_DATA = {
   ],
 
   developers: [
+    {
+      id: 'dev-naveen',
+      name: 'Naveen Kumar D',
+      username: 'naveen3438',
+      role: 'Developer',
+      isVerified: true,
+      bio: 'BCA student and passionate developer focused on building meaningful web applications and exploring new technologies. Interested in full-stack development, open source and developer communities.',
+      headline: 'BCA student and passionate developer focused on building meaningful web applications and exploring new technologies.',
+      location: 'Bengaluru, India',
+      website: 'https://naveenkumar.dev',
+      social: {
+        github: 'https://github.com/naveen3438',
+        linkedin: 'https://linkedin.com/in/naveen-kumar',
+        instagram: 'https://instagram.com/naveen.dev'
+      },
+      collaborationStatus: 'Available for collaboration',
+      collaborationStatusType: 'available',
+      openToInvitations: true,
+      skills: ['Python', 'Django', 'Flask', 'Java', 'JavaScript', 'HTML', 'CSS', 'MySQL', 'Git', 'GitHub', 'Bootstrap', 'SQL'],
+      connectionState: 'Connected',
+      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80'
+    },
+    {
+      id: 'dev-balaji',
+      name: 'Balaji',
+      username: 'Balajikumar',
+      role: 'Core Contributor',
+      isVerified: true,
+      bio: 'Fullstack engineer & open-source contributor. Building high-performance developer tools and collaboration systems.',
+      headline: 'Fullstack engineer & open-source contributor.',
+      location: 'Chennai, India',
+      website: 'https://balajikumar.dev',
+      social: {
+        github: 'https://github.com/balajiaj2310',
+        linkedin: 'https://linkedin.com/in/balaji',
+        instagram: 'https://instagram.com/balaji'
+      },
+      collaborationStatus: 'Open to project invitations',
+      collaborationStatusType: 'available',
+      openToInvitations: true,
+      skills: ['Python', 'Django', 'JavaScript', 'PostgreSQL', 'Docker'],
+      connectionState: 'Connected',
+      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80'
+    },
     {
       id: 'dev-1',
       name: 'Ananya Roy',

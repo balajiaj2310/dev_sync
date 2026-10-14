@@ -6,6 +6,7 @@
 import { TeamService } from '../services/team-service.js';
 import { ModalManager } from '../core/modal-manager.js';
 import { toastSuccess } from '../components/toast.js';
+import { ROUTES } from '../core/route-config.js';
 
 export async function initTeamsPage() {
   const memberTableBody = document.getElementById('teamMemberTableBody');
@@ -14,13 +15,15 @@ export async function initTeamsPage() {
     if (!memberTableBody) return;
     const members = await TeamService.getMembers();
 
-    memberTableBody.innerHTML = members.map(m => `
+    memberTableBody.innerHTML = members.map(m => {
+      const username = m.username || m.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+      return `
       <tr>
         <td>
-          <div class="member-user-cell">
+          <a href="${ROUTES.DEVELOPER_PROFILE}?user=${username}" class="member-user-cell" style="text-decoration: none; color: inherit;">
             <img src="${m.avatar}" alt="${m.name}" class="member-avatar" />
             <span class="member-name">${m.name}</span>
-          </div>
+          </a>
         </td>
         <td>
           <span class="badge ${m.role === 'Owner' ? 'badge-public' : 'badge-private'}">${m.role}</span>
@@ -37,7 +40,8 @@ export async function initTeamsPage() {
           <button class="row-action-btn" title="Manage member">&bull;&bull;&bull;</button>
         </td>
       </tr>
-    `).join('');
+    `;
+    }).join('');
   }
 
   renderMembers();
