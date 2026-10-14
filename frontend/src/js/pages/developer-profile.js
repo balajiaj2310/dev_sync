@@ -5,6 +5,7 @@
 
 import { ProfileService } from '../services/profile-service.js';
 import { ConnectionService } from '../services/connection-service.js';
+import { AuthService } from '../services/auth-service.js';
 import { toastSuccess, toastInfo, toastWarning } from '../components/toast.js';
 import { ROUTES } from '../core/route-config.js';
 
@@ -24,9 +25,14 @@ export async function initDeveloperProfilePage() {
     }
   }
 
-  // Fallback to primary developer (Naveen) if no user specified
+  // Fallback to active logged-in user if available, or primary demo developer
   if (!requestedUsername) {
-    requestedUsername = 'naveen3438';
+    const session = AuthService.getCurrentUserSession();
+    if (session && session.username) {
+      requestedUsername = session.username;
+    } else {
+      requestedUsername = 'naveen3438';
+    }
   }
 
   // Load Developer Data
@@ -35,6 +41,10 @@ export async function initDeveloperProfilePage() {
     developer = await ProfileService.getDeveloperProfile(requestedUsername);
   } catch (err) {
     console.error('Failed to load developer profile:', err);
+  }
+
+  if (developer) {
+    document.title = `${developer.name || developer.username} (@${developer.username}) — DevSync`;
   }
 
   // Check if viewing own profile
@@ -188,19 +198,19 @@ export async function initDeveloperProfilePage() {
             <!-- Followers / Following / Projects / Teams -->
             <div class="dev-stats-counter-row">
               <div class="dev-counter-item" data-tab="collaborators">
-                <span class="dev-counter-num" id="followersCount">${developer.stats?.followers || 24}</span>
+                <span class="dev-counter-num" id="followersCount">${developer.stats?.followers ?? 0}</span>
                 <span class="dev-counter-lbl">Followers</span>
               </div>
               <div class="dev-counter-item" data-tab="collaborators">
-                <span class="dev-counter-num">${developer.stats?.following || 18}</span>
+                <span class="dev-counter-num">${developer.stats?.following ?? 0}</span>
                 <span class="dev-counter-lbl">Following</span>
               </div>
               <div class="dev-counter-item" data-tab="projects">
-                <span class="dev-counter-num">${visibleProjects.length || 5}</span>
+                <span class="dev-counter-num">${visibleProjects.length}</span>
                 <span class="dev-counter-lbl">Projects</span>
               </div>
               <div class="dev-counter-item" data-tab="teams">
-                <span class="dev-counter-num">${(developer.teams || []).length || 2}</span>
+                <span class="dev-counter-num">${(developer.teams || []).length}</span>
                 <span class="dev-counter-lbl">Teams</span>
               </div>
             </div>
@@ -286,8 +296,10 @@ export async function initDeveloperProfilePage() {
 
             <div class="dev-about-content">
               <div class="dev-about-text">
-                <p>${escapeHtml(developer.bio || 'Developer on DevSync.')}</p>
-                <p>Currently exploring Django, Flask and cloud deployment. My goal is to work on impactful projects and contribute to open source.</p>
+                ${(developer.bio || 'Passionate developer building modern applications and collaborating across DevSync.')
+                  .split(/\n+/)
+                  .map(para => `<p>${escapeHtml(para.trim())}</p>`)
+                  .join('')}
               </div>
 
               <div class="dev-about-facts">
@@ -406,7 +418,7 @@ export async function initDeveloperProfilePage() {
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
                 </div>
                 <div class="dev-stat-tile-data">
-                  <span class="dev-stat-tile-num">${developer.stats?.repositoriesCount || 12}</span>
+                  <span class="dev-stat-tile-num">${developer.stats?.repositoriesCount ?? visibleProjects.length}</span>
                   <span class="dev-stat-tile-lbl">Repositories</span>
                 </div>
               </div>
@@ -417,7 +429,7 @@ export async function initDeveloperProfilePage() {
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
                 </div>
                 <div class="dev-stat-tile-data">
-                  <span class="dev-stat-tile-num">${developer.stats?.contributionsCount || 48}</span>
+                  <span class="dev-stat-tile-num">${developer.stats?.contributionsCount ?? 0}</span>
                   <span class="dev-stat-tile-lbl">Contributions</span>
                 </div>
               </div>
@@ -428,7 +440,7 @@ export async function initDeveloperProfilePage() {
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 0 1 2 2v7"/><line x1="6" y1="9" x2="6" y2="21"/></svg>
                 </div>
                 <div class="dev-stat-tile-data">
-                  <span class="dev-stat-tile-num">${developer.stats?.pullRequestsCount || 8}</span>
+                  <span class="dev-stat-tile-num">${developer.stats?.pullRequestsCount ?? 0}</span>
                   <span class="dev-stat-tile-lbl">Pull Requests</span>
                 </div>
               </div>
@@ -439,7 +451,7 @@ export async function initDeveloperProfilePage() {
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                 </div>
                 <div class="dev-stat-tile-data">
-                  <span class="dev-stat-tile-num">${developer.stats?.issuesCount || 24}</span>
+                  <span class="dev-stat-tile-num">${developer.stats?.issuesCount ?? 0}</span>
                   <span class="dev-stat-tile-lbl">Issues</span>
                 </div>
               </div>
@@ -457,7 +469,7 @@ export async function initDeveloperProfilePage() {
             </div>
 
             <div class="dev-achievements-list">
-              ${(developer.achievements || []).map(ach => `
+              ${(developer.achievements || []).length > 0 ? (developer.achievements || []).map(ach => `
                 <div class="dev-achievement-item">
                   <div class="dev-achievement-badge ${ach.color || 'green'}">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
@@ -467,7 +479,11 @@ export async function initDeveloperProfilePage() {
                     <span class="dev-achievement-desc">${escapeHtml(ach.description)}</span>
                   </div>
                 </div>
-              `).join('')}
+              `).join('') : `
+                <div class="text-secondary py-3 text-center" style="font-size: 13px;">
+                  No achievements recorded yet.
+                </div>
+              `}
             </div>
           </article>
 
@@ -484,11 +500,13 @@ export async function initDeveloperProfilePage() {
             </div>
 
             <div class="dev-skills-cloud">
-              ${(developer.skills || []).map(skill => {
+              ${(developer.skills || []).length > 0 ? (developer.skills || []).map(skill => {
                 const name = typeof skill === 'string' ? skill : skill.name;
                 const color = typeof skill === 'string' ? getSkillColor(skill) : (skill.color || 'blue');
                 return `<span class="dev-tech-pill ${color}">${escapeHtml(name)}</span>`;
-              }).join('')}
+              }).join('') : `
+                <div class="text-secondary py-2" style="font-size: 13px;">No skills added yet.</div>
+              `}
             </div>
           </article>
 
@@ -503,7 +521,7 @@ export async function initDeveloperProfilePage() {
             </div>
 
             <div class="dev-teams-list">
-              ${(developer.teams || []).map(team => `
+              ${(developer.teams || []).length > 0 ? (developer.teams || []).map(team => `
                 <a href="${ROUTES.TEAM_DETAIL}?id=${team.id}" class="dev-team-item">
                   <img src="${team.avatar}" alt="${team.name}" class="dev-team-avatar" />
                   <div class="dev-team-meta">
@@ -511,7 +529,11 @@ export async function initDeveloperProfilePage() {
                     <span class="dev-team-role">${escapeHtml(team.role)} &bull; ${team.membersCount || 0} members</span>
                   </div>
                 </a>
-              `).join('')}
+              `).join('') : `
+                <div class="text-secondary py-3 text-center" style="font-size: 13px;">
+                  No team memberships yet.
+                </div>
+              `}
             </div>
           </article>
         </div>

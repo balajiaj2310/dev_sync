@@ -25,6 +25,16 @@ export const AuthService = {
   async signUp(data) {
     try {
       const res = await apiClient.post('/auth/register/', data);
+      if (res && (res.access || res.token)) {
+        const token = res.access || res.token;
+        localStorage.setItem(APP_CONFIG.storageKeys.authToken, token);
+        if (res.user) {
+          localStorage.setItem(APP_CONFIG.storageKeys.userSession, JSON.stringify(res.user));
+        }
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('devsync:auth-changed', { detail: { authenticated: true, user: res.user } }));
+        }
+      }
       return res;
     } catch (err) {
       if (APP_CONFIG.demoMode) {

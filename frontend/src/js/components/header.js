@@ -41,6 +41,43 @@ export function initHeader() {
     });
   }
 
+  // Dynamic topbar session hydration
+  const currentUser = AuthService.getCurrentUserSession();
+  if (currentUser) {
+    const avatarEls = document.querySelectorAll('.user-avatar');
+    avatarEls.forEach(img => {
+      if (currentUser.avatar) img.src = currentUser.avatar;
+      img.alt = currentUser.name || currentUser.username;
+    });
+
+    const nameEls = document.querySelectorAll('.user-name');
+    nameEls.forEach(el => {
+      el.textContent = currentUser.name || currentUser.username;
+    });
+
+    const roleEls = document.querySelectorAll('.user-role');
+    roleEls.forEach(el => {
+      if (currentUser.role) el.textContent = currentUser.role;
+    });
+
+    const dropdownHeader = document.querySelector('.dropdown-header');
+    if (dropdownHeader) {
+      dropdownHeader.textContent = `Signed in as @${currentUser.username}`;
+    }
+
+    const topbarUserLink = document.getElementById('topbarUserLink');
+    if (topbarUserLink) {
+      topbarUserLink.href = `/developers/${encodeURIComponent(currentUser.username)}/`;
+    }
+
+    const dropdownProfileLinks = document.querySelectorAll('.dropdown-item');
+    dropdownProfileLinks.forEach(link => {
+      if (link.textContent.includes('View Profile')) {
+        link.href = `/developers/${encodeURIComponent(currentUser.username)}/`;
+      }
+    });
+  }
+
   // Global search shortcut (Ctrl+K / Cmd+K)
   const searchInput = document.querySelector('.topbar-search-input');
   document.addEventListener('keydown', (e) => {

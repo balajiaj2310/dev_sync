@@ -130,39 +130,86 @@ export function initAuthPage() {
   // Sign Up Form
   const signUpForm = document.getElementById('signUpForm');
   if (signUpForm) {
-    signUpForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
+    let isRegistering = false;
+
+    async function handleSignUp(e) {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      if (isRegistering) return false;
+
       const nameInput = signUpForm.querySelector('#name');
       const emailInput = signUpForm.querySelector('#email');
       const passInput = signUpForm.querySelector('#password');
       const submitBtn = signUpForm.querySelector('button[type="submit"]');
 
-      if (!nameInput.value.trim()) {
+      const nameVal = nameInput ? nameInput.value.trim() : '';
+      const emailVal = emailInput ? emailInput.value.trim() : '';
+      const passVal = passInput ? passInput.value : '';
+
+      if (!nameVal) {
         toastDanger('Please enter your full name.');
-        return;
+        if (nameInput) nameInput.focus();
+        return false;
       }
-      if (!isValidEmail(emailInput.value)) {
+      if (!isValidEmail(emailVal)) {
         toastDanger('Please enter a valid email address.');
-        return;
+        if (emailInput) emailInput.focus();
+        return false;
       }
-      if (!isValidPassword(passInput.value)) {
+      if (!isValidPassword(passVal)) {
         toastDanger('Password must be at least 8 characters.');
-        return;
+        if (passInput) passInput.focus();
+        return false;
       }
 
-      submitBtn.disabled = true;
-      submitBtn.innerHTML = '<span class="btn-spinner"></span> Creating Account...';
+      isRegistering = true;
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="btn-spinner"></span> Creating Account...';
+      }
 
       try {
-        await AuthService.signUp({ name: nameInput.value, email: emailInput.value });
-        toastSuccess('Account created successfully! Taking you to your dashboard...', 'Welcome to DevSync');
-        setTimeout(() => navigateTo(ROUTES.OVERVIEW), 700);
+        const res = await AuthService.signUp({ name: nameVal, email: emailVal, password: passVal });
+        const devName = res?.user?.name || nameVal || 'Developer';
+        toastSuccess(`Welcome to DevSync, ${devName}! Account created.`, 'Success');
+
+        const urlParams = new URLSearchParams(window.location.search);
+        let destination = urlParams.get('redirect') || ROUTES.OVERVIEW;
+        if (destination.includes('sign-in') || destination.includes('sign-up')) {
+          destination = ROUTES.OVERVIEW;
+        }
+
+        setTimeout(() => {
+          window.location.replace(destination);
+        }, 300);
       } catch (err) {
-        toastDanger(err.message || 'Registration failed.');
-        submitBtn.disabled = false;
-        submitBtn.innerHTML = 'Create Account';
+        isRegistering = false;
+        toastDanger(err.message || 'Registration failed. Please try again.');
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = 'Create Account &rarr;';
+        }
       }
-    });
+      return false;
+    }
+
+    function onSignUpSubmitWrapper(e) {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      handleSignUp(e);
+      return false;
+    }
+
+    signUpForm.onsubmit = onSignUpSubmitWrapper;
+    signUpForm.addEventListener('submit', onSignUpSubmitWrapper);
+    const signUpBtn = signUpForm.querySelector('button[type="submit"]');
+    if (signUpBtn) {
+      signUpBtn.addEventListener('click', onSignUpSubmitWrapper);
+    }
   }
 
   // Forgot Password Form

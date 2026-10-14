@@ -229,19 +229,43 @@ export const MockAPI = {
 
   async getDeveloperByUsername(username) {
     await delay();
-    if (!username || username.toLowerCase() === mockStore.currentUser.username.toLowerCase()) {
+    if (!username) {
       return { ...mockStore.currentUser };
     }
     const u = username.toLowerCase();
-    const found = mockStore.developers.find(d => d.username.toLowerCase() === u);
+    if (u === mockStore.currentUser.username.toLowerCase()) {
+      return { ...mockStore.currentUser };
+    }
+    const found = mockStore.developers.find(d => d.username.toLowerCase() === u || d.id === u);
     if (found) {
-      // Provide fallback structure if any key is missing
       return {
-        ...mockStore.currentUser,
-        ...found,
-        projects: found.projects || mockStore.currentUser.projects.filter(p => p.visibility === 'Public'),
-        pinnedProjects: found.pinnedProjects || ['repo-chaturya', 'repo-portfolio'],
-        skills: (found.skills || []).map(s => typeof s === 'string' ? { name: s, category: 'General', color: 'blue' } : s)
+        id: found.id,
+        name: found.name,
+        username: found.username,
+        email: found.email || `${found.username}@devsync.dev`,
+        role: found.role || 'Developer',
+        isVerified: found.isVerified || false,
+        avatar: found.avatar,
+        headline: found.headline || '',
+        bio: found.bio || '',
+        location: found.location || '',
+        collaborationStatus: found.collaborationStatus || 'Available for collaboration',
+        collaborationStatusType: found.collaborationStatusType || 'available',
+        openToInvitations: found.openToInvitations !== false,
+        skills: (found.skills || []).map(s => typeof s === 'string' ? { name: s, category: 'General', color: 'blue' } : s),
+        projects: found.projects || [],
+        pinnedProjects: found.pinnedProjects || [],
+        stats: found.stats || {
+          followers: 0,
+          following: 0,
+          projects: (found.projects || []).length,
+          teams: (found.teams || []).length,
+          repositoriesCount: (found.projects || []).length,
+          contributionsCount: 0,
+          pullRequestsCount: 0,
+          issuesCount: 0
+        },
+        ...found
       };
     }
     return null;

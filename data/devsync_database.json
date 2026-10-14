@@ -1,0 +1,1087 @@
+{
+  "profiles": {
+    "naveen3438": {
+      "id": "dev-naveen",
+      "name": "Naveen Kumar D",
+      "username": "naveen3438",
+      "email": "naveen@devsync.dev",
+      "password": "demo12345",
+      "role": "Developer",
+      "isVerified": true,
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+      "headline": "BCA student and passionate developer focused on building meaningful web applications and exploring new technologies. Interested in full-stack development, open source and developer communities.",
+      "bio": "I'm a BCA student at Bengaluru City University with a strong interest in web development, backend systems and developer tools. I enjoy building real world projects, learning new technologies and collaborating with other developers. Currently exploring Django, Flask and cloud deployment. My goal is to work on impactful projects and contribute to open source.",
+      "location": "Bengaluru, India",
+      "website": "https://naveenkumar.dev",
+      "social": {
+        "github": "https://github.com/naveen3438",
+        "linkedin": "https://linkedin.com/in/naveen-kumar",
+        "instagram": "https://instagram.com/naveen.dev"
+      },
+      "collaborationStatus": "Available for collaboration",
+      "collaborationStatusType": "available",
+      "openToInvitations": true,
+      "education": {
+        "degree": "BCA Student",
+        "institution": "Bengaluru City University",
+        "location": "Bengaluru, India",
+        "field": "Computer Applications",
+        "timeline": "2022 - 2025"
+      },
+      "experience": [
+        {
+          "role": "Full Stack Intern",
+          "organization": "Chaturya Tech Club",
+          "timeline": "2023 - Present",
+          "description": "Building event registration portals and student developer community platforms with Django."
+        }
+      ],
+      "skills": [
+        {
+          "name": "Python",
+          "category": "Backend",
+          "color": "blue"
+        },
+        {
+          "name": "Django",
+          "category": "Backend",
+          "color": "mint"
+        },
+        {
+          "name": "Flask",
+          "category": "Backend",
+          "color": "blue"
+        },
+        {
+          "name": "Java",
+          "category": "Backend",
+          "color": "blue"
+        },
+        {
+          "name": "JavaScript",
+          "category": "Frontend",
+          "color": "amber"
+        },
+        {
+          "name": "HTML",
+          "category": "Frontend",
+          "color": "rose"
+        },
+        {
+          "name": "CSS",
+          "category": "Frontend",
+          "color": "purple"
+        },
+        {
+          "name": "MySQL",
+          "category": "Database",
+          "color": "cyan"
+        },
+        {
+          "name": "Git",
+          "category": "Tool",
+          "color": "neutral"
+        },
+        {
+          "name": "GitHub",
+          "category": "Tool",
+          "color": "neutral"
+        },
+        {
+          "name": "Bootstrap",
+          "category": "Frontend",
+          "color": "purple"
+        },
+        {
+          "name": "SQL",
+          "category": "Database",
+          "color": "cyan"
+        }
+      ],
+      "pinnedProjects": [
+        "repo-chaturya",
+        "repo-college",
+        "repo-portfolio"
+      ],
+      "projects": [
+        {
+          "id": "repo-chaturya",
+          "name": "chaturyanew",
+          "description": "Student developers club website built with Django. Event registrations, workshops and community features.",
+          "tags": [
+            {
+              "name": "Python",
+              "color": "blue"
+            },
+            {
+              "name": "Django",
+              "color": "mint"
+            },
+            {
+              "name": "Bootstrap",
+              "color": "purple"
+            }
+          ],
+          "stars": 28,
+          "forks": 6,
+          "updated": "Updated 2 days ago",
+          "visibility": "Public",
+          "iconBg": "#10B981",
+          "relationship": "Owner"
+        },
+        {
+          "id": "repo-college",
+          "name": "college-portal",
+          "description": "Multi-tenant college website for Seshadripuram with admissions, dashboard and student portal.",
+          "tags": [
+            {
+              "name": "Flask",
+              "color": "blue"
+            },
+            {
+              "name": "SQLite",
+              "color": "blue"
+            },
+            {
+              "name": "Bootstrap",
+              "color": "purple"
+            }
+          ],
+          "stars": 15,
+          "forks": 4,
+          "updated": "Updated 1 week ago",
+          "visibility": "Private",
+          "iconBg": "#6366F1",
+          "relationship": "Owner"
+        },
+        {
+          "id": "repo-portfolio",
+          "name": "portfolio-site",
+          "description": "Personal portfolio website with modern UI and responsive design.",
+          "tags": [
+            {
+              "name": "JavaScript",
+              "color": "amber"
+            },
+            {
+              "name": "HTML",
+              "color": "rose"
+            },
+            {
+              "name": "CSS",
+              "color": "purple"
+            }
+          ],
+          "stars": 12,
+          "forks": 3,
+          "updated": "Updated 3 weeks ago",
+          "visibility": "Public",
+          "iconBg": "#1E293B",
+          "relationship": "Owner"
+        },
+        {
+          "id": "repo-devsync",
+          "name": "DevSync Core",
+          "description": "Main platform for developer collaboration with repositories, teams and discussions.",
+          "tags": [
+            {
+              "name": "Python",
+              "color": "blue"
+            },
+            {
+              "name": "Django",
+              "color": "mint"
+            },
+            {
+              "name": "PostgreSQL",
+              "color": "cyan"
+            }
+          ],
+          "stars": 42,
+          "forks": 11,
+          "updated": "Updated 5 days ago",
+          "visibility": "Public",
+          "iconBg": "#0D9488",
+          "relationship": "Contributor"
+        },
+        {
+          "id": "repo-events",
+          "name": "Event Management",
+          "description": "Cultural and technical event management system for college.",
+          "tags": [
+            {
+              "name": "Python",
+              "color": "blue"
+            },
+            {
+              "name": "Flask",
+              "color": "blue"
+            },
+            {
+              "name": "Bootstrap",
+              "color": "purple"
+            }
+          ],
+          "stars": 18,
+          "forks": 7,
+          "updated": "Updated 2 weeks ago",
+          "visibility": "Public",
+          "iconBg": "#10B981",
+          "relationship": "Owner"
+        },
+        {
+          "id": "repo-ai",
+          "name": "AI Chatbot",
+          "description": "Floating AI assistant for DevSync to help developers with coding and debugging.",
+          "tags": [
+            {
+              "name": "JavaScript",
+              "color": "amber"
+            },
+            {
+              "name": "Python",
+              "color": "blue"
+            },
+            {
+              "name": "API",
+              "color": "cyan"
+            }
+          ],
+          "stars": 25,
+          "forks": 9,
+          "updated": "Updated 1 week ago",
+          "visibility": "Public",
+          "iconBg": "#8B5CF6",
+          "relationship": "Contributor"
+        }
+      ],
+      "achievements": [
+        {
+          "id": "ach-1",
+          "title": "First Project",
+          "description": "Created your first public project",
+          "color": "green",
+          "date": "Jan 2024"
+        },
+        {
+          "id": "ach-2",
+          "title": "Collaborator",
+          "description": "Worked with 5+ developers",
+          "color": "blue",
+          "date": "Mar 2024"
+        },
+        {
+          "id": "ach-3",
+          "title": "Consistent",
+          "description": "Active for 30+ days",
+          "color": "purple",
+          "date": "May 2024"
+        }
+      ],
+      "activities": [
+        {
+          "id": "act-1",
+          "title": "Updated chaturyanew",
+          "description": "Pushed 4 commits to main: Added registration endpoint with QR code verification.",
+          "time": "2 days ago"
+        },
+        {
+          "id": "act-2",
+          "title": "Milestone Completed in DevSync Core",
+          "description": "Completed Milestone: Developer Public Profile System & AI Assistant integration.",
+          "time": "5 days ago"
+        },
+        {
+          "id": "act-3",
+          "title": "Joined Chaturya Developers team",
+          "description": "Accepted invitation to collaborate on open source student developer projects.",
+          "time": "1 week ago"
+        },
+        {
+          "id": "act-4",
+          "title": "Created repository AI Chatbot",
+          "description": "Initialized repository with vanilla JS floating assistant widget and documentation.",
+          "time": "2 weeks ago"
+        }
+      ],
+      "teams": [
+        {
+          "id": "team-chaturya",
+          "name": "Chaturya Developers",
+          "role": "Lead Maintainer",
+          "membersCount": 8,
+          "avatar": "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=64&q=80",
+          "description": "Student developers club and open-source project incubator."
+        },
+        {
+          "id": "team-devsync",
+          "name": "DevSync Core Team",
+          "role": "Core Contributor",
+          "membersCount": 14,
+          "avatar": "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=64&q=80",
+          "description": "Engineers building the DevSync collaboration and productivity platform."
+        }
+      ],
+      "collaborators": [
+        {
+          "name": "Priya S",
+          "username": "priyas",
+          "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=64&q=80",
+          "role": "Fullstack Developer"
+        },
+        {
+          "name": "Ananya Roy",
+          "username": "ananyaroy",
+          "avatar": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=64&q=80",
+          "role": "Cloud Engineer"
+        },
+        {
+          "name": "Vikram Rao",
+          "username": "vikramrao",
+          "avatar": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=64&q=80",
+          "role": "ML Engineer"
+        }
+      ],
+      "stats": {
+        "followers": 24,
+        "following": 18,
+        "projects": 6,
+        "teams": 2,
+        "repositoriesCount": 6,
+        "contributionsCount": 48,
+        "pullRequestsCount": 8,
+        "issuesCount": 24
+      }
+    },
+    "balajikumar": {
+      "id": "dev-balaji",
+      "name": "Balaji",
+      "username": "balajikumar",
+      "email": "balaji@devsync.dev",
+      "password": "demo12345",
+      "role": "Core Contributor",
+      "isVerified": true,
+      "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80",
+      "headline": "Fullstack engineer & open-source contributor.",
+      "bio": "Fullstack engineer & open-source contributor. Building high-performance developer tools and collaboration systems.",
+      "location": "Chennai, India",
+      "website": "https://balajikumar.dev",
+      "social": {
+        "github": "https://github.com/balajikumar",
+        "linkedin": "https://linkedin.com/in/balajikumar",
+        "instagram": "https://instagram.com/balajikumar"
+      },
+      "collaborationStatus": "Open to project invitations",
+      "collaborationStatusType": "available",
+      "openToInvitations": true,
+      "education": {
+        "degree": "BCA Student",
+        "institution": "Bengaluru City University",
+        "location": "Bengaluru, India",
+        "field": "Computer Applications",
+        "timeline": "2022 - 2025"
+      },
+      "experience": [
+        {
+          "role": "Full Stack Contributor",
+          "organization": "DevSync Community",
+          "timeline": "2024 - Present",
+          "description": "Building open source developer collaboration tools and web applications."
+        }
+      ],
+      "skills": [
+        {
+          "name": "Python",
+          "category": "Backend",
+          "color": "blue"
+        },
+        {
+          "name": "Django",
+          "category": "Backend",
+          "color": "mint"
+        },
+        {
+          "name": "JavaScript",
+          "category": "Frontend",
+          "color": "amber"
+        },
+        {
+          "name": "PostgreSQL",
+          "category": "Database",
+          "color": "cyan"
+        },
+        {
+          "name": "Docker",
+          "category": "Tool",
+          "color": "neutral"
+        }
+      ],
+      "pinnedProjects": [
+        "repo-devsync",
+        "repo-chaturya"
+      ],
+      "projects": [
+        {
+          "id": "repo-devsync",
+          "name": "devsync-core",
+          "description": "Core backend services for DevSync developer collaboration platform.",
+          "tags": [
+            {
+              "name": "Python",
+              "color": "blue"
+            },
+            {
+              "name": "Django",
+              "color": "mint"
+            }
+          ],
+          "stars": 28,
+          "forks": 5,
+          "updated": "2 hours ago",
+          "visibility": "Public",
+          "iconBg": "#0D9488"
+        }
+      ],
+      "achievements": [
+        {
+          "id": "ach-1-balajikumar",
+          "title": "First Project",
+          "description": "Created first public project",
+          "color": "green",
+          "date": "2024"
+        },
+        {
+          "id": "ach-2-balajikumar",
+          "title": "Collaborator",
+          "description": "Worked with 5+ developers",
+          "color": "blue",
+          "date": "2024"
+        }
+      ],
+      "activities": [
+        {
+          "id": "act-1-balajikumar",
+          "title": "Joined DevSync",
+          "description": "Created account and public profile on DevSync.",
+          "time": "Recently"
+        }
+      ],
+      "teams": [],
+      "collaborators": [],
+      "stats": {
+        "followers": 32,
+        "following": 15,
+        "projects": 1,
+        "teams": 0,
+        "repositoriesCount": 1,
+        "contributionsCount": 642,
+        "pullRequestsCount": 8,
+        "issuesCount": 24
+      }
+    },
+    "ananyaroy": {
+      "id": "dev-1",
+      "name": "Ananya Roy",
+      "username": "ananyaroy",
+      "email": "ananya@devsync.dev",
+      "password": "demo12345",
+      "role": "Cloud Engineer",
+      "isVerified": true,
+      "avatar": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=120&q=80",
+      "headline": "Building high-performance cloud microservices and open source developer utilities.",
+      "bio": "Fullstack engineer passionate about cloud microservices and scalable web applications.",
+      "location": "Hyderabad, India",
+      "website": "https://ananyaroy.dev",
+      "social": {
+        "github": "https://github.com/ananyaroy",
+        "linkedin": "https://linkedin.com/in/ananyaroy",
+        "instagram": "https://instagram.com/ananyaroy"
+      },
+      "collaborationStatus": "Available for collaboration",
+      "collaborationStatusType": "available",
+      "openToInvitations": true,
+      "education": {
+        "degree": "BCA Student",
+        "institution": "Bengaluru City University",
+        "location": "Bengaluru, India",
+        "field": "Computer Applications",
+        "timeline": "2022 - 2025"
+      },
+      "experience": [
+        {
+          "role": "Full Stack Contributor",
+          "organization": "DevSync Community",
+          "timeline": "2024 - Present",
+          "description": "Building open source developer collaboration tools and web applications."
+        }
+      ],
+      "skills": [
+        {
+          "name": "Python",
+          "category": "Backend",
+          "color": "blue"
+        },
+        {
+          "name": "React",
+          "category": "Frontend",
+          "color": "cyan"
+        },
+        {
+          "name": "PostgreSQL",
+          "category": "Database",
+          "color": "cyan"
+        },
+        {
+          "name": "Docker",
+          "category": "Tool",
+          "color": "neutral"
+        }
+      ],
+      "pinnedProjects": [],
+      "projects": [
+        {
+          "id": "repo-cloudmesh",
+          "name": "cloud-mesh",
+          "description": "Lightweight service mesh orchestration tool for Kubernetes clusters.",
+          "tags": [
+            {
+              "name": "Go",
+              "color": "blue"
+            },
+            {
+              "name": "Docker",
+              "color": "neutral"
+            }
+          ],
+          "stars": 34,
+          "forks": 8,
+          "updated": "3 days ago",
+          "visibility": "Public",
+          "iconBg": "#06B6D4"
+        }
+      ],
+      "achievements": [
+        {
+          "id": "ach-1-ananyaroy",
+          "title": "First Project",
+          "description": "Created first public project",
+          "color": "green",
+          "date": "2024"
+        },
+        {
+          "id": "ach-2-ananyaroy",
+          "title": "Collaborator",
+          "description": "Worked with 5+ developers",
+          "color": "blue",
+          "date": "2024"
+        }
+      ],
+      "activities": [
+        {
+          "id": "act-1-ananyaroy",
+          "title": "Joined DevSync",
+          "description": "Created account and public profile on DevSync.",
+          "time": "Recently"
+        }
+      ],
+      "teams": [],
+      "collaborators": [],
+      "stats": {
+        "followers": 19,
+        "following": 12,
+        "projects": 1,
+        "teams": 0,
+        "repositoriesCount": 1,
+        "contributionsCount": 210,
+        "pullRequestsCount": 5,
+        "issuesCount": 11
+      }
+    },
+    "vikramrao": {
+      "id": "dev-2",
+      "name": "Vikram Rao",
+      "username": "vikramrao",
+      "email": "vikram@devsync.dev",
+      "password": "demo12345",
+      "role": "ML Engineer",
+      "isVerified": true,
+      "avatar": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=120&q=80",
+      "headline": "Machine Learning specialist, working with PyTorch, model deployment, and FastAPI.",
+      "bio": "Machine Learning specialist focused on large-scale model inference, edge deployment, and PyTorch tooling.",
+      "location": "Pune, India",
+      "website": "https://vikramrao.ai",
+      "social": {
+        "github": "https://github.com/vikramrao",
+        "linkedin": "https://linkedin.com/in/vikramrao",
+        "instagram": "https://instagram.com/vikramrao"
+      },
+      "collaborationStatus": "Open to project invitations",
+      "collaborationStatusType": "available",
+      "openToInvitations": true,
+      "education": {
+        "degree": "BCA Student",
+        "institution": "Bengaluru City University",
+        "location": "Bengaluru, India",
+        "field": "Computer Applications",
+        "timeline": "2022 - 2025"
+      },
+      "experience": [
+        {
+          "role": "Full Stack Contributor",
+          "organization": "DevSync Community",
+          "timeline": "2024 - Present",
+          "description": "Building open source developer collaboration tools and web applications."
+        }
+      ],
+      "skills": [
+        {
+          "name": "PyTorch",
+          "category": "AI/ML",
+          "color": "rose"
+        },
+        {
+          "name": "FastAPI",
+          "category": "Backend",
+          "color": "mint"
+        },
+        {
+          "name": "Python",
+          "category": "Backend",
+          "color": "blue"
+        },
+        {
+          "name": "Docker",
+          "category": "Tool",
+          "color": "neutral"
+        }
+      ],
+      "pinnedProjects": [],
+      "projects": [
+        {
+          "id": "repo-embedserver",
+          "name": "embed-server",
+          "description": "High-throughput embedding generation microservice with ONNX runtime.",
+          "tags": [
+            {
+              "name": "Python",
+              "color": "blue"
+            },
+            {
+              "name": "FastAPI",
+              "color": "mint"
+            }
+          ],
+          "stars": 41,
+          "forks": 9,
+          "updated": "1 week ago",
+          "visibility": "Public",
+          "iconBg": "#EF4444"
+        }
+      ],
+      "achievements": [
+        {
+          "id": "ach-1-vikramrao",
+          "title": "First Project",
+          "description": "Created first public project",
+          "color": "green",
+          "date": "2024"
+        },
+        {
+          "id": "ach-2-vikramrao",
+          "title": "Collaborator",
+          "description": "Worked with 5+ developers",
+          "color": "blue",
+          "date": "2024"
+        }
+      ],
+      "activities": [
+        {
+          "id": "act-1-vikramrao",
+          "title": "Joined DevSync",
+          "description": "Created account and public profile on DevSync.",
+          "time": "Recently"
+        }
+      ],
+      "teams": [],
+      "collaborators": [],
+      "stats": {
+        "followers": 28,
+        "following": 14,
+        "projects": 1,
+        "teams": 0,
+        "repositoriesCount": 1,
+        "contributionsCount": 340,
+        "pullRequestsCount": 7,
+        "issuesCount": 14
+      }
+    },
+    "tarapatel": {
+      "id": "dev-3",
+      "name": "Tara Patel",
+      "username": "tarapatel",
+      "email": "tara@devsync.dev",
+      "password": "demo12345",
+      "role": "DevOps Specialist",
+      "isVerified": true,
+      "avatar": "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=120&q=80",
+      "headline": "DevOps & Site Reliability Engineer focused on Kubernetes orchestration and Terraform.",
+      "bio": "SRE and cloud infrastructure developer with a passion for automated CI/CD pipelines and zero-downtime deployments.",
+      "location": "Mumbai, India",
+      "website": "https://tarapatel.cloud",
+      "social": {
+        "github": "https://github.com/tarapatel",
+        "linkedin": "https://linkedin.com/in/tarapatel",
+        "instagram": "https://instagram.com/tarapatel"
+      },
+      "collaborationStatus": "Available for collaboration",
+      "collaborationStatusType": "available",
+      "openToInvitations": true,
+      "education": {
+        "degree": "BCA Student",
+        "institution": "Bengaluru City University",
+        "location": "Bengaluru, India",
+        "field": "Computer Applications",
+        "timeline": "2022 - 2025"
+      },
+      "experience": [
+        {
+          "role": "Full Stack Contributor",
+          "organization": "DevSync Community",
+          "timeline": "2024 - Present",
+          "description": "Building open source developer collaboration tools and web applications."
+        }
+      ],
+      "skills": [
+        {
+          "name": "Kubernetes",
+          "category": "DevOps",
+          "color": "cyan"
+        },
+        {
+          "name": "Terraform",
+          "category": "DevOps",
+          "color": "purple"
+        },
+        {
+          "name": "Go",
+          "category": "Backend",
+          "color": "blue"
+        },
+        {
+          "name": "AWS",
+          "category": "Cloud",
+          "color": "amber"
+        }
+      ],
+      "pinnedProjects": [],
+      "projects": [
+        {
+          "id": "repo-tf-modules",
+          "name": "k8s-tf-modules",
+          "description": "Reusable Terraform templates for multi-region EKS clusters.",
+          "tags": [
+            {
+              "name": "Terraform",
+              "color": "purple"
+            },
+            {
+              "name": "AWS",
+              "color": "amber"
+            }
+          ],
+          "stars": 52,
+          "forks": 14,
+          "updated": "4 days ago",
+          "visibility": "Public",
+          "iconBg": "#8B5CF6"
+        }
+      ],
+      "achievements": [
+        {
+          "id": "ach-1-tarapatel",
+          "title": "First Project",
+          "description": "Created first public project",
+          "color": "green",
+          "date": "2024"
+        },
+        {
+          "id": "ach-2-tarapatel",
+          "title": "Collaborator",
+          "description": "Worked with 5+ developers",
+          "color": "blue",
+          "date": "2024"
+        }
+      ],
+      "activities": [
+        {
+          "id": "act-1-tarapatel",
+          "title": "Joined DevSync",
+          "description": "Created account and public profile on DevSync.",
+          "time": "Recently"
+        }
+      ],
+      "teams": [],
+      "collaborators": [],
+      "stats": {
+        "followers": 35,
+        "following": 20,
+        "projects": 1,
+        "teams": 0,
+        "repositoriesCount": 1,
+        "contributionsCount": 420,
+        "pullRequestsCount": 12,
+        "issuesCount": 18
+      }
+    },
+    "rahuldev": {
+      "id": "dev-4",
+      "name": "Rahul Dev",
+      "username": "rahuldev",
+      "email": "rahul@devsync.dev",
+      "password": "demo12345",
+      "role": "Frontend Architect",
+      "isVerified": true,
+      "avatar": "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=120&q=80",
+      "headline": "Frontend enthusiast crafting accessible design systems and lightning-fast web experiences.",
+      "bio": "Frontend specialist obsessed with component performance, design token architectures, and accessibility standards.",
+      "location": "Delhi, India",
+      "website": "https://rahuldev.design",
+      "social": {
+        "github": "https://github.com/rahuldev",
+        "linkedin": "https://linkedin.com/in/rahuldev",
+        "instagram": "https://instagram.com/rahuldev"
+      },
+      "collaborationStatus": "Currently busy",
+      "collaborationStatusType": "busy",
+      "openToInvitations": false,
+      "education": {
+        "degree": "BCA Student",
+        "institution": "Bengaluru City University",
+        "location": "Bengaluru, India",
+        "field": "Computer Applications",
+        "timeline": "2022 - 2025"
+      },
+      "experience": [
+        {
+          "role": "Full Stack Contributor",
+          "organization": "DevSync Community",
+          "timeline": "2024 - Present",
+          "description": "Building open source developer collaboration tools and web applications."
+        }
+      ],
+      "skills": [
+        {
+          "name": "TypeScript",
+          "category": "Frontend",
+          "color": "blue"
+        },
+        {
+          "name": "Vue",
+          "category": "Frontend",
+          "color": "mint"
+        },
+        {
+          "name": "CSS Architecture",
+          "category": "Frontend",
+          "color": "purple"
+        },
+        {
+          "name": "React",
+          "category": "Frontend",
+          "color": "cyan"
+        }
+      ],
+      "pinnedProjects": [],
+      "projects": [
+        {
+          "id": "repo-token-engine",
+          "name": "token-engine",
+          "description": "Design token compiler transforming Figma styles into cross-platform CSS/JSON variables.",
+          "tags": [
+            {
+              "name": "TypeScript",
+              "color": "blue"
+            },
+            {
+              "name": "CSS",
+              "color": "purple"
+            }
+          ],
+          "stars": 67,
+          "forks": 18,
+          "updated": "Yesterday",
+          "visibility": "Public",
+          "iconBg": "#10B981"
+        }
+      ],
+      "achievements": [
+        {
+          "id": "ach-1-rahuldev",
+          "title": "First Project",
+          "description": "Created first public project",
+          "color": "green",
+          "date": "2024"
+        },
+        {
+          "id": "ach-2-rahuldev",
+          "title": "Collaborator",
+          "description": "Worked with 5+ developers",
+          "color": "blue",
+          "date": "2024"
+        }
+      ],
+      "activities": [
+        {
+          "id": "act-1-rahuldev",
+          "title": "Joined DevSync",
+          "description": "Created account and public profile on DevSync.",
+          "time": "Recently"
+        }
+      ],
+      "teams": [],
+      "collaborators": [],
+      "stats": {
+        "followers": 45,
+        "following": 22,
+        "projects": 1,
+        "teams": 0,
+        "repositoriesCount": 1,
+        "contributionsCount": 510,
+        "pullRequestsCount": 15,
+        "issuesCount": 22
+      }
+    },
+    "aaravmehta": {
+      "id": "dev-aaravmehta",
+      "name": "Aarav Mehta",
+      "username": "aaravmehta",
+      "email": "aarav.mehta@devsync.dev",
+      "password": "password123",
+      "role": "Developer",
+      "isVerified": true,
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+      "headline": "Passionate Developer building meaningful web applications and exploring modern technologies.",
+      "bio": "Hello, I am Aarav Mehta. I enjoy building software, collaborating with fellow engineers, and shipping high-quality code on DevSync.",
+      "location": "Bengaluru, India",
+      "website": "https://aaravmehta.dev",
+      "social": {
+        "github": "https://github.com/aaravmehta",
+        "linkedin": "https://linkedin.com/in/aaravmehta",
+        "instagram": "https://instagram.com/aaravmehta"
+      },
+      "collaborationStatus": "Available for collaboration",
+      "collaborationStatusType": "available",
+      "openToInvitations": true,
+      "education": {
+        "degree": "BCA Student",
+        "institution": "Bengaluru City University",
+        "location": "Bengaluru, India",
+        "field": "Computer Applications",
+        "timeline": "2022 - 2025"
+      },
+      "experience": [
+        {
+          "role": "Full Stack Contributor",
+          "organization": "DevSync Community",
+          "timeline": "2024 - Present",
+          "description": "Building open source developer collaboration tools and web applications."
+        }
+      ],
+      "skills": [
+        {
+          "name": "Python",
+          "category": "Backend",
+          "color": "blue"
+        },
+        {
+          "name": "Django",
+          "category": "Backend",
+          "color": "mint"
+        },
+        {
+          "name": "JavaScript",
+          "category": "Frontend",
+          "color": "amber"
+        },
+        {
+          "name": "React",
+          "category": "Frontend",
+          "color": "cyan"
+        },
+        {
+          "name": "Git",
+          "category": "Tool",
+          "color": "neutral"
+        },
+        {
+          "name": "GitHub",
+          "category": "Tool",
+          "color": "neutral"
+        }
+      ],
+      "pinnedProjects": [
+        "repo-aaravmehta-core"
+      ],
+      "projects": [
+        {
+          "id": "repo-aaravmehta-core",
+          "name": "aaravmehta-workspace",
+          "description": "Personal developer workspace and project repository on DevSync.",
+          "tags": [
+            {
+              "name": "Python",
+              "color": "blue"
+            },
+            {
+              "name": "JavaScript",
+              "color": "amber"
+            }
+          ],
+          "stars": 12,
+          "forks": 3,
+          "updated": "Updated recently",
+          "visibility": "Public",
+          "iconBg": "#0D9488",
+          "relationship": "Owner"
+        }
+      ],
+      "achievements": [
+        {
+          "id": "ach-1-aaravmehta",
+          "title": "First Project",
+          "description": "Created first public project",
+          "color": "green",
+          "date": "2024"
+        },
+        {
+          "id": "ach-2-aaravmehta",
+          "title": "Collaborator",
+          "description": "Worked with 5+ developers",
+          "color": "blue",
+          "date": "2024"
+        }
+      ],
+      "activities": [
+        {
+          "id": "act-1-aaravmehta",
+          "title": "Joined DevSync",
+          "description": "Created account and public profile on DevSync.",
+          "time": "Recently"
+        }
+      ],
+      "teams": [],
+      "collaborators": [],
+      "stats": {
+        "followers": 0,
+        "following": 0,
+        "projects": 1,
+        "teams": 0,
+        "repositoriesCount": 1,
+        "contributionsCount": 0,
+        "pullRequestsCount": 0,
+        "issuesCount": 0
+      }
+    }
+  },
+  "version": "1.0.0"
+}

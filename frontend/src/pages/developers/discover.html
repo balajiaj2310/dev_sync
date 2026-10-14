@@ -22,7 +22,7 @@
   <link rel="stylesheet" href="../../assets/css/pages/developers.css">
   <link rel="stylesheet" href="../../assets/css/devsync-ai.css">
 </head>
-<body data-authenticated="true" data-page="developers">
+<body data-authenticated="false" data-page="developers">
   <div class="app-container">
     <aside class="app-sidebar">
       <div class="sidebar-header">
@@ -84,13 +84,20 @@
 
         <!-- Developer Cards Grid -->
         <div id="developerGrid" class="developer-grid">
-          <!-- Dynamically populated via developers.js -->
+          <div class="developer-loading-state" role="status" aria-live="polite">
+            <div class="spinner mb-3" style="margin: 0 auto 12px auto;"></div>
+            <p class="text-secondary" style="font-size: 14px; margin: 0;">Discovering talented developers...</p>
+          </div>
         </div>
       </main>
     </div>
   </div>
 
   <script type="module" src="../../js/main.js"></script>
+  <script type="module">
+    import { initDevelopersPage } from '../../js/pages/developers.js';
+    initDevelopersPage();
+  </script>
   <!-- DevSync Floating AI Assistant Widget -->
   <script>
     window.DEVSYNC_AI_CONFIG = {

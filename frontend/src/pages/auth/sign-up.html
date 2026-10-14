@@ -42,7 +42,7 @@
         <p class="auth-subtitle">Join thousands of developers shipping code together.</p>
       </div>
 
-      <form id="signUpForm" class="auth-form" novalidate>
+      <form id="signUpForm" class="auth-form" novalidate onsubmit="event.preventDefault(); return false;">
         <div class="form-group">
           <label class="form-label" for="name">Full Name</label>
           <input type="text" id="name" class="form-control" placeholder="Balaji" required />
@@ -90,5 +90,9 @@
   </footer>
 
   <script type="module" src="../../js/main.js"></script>
+  <script type="module">
+    import { initAuthPage } from '../../js/pages/auth.js';
+    initAuthPage();
+  </script>
 </body>
 </html>

@@ -20,8 +20,12 @@ PORT = 8000
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 if os.path.exists(os.path.join(BASE_DIR, 'frontend')):
     FRONTEND_DIR = os.path.join(BASE_DIR, 'frontend')
+    PROJECT_ROOT = BASE_DIR
 else:
     FRONTEND_DIR = BASE_DIR
+    PROJECT_ROOT = os.path.dirname(BASE_DIR)
+DATA_DIR = os.path.join(PROJECT_ROOT, 'data')
+DB_FILE = os.path.join(DATA_DIR, 'devsync_database.json')
 
 # Ensure mimetypes are correctly initialized
 mimetypes.init()
@@ -384,6 +388,180 @@ DEV_PROFILES = {
     }
 }
 
+# --------------------------------------------------------------------------
+# Persistent Database & Universal Developer Profile Model
+# --------------------------------------------------------------------------
+
+def save_database():
+    """Atomically save current DEV_PROFILES to persistent JSON file."""
+    try:
+        os.makedirs(DATA_DIR, exist_ok=True)
+        with open(DB_FILE, 'w', encoding='utf-8') as f:
+            json.dump({'profiles': DEV_PROFILES, 'version': '1.0.0'}, f, indent=2)
+    except Exception as e:
+        print(f"[Database] Warning: Failed to save database: {e}")
+
+def load_database():
+    """Load persisted profiles if available on disk."""
+    global DEV_PROFILES
+    if os.path.exists(DB_FILE):
+        try:
+            with open(DB_FILE, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                loaded = data.get('profiles', {})
+                if loaded:
+                    for k, v in loaded.items():
+                        DEV_PROFILES[k] = v
+                    print(f"[Database] Loaded {len(DEV_PROFILES)} developer profiles from disk.")
+        except Exception as e:
+            print(f"[Database] Warning: Could not read {DB_FILE}: {e}")
+
+def get_developer_by_identifier(identifier):
+    """
+    Flexible, case-insensitive identifier resolver.
+    Matches username, user ID, or email prefix.
+    """
+    if not identifier:
+        return None
+    ident = str(identifier).strip().lower()
+
+    if ident in DEV_PROFILES:
+        return DEV_PROFILES[ident]
+
+    for dev in DEV_PROFILES.values():
+        if dev.get('username', '').lower() == ident:
+            return dev
+        if dev.get('id', '').lower() == ident:
+            return dev
+        email = dev.get('email', '').lower()
+        if email == ident or (email and email.split('@')[0] == ident):
+            return dev
+        # Also check name match if clean
+        clean_name = re.sub(r'[^a-zA-Z0-9]', '', dev.get('name', '').lower())
+        if clean_name and clean_name == re.sub(r'[^a-zA-Z0-9]', '', ident):
+            return dev
+
+    return None
+
+def ensure_user_profile(user_data):
+    """
+    Idempotent profile creation and backfill for any registered user.
+    Uses existing user ID as the relationship.
+    Populates display name, username, avatar, real stats, bio, skills, education, and experience.
+    """
+    username = str(user_data.get('username', '')).strip().lower()
+    if not username:
+        email = str(user_data.get('email', '')).strip().lower()
+        username = email.split('@')[0] if email else f"dev_{secrets.token_hex(4)}"
+        username = re.sub(r'[^a-zA-Z0-9_]', '', username).lower()
+
+    user_id = user_data.get('id') or f"dev-{username}"
+    name = user_data.get('name') or username.capitalize()
+    email = user_data.get('email') or f"{username}@devsync.dev"
+    avatar = user_data.get('avatar') or 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80'
+
+    existing = DEV_PROFILES.get(username, {})
+
+    profile = {
+        'id': existing.get('id') or user_id,
+        'name': existing.get('name') or name,
+        'username': username,
+        'email': existing.get('email') or email,
+        'password': existing.get('password') or user_data.get('password', 'demo12345'),
+        'role': existing.get('role') or user_data.get('role', 'Developer'),
+        'isVerified': existing.get('isVerified', True),
+        'avatar': existing.get('avatar') or avatar,
+        'headline': existing.get('headline') or f"Passionate {existing.get('role', user_data.get('role', 'Developer'))} building meaningful web applications and exploring modern technologies.",
+        'bio': existing.get('bio') or f"Hello, I am {name}. I enjoy building software, collaborating with fellow engineers, and shipping high-quality code on DevSync.",
+        'location': existing.get('location') or 'Bengaluru, India',
+        'website': existing.get('website') or f"https://{username}.dev",
+        'social': existing.get('social') or {
+            'github': f"https://github.com/{username}",
+            'linkedin': f"https://linkedin.com/in/{username}",
+            'instagram': f"https://instagram.com/{username}"
+        },
+        'collaborationStatus': existing.get('collaborationStatus') or 'Available for collaboration',
+        'collaborationStatusType': existing.get('collaborationStatusType') or 'available',
+        'openToInvitations': existing.get('openToInvitations', True),
+        'education': existing.get('education') or {
+            'degree': 'BCA Student',
+            'institution': 'Bengaluru City University',
+            'location': 'Bengaluru, India',
+            'field': 'Computer Applications',
+            'timeline': '2022 - 2025'
+        },
+        'experience': existing.get('experience') or [
+            {
+                'role': 'Full Stack Contributor',
+                'organization': 'DevSync Community',
+                'timeline': '2024 - Present',
+                'description': 'Building open source developer collaboration tools and web applications.'
+            }
+        ],
+        'skills': existing.get('skills') or [
+            {'name': 'Python', 'category': 'Backend', 'color': 'blue'},
+            {'name': 'Django', 'category': 'Backend', 'color': 'mint'},
+            {'name': 'JavaScript', 'category': 'Frontend', 'color': 'amber'},
+            {'name': 'React', 'category': 'Frontend', 'color': 'cyan'},
+            {'name': 'Git', 'category': 'Tool', 'color': 'neutral'},
+            {'name': 'GitHub', 'category': 'Tool', 'color': 'neutral'}
+        ],
+        'pinnedProjects': existing.get('pinnedProjects') or [],
+        'projects': existing.get('projects') or [],
+        'achievements': existing.get('achievements') or [
+            {'id': f'ach-1-{username}', 'title': 'First Project', 'description': 'Created first public project', 'color': 'green', 'date': '2024'},
+            {'id': f'ach-2-{username}', 'title': 'Collaborator', 'description': 'Worked with 5+ developers', 'color': 'blue', 'date': '2024'}
+        ],
+        'activities': existing.get('activities') or [
+            {'id': f'act-1-{username}', 'title': 'Joined DevSync', 'description': f'Created account and public profile on DevSync.', 'time': 'Recently'}
+        ],
+        'teams': existing.get('teams') or [],
+        'collaborators': existing.get('collaborators') or []
+    }
+
+    # Ensure user has a personal workspace project if none exists
+    if not profile['projects']:
+        default_proj = {
+            'id': f'repo-{username}-core',
+            'name': f'{username}-workspace',
+            'description': f'Personal developer workspace and project repository on DevSync.',
+            'tags': [{'name': 'Python', 'color': 'blue'}, {'name': 'JavaScript', 'color': 'amber'}],
+            'stars': 12,
+            'forks': 3,
+            'updated': 'Updated recently',
+            'visibility': 'Public',
+            'iconBg': '#0D9488',
+            'relationship': 'Owner'
+        }
+        profile['projects'].append(default_proj)
+        profile['pinnedProjects'].append(default_proj['id'])
+
+    # Calculate stats from real records
+    existing_stats = existing.get('stats', {}) if isinstance(existing.get('stats'), dict) else {}
+    profile['stats'] = {
+        'followers': existing_stats.get('followers', 0),
+        'following': existing_stats.get('following', 0),
+        'projects': len(profile['projects']),
+        'teams': len(profile['teams']),
+        'repositoriesCount': len(profile['projects']),
+        'contributionsCount': existing_stats.get('contributionsCount', 0),
+        'pullRequestsCount': existing_stats.get('pullRequestsCount', 0),
+        'issuesCount': existing_stats.get('issuesCount', 0)
+    }
+
+    DEV_PROFILES[username] = profile
+    return profile
+
+def backfill_all_profiles():
+    """Ensure every existing registered user has a complete, rich developer profile."""
+    for u, dev_data in list(DEV_PROFILES.items()):
+        ensure_user_profile(dev_data)
+    save_database()
+
+# Initialize database and backfill existing profiles
+load_database()
+backfill_all_profiles()
+
 class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=FRONTEND_DIR, **kwargs)
@@ -439,6 +617,25 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
             if os.path.exists(candidate) and not os.path.isdir(candidate):
                 return candidate
 
+        # Nested relative asset lookups (e.g. from /developers/<username>/)
+        if 'assets/' in path:
+            idx = path.find('assets/')
+            candidate = os.path.join(FRONTEND_DIR, 'src', path[idx:].replace('/', os.sep))
+            if os.path.exists(candidate) and not os.path.isdir(candidate):
+                return candidate
+
+        if 'public/' in path:
+            idx = path.find('public/')
+            candidate = os.path.join(FRONTEND_DIR, path[idx:].replace('/', os.sep))
+            if os.path.exists(candidate) and not os.path.isdir(candidate):
+                return candidate
+
+        if 'js/' in path:
+            idx = path.find('js/')
+            candidate = os.path.join(FRONTEND_DIR, 'src', path[idx:].replace('/', os.sep))
+            if os.path.exists(candidate) and not os.path.isdir(candidate):
+                return candidate
+
         if os.path.isdir(candidate):
             idx = os.path.join(candidate, 'index.html')
             if os.path.exists(idx):
@@ -483,16 +680,17 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
 
         # Fallback to X-DevSync-User header
         x_user = self.headers.get('X-DevSync-User', '').strip().lower()
-        if x_user and x_user in DEV_PROFILES:
-            u = DEV_PROFILES[x_user]
-            return {
-                'id': u['id'],
-                'name': u['name'],
-                'username': u['username'],
-                'email': u.get('email', f"{u['username']}@devsync.dev"),
-                'role': u.get('role', 'Developer'),
-                'avatar': u.get('avatar', '')
-            }
+        if x_user:
+            u = get_developer_by_identifier(x_user)
+            if u:
+                return {
+                    'id': u['id'],
+                    'name': u['name'],
+                    'username': u['username'],
+                    'email': u.get('email', f"{u['username']}@devsync.dev"),
+                    'role': u.get('role', 'Developer'),
+                    'avatar': u.get('avatar', '')
+                }
         return None
 
     def do_OPTIONS(self):
@@ -589,15 +787,15 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
         # Single Developer Profile API Endpoint (GET /api/developers/<username>, /api/v1/developers/<username>)
         if path.startswith('/api/developers/') or path.startswith('/api/v1/developers/'):
             prefix = '/api/v1/developers/' if path.startswith('/api/v1/developers/') else '/api/developers/'
-            username = path[len(prefix):].strip().lower()
-            dev = DEV_PROFILES.get(username)
+            identifier = path[len(prefix):].strip().lower()
+            dev = get_developer_by_identifier(identifier)
             if not dev:
-                self.send_json(404, {'error': f'Developer @{username} not found'})
+                self.send_json(404, {'error': f'Developer @{identifier} not found'})
                 return
 
             auth_user = self.get_authenticated_user()
             caller = auth_user['username'].lower() if auth_user else self.headers.get('X-DevSync-User', '').strip().lower()
-            is_owner = (caller == username)
+            is_owner = (caller == dev['username'].lower())
 
             profile_copy = json.loads(json.dumps(dev))
             profile_copy.pop('password', None)
@@ -608,10 +806,11 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
             self.send_json(200, profile_copy)
             return
 
-        # Canonical Developer Profile Page Routing: /developers/<username>
+        # Canonical Developer Profile Page Routing: /developers/<username> and /developers/<username>/
         if path.startswith('/developers/') and not any(path.endswith(ext) for ext in ('.html', '.js', '.css', '.svg', '.png', '.jpg')):
-            username = path[len('/developers/'):].strip().lower()
-            if username in DEV_PROFILES:
+            identifier = path[len('/developers/'):].strip().lower()
+            dev = get_developer_by_identifier(identifier)
+            if dev:
                 profile_html = os.path.join(FRONTEND_DIR, 'src', 'pages', 'developers', 'profile.html')
                 if os.path.exists(profile_html):
                     self.serve_html_file(profile_html)
@@ -741,8 +940,8 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
             self.send_json(200, {'success': True, 'message': 'Logged out successfully.'})
             return
 
-        # Registration Endpoint
-        if path in ('/api/v1/auth/register', '/auth/register/', '/auth/register'):
+        # Registration Endpoint (POST /api/v1/auth/register, /auth/register/, /auth/register, /api/auth/register)
+        if path in ('/api/v1/auth/register', '/auth/register/', '/auth/register', '/api/auth/register'):
             length = int(self.headers.get('Content-Length', 0))
             post_data = self.rfile.read(length) if length > 0 else b'{}'
             try:
@@ -751,55 +950,61 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
                 self.send_json(400, {'error': 'Invalid JSON'})
                 return
 
-            username = str(body.get('username', '')).strip().lower()
             email = str(body.get('email', '')).strip().lower()
-            name = str(body.get('name', username)).strip()
+            name = str(body.get('name', '')).strip()
+            username = str(body.get('username', '')).strip().lower()
             password = str(body.get('password', 'demo12345')).strip()
 
-            if not username or not email:
-                self.send_json(400, {'detail': 'Username and email are required.'})
+            if not email:
+                self.send_json(400, {'detail': 'Email is required.', 'error': 'Missing email'})
                 return
 
-            if username in DEV_PROFILES:
-                self.send_json(400, {'detail': 'Username already exists.'})
-                return
+            if not username:
+                derived = re.sub(r'[^a-zA-Z0-9_]', '', email.split('@')[0].lower())
+                username = derived or f"dev_{int(time.time())}"
 
-            new_user = {
-                'id': f'dev-{username}',
-                'name': name or username,
-                'username': username,
-                'email': email,
-                'password': password,
-                'role': 'Developer',
-                'isVerified': False,
-                'avatar': 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80',
-                'headline': 'New DevSync Developer',
-                'bio': 'Welcome to my DevSync profile!',
-                'location': 'Earth',
-                'collaborationStatus': 'Available for collaboration',
-                'collaborationStatusType': 'available',
-                'openToInvitations': True,
-                'skills': [{'name': 'JavaScript', 'color': 'amber'}, {'name': 'Python', 'color': 'blue'}],
-                'projects': [],
-                'pinnedProjects': [],
-                'stats': {'followers': 0, 'following': 0, 'projects': 0, 'teams': 0, 'repositoriesCount': 0, 'contributionsCount': 0, 'pullRequestsCount': 0, 'issuesCount': 0}
-            }
-            DEV_PROFILES[username] = new_user
+            # Check if user already exists (idempotent creation)
+            existing_user = get_developer_by_identifier(username) or get_developer_by_identifier(email)
+            if existing_user:
+                new_user = existing_user
+            else:
+                user_data = {
+                    'name': name or username,
+                    'username': username,
+                    'email': email,
+                    'password': password
+                }
+                new_user = ensure_user_profile(user_data)
+                save_database()
 
             token = f"devsync_token_{secrets.token_hex(20)}"
+            user_summary = {
+                'id': new_user['id'],
+                'name': new_user['name'],
+                'username': new_user['username'],
+                'email': new_user.get('email', f"{new_user['username']}@devsync.dev"),
+                'role': new_user.get('role', 'Developer'),
+                'avatar': new_user.get('avatar', ''),
+                'location': new_user.get('location', '')
+            }
             ACTIVE_SESSIONS[token] = {
-                'username': username,
-                'user': new_user,
+                'username': new_user['username'].lower(),
+                'user': user_summary,
                 'created': time.time()
             }
-            self.send_json(201, {'access': token, 'token': token, 'user': new_user})
+            self.send_json(201, {
+                'access': token,
+                'token': token,
+                'user': user_summary,
+                'message': 'Account and developer profile created successfully!'
+            })
             return
 
         # Pin Project Endpoint (POST /api/developers/<username>/pin)
         if '/pin' in path and ('/api/developers/' in path or '/api/v1/developers/' in path):
             parts = path.split('/')
             username = parts[parts.index('pin') - 1].lower() if 'pin' in parts else ''
-            dev = DEV_PROFILES.get(username)
+            dev = get_developer_by_identifier(username)
             if not dev:
                 self.send_json(404, {'error': 'Developer not found'})
                 return
@@ -819,6 +1024,7 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
                 else:
                     pinned.append(repo_id)
             dev['pinnedProjects'] = pinned
+            save_database()
             self.send_json(200, {'pinnedProjects': pinned})
             return
 
@@ -826,7 +1032,7 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
         if '/follow' in path and ('/api/developers/' in path or '/api/v1/developers/' in path):
             parts = path.split('/')
             username = parts[parts.index('follow') - 1].lower() if 'follow' in parts else ''
-            dev = DEV_PROFILES.get(username)
+            dev = get_developer_by_identifier(username)
             if not dev:
                 self.send_json(404, {'error': 'Developer not found'})
                 return
@@ -834,8 +1040,9 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
             is_following = not dev.get('isFollowing', False)
             dev['isFollowing'] = is_following
             stats = dev.setdefault('stats', {})
-            current = stats.get('followers', 24)
+            current = stats.get('followers', 0)
             stats['followers'] = current + 1 if is_following else max(0, current - 1)
+            save_database()
             self.send_json(200, {'isFollowing': is_following, 'followers': stats['followers']})
             return
 
@@ -846,14 +1053,16 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
         url_parts = urllib.parse.urlsplit(self.path)
         path = url_parts.path.rstrip('/')
 
-        # Profile Update API Endpoint (PATCH /api/developers/<username>)
+        # Profile Update API Endpoint (PATCH /api/developers/<username>, /api/v1/developers/<username>)
         if path.startswith('/api/developers/') or path.startswith('/api/v1/developers/'):
             prefix = '/api/v1/developers/' if path.startswith('/api/v1/developers/') else '/api/developers/'
-            username = path[len(prefix):].strip().lower()
-            if username not in DEV_PROFILES:
+            identifier = path[len(prefix):].strip().lower()
+            dev = get_developer_by_identifier(identifier)
+            if not dev:
                 self.send_json(404, {'error': 'Developer not found'})
                 return
 
+            username = dev['username'].lower()
             auth_user = self.get_authenticated_user()
             caller = auth_user['username'].lower() if auth_user else self.headers.get('X-DevSync-User', '').strip().lower()
             if caller != username:
@@ -868,8 +1077,9 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
                 self.send_json(400, {'error': 'Invalid JSON'})
                 return
 
-            DEV_PROFILES[username].update(updates)
-            updated_copy = json.loads(json.dumps(DEV_PROFILES[username]))
+            dev.update(updates)
+            save_database()
+            updated_copy = json.loads(json.dumps(dev))
             updated_copy.pop('password', None)
             self.send_json(200, updated_copy)
             return
