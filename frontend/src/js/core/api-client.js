@@ -30,11 +30,6 @@ class ApiClient {
   }
 
   async request(endpoint, options = {}) {
-    if (this.demoMode) {
-      console.info(`[DevSync API Mock] Intercepted call to ${endpoint}`);
-      return null;
-    }
-
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), APP_CONFIG.requestTimeoutMs);
 
@@ -52,14 +47,19 @@ class ApiClient {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.detail || errorData.message || `HTTP Error ${response.status}`);
+        const err = new Error(errorData.detail || errorData.error || errorData.message || `HTTP Error ${response.status}`);
+        err.status = response.status;
+        err.data = errorData;
+        throw err;
       }
 
       return await response.json();
     } catch (err) {
       clearTimeout(timeoutId);
       if (err.name === 'AbortError') {
-        throw new Error('Request timed out. Please check your connection.');
+        const timeoutErr = new Error('Request timed out. Please check your connection.');
+        timeoutErr.status = 408;
+        throw timeoutErr;
       }
       throw err;
     }

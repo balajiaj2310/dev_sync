@@ -205,10 +205,14 @@ export const MockAPI = {
     let list = [...mockStore.developers];
     if (search) {
       const q = search.toLowerCase();
-      list = list.filter(d => d.name.toLowerCase().includes(q) || d.username.toLowerCase().includes(q));
+      list = list.filter(d => (d.name || '').toLowerCase().includes(q) || (d.username || '').toLowerCase().includes(q));
     }
-    if (skill && skill !== 'All Skills') {
-      list = list.filter(d => d.skills.some(s => s.toLowerCase() === skill.toLowerCase()));
+    if (skill && skill !== 'All Skills' && skill !== 'All') {
+      const targetSkill = skill.toLowerCase();
+      list = list.filter(d => (d.skills || []).some(s => {
+        const sName = typeof s === 'string' ? s : (s?.name || '');
+        return sName.toLowerCase() === targetSkill;
+      }));
     }
     return list;
   },

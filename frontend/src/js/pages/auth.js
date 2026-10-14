@@ -34,13 +34,26 @@ export function initAuthPage() {
       const passInput = signInForm.querySelector('#password');
       const submitBtn = signInForm.querySelector('button[type="submit"]');
 
-      if (!isValidEmail(emailInput.value)) {
+      const emailVal = emailInput.value.trim();
+      const passVal = passInput.value;
+
+      if (!emailVal) {
+        toastDanger('Please enter your email address.');
+        emailInput.focus();
+        return;
+      }
+      if (!isValidEmail(emailVal)) {
         toastDanger('Please enter a valid email address.');
         emailInput.focus();
         return;
       }
-      if (!isValidPassword(passInput.value)) {
-        toastDanger('Password must be at least 8 characters.');
+      if (!passVal) {
+        toastDanger('Please enter your password.');
+        passInput.focus();
+        return;
+      }
+      if (passVal.length < 6) {
+        toastDanger('Password must be at least 6 characters.');
         passInput.focus();
         return;
       }
@@ -49,13 +62,20 @@ export function initAuthPage() {
       submitBtn.innerHTML = '<span class="btn-spinner"></span> Signing In...';
 
       try {
-        await AuthService.signIn({ email: emailInput.value, password: passInput.value });
-        toastSuccess('Welcome back, Balaji! Redirecting to Overview...', 'Signed In');
-        setTimeout(() => navigateTo(ROUTES.OVERVIEW), 600);
+        const res = await AuthService.signIn({ email: emailVal, password: passVal });
+        const userName = res.user?.name || 'Developer';
+        toastSuccess(`Welcome back, ${userName}! Redirecting to workspace...`, 'Signed In');
+
+        // Honor ?redirect= parameter or default to Overview
+        const urlParams = new URLSearchParams(window.location.search);
+        const destination = urlParams.get('redirect') || ROUTES.OVERVIEW;
+        setTimeout(() => {
+          window.location.href = destination;
+        }, 500);
       } catch (err) {
-        toastDanger(err.message || 'Authentication failed.');
+        toastDanger(err.message || 'Invalid email or password. Please verify your credentials and try again.');
         submitBtn.disabled = false;
-        submitBtn.innerHTML = 'Sign In';
+        submitBtn.innerHTML = 'Sign In &rarr;';
       }
     });
   }
