@@ -798,6 +798,10 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
             '/pull-requests': 'src/pages/pull-requests/list.html',
             '/issues': 'src/pages/issues/list.html',
             '/teams': 'src/pages/teams/members.html',
+            '/settings': 'src/pages/settings/account.html',
+            '/settings/account': 'src/pages/settings/account.html',
+            '/settings/privacy': 'src/pages/settings/privacy.html',
+            '/settings/preferences': 'src/pages/settings/preferences.html',
         }
         if path in route_map:
             target = os.path.join(FRONTEND_DIR, route_map[path].replace('/', os.sep))
