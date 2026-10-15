@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Team Members — DevSync</title>
+  <title>Teams & Project Collaborators — DevSync</title>
   <link rel="icon" type="image/svg+xml" href="../../../public/favicon.svg">
   <link rel="stylesheet" href="../../assets/css/tokens.css">
   <link rel="stylesheet" href="../../assets/css/reset.css">
@@ -24,35 +24,6 @@
   <link rel="stylesheet" href="../../assets/css/pages/teams.css">
   <link rel="stylesheet" href="../../assets/css/pages/dashboard.css">
   <link rel="stylesheet" href="../../assets/css/devsync-ai.css">
-  <style>
-    .member-user-cell {
-      display: flex;
-      align-items: center;
-      gap: var(--space-3);
-    }
-    .member-avatar {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 1px solid var(--color-border);
-      flex-shrink: 0;
-    }
-    .member-name {
-      font-weight: 600;
-      font-size: 13.5px;
-      color: var(--color-text-primary);
-    }
-    .member-you-badge {
-      font-size: 11px;
-      color: var(--color-text-secondary);
-      font-weight: 400;
-    }
-    .row-action-btn:hover {
-      background-color: var(--color-surface-subtle) !important;
-      color: var(--color-text-primary) !important;
-    }
-  </style>
 </head>
 <body data-authenticated="false" data-page="teams">
   <div class="app-container">
@@ -82,30 +53,46 @@
         <div class="topbar-left">
           <button class="mobile-menu-toggle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
           <div class="topbar-search-box">
-            <input type="text" id="memberSearchInput" class="topbar-search-input" placeholder="Search members by name or role..." />
+            <input type="text" id="memberSearchInput" class="topbar-search-input" placeholder="Search collaborators by name, role, or project..." />
           </div>
         </div>
         <div class="topbar-right">
           <a href="../notifications/index.html" class="topbar-icon-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></a>
-          <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" alt="Naveen" class="user-avatar" />
+          <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80" alt="Balaji" class="user-avatar" />
         </div>
       </header>
 
       <main class="app-content">
-        <!-- Page Title & Invite Action -->
-        <div class="page-toolbar">
+        <!-- Page Title & Toolbar with Persona Switcher -->
+        <div class="page-toolbar" style="margin-bottom: var(--space-4);">
           <div>
-            <h1 class="text-page-title mb-1">Team Members</h1>
-            <p class="text-secondary" style="font-size: 13.5px; margin: 0;">Collaborate with your team and manage access.</p>
+            <h1 class="text-page-title mb-1">Teams & Project Collaborators</h1>
+            <p class="text-secondary" style="font-size: 13.5px; margin: 0;">View project allocations, member counts, and manage collaborator roles with owner authority.</p>
           </div>
-          <button class="btn btn-primary btn-pill" id="btnInviteMember">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Invite Member
-          </button>
+          <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+            <!-- Active Persona Switcher for Demonstrating Authority -->
+            <div class="persona-switcher-wrapper" title="Switch your session persona to test project owner authority vs non-owner permissions">
+              <img id="personaAvatar" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=64&q=80" alt="Persona" class="persona-avatar-img" />
+              <div style="display: flex; flex-direction: column;">
+                <span style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-text-secondary); font-weight: 700;">Simulate User:</span>
+                <select id="personaSelect" class="persona-select">
+                  <option value="Balajikumar">Balaji (👑 Owner of devsync-core, ai-tools)</option>
+                  <option value="naveen3438">Naveen Kumar D (👑 Owner of campus-connect, chaturya-club)</option>
+                  <option value="priyas">Priya S (Developer - Non-Owner Member)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Add Member / Invite Action -->
+            <button class="btn btn-primary btn-pill" id="btnInviteMember">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Add Member to Project
+            </button>
+          </div>
         </div>
 
         <!-- 4 Team Metric Cards -->
-        <div class="team-metrics-row mb-6">
+        <div class="team-metrics-row mb-5">
           <div class="metric-card">
             <div class="metric-card-left">
               <div class="metric-icon-box" style="background: var(--color-mint-soft); color: var(--color-success); border-radius: 8px; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center;">
@@ -113,7 +100,7 @@
               </div>
               <div class="metric-value-box">
                 <span id="metricMemberCount" class="metric-value">7</span>
-                <span class="metric-label">Team Members</span>
+                <span class="metric-label">Total Collaborators</span>
               </div>
             </div>
             <span class="metric-badge-trend trend-up">&uarr; 33%</span>
@@ -125,7 +112,7 @@
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
               </div>
               <div class="metric-value-box">
-                <span class="metric-value">5</span>
+                <span id="metricActiveToday" class="metric-value">5</span>
                 <span class="metric-label">Active Today</span>
               </div>
             </div>
@@ -138,8 +125,8 @@
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
               </div>
               <div class="metric-value-box">
-                <span class="metric-value">12</span>
-                <span class="metric-label">Repositories</span>
+                <span id="metricRepoCount" class="metric-value">5</span>
+                <span class="metric-label">Active Projects</span>
               </div>
             </div>
             <span class="metric-badge-trend trend-up">&uarr; 20%</span>
@@ -159,12 +146,64 @@
           </div>
         </div>
 
+        <!-- Project Filter Strip (Showing How Many Members in Each Project) -->
+        <div class="project-filter-strip">
+          <div class="project-tabs-container">
+            <span class="project-tab-label">Filter Project:</span>
+            <div id="projectFilterTabs" style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <!-- Rendered dynamically by teams.js -->
+            </div>
+          </div>
+          <button id="btnResetTeamDefaults" class="btn btn-outline btn-sm" title="Reset all member assignments and roles back to default" style="font-size: 11.5px; padding: 4px 10px;">
+            Reset Demo Data
+          </button>
+        </div>
+
+        <!-- Project Context Banner (Appears when viewing a specific project) -->
+        <div class="project-context-banner" id="projectContextBanner" style="display: none;">
+          <div class="project-banner-left">
+            <div class="project-banner-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            </div>
+            <div>
+              <h3 class="project-banner-title" id="projectBannerTitle">devsync-core</h3>
+              <p class="project-banner-desc" id="projectBannerDesc">Core backend services, authentication API, and real-time collaboration engine.</p>
+            </div>
+          </div>
+          <div class="project-banner-meta-grid">
+            <div class="project-meta-pill">
+              <span class="project-meta-label">Project Owner:</span>
+              <span class="project-meta-val" id="projectBannerOwner">Balaji (@Balajikumar)</span>
+            </div>
+            <div class="project-meta-pill">
+              <span class="project-meta-label">Total Collaborators:</span>
+              <span class="project-meta-val" id="projectMemberCountBadge">4 Members</span>
+            </div>
+            <div id="ownerAuthorityBadge" class="project-meta-pill">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Project Squads Overview Cards (Shown in "All Projects" view) -->
+        <div class="project-squads-container" id="projectSquadsContainer">
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <div>
+              <h3 class="font-heading" style="font-size: 16px; margin: 0;">Project Squads & Member Capacities</h3>
+              <span class="text-secondary" style="font-size: 12.5px;">Click any repository to view its active collaborators, member count, and owner permissions</span>
+            </div>
+          </div>
+          <div class="project-squads-grid" id="projectSquadsGrid">
+            <!-- Dynamically populated by teams.js -->
+          </div>
+        </div>
+
         <!-- Members Table Card -->
         <div class="chart-card" style="padding: 0; overflow: hidden; border-radius: var(--radius-lg);">
-          <div style="padding: 16px 20px; border-bottom: 1px solid var(--color-border); display: flex; align-items: center; justify-content: space-between;">
+          <div style="padding: 16px 20px; border-bottom: 1px solid var(--color-border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
             <div>
               <h3 class="font-heading" style="font-size: 15px; margin: 0;">Active Collaborators & Squad</h3>
-              <span class="text-metadata" style="font-size: 12px;">Engineers with commit & push privileges</span>
+              <span class="text-metadata" style="font-size: 12px;">Engineers with project privileges and assigned roles</span>
             </div>
             <span id="filteredCountBadge" class="badge badge-public" style="font-size: 12px;">7 Members</span>
           </div>
@@ -175,7 +214,7 @@
                 <tr>
                   <th>Name</th>
                   <th>Role</th>
-                  <th>Repositories</th>
+                  <th>Working On Project(s)</th>
                   <th>Contributions</th>
                   <th>Status</th>
                   <th>Joined</th>
@@ -183,167 +222,7 @@
                 </tr>
               </thead>
               <tbody id="teamMemberTableBody">
-              <tr data-member-id="member-naveen">
-                <td>
-                  <a href="../developers/profile.html?user=naveen3438" class="member-user-cell" style="text-decoration: none; color: inherit;">
-                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&q=80" alt="Naveen Kumar D" class="member-avatar" />
-                    <div>
-                      <div class="member-name">Naveen Kumar D <span class="member-you-badge">(Lead)</span></div>
-                      <div class="text-secondary" style="font-size: 11.5px;">@naveen3438</div>
-                    </div>
-                  </a>
-                </td>
-                <td>
-                  <span class="badge badge-public">Lead Maintainer</span>
-                </td>
-                <td><strong>12</strong></td>
-                <td><strong>248</strong></td>
-                <td>
-                  <span class="status-indicator online">Online</span>
-                </td>
-                <td class="text-secondary">Jan 2024</td>
-                <td>
-                  <button class="row-action-btn" title="Manage member" style="background: none; border: none; cursor: pointer; font-size: 16px; color: var(--color-text-secondary); padding: 4px 8px; border-radius: 4px;">&bull;&bull;&bull;</button>
-                </td>
-              </tr>
-              <tr data-member-id="member-balaji">
-                <td>
-                  <a href="../developers/profile.html?user=Balajikumar" class="member-user-cell" style="text-decoration: none; color: inherit;">
-                    <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&q=80" alt="Balaji" class="member-avatar" />
-                    <div>
-                      <div class="member-name">Balaji <span class="member-you-badge">(Owner)</span></div>
-                      <div class="text-secondary" style="font-size: 11.5px;">@Balajikumar</div>
-                    </div>
-                  </a>
-                </td>
-                <td>
-                  <span class="badge badge-public">Owner</span>
-                </td>
-                <td><strong>12</strong></td>
-                <td><strong>245</strong></td>
-                <td>
-                  <span class="status-indicator online">Online</span>
-                </td>
-                <td class="text-secondary">Jan 2024</td>
-                <td>
-                  <button class="row-action-btn" title="Manage member" style="background: none; border: none; cursor: pointer; font-size: 16px; color: var(--color-text-secondary); padding: 4px 8px; border-radius: 4px;">&bull;&bull;&bull;</button>
-                </td>
-              </tr>
-              <tr data-member-id="member-priya">
-                <td>
-                  <a href="../developers/profile.html?user=priyas" class="member-user-cell" style="text-decoration: none; color: inherit;">
-                    <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=80&q=80" alt="Priya S" class="member-avatar" />
-                    <div>
-                      <div class="member-name">Priya S</div>
-                      <div class="text-secondary" style="font-size: 11.5px;">@priyas</div>
-                    </div>
-                  </a>
-                </td>
-                <td>
-                  <span class="badge badge-private">Fullstack Developer</span>
-                </td>
-                <td><strong>8</strong></td>
-                <td><strong>132</strong></td>
-                <td>
-                  <span class="status-indicator online">Online</span>
-                </td>
-                <td class="text-secondary">Feb 2024</td>
-                <td>
-                  <button class="row-action-btn" title="Manage member" style="background: none; border: none; cursor: pointer; font-size: 16px; color: var(--color-text-secondary); padding: 4px 8px; border-radius: 4px;">&bull;&bull;&bull;</button>
-                </td>
-              </tr>
-              <tr data-member-id="member-arjun">
-                <td>
-                  <a href="../developers/profile.html?user=arjun" class="member-user-cell" style="text-decoration: none; color: inherit;">
-                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=80&q=80" alt="Arjun" class="member-avatar" />
-                    <div>
-                      <div class="member-name">Arjun</div>
-                      <div class="text-secondary" style="font-size: 11.5px;">@arjun</div>
-                    </div>
-                  </a>
-                </td>
-                <td>
-                  <span class="badge badge-private">Frontend Developer</span>
-                </td>
-                <td><strong>6</strong></td>
-                <td><strong>98</strong></td>
-                <td>
-                  <span class="status-indicator offline">Offline</span>
-                </td>
-                <td class="text-secondary">Mar 2024</td>
-                <td>
-                  <button class="row-action-btn" title="Manage member" style="background: none; border: none; cursor: pointer; font-size: 16px; color: var(--color-text-secondary); padding: 4px 8px; border-radius: 4px;">&bull;&bull;&bull;</button>
-                </td>
-              </tr>
-              <tr data-member-id="member-sneha">
-                <td>
-                  <a href="../developers/profile.html?user=sneha" class="member-user-cell" style="text-decoration: none; color: inherit;">
-                    <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=80&q=80" alt="Sneha" class="member-avatar" />
-                    <div>
-                      <div class="member-name">Sneha</div>
-                      <div class="text-secondary" style="font-size: 11.5px;">@sneha</div>
-                    </div>
-                  </a>
-                </td>
-                <td>
-                  <span class="badge badge-private">Backend Developer</span>
-                </td>
-                <td><strong>5</strong></td>
-                <td><strong>76</strong></td>
-                <td>
-                  <span class="status-indicator online">Online</span>
-                </td>
-                <td class="text-secondary">Mar 2024</td>
-                <td>
-                  <button class="row-action-btn" title="Manage member" style="background: none; border: none; cursor: pointer; font-size: 16px; color: var(--color-text-secondary); padding: 4px 8px; border-radius: 4px;">&bull;&bull;&bull;</button>
-                </td>
-              </tr>
-              <tr data-member-id="member-karthik">
-                <td>
-                  <a href="../developers/profile.html?user=karthik" class="member-user-cell" style="text-decoration: none; color: inherit;">
-                    <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=80&q=80" alt="Karthik" class="member-avatar" />
-                    <div>
-                      <div class="member-name">Karthik</div>
-                      <div class="text-secondary" style="font-size: 11.5px;">@karthik</div>
-                    </div>
-                  </a>
-                </td>
-                <td>
-                  <span class="badge badge-private">Systems Developer</span>
-                </td>
-                <td><strong>7</strong></td>
-                <td><strong>114</strong></td>
-                <td>
-                  <span class="status-indicator online">Online</span>
-                </td>
-                <td class="text-secondary">Apr 2024</td>
-                <td>
-                  <button class="row-action-btn" title="Manage member" style="background: none; border: none; cursor: pointer; font-size: 16px; color: var(--color-text-secondary); padding: 4px 8px; border-radius: 4px;">&bull;&bull;&bull;</button>
-                </td>
-              </tr>
-              <tr data-member-id="member-rohan">
-                <td>
-                  <a href="../developers/profile.html?user=rohan" class="member-user-cell" style="text-decoration: none; color: inherit;">
-                    <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=80&q=80" alt="Rohan" class="member-avatar" />
-                    <div>
-                      <div class="member-name">Rohan</div>
-                      <div class="text-secondary" style="font-size: 11.5px;">@rohan</div>
-                    </div>
-                  </a>
-                </td>
-                <td>
-                  <span class="badge badge-private">UI/UX Designer</span>
-                </td>
-                <td><strong>4</strong></td>
-                <td><strong>52</strong></td>
-                <td>
-                  <span class="status-indicator offline">Offline</span>
-                </td>
-                <td class="text-secondary">May 2024</td>
-                <td>
-                  <button class="row-action-btn" title="Manage member" style="background: none; border: none; cursor: pointer; font-size: 16px; color: var(--color-text-secondary); padding: 4px 8px; border-radius: 4px;">&bull;&bull;&bull;</button>
-                </td>
-              </tr>
+                <!-- Dynamically rendered and managed via teams.js -->
               </tbody>
             </table>
           </div>
@@ -352,150 +231,133 @@
     </div>
   </div>
 
-  <!-- Invite Team Modal -->
-  <div class="modal-backdrop" id="inviteTeamModal" role="dialog" aria-modal="true" aria-labelledby="inviteModalTitle" style="display: none;">
+  <!-- Add Member to Project Modal -->
+  <div class="modal-backdrop" id="addMemberModal" role="dialog" aria-modal="true" aria-labelledby="addModalTitle" style="display: none;">
     <div class="modal-dialog">
       <div class="modal-header">
-        <h3 class="modal-title" id="inviteModalTitle">Invite New Member</h3>
+        <h3 class="modal-title" id="addModalTitle">Add Collaborator to Project</h3>
         <button class="modal-close-btn" data-modal-close aria-label="Close" style="background: none; border: none; font-size: 22px; cursor: pointer;">&times;</button>
       </div>
-      <form id="inviteTeamForm">
+      <form id="addMemberForm">
         <div class="modal-body">
           <div class="form-group" style="margin-bottom: 16px;">
-            <label class="form-label" for="inviteName" style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px;">Member Full Name</label>
-            <input type="text" id="inviteName" class="form-control" placeholder="e.g. Vikram Rao" style="width: 100%; padding: 8px 12px; border: 1px solid var(--color-border); border-radius: 6px;" required />
+            <label class="form-label" for="modalProjectSelect" style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px;">Target Project</label>
+            <select id="modalProjectSelect" class="form-select" style="width: 100%; padding: 8px 12px; border: 1px solid var(--color-border); border-radius: 6px;" required>
+              <!-- Options populated by teams.js -->
+            </select>
+            <span class="text-secondary" style="font-size: 11px; margin-top: 4px; display: block;">Only the project owner has authority to add members.</span>
           </div>
+
           <div class="form-group" style="margin-bottom: 16px;">
-            <label class="form-label" for="inviteEmail" style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px;">Colleague Email</label>
-            <input type="email" id="inviteEmail" class="form-control" placeholder="colleague@devsync.dev" style="width: 100%; padding: 8px 12px; border: 1px solid var(--color-border); border-radius: 6px;" required />
+            <label class="form-label" for="modalCandidateSelect" style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px;">Select Developer (Registered)</label>
+            <select id="modalCandidateSelect" class="form-select" style="width: 100%; padding: 8px 12px; border: 1px solid var(--color-border); border-radius: 6px;">
+              <!-- Options populated by teams.js -->
+            </select>
           </div>
+
           <div class="form-group" style="margin-bottom: 16px;">
-            <label class="form-label" for="inviteRole" style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px;">Role</label>
-            <select id="inviteRole" class="form-select" style="width: 100%; padding: 8px 12px; border: 1px solid var(--color-border); border-radius: 6px;">
-              <option value="Developer">Developer</option>
-              <option value="Designer">Designer</option>
+            <label class="form-label" for="addMemberNameInput" style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px;">Full Name</label>
+            <input type="text" id="addMemberNameInput" class="form-control" placeholder="e.g. Vikram Rao" style="width: 100%; padding: 8px 12px; border: 1px solid var(--color-border); border-radius: 6px;" required />
+          </div>
+
+          <div class="form-group" style="margin-bottom: 16px;">
+            <label class="form-label" for="addMemberEmailInput" style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px;">Email Address</label>
+            <input type="email" id="addMemberEmailInput" class="form-control" placeholder="developer@devsync.dev" style="width: 100%; padding: 8px 12px; border: 1px solid var(--color-border); border-radius: 6px;" required />
+          </div>
+
+          <div class="form-group" style="margin-bottom: 16px;">
+            <label class="form-label" for="addMemberRoleSelect" style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px;">Assign Role in Project</label>
+            <select id="addMemberRoleSelect" class="form-select" style="width: 100%; padding: 8px 12px; border: 1px solid var(--color-border); border-radius: 6px;">
+              <option value="Lead Maintainer">Lead Maintainer</option>
+              <option value="Fullstack Developer">Fullstack Developer</option>
+              <option value="Frontend Developer">Frontend Developer</option>
+              <option value="Backend Developer">Backend Developer</option>
+              <option value="Systems Developer">Systems Developer</option>
+              <option value="UI/UX Designer">UI/UX Designer</option>
               <option value="DevOps Specialist">DevOps Specialist</option>
-              <option value="Owner">Owner</option>
+              <option value="Contributor">Contributor</option>
+              <option value="Viewer">Viewer</option>
             </select>
           </div>
         </div>
         <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 8px; padding-top: 16px; border-top: 1px solid var(--color-border);">
           <button type="button" class="btn btn-outline btn-pill" data-modal-close>Cancel</button>
-          <button type="submit" class="btn btn-primary btn-pill">Send Invite &rarr;</button>
+          <button type="submit" class="btn btn-primary btn-pill">Add Collaborator &rarr;</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- Dedicated Team Members Self-Contained Controller -->
-  <script>
-    (function() {
-      const searchInput = document.getElementById('memberSearchInput');
-      const tableBody = document.getElementById('teamMemberTableBody');
-      const btnInvite = document.getElementById('btnInviteMember');
-      const inviteModal = document.getElementById('inviteTeamModal');
-      const inviteForm = document.getElementById('inviteTeamForm');
-      const filteredBadge = document.getElementById('filteredCountBadge');
-      const countEl = document.getElementById('metricMemberCount');
+  <!-- Change Role Modal -->
+  <div class="modal-backdrop" id="changeRoleModal" role="dialog" aria-modal="true" aria-labelledby="roleModalTitle" style="display: none;">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title" id="roleModalTitle">Owner Authority: Assign Project Role</h3>
+        <button class="modal-close-btn" data-modal-close aria-label="Close" style="background: none; border: none; font-size: 22px; cursor: pointer;">&times;</button>
+      </div>
+      <form id="changeRoleForm">
+        <div class="modal-body">
+          <div style="background: var(--color-surface-subtle); padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; border: 1px solid var(--color-border);">
+            <div style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: 2px;">Target Member:</div>
+            <div id="changeRoleMemberName" style="font-weight: 700; font-size: 15px; color: var(--color-text-primary);"></div>
+            <div style="font-size: 12px; color: var(--color-text-secondary); margin-top: 6px;">Project:</div>
+            <div id="changeRoleProjectName" style="font-weight: 600; font-size: 13.5px; color: var(--color-primary);"></div>
+          </div>
 
-      // Live search filter
-      if (searchInput && tableBody) {
-        searchInput.addEventListener('input', function(e) {
-          const query = (e.target.value || '').trim().toLowerCase();
-          const rows = tableBody.querySelectorAll('tr');
-          let visibleCount = 0;
-          rows.forEach(row => {
-            const text = row.innerText.toLowerCase();
-            if (!query || text.includes(query)) {
-              row.style.display = '';
-              visibleCount++;
-            } else {
-              row.style.display = 'none';
-            }
-          });
-          if (filteredBadge) {
-            filteredBadge.textContent = query ? (visibleCount + ' Found') : (rows.length + ' Members');
-          }
-        });
-      }
+          <div class="form-group" style="margin-bottom: 16px;">
+            <label class="form-label" for="newRoleSelect" style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px;">Select New Role</label>
+            <select id="newRoleSelect" class="form-select" style="width: 100%; padding: 8px 12px; border: 1px solid var(--color-border); border-radius: 6px;">
+              <option value="Owner">👑 Owner</option>
+              <option value="Lead Maintainer">Lead Maintainer</option>
+              <option value="Fullstack Developer">Fullstack Developer</option>
+              <option value="Frontend Developer">Frontend Developer</option>
+              <option value="Backend Developer">Backend Developer</option>
+              <option value="Systems Developer">Systems Developer</option>
+              <option value="UI/UX Designer">UI/UX Designer</option>
+              <option value="DevOps Specialist">DevOps Specialist</option>
+              <option value="Contributor">Contributor</option>
+              <option value="Viewer">Viewer</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 8px; padding-top: 16px; border-top: 1px solid var(--color-border);">
+          <button type="button" class="btn btn-outline btn-pill" data-modal-close>Cancel</button>
+          <button type="submit" class="btn btn-primary btn-pill">Save Role &rarr;</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
-      // Modal Controls
-      function openModal() {
-        if (inviteModal) {
-          inviteModal.style.display = 'flex';
-          inviteModal.classList.add('show', 'open');
-        }
-      }
+  <!-- Remove Member Confirmation Modal -->
+  <div class="modal-backdrop" id="removeMemberModal" role="dialog" aria-modal="true" aria-labelledby="removeModalTitle" style="display: none;">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title" id="removeModalTitle" style="color: var(--color-danger);">Remove from Project</h3>
+        <button class="modal-close-btn" data-modal-close aria-label="Close" style="background: none; border: none; font-size: 22px; cursor: pointer;">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 14px; margin-bottom: 12px;">
+          Are you sure you want to remove <strong id="removeMemberName"></strong> from <strong id="removeProjectName"></strong>?
+        </p>
+        <p class="text-secondary" style="font-size: 12.5px; margin: 0;">
+          They will immediately lose write and push privileges to this project repository. This action is enforced under project owner authority.
+        </p>
+      </div>
+      <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 8px; padding-top: 16px; border-top: 1px solid var(--color-border);">
+        <button type="button" class="btn btn-outline btn-pill" data-modal-close>Cancel</button>
+        <button type="button" class="btn btn-primary btn-pill" id="confirmRemoveBtn" style="background-color: var(--color-danger); border-color: var(--color-danger); color: white;">Yes, Remove Collaborator</button>
+      </div>
+    </div>
+  </div>
 
-      function closeModal() {
-        if (inviteModal) {
-          inviteModal.style.display = 'none';
-          inviteModal.classList.remove('show', 'open');
-        }
-      }
-
-      if (btnInvite) {
-        btnInvite.addEventListener('click', openModal);
-      }
-
-      document.querySelectorAll('[data-modal-close]').forEach(btn => {
-        btn.addEventListener('click', closeModal);
-      });
-
-      if (inviteModal) {
-        inviteModal.addEventListener('click', function(e) {
-          if (e.target === inviteModal) closeModal();
-        });
-      }
-
-      // Form Submission
-      if (inviteForm && tableBody) {
-        inviteForm.addEventListener('submit', function(e) {
-          e.preventDefault();
-          const name = document.getElementById('inviteName').value.trim() || 'New Member';
-          const email = document.getElementById('inviteEmail').value.trim();
-          const role = document.getElementById('inviteRole').value;
-          const username = email.split('@')[0].toLowerCase().replace(/[^a-z0-9]/g, '');
-
-          const newRow = document.createElement('tr');
-          newRow.innerHTML = `
-            <td>
-              <a href="../developers/profile.html?user=${username}" class="member-user-cell" style="text-decoration: none; color: inherit;">
-                <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&q=80" alt="${name}" class="member-avatar" />
-                <div>
-                  <div class="member-name">${name} <span class="member-you-badge">(Invited)</span></div>
-                  <div class="text-secondary" style="font-size: 11.5px;">@${username}</div>
-                </div>
-              </a>
-            </td>
-            <td>
-              <span class="badge badge-private">${role}</span>
-            </td>
-            <td><strong>0</strong></td>
-            <td><strong>0</strong></td>
-            <td>
-              <span class="status-indicator offline">Pending</span>
-            </td>
-            <td class="text-secondary">Just now</td>
-            <td>
-              <button class="row-action-btn" title="Manage member" style="background: none; border: none; cursor: pointer; font-size: 16px; color: var(--color-text-secondary); padding: 4px 8px; border-radius: 4px;">&bull;&bull;&bull;</button>
-            </td>
-          `;
-
-          tableBody.prepend(newRow);
-          closeModal();
-          inviteForm.reset();
-
-          const totalRows = tableBody.querySelectorAll('tr').length;
-          if (countEl) countEl.textContent = totalRows;
-          if (filteredBadge) filteredBadge.textContent = totalRows + ' Members';
-
-          alert(`Invitation sent to ${email} as ${role}!`);
-        });
-      }
-    })();
+  <script type="module">
+    import { initTeamsPage } from '../../js/pages/teams.js';
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initTeamsPage);
+    } else {
+      initTeamsPage();
+    }
   </script>
-
   <script type="module" src="../../js/main.js"></script>
   <!-- DevSync Floating AI Assistant Widget -->
   <script>
