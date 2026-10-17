@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Team Members — DevSync</title>
+  <title>Teams & Project Collaborators — DevSync</title>
   <link rel="icon" type="image/svg+xml" href="../../../public/favicon.svg">
   <link rel="stylesheet" href="../../assets/css/tokens.css">
   <link rel="stylesheet" href="../../assets/css/reset.css">
@@ -22,9 +22,10 @@
   <link rel="stylesheet" href="../../assets/css/components/dropdowns.css">
   <link rel="stylesheet" href="../../assets/css/components/notifications.css">
   <link rel="stylesheet" href="../../assets/css/pages/teams.css">
+  <link rel="stylesheet" href="../../assets/css/pages/dashboard.css">
   <link rel="stylesheet" href="../../assets/css/devsync-ai.css">
 </head>
-<body data-authenticated="true" data-page="teams">
+<body data-authenticated="false" data-page="teams">
   <div class="app-container">
     <aside class="app-sidebar">
       <div class="sidebar-header">
@@ -52,132 +53,311 @@
         <div class="topbar-left">
           <button class="mobile-menu-toggle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
           <div class="topbar-search-box">
-            <input type="text" class="topbar-search-input" placeholder="Search members..." />
+            <input type="text" id="memberSearchInput" class="topbar-search-input" placeholder="Search collaborators by name, role, or project..." />
           </div>
         </div>
         <div class="topbar-right">
           <a href="../notifications/index.html" class="topbar-icon-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></a>
-          <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" alt="Balaji" class="user-avatar" />
+          <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80" alt="Balaji" class="user-avatar" />
         </div>
       </header>
 
       <main class="app-content">
-        <!-- Page Title & Invite Action (Image 1 Team Members) -->
-        <div class="page-toolbar">
+        <!-- Page Title & Toolbar with Persona Switcher -->
+        <div class="page-toolbar" style="margin-bottom: var(--space-4);">
           <div>
-            <h1 class="text-page-title mb-1">Team Members</h1>
-            <p class="text-secondary" style="font-size: 13.5px; margin: 0;">Collaborate with your team and manage access.</p>
+            <h1 class="text-page-title mb-1">Teams & Project Collaborators</h1>
+            <p class="text-secondary" style="font-size: 13.5px; margin: 0;">View project allocations, member counts, and manage collaborator roles with owner authority.</p>
           </div>
-          <button class="btn btn-primary btn-pill" id="btnInviteMember">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Invite Member
-          </button>
+          <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+            <!-- Active Persona Switcher for Demonstrating Authority -->
+            <div class="persona-switcher-wrapper" title="Switch your session persona to test project owner authority vs non-owner permissions">
+              <img id="personaAvatar" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=64&q=80" alt="Persona" class="persona-avatar-img" />
+              <div style="display: flex; flex-direction: column;">
+                <span style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-text-secondary); font-weight: 700;">Simulate User:</span>
+                <select id="personaSelect" class="persona-select">
+                  <option value="Balajikumar">Balaji (👑 Owner of devsync-core, ai-tools)</option>
+                  <option value="naveen3438">Naveen Kumar D (👑 Owner of campus-connect, chaturya-club)</option>
+                  <option value="priyas">Priya S (Developer - Non-Owner Member)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Add Member / Invite Action -->
+            <button class="btn btn-primary btn-pill" id="btnInviteMember">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Add Member to Project
+            </button>
+          </div>
         </div>
 
-        <!-- 4 Team Metric Cards (Image 1) -->
-        <div class="team-metrics-row">
+        <!-- 4 Team Metric Cards -->
+        <div class="team-metrics-row mb-5">
           <div class="metric-card">
             <div class="metric-card-left">
-              <div class="metric-icon-box">
+              <div class="metric-icon-box" style="background: var(--color-mint-soft); color: var(--color-success); border-radius: 8px; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center;">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
               </div>
               <div class="metric-value-box">
-                <span class="metric-value">6</span>
-                <span class="metric-label">Team Members</span>
+                <span id="metricMemberCount" class="metric-value">7</span>
+                <span class="metric-label">Total Collaborators</span>
               </div>
             </div>
+            <span class="metric-badge-trend trend-up">&uarr; 33%</span>
           </div>
 
           <div class="metric-card">
             <div class="metric-card-left">
-              <div class="metric-icon-box">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              <div class="metric-icon-box" style="background: var(--color-mint-soft); color: var(--color-success); border-radius: 8px; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
               </div>
               <div class="metric-value-box">
-                <span class="metric-value">4</span>
+                <span id="metricActiveToday" class="metric-value">5</span>
                 <span class="metric-label">Active Today</span>
               </div>
             </div>
+            <span class="metric-badge-trend trend-up" style="color: var(--color-success);">83%</span>
           </div>
 
           <div class="metric-card">
             <div class="metric-card-left">
-              <div class="metric-icon-box">
+              <div class="metric-icon-box" style="background: #EFF6FF; color: #2563EB; border-radius: 8px; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center;">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
               </div>
               <div class="metric-value-box">
-                <span class="metric-value">12</span>
-                <span class="metric-label">Repositories</span>
+                <span id="metricRepoCount" class="metric-value">5</span>
+                <span class="metric-label">Active Projects</span>
               </div>
             </div>
+            <span class="metric-badge-trend trend-up">&uarr; 20%</span>
           </div>
 
           <div class="metric-card">
             <div class="metric-card-left">
-              <div class="metric-icon-box">
+              <div class="metric-icon-box" style="background: #FDF4FF; color: #9333EA; border-radius: 8px; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center;">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
               </div>
               <div class="metric-value-box">
-                <span class="metric-value">28</span>
+                <span class="metric-value">965</span>
                 <span class="metric-label">Total Contributions</span>
               </div>
+            </div>
+            <span class="metric-badge-trend trend-up">&uarr; 42%</span>
+          </div>
+        </div>
+
+        <!-- Project Filter Strip (Showing How Many Members in Each Project) -->
+        <div class="project-filter-strip">
+          <div class="project-tabs-container">
+            <span class="project-tab-label">Filter Project:</span>
+            <div id="projectFilterTabs" style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <!-- Rendered dynamically by teams.js -->
+            </div>
+          </div>
+          <button id="btnResetTeamDefaults" class="btn btn-outline btn-sm" title="Reset all member assignments and roles back to default" style="font-size: 11.5px; padding: 4px 10px;">
+            Reset Demo Data
+          </button>
+        </div>
+
+        <!-- Project Context Banner (Appears when viewing a specific project) -->
+        <div class="project-context-banner" id="projectContextBanner" style="display: none;">
+          <div class="project-banner-left">
+            <div class="project-banner-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            </div>
+            <div>
+              <h3 class="project-banner-title" id="projectBannerTitle">devsync-core</h3>
+              <p class="project-banner-desc" id="projectBannerDesc">Core backend services, authentication API, and real-time collaboration engine.</p>
+            </div>
+          </div>
+          <div class="project-banner-meta-grid">
+            <div class="project-meta-pill">
+              <span class="project-meta-label">Project Owner:</span>
+              <span class="project-meta-val" id="projectBannerOwner">Balaji (@Balajikumar)</span>
+            </div>
+            <div class="project-meta-pill">
+              <span class="project-meta-label">Total Collaborators:</span>
+              <span class="project-meta-val" id="projectMemberCountBadge">4 Members</span>
+            </div>
+            <div id="ownerAuthorityBadge" class="project-meta-pill">
+              <!-- Rendered dynamically -->
             </div>
           </div>
         </div>
 
-        <!-- Members Table (Image 1) -->
-        <div class="table-responsive">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Role</th>
-                <th>Repositories</th>
-                <th>Contributions</th>
-                <th>Status</th>
-                <th>Joined</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody id="teamMemberTableBody">
-              <!-- Dynamically populated via teams.js -->
-            </tbody>
-          </table>
+        <!-- Project Squads Overview Cards (Shown in "All Projects" view) -->
+        <div class="project-squads-container" id="projectSquadsContainer">
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <div>
+              <h3 class="font-heading" style="font-size: 16px; margin: 0;">Project Squads & Member Capacities</h3>
+              <span class="text-secondary" style="font-size: 12.5px;">Click any repository to view its active collaborators, member count, and owner permissions</span>
+            </div>
+          </div>
+          <div class="project-squads-grid" id="projectSquadsGrid">
+            <!-- Dynamically populated by teams.js -->
+          </div>
+        </div>
+
+        <!-- Members Table Card -->
+        <div class="chart-card" style="padding: 0; overflow: hidden; border-radius: var(--radius-lg);">
+          <div style="padding: 16px 20px; border-bottom: 1px solid var(--color-border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+            <div>
+              <h3 class="font-heading" style="font-size: 15px; margin: 0;">Active Collaborators & Squad</h3>
+              <span class="text-metadata" style="font-size: 12px;">Engineers with project privileges and assigned roles</span>
+            </div>
+            <span id="filteredCountBadge" class="badge badge-public" style="font-size: 12px;">7 Members</span>
+          </div>
+
+          <div class="table-responsive" style="margin: 0; border: none;">
+            <table class="data-table" style="width: 100%;">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Role</th>
+                  <th>Working On Project(s)</th>
+                  <th>Contributions</th>
+                  <th>Status</th>
+                  <th>Joined</th>
+                  <th style="text-align: right; width: 60px;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="teamMemberTableBody">
+                <!-- Dynamically rendered and managed via teams.js -->
+              </tbody>
+            </table>
+          </div>
         </div>
       </main>
     </div>
   </div>
 
-  <!-- Invite Team Modal -->
-  <div class="modal-backdrop" id="inviteTeamModal" role="dialog" aria-modal="true" aria-labelledby="inviteModalTitle">
+  <!-- Add Member to Project Modal -->
+  <div class="modal-backdrop" id="addMemberModal" role="dialog" aria-modal="true" aria-labelledby="addModalTitle" style="display: none;">
     <div class="modal-dialog">
       <div class="modal-header">
-        <h3 class="modal-title" id="inviteModalTitle">Invite New Member</h3>
-        <button class="modal-close-btn" data-modal-close aria-label="Close">&times;</button>
+        <h3 class="modal-title" id="addModalTitle">Add Collaborator to Project</h3>
+        <button class="modal-close-btn" data-modal-close aria-label="Close" style="background: none; border: none; font-size: 22px; cursor: pointer;">&times;</button>
       </div>
-      <form id="inviteTeamForm">
+      <form id="addMemberForm">
         <div class="modal-body">
-          <div class="form-group">
-            <label class="form-label" for="inviteEmail">Colleague Email</label>
-            <input type="email" id="inviteEmail" class="form-control" placeholder="colleague@domain.com" required />
+          <div class="form-group" style="margin-bottom: 16px;">
+            <label class="form-label" for="modalProjectSelect" style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px;">Target Project</label>
+            <select id="modalProjectSelect" class="form-select" style="width: 100%; padding: 8px 12px; border: 1px solid var(--color-border); border-radius: 6px;" required>
+              <!-- Options populated by teams.js -->
+            </select>
+            <span class="text-secondary" style="font-size: 11px; margin-top: 4px; display: block;">Only the project owner has authority to add members.</span>
           </div>
-          <div class="form-group">
-            <label class="form-label" for="inviteRole">Role</label>
-            <select id="inviteRole" class="form-select">
-              <option value="Developer">Developer</option>
-              <option value="Designer">Designer</option>
-              <option value="Owner">Owner</option>
+
+          <div class="form-group" style="margin-bottom: 16px;">
+            <label class="form-label" for="modalCandidateSelect" style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px;">Select Developer (Registered)</label>
+            <select id="modalCandidateSelect" class="form-select" style="width: 100%; padding: 8px 12px; border: 1px solid var(--color-border); border-radius: 6px;">
+              <!-- Options populated by teams.js -->
+            </select>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 16px;">
+            <label class="form-label" for="addMemberNameInput" style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px;">Full Name</label>
+            <input type="text" id="addMemberNameInput" class="form-control" placeholder="e.g. Vikram Rao" style="width: 100%; padding: 8px 12px; border: 1px solid var(--color-border); border-radius: 6px;" required />
+          </div>
+
+          <div class="form-group" style="margin-bottom: 16px;">
+            <label class="form-label" for="addMemberEmailInput" style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px;">Email Address</label>
+            <input type="email" id="addMemberEmailInput" class="form-control" placeholder="developer@devsync.dev" style="width: 100%; padding: 8px 12px; border: 1px solid var(--color-border); border-radius: 6px;" required />
+          </div>
+
+          <div class="form-group" style="margin-bottom: 16px;">
+            <label class="form-label" for="addMemberRoleSelect" style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px;">Assign Role in Project</label>
+            <select id="addMemberRoleSelect" class="form-select" style="width: 100%; padding: 8px 12px; border: 1px solid var(--color-border); border-radius: 6px;">
+              <option value="Lead Maintainer">Lead Maintainer</option>
+              <option value="Fullstack Developer">Fullstack Developer</option>
+              <option value="Frontend Developer">Frontend Developer</option>
+              <option value="Backend Developer">Backend Developer</option>
+              <option value="Systems Developer">Systems Developer</option>
+              <option value="UI/UX Designer">UI/UX Designer</option>
+              <option value="DevOps Specialist">DevOps Specialist</option>
+              <option value="Contributor">Contributor</option>
+              <option value="Viewer">Viewer</option>
             </select>
           </div>
         </div>
-        <div class="modal-footer">
+        <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 8px; padding-top: 16px; border-top: 1px solid var(--color-border);">
           <button type="button" class="btn btn-outline btn-pill" data-modal-close>Cancel</button>
-          <button type="submit" class="btn btn-primary btn-pill">Send Invite &rarr;</button>
+          <button type="submit" class="btn btn-primary btn-pill">Add Collaborator &rarr;</button>
         </div>
       </form>
     </div>
   </div>
 
+  <!-- Change Role Modal -->
+  <div class="modal-backdrop" id="changeRoleModal" role="dialog" aria-modal="true" aria-labelledby="roleModalTitle" style="display: none;">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title" id="roleModalTitle">Owner Authority: Assign Project Role</h3>
+        <button class="modal-close-btn" data-modal-close aria-label="Close" style="background: none; border: none; font-size: 22px; cursor: pointer;">&times;</button>
+      </div>
+      <form id="changeRoleForm">
+        <div class="modal-body">
+          <div style="background: var(--color-surface-subtle); padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; border: 1px solid var(--color-border);">
+            <div style="font-size: 12px; color: var(--color-text-secondary); margin-bottom: 2px;">Target Member:</div>
+            <div id="changeRoleMemberName" style="font-weight: 700; font-size: 15px; color: var(--color-text-primary);"></div>
+            <div style="font-size: 12px; color: var(--color-text-secondary); margin-top: 6px;">Project:</div>
+            <div id="changeRoleProjectName" style="font-weight: 600; font-size: 13.5px; color: var(--color-primary);"></div>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 16px;">
+            <label class="form-label" for="newRoleSelect" style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px;">Select New Role</label>
+            <select id="newRoleSelect" class="form-select" style="width: 100%; padding: 8px 12px; border: 1px solid var(--color-border); border-radius: 6px;">
+              <option value="Owner">👑 Owner</option>
+              <option value="Lead Maintainer">Lead Maintainer</option>
+              <option value="Fullstack Developer">Fullstack Developer</option>
+              <option value="Frontend Developer">Frontend Developer</option>
+              <option value="Backend Developer">Backend Developer</option>
+              <option value="Systems Developer">Systems Developer</option>
+              <option value="UI/UX Designer">UI/UX Designer</option>
+              <option value="DevOps Specialist">DevOps Specialist</option>
+              <option value="Contributor">Contributor</option>
+              <option value="Viewer">Viewer</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 8px; padding-top: 16px; border-top: 1px solid var(--color-border);">
+          <button type="button" class="btn btn-outline btn-pill" data-modal-close>Cancel</button>
+          <button type="submit" class="btn btn-primary btn-pill">Save Role &rarr;</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Remove Member Confirmation Modal -->
+  <div class="modal-backdrop" id="removeMemberModal" role="dialog" aria-modal="true" aria-labelledby="removeModalTitle" style="display: none;">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title" id="removeModalTitle" style="color: var(--color-danger);">Remove from Project</h3>
+        <button class="modal-close-btn" data-modal-close aria-label="Close" style="background: none; border: none; font-size: 22px; cursor: pointer;">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 14px; margin-bottom: 12px;">
+          Are you sure you want to remove <strong id="removeMemberName"></strong> from <strong id="removeProjectName"></strong>?
+        </p>
+        <p class="text-secondary" style="font-size: 12.5px; margin: 0;">
+          They will immediately lose write and push privileges to this project repository. This action is enforced under project owner authority.
+        </p>
+      </div>
+      <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 8px; padding-top: 16px; border-top: 1px solid var(--color-border);">
+        <button type="button" class="btn btn-outline btn-pill" data-modal-close>Cancel</button>
+        <button type="button" class="btn btn-primary btn-pill" id="confirmRemoveBtn" style="background-color: var(--color-danger); border-color: var(--color-danger); color: white;">Yes, Remove Collaborator</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initTeamsPage } from '../../js/pages/teams.js';
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initTeamsPage);
+    } else {
+      initTeamsPage();
+    }
+  </script>
   <script type="module" src="../../js/main.js"></script>
   <!-- DevSync Floating AI Assistant Widget -->
   <script>

@@ -15,3 +15,7 @@ export function toastDanger(message, title = 'Error') {
 export function toastInfo(message, title = 'Notice') {
   showToast({ title, message, type: 'info' });
 }
+
+export function toastWarning(message, title = 'Warning') {
+  showToast({ title, message, type: 'warning' });
+}

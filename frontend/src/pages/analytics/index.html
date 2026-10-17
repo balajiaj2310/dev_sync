@@ -21,11 +21,95 @@
   <link rel="stylesheet" href="../../assets/css/components/dropdowns.css">
   <link rel="stylesheet" href="../../assets/css/components/notifications.css">
   <link rel="stylesheet" href="../../assets/css/pages/analytics.css">
+  <link rel="stylesheet" href="../../assets/css/pages/dashboard.css">
   <!-- Chart.js CDN for Analytics Visualization -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <link rel="stylesheet" href="../../assets/css/devsync-ai.css">
+  <style>
+    /* In-page styling extensions for analytics details */
+    .heatmap-months-row {
+      display: flex;
+      justify-content: space-between;
+      padding-left: 28px;
+      font-size: 11px;
+      color: var(--color-text-secondary);
+      margin-bottom: 6px;
+      max-width: 820px;
+    }
+    .heatmap-layout {
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+    }
+    .heatmap-days-col {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 102px;
+      font-size: 10px;
+      color: var(--color-text-secondary);
+      padding-top: 14px;
+      line-height: 1;
+    }
+    .stat-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: var(--radius-pill, 9999px);
+      font-size: 12px;
+      background: var(--color-surface-subtle);
+      border: 1px solid var(--color-border);
+      color: var(--color-text-secondary);
+    }
+    .stat-pill strong {
+      color: var(--color-text-primary);
+    }
+    .repo-progress-item {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .repo-progress-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+    .repo-progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+    }
+    .progress-bar-track {
+      width: 100%;
+      height: 6px;
+      background: var(--color-surface-subtle);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.4s ease;
+    }
+    .lang-bar {
+      display: flex;
+      height: 10px;
+      border-radius: 5px;
+      overflow: hidden;
+      margin: 12px 0 16px;
+      background: #E2E8F0;
+    }
+    .chart-fallback-svg {
+      width: 100%;
+      height: 280px;
+      display: block;
+    }
+  </style>
 </head>
-<body data-authenticated="true" data-page="analytics">
+<body data-authenticated="false" data-page="analytics">
   <div class="app-container">
     <aside class="app-sidebar">
       <div class="sidebar-header">
@@ -58,66 +142,966 @@
         </div>
         <div class="topbar-right">
           <a href="../notifications/index.html" class="topbar-icon-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></a>
-          <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" alt="Balaji" class="user-avatar" />
+          <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" alt="Naveen" class="user-avatar" />
         </div>
       </header>
 
       <main class="app-content">
+        <!-- Filter Bar -->
         <div class="analytics-filter-bar">
           <div>
             <h1 class="text-page-title mb-1">Engineering Velocity & Analytics</h1>
             <p class="text-secondary" style="font-size: 13.5px; margin: 0;">Commit frequency, repository distribution, and peer review cadence.</p>
           </div>
-          <select class="form-select" style="width: 160px;">
+          <select id="timeframeSelect" class="form-select" style="width: 160px; font-weight: 500;">
             <option value="30d">Last 30 Days</option>
             <option value="90d">Last Quarter</option>
-            <option value="year">Past Year</option>
+            <option value="year" selected>Past Year</option>
           </select>
+        </div>
+
+        <!-- 4 Key Metric Cards Row -->
+        <div class="metrics-row mb-6">
+          <div class="metric-card">
+            <div class="metric-card-left">
+              <div class="metric-icon-box" style="background: var(--color-mint-soft); color: var(--color-success); border-radius: 8px; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><line x1="1.05" y1="12" x2="7" y2="12"/><line x1="17.01" y1="12" x2="22.96" y2="12"/></svg>
+              </div>
+              <div class="metric-value-box">
+                <span id="metricTotalCommits" class="metric-value">642</span>
+                <span class="metric-label">Total Commits</span>
+              </div>
+            </div>
+            <span class="metric-badge-trend trend-up">&uarr; 18.2%</span>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-card-left">
+              <div class="metric-icon-box" style="background: var(--color-mint-soft); color: var(--color-success); border-radius: 8px; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 0 1 2 2v7"/><line x1="6" y1="9" x2="6" y2="21"/></svg>
+              </div>
+              <div class="metric-value-box">
+                <span id="metricPRsMerged" class="metric-value">58</span>
+                <span class="metric-label">PRs Merged</span>
+              </div>
+            </div>
+            <span class="metric-badge-trend trend-up">&uarr; 14.5%</span>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-card-left">
+              <div class="metric-icon-box" style="background: #EFF6FF; color: #2563EB; border-radius: 8px; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              </div>
+              <div class="metric-value-box">
+                <span id="metricCycleTime" class="metric-value">4.2h</span>
+                <span class="metric-label">Avg PR Cycle Time</span>
+              </div>
+            </div>
+            <span class="metric-badge-trend trend-up" style="color: var(--color-success);">&darr; 22% faster</span>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-card-left">
+              <div class="metric-icon-box" style="background: #FDF4FF; color: #9333EA; border-radius: 8px; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>
+              </div>
+              <div class="metric-value-box">
+                <span id="metricReviewRate" class="metric-value">94.8%</span>
+                <span class="metric-label">Review Completion</span>
+              </div>
+            </div>
+            <span class="metric-badge-trend trend-up">&uarr; 5.2%</span>
+          </div>
         </div>
 
         <!-- Annual Contribution Heatmap -->
         <div class="chart-card mb-6">
           <div class="chart-header">
             <h3 class="font-heading" style="font-size: 16px; margin: 0;">Annual Contribution Heatmap</h3>
-            <span class="text-metadata">642 contributions in the last year</span>
+            <span id="heatmapSubtext" class="text-metadata" style="font-weight: 500;">642 contributions in the last year</span>
           </div>
+
+          <!-- Months Bar -->
+          <div class="heatmap-months-row">
+            <span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span>
+            <span>Jul</span><span>Aug</span><span>Sep</span><span>Oct</span><span>Nov</span><span>Dec</span>
+          </div>
+
           <div class="heatmap-container">
-            <div class="heatmap-grid" id="heatmapGrid"></div>
+            <div class="heatmap-layout">
+              <div class="heatmap-days-col">
+                <span>Mon</span>
+                <span>Wed</span>
+                <span>Fri</span>
+              </div>
+              <div class="heatmap-grid" id="heatmapGrid">
+            <div class="heatmap-cell" data-level="2" data-week="1" data-contribs="5" title="5 contributions (Sun, W1)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="1" data-contribs="5" title="5 contributions (Mon, W1)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="1" data-contribs="5" title="5 contributions (Tue, W1)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="1" data-contribs="0" title="0 contributions (Wed, W1)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="1" data-contribs="7" title="7 contributions (Thu, W1)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="1" data-contribs="0" title="0 contributions (Fri, W1)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="1" data-contribs="3" title="3 contributions (Sat, W1)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="2" data-contribs="0" title="0 contributions (Sun, W2)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="2" data-contribs="5" title="5 contributions (Mon, W2)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="2" data-contribs="0" title="0 contributions (Tue, W2)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="2" data-contribs="0" title="0 contributions (Wed, W2)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="2" data-contribs="7" title="7 contributions (Thu, W2)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="2" data-contribs="4" title="4 contributions (Fri, W2)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="2" data-contribs="5" title="5 contributions (Sat, W2)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="3" data-contribs="5" title="5 contributions (Sun, W3)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="3" data-contribs="6" title="6 contributions (Mon, W3)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="3" data-contribs="3" title="3 contributions (Tue, W3)"></div>
+            <div class="heatmap-cell" data-level="4" data-week="3" data-contribs="10" title="10 contributions (Wed, W3)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="3" data-contribs="0" title="0 contributions (Thu, W3)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="3" data-contribs="4" title="4 contributions (Fri, W3)"></div>
+            <div class="heatmap-cell" data-level="3" data-week="3" data-contribs="9" title="9 contributions (Sat, W3)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="4" data-contribs="3" title="3 contributions (Sun, W4)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="4" data-contribs="7" title="7 contributions (Mon, W4)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="4" data-contribs="0" title="0 contributions (Tue, W4)"></div>
+            <div class="heatmap-cell" data-level="4" data-week="4" data-contribs="9" title="9 contributions (Wed, W4)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="4" data-contribs="5" title="5 contributions (Thu, W4)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="4" data-contribs="6" title="6 contributions (Fri, W4)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="4" data-contribs="7" title="7 contributions (Sat, W4)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="5" data-contribs="0" title="0 contributions (Sun, W5)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="5" data-contribs="6" title="6 contributions (Mon, W5)"></div>
+            <div class="heatmap-cell" data-level="4" data-week="5" data-contribs="9" title="9 contributions (Tue, W5)"></div>
+            <div class="heatmap-cell" data-level="3" data-week="5" data-contribs="8" title="8 contributions (Wed, W5)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="5" data-contribs="5" title="5 contributions (Thu, W5)"></div>
+            <div class="heatmap-cell" data-level="3" data-week="5" data-contribs="7" title="7 contributions (Fri, W5)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="5" data-contribs="3" title="3 contributions (Sat, W5)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="6" data-contribs="7" title="7 contributions (Sun, W6)"></div>
+            <div class="heatmap-cell" data-level="4" data-week="6" data-contribs="11" title="11 contributions (Mon, W6)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="6" data-contribs="0" title="0 contributions (Tue, W6)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="6" data-contribs="7" title="7 contributions (Wed, W6)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="6" data-contribs="5" title="5 contributions (Thu, W6)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="6" data-contribs="4" title="4 contributions (Fri, W6)"></div>
+            <div class="heatmap-cell" data-level="4" data-week="6" data-contribs="11" title="11 contributions (Sat, W6)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="7" data-contribs="5" title="5 contributions (Sun, W7)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="7" data-contribs="5" title="5 contributions (Mon, W7)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="7" data-contribs="3" title="3 contributions (Tue, W7)"></div>
+            <div class="heatmap-cell" data-level="3" data-week="7" data-contribs="8" title="8 contributions (Wed, W7)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="7" data-contribs="3" title="3 contributions (Thu, W7)"></div>
+            <div class="heatmap-cell" data-level="3" data-week="7" data-contribs="9" title="9 contributions (Fri, W7)"></div>
+            <div class="heatmap-cell" data-level="3" data-week="7" data-contribs="8" title="8 contributions (Sat, W7)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="8" data-contribs="0" title="0 contributions (Sun, W8)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="8" data-contribs="5" title="5 contributions (Mon, W8)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="8" data-contribs="4" title="4 contributions (Tue, W8)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="8" data-contribs="0" title="0 contributions (Wed, W8)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="8" data-contribs="7" title="7 contributions (Thu, W8)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="8" data-contribs="5" title="5 contributions (Fri, W8)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="8" data-contribs="5" title="5 contributions (Sat, W8)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="9" data-contribs="3" title="3 contributions (Sun, W9)"></div>
+            <div class="heatmap-cell" data-level="4" data-week="9" data-contribs="9" title="9 contributions (Mon, W9)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="9" data-contribs="3" title="3 contributions (Tue, W9)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="9" data-contribs="5" title="5 contributions (Wed, W9)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="9" data-contribs="0" title="0 contributions (Thu, W9)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="9" data-contribs="0" title="0 contributions (Fri, W9)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="9" data-contribs="7" title="7 contributions (Sat, W9)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="10" data-contribs="0" title="0 contributions (Sun, W10)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="10" data-contribs="4" title="4 contributions (Mon, W10)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="10" data-contribs="5" title="5 contributions (Tue, W10)"></div>
+            <div class="heatmap-cell" data-level="3" data-week="10" data-contribs="7" title="7 contributions (Wed, W10)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="10" data-contribs="5" title="5 contributions (Thu, W10)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="10" data-contribs="7" title="7 contributions (Fri, W10)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="10" data-contribs="7" title="7 contributions (Sat, W10)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="11" data-contribs="4" title="4 contributions (Sun, W11)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="11" data-contribs="4" title="4 contributions (Mon, W11)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="11" data-contribs="0" title="0 contributions (Tue, W11)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="11" data-contribs="7" title="7 contributions (Wed, W11)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="11" data-contribs="5" title="5 contributions (Thu, W11)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="11" data-contribs="7" title="7 contributions (Fri, W11)"></div>
+            <div class="heatmap-cell" data-level="3" data-week="11" data-contribs="9" title="9 contributions (Sat, W11)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="12" data-contribs="5" title="5 contributions (Sun, W12)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="12" data-contribs="3" title="3 contributions (Mon, W12)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="12" data-contribs="0" title="0 contributions (Tue, W12)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="12" data-contribs="7" title="7 contributions (Wed, W12)"></div>
+            <div class="heatmap-cell" data-level="4" data-week="12" data-contribs="11" title="11 contributions (Thu, W12)"></div>
+            <div class="heatmap-cell" data-level="3" data-week="12" data-contribs="9" title="9 contributions (Fri, W12)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="12" data-contribs="3" title="3 contributions (Sat, W12)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="13" data-contribs="0" title="0 contributions (Sun, W13)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="13" data-contribs="4" title="4 contributions (Mon, W13)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="13" data-contribs="3" title="3 contributions (Tue, W13)"></div>
+            <div class="heatmap-cell" data-level="3" data-week="13" data-contribs="7" title="7 contributions (Wed, W13)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="13" data-contribs="0" title="0 contributions (Thu, W13)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="13" data-contribs="3" title="3 contributions (Fri, W13)"></div>
+            <div class="heatmap-cell" data-level="4" data-week="13" data-contribs="11" title="11 contributions (Sat, W13)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="14" data-contribs="5" title="5 contributions (Sun, W14)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="14" data-contribs="7" title="7 contributions (Mon, W14)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="14" data-contribs="0" title="0 contributions (Tue, W14)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="14" data-contribs="5" title="5 contributions (Wed, W14)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="14" data-contribs="3" title="3 contributions (Thu, W14)"></div>
+            <div class="heatmap-cell" data-level="4" data-week="14" data-contribs="11" title="11 contributions (Fri, W14)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="14" data-contribs="7" title="7 contributions (Sat, W14)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="15" data-contribs="5" title="5 contributions (Sun, W15)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="15" data-contribs="6" title="6 contributions (Mon, W15)"></div>
+            <div class="heatmap-cell" data-level="3" data-week="15" data-contribs="8" title="8 contributions (Tue, W15)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="15" data-contribs="0" title="0 contributions (Wed, W15)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="15" data-contribs="4" title="4 contributions (Thu, W15)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="15" data-contribs="0" title="0 contributions (Fri, W15)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="15" data-contribs="5" title="5 contributions (Sat, W15)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="16" data-contribs="3" title="3 contributions (Sun, W16)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="16" data-contribs="5" title="5 contributions (Mon, W16)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="16" data-contribs="3" title="3 contributions (Tue, W16)"></div>
+            <div class="heatmap-cell" data-level="3" data-week="16" data-contribs="7" title="7 contributions (Wed, W16)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="16" data-contribs="4" title="4 contributions (Thu, W16)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="16" data-contribs="5" title="5 contributions (Fri, W16)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="16" data-contribs="5" title="5 contributions (Sat, W16)"></div>
+            <div class="heatmap-cell" data-level="4" data-week="17" data-contribs="11" title="11 contributions (Sun, W17)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="17" data-contribs="5" title="5 contributions (Mon, W17)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="17" data-contribs="6" title="6 contributions (Tue, W17)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="17" data-contribs="0" title="0 contributions (Wed, W17)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="17" data-contribs="0" title="0 contributions (Thu, W17)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="17" data-contribs="4" title="4 contributions (Fri, W17)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="17" data-contribs="5" title="5 contributions (Sat, W17)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="18" data-contribs="0" title="0 contributions (Sun, W18)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="18" data-contribs="7" title="7 contributions (Mon, W18)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="18" data-contribs="0" title="0 contributions (Tue, W18)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="18" data-contribs="4" title="4 contributions (Wed, W18)"></div>
+            <div class="heatmap-cell" data-level="3" data-week="18" data-contribs="7" title="7 contributions (Thu, W18)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="18" data-contribs="3" title="3 contributions (Fri, W18)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="18" data-contribs="3" title="3 contributions (Sat, W18)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="19" data-contribs="4" title="4 contributions (Sun, W19)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="19" data-contribs="3" title="3 contributions (Mon, W19)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="19" data-contribs="5" title="5 contributions (Tue, W19)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="19" data-contribs="0" title="0 contributions (Wed, W19)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="19" data-contribs="7" title="7 contributions (Thu, W19)"></div>
+            <div class="heatmap-cell" data-level="3" data-week="19" data-contribs="7" title="7 contributions (Fri, W19)"></div>
+            <div class="heatmap-cell" data-level="4" data-week="19" data-contribs="9" title="9 contributions (Sat, W19)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="20" data-contribs="0" title="0 contributions (Sun, W20)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="20" data-contribs="3" title="3 contributions (Mon, W20)"></div>
+            <div class="heatmap-cell" data-level="3" data-week="20" data-contribs="7" title="7 contributions (Tue, W20)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="20" data-contribs="0" title="0 contributions (Wed, W20)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="20" data-contribs="0" title="0 contributions (Thu, W20)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="20" data-contribs="4" title="4 contributions (Fri, W20)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="20" data-contribs="5" title="5 contributions (Sat, W20)"></div>
+            <div class="heatmap-cell" data-level="4" data-week="21" data-contribs="11" title="11 contributions (Sun, W21)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="21" data-contribs="6" title="6 contributions (Mon, W21)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="21" data-contribs="0" title="0 contributions (Tue, W21)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="21" data-contribs="3" title="3 contributions (Wed, W21)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="21" data-contribs="7" title="7 contributions (Thu, W21)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="21" data-contribs="0" title="0 contributions (Fri, W21)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="21" data-contribs="3" title="3 contributions (Sat, W21)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="22" data-contribs="7" title="7 contributions (Sun, W22)"></div>
+            <div class="heatmap-cell" data-level="3" data-week="22" data-contribs="9" title="9 contributions (Mon, W22)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="22" data-contribs="0" title="0 contributions (Tue, W22)"></div>
+            <div class="heatmap-cell" data-level="4" data-week="22" data-contribs="9" title="9 contributions (Wed, W22)"></div>
+            <div class="heatmap-cell" data-level="3" data-week="22" data-contribs="7" title="7 contributions (Thu, W22)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="22" data-contribs="7" title="7 contributions (Fri, W22)"></div>
+            <div class="heatmap-cell" data-level="3" data-week="22" data-contribs="8" title="8 contributions (Sat, W22)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="23" data-contribs="0" title="0 contributions (Sun, W23)"></div>
+            <div class="heatmap-cell" data-level="3" data-week="23" data-contribs="7" title="7 contributions (Mon, W23)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="23" data-contribs="5" title="5 contributions (Tue, W23)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="23" data-contribs="6" title="6 contributions (Wed, W23)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="23" data-contribs="7" title="7 contributions (Thu, W23)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="23" data-contribs="4" title="4 contributions (Fri, W23)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="23" data-contribs="0" title="0 contributions (Sat, W23)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="24" data-contribs="5" title="5 contributions (Sun, W24)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="24" data-contribs="3" title="3 contributions (Mon, W24)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="24" data-contribs="6" title="6 contributions (Tue, W24)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="24" data-contribs="3" title="3 contributions (Wed, W24)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="24" data-contribs="0" title="0 contributions (Thu, W24)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="24" data-contribs="7" title="7 contributions (Fri, W24)"></div>
+            <div class="heatmap-cell" data-level="4" data-week="24" data-contribs="9" title="9 contributions (Sat, W24)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="25" data-contribs="5" title="5 contributions (Sun, W25)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="25" data-contribs="4" title="4 contributions (Mon, W25)"></div>
+            <div class="heatmap-cell" data-level="3" data-week="25" data-contribs="7" title="7 contributions (Tue, W25)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="25" data-contribs="3" title="3 contributions (Wed, W25)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="25" data-contribs="5" title="5 contributions (Thu, W25)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="25" data-contribs="7" title="7 contributions (Fri, W25)"></div>
+            <div class="heatmap-cell" data-level="4" data-week="25" data-contribs="11" title="11 contributions (Sat, W25)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="26" data-contribs="5" title="5 contributions (Sun, W26)"></div>
+            <div class="heatmap-cell" data-level="3" data-week="26" data-contribs="8" title="8 contributions (Mon, W26)"></div>
+            <div class="heatmap-cell" data-level="4" data-week="26" data-contribs="9" title="9 contributions (Tue, W26)"></div>
+            <div class="heatmap-cell" data-level="4" data-week="26" data-contribs="9" title="9 contributions (Wed, W26)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="26" data-contribs="3" title="3 contributions (Thu, W26)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="26" data-contribs="5" title="5 contributions (Fri, W26)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="26" data-contribs="5" title="5 contributions (Sat, W26)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="27" data-contribs="0" title="0 contributions (Sun, W27)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="27" data-contribs="5" title="5 contributions (Mon, W27)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="27" data-contribs="6" title="6 contributions (Tue, W27)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="27" data-contribs="4" title="4 contributions (Wed, W27)"></div>
+            <div class="heatmap-cell" data-level="3" data-week="27" data-contribs="7" title="7 contributions (Thu, W27)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="27" data-contribs="0" title="0 contributions (Fri, W27)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="27" data-contribs="4" title="4 contributions (Sat, W27)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="28" data-contribs="0" title="0 contributions (Sun, W28)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="28" data-contribs="3" title="3 contributions (Mon, W28)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="28" data-contribs="6" title="6 contributions (Tue, W28)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="28" data-contribs="0" title="0 contributions (Wed, W28)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="28" data-contribs="5" title="5 contributions (Thu, W28)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="28" data-contribs="3" title="3 contributions (Fri, W28)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="28" data-contribs="0" title="0 contributions (Sat, W28)"></div>
+            <div class="heatmap-cell" data-level="4" data-week="29" data-contribs="11" title="11 contributions (Sun, W29)"></div>
+            <div class="heatmap-cell" data-level="3" data-week="29" data-contribs="9" title="9 contributions (Mon, W29)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="29" data-contribs="0" title="0 contributions (Tue, W29)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="29" data-contribs="5" title="5 contributions (Wed, W29)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="29" data-contribs="0" title="0 contributions (Thu, W29)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="29" data-contribs="0" title="0 contributions (Fri, W29)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="29" data-contribs="3" title="3 contributions (Sat, W29)"></div>
+            <div class="heatmap-cell" data-level="3" data-week="30" data-contribs="7" title="7 contributions (Sun, W30)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="30" data-contribs="7" title="7 contributions (Mon, W30)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="30" data-contribs="0" title="0 contributions (Tue, W30)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="30" data-contribs="6" title="6 contributions (Wed, W30)"></div>
+            <div class="heatmap-cell" data-level="4" data-week="30" data-contribs="11" title="11 contributions (Thu, W30)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="30" data-contribs="0" title="0 contributions (Fri, W30)"></div>
+            <div class="heatmap-cell" data-level="4" data-week="30" data-contribs="9" title="9 contributions (Sat, W30)"></div>
+            <div class="heatmap-cell" data-level="4" data-week="31" data-contribs="9" title="9 contributions (Sun, W31)"></div>
+            <div class="heatmap-cell" data-level="3" data-week="31" data-contribs="7" title="7 contributions (Mon, W31)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="31" data-contribs="0" title="0 contributions (Tue, W31)"></div>
+            <div class="heatmap-cell" data-level="4" data-week="31" data-contribs="10" title="10 contributions (Wed, W31)"></div>
+            <div class="heatmap-cell" data-level="3" data-week="31" data-contribs="9" title="9 contributions (Thu, W31)"></div>
+            <div class="heatmap-cell" data-level="3" data-week="31" data-contribs="8" title="8 contributions (Fri, W31)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="31" data-contribs="0" title="0 contributions (Sat, W31)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="32" data-contribs="6" title="6 contributions (Sun, W32)"></div>
+            <div class="heatmap-cell" data-level="3" data-week="32" data-contribs="8" title="8 contributions (Mon, W32)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="32" data-contribs="4" title="4 contributions (Tue, W32)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="32" data-contribs="3" title="3 contributions (Wed, W32)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="32" data-contribs="5" title="5 contributions (Thu, W32)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="32" data-contribs="0" title="0 contributions (Fri, W32)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="32" data-contribs="3" title="3 contributions (Sat, W32)"></div>
+            <div class="heatmap-cell" data-level="4" data-week="33" data-contribs="10" title="10 contributions (Sun, W33)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="33" data-contribs="5" title="5 contributions (Mon, W33)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="33" data-contribs="5" title="5 contributions (Tue, W33)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="33" data-contribs="3" title="3 contributions (Wed, W33)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="33" data-contribs="0" title="0 contributions (Thu, W33)"></div>
+            <div class="heatmap-cell" data-level="4" data-week="33" data-contribs="9" title="9 contributions (Fri, W33)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="33" data-contribs="6" title="6 contributions (Sat, W33)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="34" data-contribs="0" title="0 contributions (Sun, W34)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="34" data-contribs="6" title="6 contributions (Mon, W34)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="34" data-contribs="6" title="6 contributions (Tue, W34)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="34" data-contribs="5" title="5 contributions (Wed, W34)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="34" data-contribs="0" title="0 contributions (Thu, W34)"></div>
+            <div class="heatmap-cell" data-level="3" data-week="34" data-contribs="7" title="7 contributions (Fri, W34)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="34" data-contribs="5" title="5 contributions (Sat, W34)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="35" data-contribs="5" title="5 contributions (Sun, W35)"></div>
+            <div class="heatmap-cell" data-level="4" data-week="35" data-contribs="11" title="11 contributions (Mon, W35)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="35" data-contribs="7" title="7 contributions (Tue, W35)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="35" data-contribs="5" title="5 contributions (Wed, W35)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="35" data-contribs="3" title="3 contributions (Thu, W35)"></div>
+            <div class="heatmap-cell" data-level="4" data-week="35" data-contribs="10" title="10 contributions (Fri, W35)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="35" data-contribs="7" title="7 contributions (Sat, W35)"></div>
+            <div class="heatmap-cell" data-level="3" data-week="36" data-contribs="9" title="9 contributions (Sun, W36)"></div>
+            <div class="heatmap-cell" data-level="3" data-week="36" data-contribs="9" title="9 contributions (Mon, W36)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="36" data-contribs="4" title="4 contributions (Tue, W36)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="36" data-contribs="5" title="5 contributions (Wed, W36)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="36" data-contribs="3" title="3 contributions (Thu, W36)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="36" data-contribs="0" title="0 contributions (Fri, W36)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="36" data-contribs="6" title="6 contributions (Sat, W36)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="37" data-contribs="5" title="5 contributions (Sun, W37)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="37" data-contribs="6" title="6 contributions (Mon, W37)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="37" data-contribs="3" title="3 contributions (Tue, W37)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="37" data-contribs="3" title="3 contributions (Wed, W37)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="37" data-contribs="5" title="5 contributions (Thu, W37)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="37" data-contribs="6" title="6 contributions (Fri, W37)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="37" data-contribs="4" title="4 contributions (Sat, W37)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="38" data-contribs="7" title="7 contributions (Sun, W38)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="38" data-contribs="5" title="5 contributions (Mon, W38)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="38" data-contribs="0" title="0 contributions (Tue, W38)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="38" data-contribs="0" title="0 contributions (Wed, W38)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="38" data-contribs="5" title="5 contributions (Thu, W38)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="38" data-contribs="5" title="5 contributions (Fri, W38)"></div>
+            <div class="heatmap-cell" data-level="3" data-week="38" data-contribs="7" title="7 contributions (Sat, W38)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="39" data-contribs="5" title="5 contributions (Sun, W39)"></div>
+            <div class="heatmap-cell" data-level="3" data-week="39" data-contribs="7" title="7 contributions (Mon, W39)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="39" data-contribs="0" title="0 contributions (Tue, W39)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="39" data-contribs="4" title="4 contributions (Wed, W39)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="39" data-contribs="5" title="5 contributions (Thu, W39)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="39" data-contribs="5" title="5 contributions (Fri, W39)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="39" data-contribs="7" title="7 contributions (Sat, W39)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="40" data-contribs="6" title="6 contributions (Sun, W40)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="40" data-contribs="3" title="3 contributions (Mon, W40)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="40" data-contribs="5" title="5 contributions (Tue, W40)"></div>
+            <div class="heatmap-cell" data-level="3" data-week="40" data-contribs="7" title="7 contributions (Wed, W40)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="40" data-contribs="5" title="5 contributions (Thu, W40)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="40" data-contribs="0" title="0 contributions (Fri, W40)"></div>
+            <div class="heatmap-cell" data-level="4" data-week="40" data-contribs="11" title="11 contributions (Sat, W40)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="41" data-contribs="5" title="5 contributions (Sun, W41)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="41" data-contribs="3" title="3 contributions (Mon, W41)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="41" data-contribs="4" title="4 contributions (Tue, W41)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="41" data-contribs="7" title="7 contributions (Wed, W41)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="41" data-contribs="6" title="6 contributions (Thu, W41)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="41" data-contribs="7" title="7 contributions (Fri, W41)"></div>
+            <div class="heatmap-cell" data-level="3" data-week="41" data-contribs="8" title="8 contributions (Sat, W41)"></div>
+            <div class="heatmap-cell" data-level="3" data-week="42" data-contribs="9" title="9 contributions (Sun, W42)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="42" data-contribs="3" title="3 contributions (Mon, W42)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="42" data-contribs="6" title="6 contributions (Tue, W42)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="42" data-contribs="3" title="3 contributions (Wed, W42)"></div>
+            <div class="heatmap-cell" data-level="3" data-week="42" data-contribs="8" title="8 contributions (Thu, W42)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="42" data-contribs="7" title="7 contributions (Fri, W42)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="42" data-contribs="3" title="3 contributions (Sat, W42)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="43" data-contribs="3" title="3 contributions (Sun, W43)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="43" data-contribs="5" title="5 contributions (Mon, W43)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="43" data-contribs="4" title="4 contributions (Tue, W43)"></div>
+            <div class="heatmap-cell" data-level="3" data-week="43" data-contribs="7" title="7 contributions (Wed, W43)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="43" data-contribs="0" title="0 contributions (Thu, W43)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="43" data-contribs="5" title="5 contributions (Fri, W43)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="43" data-contribs="0" title="0 contributions (Sat, W43)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="44" data-contribs="0" title="0 contributions (Sun, W44)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="44" data-contribs="4" title="4 contributions (Mon, W44)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="44" data-contribs="4" title="4 contributions (Tue, W44)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="44" data-contribs="0" title="0 contributions (Wed, W44)"></div>
+            <div class="heatmap-cell" data-level="3" data-week="44" data-contribs="8" title="8 contributions (Thu, W44)"></div>
+            <div class="heatmap-cell" data-level="3" data-week="44" data-contribs="9" title="9 contributions (Fri, W44)"></div>
+            <div class="heatmap-cell" data-level="4" data-week="44" data-contribs="9" title="9 contributions (Sat, W44)"></div>
+            <div class="heatmap-cell" data-level="3" data-week="45" data-contribs="9" title="9 contributions (Sun, W45)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="45" data-contribs="3" title="3 contributions (Mon, W45)"></div>
+            <div class="heatmap-cell" data-level="4" data-week="45" data-contribs="10" title="10 contributions (Tue, W45)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="45" data-contribs="6" title="6 contributions (Wed, W45)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="45" data-contribs="5" title="5 contributions (Thu, W45)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="45" data-contribs="5" title="5 contributions (Fri, W45)"></div>
+            <div class="heatmap-cell" data-level="3" data-week="45" data-contribs="8" title="8 contributions (Sat, W45)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="46" data-contribs="0" title="0 contributions (Sun, W46)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="46" data-contribs="3" title="3 contributions (Mon, W46)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="46" data-contribs="5" title="5 contributions (Tue, W46)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="46" data-contribs="6" title="6 contributions (Wed, W46)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="46" data-contribs="6" title="6 contributions (Thu, W46)"></div>
+            <div class="heatmap-cell" data-level="3" data-week="46" data-contribs="9" title="9 contributions (Fri, W46)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="46" data-contribs="4" title="4 contributions (Sat, W46)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="47" data-contribs="7" title="7 contributions (Sun, W47)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="47" data-contribs="0" title="0 contributions (Mon, W47)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="47" data-contribs="5" title="5 contributions (Tue, W47)"></div>
+            <div class="heatmap-cell" data-level="3" data-week="47" data-contribs="7" title="7 contributions (Wed, W47)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="47" data-contribs="0" title="0 contributions (Thu, W47)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="47" data-contribs="3" title="3 contributions (Fri, W47)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="47" data-contribs="4" title="4 contributions (Sat, W47)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="48" data-contribs="6" title="6 contributions (Sun, W48)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="48" data-contribs="4" title="4 contributions (Mon, W48)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="48" data-contribs="3" title="3 contributions (Tue, W48)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="48" data-contribs="5" title="5 contributions (Wed, W48)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="48" data-contribs="4" title="4 contributions (Thu, W48)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="48" data-contribs="3" title="3 contributions (Fri, W48)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="48" data-contribs="7" title="7 contributions (Sat, W48)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="49" data-contribs="0" title="0 contributions (Sun, W49)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="49" data-contribs="0" title="0 contributions (Mon, W49)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="49" data-contribs="3" title="3 contributions (Tue, W49)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="49" data-contribs="5" title="5 contributions (Wed, W49)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="49" data-contribs="0" title="0 contributions (Thu, W49)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="49" data-contribs="7" title="7 contributions (Fri, W49)"></div>
+            <div class="heatmap-cell" data-level="4" data-week="49" data-contribs="10" title="10 contributions (Sat, W49)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="50" data-contribs="6" title="6 contributions (Sun, W50)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="50" data-contribs="0" title="0 contributions (Mon, W50)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="50" data-contribs="7" title="7 contributions (Tue, W50)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="50" data-contribs="5" title="5 contributions (Wed, W50)"></div>
+            <div class="heatmap-cell" data-level="4" data-week="50" data-contribs="9" title="9 contributions (Thu, W50)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="50" data-contribs="6" title="6 contributions (Fri, W50)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="50" data-contribs="6" title="6 contributions (Sat, W50)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="51" data-contribs="5" title="5 contributions (Sun, W51)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="51" data-contribs="0" title="0 contributions (Mon, W51)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="51" data-contribs="7" title="7 contributions (Tue, W51)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="51" data-contribs="5" title="5 contributions (Wed, W51)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="51" data-contribs="7" title="7 contributions (Thu, W51)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="51" data-contribs="5" title="5 contributions (Fri, W51)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="51" data-contribs="7" title="7 contributions (Sat, W51)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="52" data-contribs="6" title="6 contributions (Sun, W52)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="52" data-contribs="5" title="5 contributions (Mon, W52)"></div>
+            <div class="heatmap-cell" data-level="1" data-week="52" data-contribs="5" title="5 contributions (Tue, W52)"></div>
+            <div class="heatmap-cell" data-level="2" data-week="52" data-contribs="5" title="5 contributions (Wed, W52)"></div>
+            <div class="heatmap-cell" data-level="3" data-week="52" data-contribs="8" title="8 contributions (Thu, W52)"></div>
+            <div class="heatmap-cell" data-level="0" data-week="52" data-contribs="0" title="0 contributions (Fri, W52)"></div>
+            <div class="heatmap-cell" data-level="4" data-week="52" data-contribs="11" title="11 contributions (Sat, W52)"></div>
+              </div>
+            </div>
           </div>
-          <div class="heatmap-legend">
-            <span>Less</span>
-            <div class="heatmap-cell" data-level="0"></div>
-            <div class="heatmap-cell" data-level="1"></div>
-            <div class="heatmap-cell" data-level="2"></div>
-            <div class="heatmap-cell" data-level="3"></div>
-            <div class="heatmap-cell" data-level="4"></div>
-            <span>More</span>
+
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-top: var(--space-4); border-top: 1px solid var(--color-border); padding-top: var(--space-3);">
+            <div class="d-flex align-items-center gap-3 text-secondary" style="font-size: 12px;">
+              <span>Active Days: <strong>242 / 365</strong></span>
+              <span>&bull;</span>
+              <span>Longest Streak: <strong>18 days</strong></span>
+              <span>&bull;</span>
+              <span>Current Streak: <strong>5 days</strong></span>
+            </div>
+            <div class="heatmap-legend" style="margin: 0;">
+              <span>Less</span>
+              <div class="heatmap-cell" data-level="0"></div>
+              <div class="heatmap-cell" data-level="1"></div>
+              <div class="heatmap-cell" data-level="2"></div>
+              <div class="heatmap-cell" data-level="3"></div>
+              <div class="heatmap-cell" data-level="4"></div>
+              <span>More</span>
+            </div>
           </div>
         </div>
 
         <!-- 2 Column Charts -->
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: var(--space-6);">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: var(--space-6); margin-bottom: var(--space-6);">
+          <!-- Chart 1: Weekly Commit Trends -->
           <div class="chart-card">
             <div class="chart-header">
-              <h3 class="font-heading" style="font-size: 16px; margin: 0;">Weekly Commit Trends</h3>
+              <div>
+                <h3 class="font-heading" style="font-size: 16px; margin: 0;">Weekly Commit Trends</h3>
+                <span class="text-metadata" style="font-size: 12px;">Rolling 12-week commit cadence</span>
+              </div>
+              <span class="badge" style="background: var(--color-mint-soft); color: var(--color-success); font-weight: 600; padding: 4px 8px; border-radius: 6px;">+24.6% vs last mo</span>
             </div>
-            <div class="chart-container-wrap">
-              <canvas id="commitTrendsChart"></canvas>
+            <div class="chart-container-wrap" style="position: relative; height: 260px; width: 100%;">
+              <canvas id="commitTrendsChart" style="display: block; width: 100%; height: 100%;"></canvas>
+              <div id="commitTrendsFallback" style="display: none; width: 100%; height: 100%;">
+                <svg class="chart-fallback-svg" viewBox="0 0 500 240" preserveAspectRatio="none">
+                  <defs>
+                    <linearGradient id="mintGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="#86E7BC" stop-opacity="0.55"/>
+                      <stop offset="100%" stop-color="#A8F0D0" stop-opacity="0.05"/>
+                    </linearGradient>
+                  </defs>
+                  <!-- Horizontal Grid Lines -->
+                  <line x1="40" y1="30" x2="480" y2="30" stroke="#E2E8F0" stroke-dasharray="3,3"/>
+                  <line x1="40" y1="80" x2="480" y2="80" stroke="#E2E8F0" stroke-dasharray="3,3"/>
+                  <line x1="40" y1="130" x2="480" y2="130" stroke="#E2E8F0" stroke-dasharray="3,3"/>
+                  <line x1="40" y1="180" x2="480" y2="180" stroke="#E2E8F0"/>
+                  <!-- Area Fill -->
+                  <polygon points="40,180 40,140 80,120 120,95 160,115 200,60 240,85 280,50 320,65 360,40 400,55 440,35 480,45 480,180" fill="url(#mintGradient)"/>
+                  <!-- Sparkline Path -->
+                  <polyline points="40,140 80,120 120,95 160,115 200,60 240,85 280,50 320,65 360,40 400,55 440,35 480,45" fill="none" stroke="#111111" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  <!-- Data Dots -->
+                  <circle cx="200" cy="60" r="4" fill="#21865B" stroke="#FFFFFF" stroke-width="2"/>
+                  <circle cx="280" cy="50" r="4" fill="#21865B" stroke="#FFFFFF" stroke-width="2"/>
+                  <circle cx="360" cy="40" r="4.5" fill="#111111" stroke="#FFFFFF" stroke-width="2"/>
+                  <circle cx="440" cy="35" r="5" fill="#21865B" stroke="#FFFFFF" stroke-width="2"/>
+                  <!-- X-Axis Labels -->
+                  <text x="40" y="200" font-size="10" fill="#64748B" text-anchor="middle">W1</text>
+                  <text x="120" y="200" font-size="10" fill="#64748B" text-anchor="middle">W3</text>
+                  <text x="200" y="200" font-size="10" fill="#64748B" text-anchor="middle">W5</text>
+                  <text x="280" y="200" font-size="10" fill="#64748B" text-anchor="middle">W7</text>
+                  <text x="360" y="200" font-size="10" fill="#64748B" text-anchor="middle">W9</text>
+                  <text x="440" y="200" font-size="10" fill="#64748B" text-anchor="middle">W11</text>
+                  <text x="480" y="200" font-size="10" fill="#64748B" text-anchor="middle">W12</text>
+                </svg>
+              </div>
+            </div>
+            <!-- Stat Pills Footer -->
+            <div class="d-flex align-items-center gap-2 flex-wrap mt-4 pt-3" style="border-top: 1px solid var(--color-border);">
+              <span class="stat-pill">Peak: <strong>82 commits (W11)</strong></span>
+              <span class="stat-pill">Weekly Avg: <strong>53.5</strong></span>
+              <span class="stat-pill">Merged Rate: <strong>92.4%</strong></span>
             </div>
           </div>
 
+          <!-- Chart 2: Commits by Repository -->
           <div class="chart-card">
             <div class="chart-header">
-              <h3 class="font-heading" style="font-size: 16px; margin: 0;">Commits by Repository</h3>
+              <div>
+                <h3 class="font-heading" style="font-size: 16px; margin: 0;">Commits by Repository</h3>
+                <span class="text-metadata" style="font-size: 12px;">Top 5 Active Projects</span>
+              </div>
+              <a href="../repositories/list.html" class="btn btn-ghost btn-sm" style="font-size: 12px;">View All &rarr;</a>
             </div>
-            <div class="chart-container-wrap">
-              <canvas id="repoActivityChart"></canvas>
+            <div class="chart-container-wrap" style="position: relative; height: 160px; width: 100%;">
+              <canvas id="repoActivityChart" style="display: block; width: 100%; height: 100%;"></canvas>
+              <div id="repoActivityFallback" style="display: none; width: 100%; height: 100%;">
+                <svg class="chart-fallback-svg" viewBox="0 0 500 150" preserveAspectRatio="none">
+                  <!-- Bars -->
+                  <rect x="30" y="20" width="60" height="100" rx="4" fill="#111111"/>
+                  <rect x="130" y="45" width="60" height="75" rx="4" fill="#86E7BC"/>
+                  <rect x="230" y="80" width="60" height="40" rx="4" fill="#21865B"/>
+                  <rect x="330" y="90" width="60" height="30" rx="4" fill="#3568A8"/>
+                  <rect x="430" y="100" width="60" height="20" rx="4" fill="#A66B14"/>
+                  <!-- X Labels -->
+                  <text x="60" y="138" font-size="9.5" fill="#64748B" text-anchor="middle">devsync</text>
+                  <text x="160" y="138" font-size="9.5" fill="#64748B" text-anchor="middle">chaturya</text>
+                  <text x="260" y="138" font-size="9.5" fill="#64748B" text-anchor="middle">college</text>
+                  <text x="360" y="138" font-size="9.5" fill="#64748B" text-anchor="middle">ai-tools</text>
+                  <text x="460" y="138" font-size="9.5" fill="#64748B" text-anchor="middle">portfolio</text>
+                </svg>
+              </div>
             </div>
+
+            <!-- Repository Detailed Progress List -->
+            <div class="mt-4 pt-2" style="border-top: 1px solid var(--color-border);">
+              <div class="repo-progress-item">
+                <div class="repo-progress-header">
+                  <span style="font-weight: 600;">devsync-core</span>
+                  <span class="text-secondary">142 commits (41%)</span>
+                </div>
+                <div class="progress-bar-track">
+                  <div class="progress-bar-fill" style="width: 41%; background: #111111;"></div>
+                </div>
+              </div>
+
+              <div class="repo-progress-item">
+                <div class="repo-progress-header">
+                  <span style="font-weight: 600;">chaturyanew</span>
+                  <span class="text-secondary">95 commits (27%)</span>
+                </div>
+                <div class="progress-bar-track">
+                  <div class="progress-bar-fill" style="width: 27%; background: #86E7BC;"></div>
+                </div>
+              </div>
+
+              <div class="repo-progress-item">
+                <div class="repo-progress-header">
+                  <span style="font-weight: 600;">college-portal</span>
+                  <span class="text-secondary">48 commits (14%)</span>
+                </div>
+                <div class="progress-bar-track">
+                  <div class="progress-bar-fill" style="width: 14%; background: #21865B;"></div>
+                </div>
+              </div>
+
+              <div class="repo-progress-item">
+                <div class="repo-progress-header">
+                  <span style="font-weight: 600;">ai-assistant</span>
+                  <span class="text-secondary">36 commits (10%)</span>
+                </div>
+                <div class="progress-bar-track">
+                  <div class="progress-bar-fill" style="width: 10%; background: #3568A8;"></div>
+                </div>
+              </div>
+
+              <div class="repo-progress-item">
+                <div class="repo-progress-header">
+                  <span style="font-weight: 600;">portfolio-site</span>
+                  <span class="text-secondary">24 commits (8%)</span>
+                </div>
+                <div class="progress-bar-track">
+                  <div class="progress-bar-fill" style="width: 8%; background: #A66B14;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row: Languages Share & Code Review Insights -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: var(--space-6); margin-bottom: var(--space-6);">
+          <!-- Language Distribution -->
+          <div class="chart-card" style="margin-bottom: 0;">
+            <div class="chart-header">
+              <h3 class="font-heading" style="font-size: 16px; margin: 0;">Language & Stack Distribution</h3>
+              <span class="text-metadata">Across 12 Repositories</span>
+            </div>
+
+            <!-- Multi-Color Segmented Bar -->
+            <div class="lang-bar">
+              <div style="width: 42%; background: #3572A5;" title="Python 42%"></div>
+              <div style="width: 28%; background: #F1E05A;" title="JavaScript 28%"></div>
+              <div style="width: 16%; background: #E34C26;" title="HTML/CSS 16%"></div>
+              <div style="width: 8%; background: #B07219;" title="Java 8%"></div>
+              <div style="width: 6%; background: #00618A;" title="SQL 6%"></div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 13px;">
+              <div class="d-flex align-items-center gap-2">
+                <span style="width: 10px; height: 10px; border-radius: 50%; background: #3572A5;"></span>
+                <span><strong>Python</strong> &mdash; 42.0%</span>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <span style="width: 10px; height: 10px; border-radius: 50%; background: #F1E05A;"></span>
+                <span><strong>JavaScript</strong> &mdash; 28.0%</span>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <span style="width: 10px; height: 10px; border-radius: 50%; background: #E34C26;"></span>
+                <span><strong>HTML/CSS</strong> &mdash; 16.0%</span>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <span style="width: 10px; height: 10px; border-radius: 50%; background: #B07219;"></span>
+                <span><strong>Java</strong> &mdash; 8.0%</span>
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <span style="width: 10px; height: 10px; border-radius: 50%; background: #00618A;"></span>
+                <span><strong>SQL</strong> &mdash; 6.0%</span>
+              </div>
+              <div class="d-flex align-items-center gap-2 text-secondary">
+                <span style="width: 10px; height: 10px; border-radius: 50%; background: #94A3B8;"></span>
+                <span>Total: <strong>148,200 LOC</strong></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pull Request Velocity & Peer Review Cadence -->
+          <div class="chart-card" style="margin-bottom: 0;">
+            <div class="chart-header">
+              <h3 class="font-heading" style="font-size: 16px; margin: 0;">Peer Review & Merge Cadence</h3>
+              <span class="badge" style="background: var(--color-mint-soft); color: var(--color-success); font-weight: 600;">Optimal Velocity</span>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 8px;">
+              <div class="card p-3" style="background: var(--color-surface-subtle); border: 1px solid var(--color-border); border-radius: 8px;">
+                <div class="text-secondary" style="font-size: 11.5px; margin-bottom: 4px;">Median First Review</div>
+                <div style="font-size: 20px; font-weight: 700; color: var(--color-text-primary);">1.8 hours</div>
+                <div class="text-secondary" style="font-size: 11px; margin-top: 2px;">&darr; 45m faster than baseline</div>
+              </div>
+
+              <div class="card p-3" style="background: var(--color-surface-subtle); border: 1px solid var(--color-border); border-radius: 8px;">
+                <div class="text-secondary" style="font-size: 11.5px; margin-bottom: 4px;">Merge Approval Rate</div>
+                <div style="font-size: 20px; font-weight: 700; color: var(--color-success);">92.4%</div>
+                <div class="text-secondary" style="font-size: 11px; margin-top: 2px;">58 of 63 PRs merged</div>
+              </div>
+
+              <div class="card p-3" style="background: var(--color-surface-subtle); border: 1px solid var(--color-border); border-radius: 8px;">
+                <div class="text-secondary" style="font-size: 11.5px; margin-bottom: 4px;">Comments / PR</div>
+                <div style="font-size: 20px; font-weight: 700; color: var(--color-text-primary);">3.4 avg</div>
+                <div class="text-secondary" style="font-size: 11px; margin-top: 2px;">Healthy code discussions</div>
+              </div>
+
+              <div class="card p-3" style="background: var(--color-surface-subtle); border: 1px solid var(--color-border); border-radius: 8px;">
+                <div class="text-secondary" style="font-size: 11.5px; margin-bottom: 4px;">Active Reviewers</div>
+                <div style="font-size: 20px; font-weight: 700; color: var(--color-info);">12 engineers</div>
+                <div class="text-secondary" style="font-size: 11px; margin-top: 2px;">Broad review ownership</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent High-Velocity Commits Table -->
+        <div class="chart-card mt-6">
+          <div class="chart-header">
+            <div>
+              <h3 class="font-heading" style="font-size: 16px; margin: 0;">Recent Engineering Commits</h3>
+              <span class="text-metadata" style="font-size: 12px;">Real-time feed of latest contributions</span>
+            </div>
+            <a href="../repositories/commits.html" class="btn btn-ghost btn-sm" style="font-size: 12px;">Commit History &rarr;</a>
+          </div>
+
+          <div class="table-responsive" style="margin-top: var(--space-2); border: none;">
+            <table class="data-table" style="width: 100%;">
+              <thead>
+                <tr>
+                  <th>Commit</th>
+                  <th>Repository</th>
+                  <th>Author</th>
+                  <th>Branch</th>
+                  <th>Time</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <div class="d-flex align-items-center gap-2">
+                      <code style="font-size: 12px; background: #F1F5F9; padding: 2px 6px; border-radius: 4px;">2b39df3</code>
+                      <span style="font-weight: 500;">feat(auth): implement approved DevSync login page UI</span>
+                    </div>
+                  </td>
+                  <td><span class="repo-pill" style="font-size: 11.5px; padding: 2px 8px; background: var(--color-surface-subtle); border: 1px solid var(--color-border); border-radius: 12px;">dev_sync</span></td>
+                  <td>
+                    <div class="d-flex align-items-center gap-2">
+                      <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=48&q=80" style="width: 22px; height: 22px; border-radius: 50%;" alt="Naveen" />
+                      <span>Naveen Kumar D</span>
+                    </div>
+                  </td>
+                  <td><span style="font-size: 11.5px; color: var(--color-text-secondary);">main</span></td>
+                  <td class="text-secondary" style="font-size: 12px;">12 hours ago</td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <div class="d-flex align-items-center gap-2">
+                      <code style="font-size: 12px; background: #F1F5F9; padding: 2px 6px; border-radius: 4px;">bdce9d2</code>
+                      <span style="font-weight: 500;">feat(profile): universal developer profiles and persistence</span>
+                    </div>
+                  </td>
+                  <td><span class="repo-pill" style="font-size: 11.5px; padding: 2px 8px; background: var(--color-surface-subtle); border: 1px solid var(--color-border); border-radius: 12px;">dev_sync</span></td>
+                  <td>
+                    <div class="d-flex align-items-center gap-2">
+                      <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=48&q=80" style="width: 22px; height: 22px; border-radius: 50%;" alt="Naveen" />
+                      <span>Naveen Kumar D</span>
+                    </div>
+                  </td>
+                  <td><span style="font-size: 11.5px; color: var(--color-text-secondary);">main</span></td>
+                  <td class="text-secondary" style="font-size: 12px;">Yesterday</td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <div class="d-flex align-items-center gap-2">
+                      <code style="font-size: 12px; background: #F1F5F9; padding: 2px 6px; border-radius: 4px;">ac5b8d9</code>
+                      <span style="font-weight: 500;">fix(auth): prevent native form submission and redirect to overview</span>
+                    </div>
+                  </td>
+                  <td><span class="repo-pill" style="font-size: 11.5px; padding: 2px 8px; background: var(--color-surface-subtle); border: 1px solid var(--color-border); border-radius: 12px;">dev_sync</span></td>
+                  <td>
+                    <div class="d-flex align-items-center gap-2">
+                      <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=48&q=80" style="width: 22px; height: 22px; border-radius: 50%;" alt="Naveen" />
+                      <span>Naveen Kumar D</span>
+                    </div>
+                  </td>
+                  <td><span style="font-size: 11.5px; color: var(--color-text-secondary);">main</span></td>
+                  <td class="text-secondary" style="font-size: 12px;">Yesterday</td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <div class="d-flex align-items-center gap-2">
+                      <code style="font-size: 12px; background: #F1F5F9; padding: 2px 6px; border-radius: 4px;">c35344f</code>
+                      <span style="font-weight: 500;">feat(ai): streaming prompt tokens in floating assistant</span>
+                    </div>
+                  </td>
+                  <td><span class="repo-pill" style="font-size: 11.5px; padding: 2px 8px; background: var(--color-surface-subtle); border: 1px solid var(--color-border); border-radius: 12px;">devsync-core</span></td>
+                  <td>
+                    <div class="d-flex align-items-center gap-2">
+                      <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=48&q=80" style="width: 22px; height: 22px; border-radius: 50%;" alt="Balaji" />
+                      <span>Balaji</span>
+                    </div>
+                  </td>
+                  <td><span style="font-size: 11.5px; color: var(--color-text-secondary);">main</span></td>
+                  <td class="text-secondary" style="font-size: 12px;">2 days ago</td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <div class="d-flex align-items-center gap-2">
+                      <code style="font-size: 12px; background: #F1F5F9; padding: 2px 6px; border-radius: 4px;">e14a8b0</code>
+                      <span style="font-weight: 500;">perf(db): optimize developer discovery queries with composite index</span>
+                    </div>
+                  </td>
+                  <td><span class="repo-pill" style="font-size: 11.5px; padding: 2px 8px; background: var(--color-surface-subtle); border: 1px solid var(--color-border); border-radius: 12px;">chaturyanew</span></td>
+                  <td>
+                    <div class="d-flex align-items-center gap-2">
+                      <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=48&q=80" style="width: 22px; height: 22px; border-radius: 50%;" alt="Priya" />
+                      <span>Priya S</span>
+                    </div>
+                  </td>
+                  <td><span style="font-size: 11.5px; color: var(--color-text-secondary);">feature/perf</span></td>
+                  <td class="text-secondary" style="font-size: 12px;">3 days ago</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </main>
     </div>
   </div>
+
+  <!-- Dedicated Analytics Self-Initializing Script -->
+  <script>
+    (function() {
+      const commitCanvas = document.getElementById('commitTrendsChart');
+      const repoCanvas = document.getElementById('repoActivityChart');
+      const commitFallback = document.getElementById('commitTrendsFallback');
+      const repoFallback = document.getElementById('repoActivityFallback');
+      const timeframeSelect = document.getElementById('timeframeSelect');
+
+      // Initialize Charts
+      function renderCharts() {
+        if (typeof window.Chart !== 'undefined') {
+          // Chart.js is loaded
+          try {
+            if (commitCanvas) {
+              new window.Chart(commitCanvas, {
+                type: 'line',
+                data: {
+                  labels: ['W1', 'W2', 'W3', 'W4', 'W5', 'W6', 'W7', 'W8', 'W9', 'W10', 'W11', 'W12'],
+                  datasets: [{
+                    label: 'Commits',
+                    data: [38, 44, 52, 48, 65, 58, 72, 60, 78, 64, 82, 68],
+                    borderColor: '#111111',
+                    backgroundColor: 'rgba(134, 231, 188, 0.28)',
+                    fill: true,
+                    tension: 0.35,
+                    borderWidth: 2.5,
+                    pointBackgroundColor: '#111111',
+                    pointHoverRadius: 6
+                  }]
+                },
+                options: {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                      backgroundColor: '#111111',
+                      padding: 10,
+                      cornerRadius: 6
+                    }
+                  },
+                  scales: {
+                    x: { grid: { color: '#F1F5F9' } },
+                    y: { grid: { color: '#F1F5F9' }, beginAtZero: true }
+                  }
+                }
+              });
+            }
+
+            if (repoCanvas) {
+              new window.Chart(repoCanvas, {
+                type: 'bar',
+                data: {
+                  labels: ['devsync-core', 'chaturyanew', 'college-portal', 'ai-tools', 'portfolio-site'],
+                  datasets: [{
+                    label: 'Commits',
+                    data: [142, 95, 48, 36, 24],
+                    backgroundColor: ['#111111', '#86E7BC', '#21865B', '#3568A8', '#A66B14'],
+                    borderRadius: 6
+                  }]
+                },
+                options: {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                      backgroundColor: '#111111',
+                      padding: 10,
+                      cornerRadius: 6
+                    }
+                  },
+                  scales: {
+                    x: { grid: { display: false } },
+                    y: { grid: { color: '#F1F5F9' }, beginAtZero: true }
+                  }
+                }
+              });
+            }
+            return;
+          } catch (err) {
+            console.warn('Chart.js init exception, falling back to SVG:', err);
+          }
+        }
+
+        // Fallback to high-quality SVG if Chart.js is not loaded or failed
+        if (commitCanvas) commitCanvas.style.display = 'none';
+        if (repoCanvas) repoCanvas.style.display = 'none';
+        if (commitFallback) commitFallback.style.display = 'block';
+        if (repoFallback) repoFallback.style.display = 'block';
+      }
+
+      // Handle Timeframe Changes
+      if (timeframeSelect) {
+        timeframeSelect.addEventListener('change', function(e) {
+          const val = e.target.value;
+          const subtext = document.getElementById('heatmapSubtext');
+          const metricCommits = document.getElementById('metricTotalCommits');
+          const metricPRs = document.getElementById('metricPRsMerged');
+          const cells = document.querySelectorAll('#heatmapGrid .heatmap-cell');
+
+          if (val === '30d') {
+            if (subtext) subtext.textContent = '68 contributions in the last 30 days';
+            if (metricCommits) metricCommits.textContent = '68';
+            if (metricPRs) metricPRs.textContent = '8';
+            cells.forEach((c, idx) => {
+              if (idx < (52 * 7 - 30)) {
+                c.style.opacity = '0.15';
+              } else {
+                c.style.opacity = '1';
+              }
+            });
+          } else if (val === '90d') {
+            if (subtext) subtext.textContent = '198 contributions in the last quarter';
+            if (metricCommits) metricCommits.textContent = '198';
+            if (metricPRs) metricPRs.textContent = '22';
+            cells.forEach((c, idx) => {
+              if (idx < (52 * 7 - 90)) {
+                c.style.opacity = '0.2';
+              } else {
+                c.style.opacity = '1';
+              }
+            });
+          } else {
+            if (subtext) subtext.textContent = '642 contributions in the last year';
+            if (metricCommits) metricCommits.textContent = '642';
+            if (metricPRs) metricPRs.textContent = '58';
+            cells.forEach(c => c.style.opacity = '1');
+          }
+        });
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', renderCharts);
+      } else {
+        renderCharts();
+      }
+    })();
+  </script>
 
   <script type="module" src="../../js/main.js"></script>
   <!-- DevSync Floating AI Assistant Widget -->
