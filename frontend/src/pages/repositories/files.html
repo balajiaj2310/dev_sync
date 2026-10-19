@@ -4,6 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Files — devsync-core — DevSync</title>
+  <script>
+    const p = new URLSearchParams(window.location.search);
+    const repo = p.get('repo') || 'devsync-core';
+    const branch = p.get('branch') || 'main';
+    window.location.replace(`detail.html?repo=${encodeURIComponent(repo)}&tab=files&branch=${encodeURIComponent(branch)}`);
+  </script>
   <link rel="icon" type="image/svg+xml" href="../../../public/favicon.svg">
   <link rel="stylesheet" href="../../assets/css/tokens.css">
   <link rel="stylesheet" href="../../assets/css/reset.css">

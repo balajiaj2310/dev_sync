@@ -1605,6 +1605,268 @@
         "pullRequestsCount": 0,
         "issuesCount": 0
       }
+    },
+    "tester_1792423827": {
+      "id": "dev-tester_1792423827",
+      "name": "Test Developer",
+      "username": "tester_1792423827",
+      "email": "tester_1792423827@example.com",
+      "password": "pbkdf2_sha256$1500000$GKkjkCRzsmUkTxng001JYZ$0SOevzpmqXEQPfT3uTSv9n+sSujdIgyVAswxzGkA+YA=",
+      "role": "Developer",
+      "isVerified": true,
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+      "headline": "Passionate Developer building meaningful web applications and exploring modern technologies.",
+      "bio": "Hello, I am Test Developer. I enjoy building software, collaborating with fellow engineers, and shipping high-quality code on DevSync.",
+      "location": "Bengaluru, India",
+      "website": "https://tester_1792423827.dev",
+      "social": {
+        "github": "https://github.com/tester_1792423827",
+        "linkedin": "https://linkedin.com/in/tester_1792423827",
+        "instagram": "https://instagram.com/tester_1792423827"
+      },
+      "collaborationStatus": "Available for collaboration",
+      "collaborationStatusType": "available",
+      "openToInvitations": true,
+      "education": {
+        "degree": "BCA Student",
+        "institution": "Bengaluru City University",
+        "location": "Bengaluru, India",
+        "field": "Computer Applications",
+        "timeline": "2022 - 2025"
+      },
+      "experience": [
+        {
+          "role": "Full Stack Contributor",
+          "organization": "DevSync Community",
+          "timeline": "2024 - Present",
+          "description": "Building open source developer collaboration tools and web applications."
+        }
+      ],
+      "skills": [
+        {
+          "name": "Python",
+          "category": "Backend",
+          "color": "blue"
+        },
+        {
+          "name": "Django",
+          "category": "Backend",
+          "color": "mint"
+        },
+        {
+          "name": "JavaScript",
+          "category": "Frontend",
+          "color": "amber"
+        },
+        {
+          "name": "React",
+          "category": "Frontend",
+          "color": "cyan"
+        },
+        {
+          "name": "Git",
+          "category": "Tool",
+          "color": "neutral"
+        },
+        {
+          "name": "GitHub",
+          "category": "Tool",
+          "color": "neutral"
+        }
+      ],
+      "pinnedProjects": [
+        "repo-tester_1792423827-core"
+      ],
+      "projects": [
+        {
+          "id": "repo-tester_1792423827-core",
+          "name": "tester_1792423827-workspace",
+          "description": "Personal developer workspace and project repository on DevSync.",
+          "tags": [
+            {
+              "name": "Python",
+              "color": "blue"
+            },
+            {
+              "name": "JavaScript",
+              "color": "amber"
+            }
+          ],
+          "stars": 12,
+          "forks": 3,
+          "updated": "Updated recently",
+          "visibility": "Public",
+          "iconBg": "#0D9488",
+          "relationship": "Owner"
+        }
+      ],
+      "achievements": [
+        {
+          "id": "ach-1-tester_1792423827",
+          "title": "First Project",
+          "description": "Created first public project",
+          "color": "green",
+          "date": "2024"
+        },
+        {
+          "id": "ach-2-tester_1792423827",
+          "title": "Collaborator",
+          "description": "Worked with 5+ developers",
+          "color": "blue",
+          "date": "2024"
+        }
+      ],
+      "activities": [
+        {
+          "id": "act-1-tester_1792423827",
+          "title": "Joined DevSync",
+          "description": "Created account and public profile on DevSync.",
+          "time": "Recently"
+        }
+      ],
+      "teams": [],
+      "collaborators": [],
+      "stats": {
+        "followers": 0,
+        "following": 0,
+        "projects": 1,
+        "teams": 0,
+        "repositoriesCount": 1,
+        "contributionsCount": 0,
+        "pullRequestsCount": 0,
+        "issuesCount": 0
+      }
+    },
+    "tester_1792426714": {
+      "id": "dev-tester_1792426714",
+      "name": "Test Developer",
+      "username": "tester_1792426714",
+      "email": "tester_1792426714@example.com",
+      "password": "pbkdf2_sha256$1500000$a9DwNouaomF4p0OTiHWYg3$TmKNVxs+NWd2EvPvFbWv2Tn0M1ZghBwANG9eejtVAxo=",
+      "role": "Developer",
+      "isVerified": true,
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+      "headline": "Passionate Developer building meaningful web applications and exploring modern technologies.",
+      "bio": "Hello, I am Test Developer. I enjoy building software, collaborating with fellow engineers, and shipping high-quality code on DevSync.",
+      "location": "Bengaluru, India",
+      "website": "https://tester_1792426714.dev",
+      "social": {
+        "github": "https://github.com/tester_1792426714",
+        "linkedin": "https://linkedin.com/in/tester_1792426714",
+        "instagram": "https://instagram.com/tester_1792426714"
+      },
+      "collaborationStatus": "Available for collaboration",
+      "collaborationStatusType": "available",
+      "openToInvitations": true,
+      "education": {
+        "degree": "BCA Student",
+        "institution": "Bengaluru City University",
+        "location": "Bengaluru, India",
+        "field": "Computer Applications",
+        "timeline": "2022 - 2025"
+      },
+      "experience": [
+        {
+          "role": "Full Stack Contributor",
+          "organization": "DevSync Community",
+          "timeline": "2024 - Present",
+          "description": "Building open source developer collaboration tools and web applications."
+        }
+      ],
+      "skills": [
+        {
+          "name": "Python",
+          "category": "Backend",
+          "color": "blue"
+        },
+        {
+          "name": "Django",
+          "category": "Backend",
+          "color": "mint"
+        },
+        {
+          "name": "JavaScript",
+          "category": "Frontend",
+          "color": "amber"
+        },
+        {
+          "name": "React",
+          "category": "Frontend",
+          "color": "cyan"
+        },
+        {
+          "name": "Git",
+          "category": "Tool",
+          "color": "neutral"
+        },
+        {
+          "name": "GitHub",
+          "category": "Tool",
+          "color": "neutral"
+        }
+      ],
+      "pinnedProjects": [
+        "repo-tester_1792426714-core"
+      ],
+      "projects": [
+        {
+          "id": "repo-tester_1792426714-core",
+          "name": "tester_1792426714-workspace",
+          "description": "Personal developer workspace and project repository on DevSync.",
+          "tags": [
+            {
+              "name": "Python",
+              "color": "blue"
+            },
+            {
+              "name": "JavaScript",
+              "color": "amber"
+            }
+          ],
+          "stars": 12,
+          "forks": 3,
+          "updated": "Updated recently",
+          "visibility": "Public",
+          "iconBg": "#0D9488",
+          "relationship": "Owner"
+        }
+      ],
+      "achievements": [
+        {
+          "id": "ach-1-tester_1792426714",
+          "title": "First Project",
+          "description": "Created first public project",
+          "color": "green",
+          "date": "2024"
+        },
+        {
+          "id": "ach-2-tester_1792426714",
+          "title": "Collaborator",
+          "description": "Worked with 5+ developers",
+          "color": "blue",
+          "date": "2024"
+        }
+      ],
+      "activities": [
+        {
+          "id": "act-1-tester_1792426714",
+          "title": "Joined DevSync",
+          "description": "Created account and public profile on DevSync.",
+          "time": "Recently"
+        }
+      ],
+      "teams": [],
+      "collaborators": [],
+      "stats": {
+        "followers": 0,
+        "following": 0,
+        "projects": 1,
+        "teams": 0,
+        "repositoriesCount": 1,
+        "contributionsCount": 0,
+        "pullRequestsCount": 0,
+        "issuesCount": 0
+      }
     }
   },
   "repositories": {
@@ -1618,7 +1880,7 @@
       "visibility": "Private",
       "defaultBranch": "main",
       "created_at": 1789829765.893267,
-      "updated_at": 1792422971.2662702,
+      "updated_at": 1792426723.7985103,
       "stars": 28,
       "forks": 5,
       "branches": [
@@ -1857,6 +2119,28 @@
             "last_actor": "naveen3438",
             "sha256": "554ef4ff0ced9f04543c8cc11359b316e7629036515fb7181c9c0f4bf56db71c",
             "content": "modified code with authorization"
+          },
+          {
+            "path": "services/auth_provider_1792423836.py",
+            "name": "auth_provider_1792423836.py",
+            "type": "file",
+            "size": 32,
+            "updated_at": 1792423836.4468544,
+            "last_commit": "Update auth_provider logic with authorization",
+            "last_actor": "naveen3438",
+            "sha256": "554ef4ff0ced9f04543c8cc11359b316e7629036515fb7181c9c0f4bf56db71c",
+            "content": "modified code with authorization"
+          },
+          {
+            "path": "services/auth_provider_1792426723.py",
+            "name": "auth_provider_1792426723.py",
+            "type": "file",
+            "size": 32,
+            "updated_at": 1792426723.7651043,
+            "last_commit": "Update auth_provider logic with authorization",
+            "last_actor": "naveen3438",
+            "sha256": "554ef4ff0ced9f04543c8cc11359b316e7629036515fb7181c9c0f4bf56db71c",
+            "content": "modified code with authorization"
           }
         ],
         "feature/authentication": [
@@ -1873,6 +2157,24 @@
         ]
       },
       "attachments": [
+        {
+          "id": "att_6d88d38404f7",
+          "name": "API_Swagger_Specification.json",
+          "size": 20,
+          "uploaded_by": "naveen3438",
+          "uploaded_at": 1792426723.7985103,
+          "file_type": "application/json",
+          "description": "OpenAPI contract specification"
+        },
+        {
+          "id": "att_3a173b76e298",
+          "name": "API_Swagger_Specification.json",
+          "size": 20,
+          "uploaded_by": "naveen3438",
+          "uploaded_at": 1792423836.4766352,
+          "file_type": "application/json",
+          "description": "OpenAPI contract specification"
+        },
         {
           "id": "att_6ffbc2f0f06c",
           "name": "API_Swagger_Specification.json",
@@ -1911,6 +2213,50 @@
         }
       ],
       "audit_log": [
+        {
+          "id": "aud_33432006613b",
+          "action": "file_overwrite",
+          "branch": "develop",
+          "file_path": "services/auth_provider_1792426723.py",
+          "actor": "naveen3438",
+          "timestamp": 1792426723.7651043,
+          "summary": "Update auth_provider logic with authorization",
+          "sha256": "554ef4ff0ced9f04543c8cc11359b316e7629036515fb7181c9c0f4bf56db71c",
+          "size": 32
+        },
+        {
+          "id": "aud_1e3bf4c6c9d0",
+          "action": "file_upload",
+          "branch": "develop",
+          "file_path": "services/auth_provider_1792426723.py",
+          "actor": "naveen3438",
+          "timestamp": 1792426723.70191,
+          "summary": "Add authentication service provider module",
+          "sha256": "891db46eb3458220b0b14e13475275304f8091d580143003f669440b4c0102aa",
+          "size": 36
+        },
+        {
+          "id": "aud_766a64f3fb93",
+          "action": "file_overwrite",
+          "branch": "develop",
+          "file_path": "services/auth_provider_1792423836.py",
+          "actor": "naveen3438",
+          "timestamp": 1792423836.4468544,
+          "summary": "Update auth_provider logic with authorization",
+          "sha256": "554ef4ff0ced9f04543c8cc11359b316e7629036515fb7181c9c0f4bf56db71c",
+          "size": 32
+        },
+        {
+          "id": "aud_bec0b2bcb4d1",
+          "action": "file_upload",
+          "branch": "develop",
+          "file_path": "services/auth_provider_1792423836.py",
+          "actor": "naveen3438",
+          "timestamp": 1792423836.4132547,
+          "summary": "Add authentication service provider module",
+          "sha256": "891db46eb3458220b0b14e13475275304f8091d580143003f669440b4c0102aa",
+          "size": 36
+        },
         {
           "id": "aud_fc7df3377253",
           "action": "file_overwrite",
@@ -2196,6 +2542,172 @@
     }
   },
   "activity_events": [
+    {
+      "id": "evt_525889ea3520",
+      "type": "attachment_uploaded",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": null,
+      "title": "Uploaded project attachment: API_Swagger_Specification.json",
+      "description": "OpenAPI contract specification",
+      "timestamp": 1792426723.7985303,
+      "visibility": "Private",
+      "metadata": {
+        "attachment_id": "att_6d88d38404f7",
+        "file_name": "API_Swagger_Specification.json",
+        "size": 20
+      },
+      "dedup_hash": "606de04f813c05a1b00707fc3af632773308dbac4592ac0291f2067dfafd0339"
+    },
+    {
+      "id": "evt_3e35695dec62",
+      "type": "file_uploaded",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": "develop",
+      "title": "Uploaded services/auth_provider_1792426723.py to develop",
+      "description": "Add authentication service provider module",
+      "timestamp": 1792426723.7019782,
+      "visibility": "Private",
+      "metadata": {
+        "file_path": "services/auth_provider_1792426723.py",
+        "sha256": "891db46eb3458220b0b14e13475275304f8091d580143003f669440b4c0102aa",
+        "size": 36
+      },
+      "dedup_hash": "bad2bc0994e7ac6b8876f87d649d7a6927404ac627735a1c2e561bf64713d477"
+    },
+    {
+      "id": "evt_c0d2d8bbb3af",
+      "type": "collaborator_removed",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": null,
+      "title": "Removed collaborator @tarapatel",
+      "description": "Collaborator @tarapatel was removed from devsync-core.",
+      "timestamp": 1792426723.6554186,
+      "visibility": "Private",
+      "metadata": {},
+      "dedup_hash": "f677e1eaf36f293f4194280ba96d8096ca0909646637036bc208af2d99dbc245"
+    },
+    {
+      "id": "evt_a113cf26eba5",
+      "type": "collaborator_updated",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": null,
+      "title": "Updated role/responsibility for @tarapatel",
+      "description": "Role: Collaborator | Responsibility: Lead SRE & Security",
+      "timestamp": 1792426723.6344748,
+      "visibility": "Private",
+      "metadata": {},
+      "dedup_hash": "0f70a1581fc23ec40efa3d299f0e17e1231222d4e7a89b9cd0f8d6bfab843ea1"
+    },
+    {
+      "id": "evt_4d228d128e11",
+      "type": "collaborator_added",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": null,
+      "title": "Added collaborator @tarapatel as Collaborator",
+      "description": "Assigned responsibility: DevOps & SRE",
+      "timestamp": 1792426723.6184769,
+      "visibility": "Private",
+      "metadata": {},
+      "dedup_hash": "932fafb54f8d91167ac3091f248ca5db4a07134e034afa5a39b8b139cec9b228"
+    },
+    {
+      "id": "evt_75d184610b8d",
+      "type": "attachment_uploaded",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": null,
+      "title": "Uploaded project attachment: API_Swagger_Specification.json",
+      "description": "OpenAPI contract specification",
+      "timestamp": 1792423836.4766796,
+      "visibility": "Private",
+      "metadata": {
+        "attachment_id": "att_3a173b76e298",
+        "file_name": "API_Swagger_Specification.json",
+        "size": 20
+      },
+      "dedup_hash": "b55d6fa49d5a5c48dd68363f7eb906d4f2a2b189bf12fedb857ec0d32e896243"
+    },
+    {
+      "id": "evt_b837f2c25e0c",
+      "type": "file_uploaded",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": "develop",
+      "title": "Uploaded services/auth_provider_1792423836.py to develop",
+      "description": "Add authentication service provider module",
+      "timestamp": 1792423836.4133143,
+      "visibility": "Private",
+      "metadata": {
+        "file_path": "services/auth_provider_1792423836.py",
+        "sha256": "891db46eb3458220b0b14e13475275304f8091d580143003f669440b4c0102aa",
+        "size": 36
+      },
+      "dedup_hash": "22791816daebba2c9f16b760080478dc36351f87670846a03d12ed07eb9c44a3"
+    },
+    {
+      "id": "evt_c632e63cb0a0",
+      "type": "collaborator_removed",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": null,
+      "title": "Removed collaborator @tarapatel",
+      "description": "Collaborator @tarapatel was removed from devsync-core.",
+      "timestamp": 1792423836.3859823,
+      "visibility": "Private",
+      "metadata": {},
+      "dedup_hash": "70fd80da9ae05a41ff629ddd7030c90beeed511f0ab3465a37a4f75e0b653f92"
+    },
+    {
+      "id": "evt_49257f01ab1e",
+      "type": "collaborator_updated",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": null,
+      "title": "Updated role/responsibility for @tarapatel",
+      "description": "Role: Collaborator | Responsibility: Lead SRE & Security",
+      "timestamp": 1792423836.3632846,
+      "visibility": "Private",
+      "metadata": {},
+      "dedup_hash": "2b9b30d2d5530b6b3ad0052530d84ae896350769a49ff14baa8d1f5aa744e831"
+    },
+    {
+      "id": "evt_faabe9bf3e56",
+      "type": "collaborator_added",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": null,
+      "title": "Added collaborator @tarapatel as Collaborator",
+      "description": "Assigned responsibility: DevOps & SRE",
+      "timestamp": 1792423836.3442795,
+      "visibility": "Private",
+      "metadata": {},
+      "dedup_hash": "e93ea443cc1acf3d2ec2920251de4ebd477e5ac8db45402792383d3ed0a39160"
+    },
     {
       "id": "evt_37d76a4c1603",
       "type": "attachment_uploaded",
