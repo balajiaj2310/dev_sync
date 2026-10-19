@@ -6,8 +6,8 @@
 export const APP_CONFIG = {
   appName: 'DevSync',
   version: '1.0.0',
-  // When true, all service modules route to local mock data adapter
-  demoMode: true,
+  // When true, all service modules route to local mock data adapter; false routes to real Django REST backend
+  demoMode: false,
   // Future Django Backend base endpoint
   apiBaseUrl: '/api/v1',
   requestTimeoutMs: 8000,

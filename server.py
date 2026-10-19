@@ -16,10 +16,69 @@ import json
 import secrets
 import time
 import re
+import hashlib
+import django
+from django.conf import settings
+
+if not settings.configured:
+    settings.configure(
+        PASSWORD_HASHERS=[
+            'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+            'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
+            'django.contrib.auth.hashers.Argon2PasswordHasher',
+            'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
+        ],
+        EMAIL_BACKEND=os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend' if os.environ.get('EMAIL_HOST') else 'django.core.mail.backends.console.EmailBackend'),
+        EMAIL_HOST=os.environ.get('EMAIL_HOST', 'localhost'),
+        EMAIL_PORT=int(os.environ.get('EMAIL_PORT', 587)),
+        EMAIL_USE_TLS=os.environ.get('EMAIL_USE_TLS', 'True').lower() in ('true', '1'),
+        EMAIL_HOST_USER=os.environ.get('EMAIL_HOST_USER', ''),
+        EMAIL_HOST_PASSWORD=os.environ.get('EMAIL_HOST_PASSWORD', ''),
+        DEFAULT_FROM_EMAIL=os.environ.get('DEFAULT_FROM_EMAIL', 'DevSync Security <security@devsync.example>'),
+    )
+    django.setup()
+
+from django.contrib.auth.hashers import make_password, check_password
+from django.core.mail import send_mail
 
 # Google OAuth Configuration (from environment variables)
 GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID', '').strip()
 GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET', '').strip()
+
+from backend_collaboration import (
+    REPOSITORIES, ACTIVITY_EVENTS, get_repository_by_id_or_name, check_repo_permissions,
+    record_activity_event, aggregate_pulse, get_pulse_events, get_pulse_comparison,
+    get_pulse_progress, get_pulse_team_contributions, handle_branch_file_upload,
+    handle_attachment_upload, sanitize_file_path
+)
+
+def dispatch_verification_email(email, otp):
+    """
+    Dispatch verification email using Django's email facilities.
+    Supports SMTP when configured, or Console/Development backend.
+    Logs development notice clearly when SMTP is unconfigured.
+    """
+    subject = "DevSync Account Verification Code"
+    message = (
+        f"Hello,\n\n"
+        f"Your DevSync email verification code is: {otp}\n\n"
+        f"This code is valid for 10 minutes and can only be used once.\n"
+        f"If you did not request this verification, you can safely ignore this email.\n\n"
+        f"— The DevSync Security Team"
+    )
+    is_smtp_configured = bool(os.environ.get('EMAIL_HOST'))
+    try:
+        send_mail(
+            subject,
+            message,
+            settings.DEFAULT_FROM_EMAIL,
+            [email],
+            fail_silently=False
+        )
+        return True, None, is_smtp_configured
+    except Exception as e:
+        print(f"\n[DEVSYNC EMAIL NOTICE] To: {email} | OTP: {otp} | SMTP unconfigured or failed: {e}\n", flush=True)
+        return False, str(e), is_smtp_configured
 
 def verify_google_id_token(id_token):
     """
@@ -79,6 +138,8 @@ mimetypes.add_type('text/html', '.html')
 # In-Memory Active Sessions Table: token -> { 'username': username, 'user': dict, 'created': timestamp }
 ACTIVE_SESSIONS = {}
 GLOBAL_OTP_CACHE = {}
+EMAIL_OTP_CACHE = {}  # email -> { 'salt': str, 'hash': str, 'expires_at': float, 'last_sent_at': float, 'attempts_remaining': int }
+VERIFIED_TOKENS = {}  # token -> { 'email': str, 'expires_at': float }
 
 # In-Memory Database for Developer Profiles & Users (Server-Side Source of Truth)
 DEV_PROFILES = {
@@ -432,16 +493,21 @@ DEV_PROFILES = {
 # --------------------------------------------------------------------------
 
 def save_database():
-    """Atomically save current DEV_PROFILES to persistent JSON file."""
+    """Atomically save current DEV_PROFILES, REPOSITORIES, and ACTIVITY_EVENTS to persistent JSON file."""
     try:
         os.makedirs(DATA_DIR, exist_ok=True)
         with open(DB_FILE, 'w', encoding='utf-8') as f:
-            json.dump({'profiles': DEV_PROFILES, 'version': '1.0.0'}, f, indent=2)
+            json.dump({
+                'profiles': DEV_PROFILES,
+                'repositories': REPOSITORIES,
+                'activity_events': ACTIVITY_EVENTS,
+                'version': '1.1.0'
+            }, f, indent=2)
     except Exception as e:
         print(f"[Database] Warning: Failed to save database: {e}")
 
 def load_database():
-    """Load persisted profiles if available on disk."""
+    """Load persisted profiles, repositories, and activity events if available on disk."""
     global DEV_PROFILES
     if os.path.exists(DB_FILE):
         try:
@@ -452,6 +518,16 @@ def load_database():
                     for k, v in loaded.items():
                         DEV_PROFILES[k] = v
                     print(f"[Database] Loaded {len(DEV_PROFILES)} developer profiles from disk.")
+                loaded_repos = data.get('repositories', {})
+                if loaded_repos:
+                    for k, v in loaded_repos.items():
+                        REPOSITORIES[k] = v
+                    print(f"[Database] Loaded {len(REPOSITORIES)} repositories from disk.")
+                loaded_events = data.get('activity_events', [])
+                if loaded_events:
+                    ACTIVITY_EVENTS.clear()
+                    ACTIVITY_EVENTS.extend(loaded_events)
+                    print(f"[Database] Loaded {len(ACTIVITY_EVENTS)} activity events from disk.")
         except Exception as e:
             print(f"[Database] Warning: Could not read {DB_FILE}: {e}")
 
@@ -768,6 +844,25 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
             self.end_headers()
             return
 
+        # Friendly Public Pages: Redirect to canonical paths
+        if path in ('/terms', '/terms-of-service'):
+            self.send_response(302)
+            self.send_header('Location', '/src/pages/public/terms.html')
+            self.end_headers()
+            return
+
+        if path in ('/privacy', '/privacy-policy'):
+            self.send_response(302)
+            self.send_header('Location', '/src/pages/public/privacy.html')
+            self.end_headers()
+            return
+
+        if path in ('/help', '/support'):
+            self.send_response(302)
+            self.send_header('Location', '/src/pages/public/help.html')
+            self.end_headers()
+            return
+
         # Dedicated test API routes for testing HTTP error responses
         if path.startswith('/api/error/'):
             code_str = path.split('/api/error/')[-1]
@@ -784,6 +879,12 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
             '/explore': 'src/pages/public/explore.html',
             '/pricing': 'src/pages/public/pricing.html',
             '/contact': 'src/pages/public/contact.html',
+            '/terms': 'src/pages/public/terms.html',
+            '/terms-of-service': 'src/pages/public/terms.html',
+            '/privacy': 'src/pages/public/privacy.html',
+            '/privacy-policy': 'src/pages/public/privacy.html',
+            '/help': 'src/pages/public/help.html',
+            '/support': 'src/pages/public/help.html',
             '/login': 'src/pages/auth/sign-in.html',
             '/signin': 'src/pages/auth/sign-in.html',
             '/auth/sign-in': 'src/pages/auth/sign-in.html',
@@ -854,6 +955,379 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
                         dev_copy.pop('email', None)
                         dev_copy['projects'] = [p for p in dev_copy.get('projects', []) if p.get('visibility') == 'Public']
                     results.append(dev_copy)
+
+            self.send_json(200, results)
+            return
+
+
+        # ------------------------------------------------------------------
+        # Project Pulse Activity Graph Endpoints
+        # ------------------------------------------------------------------
+        # GET /api/v1/developers/<username>/pulse/events
+        if '/pulse/events' in path and ('/api/developers/' in path or '/api/v1/developers/' in path):
+            prefix = '/api/v1/developers/' if '/api/v1/developers/' in path else '/api/developers/'
+            sub = path[path.find(prefix) + len(prefix):]
+            username = sub.split('/pulse/events')[0].strip().lower()
+            query = urllib.parse.parse_qs(url_parts.query)
+            range_type = query.get('range', ['7d'])[0]
+            project_filter = query.get('project', ['all'])[0]
+            auth_user = self.get_authenticated_user()
+            caller = auth_user['username'].lower() if auth_user else self.headers.get('X-DevSync-User', '').strip().lower()
+
+            events = get_pulse_events(username, range_type=range_type, project_filter=project_filter, caller_username=caller)
+            self.send_json(200, events)
+            return
+
+        # GET /api/v1/developers/<username>/pulse/comparison
+        if '/pulse/comparison' in path and ('/api/developers/' in path or '/api/v1/developers/' in path):
+            prefix = '/api/v1/developers/' if '/api/v1/developers/' in path else '/api/developers/'
+            sub = path[path.find(prefix) + len(prefix):]
+            username = sub.split('/pulse/comparison')[0].strip().lower()
+            query = urllib.parse.parse_qs(url_parts.query)
+            range_type = query.get('range', ['7d'])[0]
+            auth_user = self.get_authenticated_user()
+            caller = auth_user['username'].lower() if auth_user else self.headers.get('X-DevSync-User', '').strip().lower()
+
+            comp = get_pulse_comparison(username, range_type=range_type, caller_username=caller)
+            self.send_json(200, comp)
+            return
+
+        # GET /api/v1/developers/<username>/pulse/progress
+        if '/pulse/progress' in path and ('/api/developers/' in path or '/api/v1/developers/' in path):
+            prefix = '/api/v1/developers/' if '/api/v1/developers/' in path else '/api/developers/'
+            sub = path[path.find(prefix) + len(prefix):]
+            username = sub.split('/pulse/progress')[0].strip().lower()
+            query = urllib.parse.parse_qs(url_parts.query)
+            project_id = query.get('project', [None])[0]
+            auth_user = self.get_authenticated_user()
+            caller = auth_user['username'].lower() if auth_user else self.headers.get('X-DevSync-User', '').strip().lower()
+
+            prog = get_pulse_progress(username, project_identifier=project_id, caller_username=caller)
+            status_code = 403 if 'Forbidden' in prog.get('error', '') else (404 if 'not found' in prog.get('error', '') else 200)
+            self.send_json(status_code, prog)
+            return
+
+        # GET /api/v1/developers/<username>/pulse/team-contributions
+        if '/pulse/team-contributions' in path and ('/api/developers/' in path or '/api/v1/developers/' in path):
+            query = urllib.parse.parse_qs(url_parts.query)
+            project_id = query.get('project', ['devsync-core'])[0]
+            auth_user = self.get_authenticated_user()
+            caller = auth_user['username'].lower() if auth_user else self.headers.get('X-DevSync-User', '').strip().lower()
+
+            contrib = get_pulse_team_contributions(project_id, caller_username=caller)
+            status_code = 403 if 'Forbidden' in contrib.get('error', '') else (404 if 'not found' in contrib.get('error', '') else 200)
+            self.send_json(status_code, contrib)
+            return
+
+        # GET /api/v1/developers/<username>/pulse
+        if '/pulse' in path and ('/api/developers/' in path or '/api/v1/developers/' in path):
+            prefix = '/api/v1/developers/' if '/api/v1/developers/' in path else '/api/developers/'
+            sub = path[path.find(prefix) + len(prefix):]
+            username = sub.split('/pulse')[0].strip().lower()
+            query = urllib.parse.parse_qs(url_parts.query)
+            range_type = query.get('range', ['7d'])[0]
+            project_filter = query.get('project', ['all'])[0]
+            auth_user = self.get_authenticated_user()
+            caller = auth_user['username'].lower() if auth_user else self.headers.get('X-DevSync-User', '').strip().lower()
+
+            pulse = aggregate_pulse(username, range_type=range_type, project_filter=project_filter, caller_username=caller)
+            self.send_json(200, pulse)
+            return
+
+        # ------------------------------------------------------------------
+        # Repositories & Collaboration Endpoints
+        # ------------------------------------------------------------------
+        # GET /api/v1/repositories/<repo_id>/members
+        m_members = re.match(r'^/api/(?:v1/)?repositories/([^/]+)/members/?$', path)
+        if m_members:
+            repo_id = m_members.group(1)
+            repo = get_repository_by_id_or_name(repo_id)
+            if not repo:
+                self.send_json(404, {'error': f'Repository {repo_id} not found'})
+                return
+            auth_user = self.get_authenticated_user()
+            can_view, role, is_owner, is_maint, is_collab = check_repo_permissions(auth_user, repo)
+            if not can_view:
+                self.send_json(403, {'error': 'Forbidden: You do not have permission to view members of this private repository.'})
+                return
+
+            enriched = []
+            for mem in repo.get('members', []):
+                u_profile = get_developer_by_identifier(mem.get('username'))
+                enriched.append({
+                    'username': mem.get('username'),
+                    'name': u_profile.get('name', mem.get('username')) if u_profile else mem.get('username'),
+                    'avatar': u_profile.get('avatar', '') if u_profile else '',
+                    'role': mem.get('role', 'Collaborator'),
+                    'responsibility': mem.get('responsibility', 'Contributor'),
+                    'assignedTasks': mem.get('assignedTasks', []),
+                    'joined_at': mem.get('joined_at'),
+                    'profileUrl': f"/src/pages/developers/profile.html?user={mem.get('username')}"
+                })
+            self.send_json(200, {
+                'repository': repo['name'],
+                'membersCount': len(enriched),
+                'members': enriched,
+                'canManageMembers': is_owner or is_maint
+            })
+            return
+
+        # GET /api/v1/repositories/<repo_id>/branches
+        m_branches = re.match(r'^/api/(?:v1/)?repositories/([^/]+)/branches/?$', path)
+        if m_branches:
+            repo_id = m_branches.group(1)
+            repo = get_repository_by_id_or_name(repo_id)
+            if not repo:
+                self.send_json(404, {'error': f'Repository {repo_id} not found'})
+                return
+            auth_user = self.get_authenticated_user()
+            can_view, role, is_owner, is_maint, is_collab = check_repo_permissions(auth_user, repo)
+            if not can_view:
+                self.send_json(403, {'error': 'Forbidden: You do not have permission to view branches of this private repository.'})
+                return
+            branches_list = []
+            for b in repo.get('branches', []):
+                b_files = repo.get('files', {}).get(b, [])
+                last_f = b_files[-1] if b_files else {}
+                branches_list.append({
+                    'name': b,
+                    'isDefault': (b == repo.get('defaultBranch', 'main')),
+                    'filesCount': len(b_files),
+                    'lastCommit': last_f.get('last_commit', 'Initial commit'),
+                    'lastActor': last_f.get('last_actor', repo.get('owner')),
+                    'updatedAt': last_f.get('updated_at', repo.get('updated_at'))
+                })
+            self.send_json(200, {
+                'repository': repo['name'],
+                'defaultBranch': repo.get('defaultBranch', 'main'),
+                'branchesCount': len(branches_list),
+                'branches': branches_list
+            })
+            return
+
+        # GET /api/v1/repositories/<repo_id>/files
+        m_files = re.match(r'^/api/(?:v1/)?repositories/([^/]+)/files/?$', path)
+        if m_files:
+            repo_id = m_files.group(1)
+            repo = get_repository_by_id_or_name(repo_id)
+            if not repo:
+                self.send_json(404, {'error': f'Repository {repo_id} not found'})
+                return
+            auth_user = self.get_authenticated_user()
+            can_view, role, is_owner, is_maint, is_collab = check_repo_permissions(auth_user, repo)
+            if not can_view:
+                self.send_json(403, {'error': 'Forbidden: You do not have permission to view files of this private repository.'})
+                return
+            query = urllib.parse.parse_qs(url_parts.query)
+            branch = query.get('branch', [repo.get('defaultBranch', 'main')])[0]
+            dir_path = query.get('path', [''])[0].strip().strip('/')
+            is_recursive = query.get('recursive', [''])[0].lower() in ('true', '1') or query.get('flat', [''])[0].lower() in ('true', '1')
+
+            branch_files = repo.get('files', {}).get(branch, [])
+            results = []
+            seen_dirs = set()
+            if is_recursive:
+                results = branch_files
+            else:
+                for f in branch_files:
+                    f_path = f.get('path', '')
+                    if dir_path:
+                        if not f_path.startswith(dir_path + '/'):
+                            continue
+                        relative = f_path[len(dir_path) + 1:]
+                    else:
+                        relative = f_path
+
+                    parts = relative.split('/')
+                    if len(parts) > 1:
+                        dir_name = parts[0]
+                        if dir_name not in seen_dirs:
+                            seen_dirs.add(dir_name)
+                            full_dir_path = f"{dir_path}/{dir_name}" if dir_path else dir_name
+                            results.append({
+                                'path': full_dir_path,
+                                'name': dir_name,
+                                'type': 'dir',
+                                'branch': branch,
+                                'size': 0,
+                                'updated_at': f.get('updated_at'),
+                                'last_commit': f.get('last_commit', ''),
+                                'last_actor': f.get('last_actor', '')
+                            })
+                    else:
+                        results.append({
+                            'path': f_path,
+                            'name': f.get('name', parts[0]),
+                            'type': 'file',
+                            'branch': branch,
+                            'size': f.get('size', 0),
+                            'updated_at': f.get('updated_at'),
+                            'last_commit': f.get('last_commit', ''),
+                            'last_actor': f.get('last_actor', '')
+                        })
+
+            self.send_json(200, {
+                'repository': repo['name'],
+                'branch': branch,
+                'path': dir_path,
+                'filesCount': len(results),
+                'files': results,
+                'allFiles': branch_files
+            })
+            return
+
+        # GET /api/v1/repositories/<repo_id>/file
+        m_file = re.match(r'^/api/(?:v1/)?repositories/([^/]+)/file/?$', path)
+        if m_file:
+            repo_id = m_file.group(1)
+            repo = get_repository_by_id_or_name(repo_id)
+            if not repo:
+                self.send_json(404, {'error': f'Repository {repo_id} not found'})
+                return
+            auth_user = self.get_authenticated_user()
+            can_view, role, is_owner, is_maint, is_collab = check_repo_permissions(auth_user, repo)
+            if not can_view:
+                self.send_json(403, {'error': 'Forbidden: You do not have permission to view file contents in this private repository.'})
+                return
+            query = urllib.parse.parse_qs(url_parts.query)
+            branch = query.get('branch', [repo.get('defaultBranch', 'main')])[0]
+            target_path = query.get('path', [query.get('file', [''])[0]])[0].strip().strip('/')
+            clean_path, err = sanitize_file_path(target_path)
+            if err:
+                self.send_json(400, {'error': 'Invalid path', 'detail': err})
+                return
+
+            branch_files = repo.get('files', {}).get(branch, [])
+            matched = next((f for f in branch_files if f.get('path') == clean_path), None)
+            if not matched:
+                self.send_json(404, {'error': f"File '{clean_path}' not found on branch '{branch}'"})
+                return
+
+            self.send_json(200, {
+                'repository': repo['name'],
+                'branch': branch,
+                'path': clean_path,
+                'name': matched.get('name', os.path.basename(clean_path)),
+                'size': matched.get('size', 0),
+                'updated_at': matched.get('updated_at'),
+                'last_commit': matched.get('last_commit'),
+                'last_actor': matched.get('last_actor'),
+                'content': matched.get('content', '')
+            })
+            return
+
+        # GET /api/v1/repositories/<repo_id>/attachments
+        m_att = re.match(r'^/api/(?:v1/)?repositories/([^/]+)/attachments/?$', path)
+        if m_att:
+            repo_id = m_att.group(1)
+            repo = get_repository_by_id_or_name(repo_id)
+            if not repo:
+                self.send_json(404, {'error': f'Repository {repo_id} not found'})
+                return
+            auth_user = self.get_authenticated_user()
+            can_view, role, is_owner, is_maint, is_collab = check_repo_permissions(auth_user, repo)
+            if not can_view:
+                self.send_json(403, {'error': 'Forbidden: You do not have permission to view attachments of this private repository.'})
+                return
+            self.send_json(200, {
+                'repository': repo['name'],
+                'attachmentsCount': len(repo.get('attachments', [])),
+                'attachments': repo.get('attachments', [])
+            })
+            return
+
+        # GET /api/v1/repositories/<repo_id>/activity
+        m_act = re.match(r'^/api/(?:v1/)?repositories/([^/]+)/activity/?$', path)
+        if m_act:
+            repo_id = m_act.group(1)
+            repo = get_repository_by_id_or_name(repo_id)
+            if not repo:
+                self.send_json(404, {'error': f'Repository {repo_id} not found'})
+                return
+            auth_user = self.get_authenticated_user()
+            can_view, role, is_owner, is_maint, is_collab = check_repo_permissions(auth_user, repo)
+            if not can_view:
+                self.send_json(403, {'error': 'Forbidden: You do not have permission to view activity of this private repository.'})
+                return
+            repo_events = [e for e in ACTIVITY_EVENTS if e.get('repository', '').lower() == repo['name'].lower()]
+            self.send_json(200, {
+                'repository': repo['name'],
+                'eventsCount': len(repo_events),
+                'events': repo_events[:50]
+            })
+            return
+
+        # GET /api/v1/repositories/<repo_id>
+        m_repo = re.match(r'^/api/(?:v1/)?repositories/([^/]+)/?$', path)
+        if m_repo and not path.endswith('/repositories'):
+            repo_id = m_repo.group(1)
+            repo = get_repository_by_id_or_name(repo_id)
+            if not repo:
+                self.send_json(404, {'error': f'Repository {repo_id} not found'})
+                return
+            auth_user = self.get_authenticated_user()
+            can_view, role, is_owner, is_maint, is_collab = check_repo_permissions(auth_user, repo)
+            if not can_view:
+                self.send_json(403, {'error': 'Forbidden: You do not have permission to view this private repository.'})
+                return
+
+            tasks = repo.get('tasks', [])
+            open_tasks = [t for t in tasks if t.get('status') != 'completed']
+            repo_copy = json.loads(json.dumps(repo))
+            repo_copy['membersCount'] = len(repo.get('members', []))
+            repo_copy['branchesCount'] = len(repo.get('branches', []))
+            repo_copy['filesCount'] = len(repo.get('files', {}).get(repo.get('defaultBranch', 'main'), []))
+            repo_copy['openTasksCount'] = len(open_tasks)
+            repo_copy['openIssuesCount'] = 12 if repo.get('name') == 'devsync-core' else 3
+            repo_copy['currentUserRole'] = role
+            repo_copy['canUpload'] = is_collab
+            repo_copy['canManageMembers'] = is_maint or is_owner
+            repo_copy['canCreateBranches'] = is_collab
+            self.send_json(200, repo_copy)
+            return
+
+        # GET /api/v1/repositories (and /api/repositories)
+        if path in ('/api/v1/repositories', '/api/repositories', '/api/v1/repositories/', '/api/repositories/'):
+            query = urllib.parse.parse_qs(url_parts.query)
+            search = query.get('search', [''])[0].strip().lower()
+            lang = query.get('language', [''])[0].strip().lower()
+            vis = query.get('visibility', [''])[0].strip().lower()
+
+            auth_user = self.get_authenticated_user()
+            results = []
+            for r in REPOSITORIES.values():
+                can_view, role, is_owner, is_maint, is_collab = check_repo_permissions(auth_user, r)
+                if not can_view:
+                    continue
+
+                if search and (search not in r['name'].lower() and search not in r.get('description', '').lower()):
+                    continue
+                if lang and lang != 'all' and lang != 'all languages' and r.get('language', '').lower() != lang:
+                    continue
+                if vis and vis != 'all' and r.get('visibility', '').lower() != vis:
+                    continue
+
+                item = {
+                    'id': r['id'],
+                    'name': r['name'],
+                    'owner': r.get('owner'),
+                    'description': r.get('description', ''),
+                    'language': r.get('language', 'Unknown'),
+                    'languageColor': r.get('languageColor', '#3572A5'),
+                    'visibility': r.get('visibility', 'Public'),
+                    'defaultBranch': r.get('defaultBranch', 'main'),
+                    'created_at': r.get('created_at'),
+                    'updated_at': r.get('updated_at'),
+                    'updated': 'Recently',
+                    'stars': r.get('stars', 0),
+                    'forks': r.get('forks', 0),
+                    'membersCount': len(r.get('members', [])),
+                    'branchesCount': len(r.get('branches', [])),
+                    'filesCount': len(r.get('files', {}).get(r.get('defaultBranch', 'main'), [])),
+                    'currentUserRole': role,
+                    'canUpload': is_collab
+                }
+                results.append(item)
 
             self.send_json(200, results)
             return
@@ -972,8 +1446,21 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
                 })
                 return
 
-            expected_password = matched_user.get('password', 'demo12345')
-            if password != expected_password:
+            stored_password = matched_user.get('password', 'demo12345')
+            is_valid_password = False
+            if stored_password.startswith(('pbkdf2_', 'argon2', 'bcrypt', 'crypt$')):
+                try:
+                    is_valid_password = check_password(password, stored_password)
+                except Exception:
+                    is_valid_password = False
+            else:
+                is_valid_password = (password == stored_password)
+                if is_valid_password:
+                    # Upgrade legacy plaintext password to Django PBKDF2 hash
+                    matched_user['password'] = make_password(password)
+                    save_database()
+
+            if not is_valid_password:
                 self.send_json(401, {
                     'detail': 'Invalid email or password. Please verify your credentials and try again.',
                     'error': 'Invalid credentials'
@@ -1104,95 +1591,230 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
             })
             return
 
-        # Send Mobile OTP Endpoint (POST /api/v1/auth/send-otp, /api/auth/send-otp)
-        if path in ('/api/v1/auth/send-otp', '/api/auth/send-otp'):
+        # Send Email OTP Endpoint (POST /api/v1/auth/send-email-otp, /api/auth/send-email-otp)
+        send_email_otp_paths = (
+            '/api/v1/auth/send-email-otp', '/api/v1/auth/send-email-otp/',
+            '/api/auth/send-email-otp', '/api/auth/send-email-otp/',
+            '/auth/send-email-otp', '/auth/send-email-otp/'
+        )
+        if path in send_email_otp_paths:
             length = int(self.headers.get('Content-Length', 0))
             post_data = self.rfile.read(length) if length > 0 else b'{}'
             try:
                 body = json.loads(post_data.decode('utf-8'))
             except Exception:
-                self.send_json(400, {'error': 'Invalid JSON'})
+                self.send_json(400, {'error': 'Invalid JSON', 'detail': 'Malformed request body.'})
                 return
 
-            mobile = str(body.get('mobile', '')).strip()
-            digits = re.sub(r'\D', '', mobile)
-            if not mobile or len(digits) < 10:
-                self.send_json(400, {'detail': 'Valid 10-digit mobile number is required.'})
+            email = str(body.get('email', '')).strip().lower()
+            if not email or '@' not in email or '.' not in email.split('@')[-1]:
+                self.send_json(400, {'detail': 'Valid email address is required to receive verification OTP.', 'error': 'Invalid email'})
                 return
 
+            # Rate limit: 60s cooldown per email
+            now = time.time()
+            cached = EMAIL_OTP_CACHE.get(email)
+            if cached and (now - cached.get('last_sent_at', 0)) < 60:
+                remaining = int(60 - (now - cached.get('last_sent_at', 0)))
+                self.send_json(429, {
+                    'detail': f'Please wait {remaining} seconds before requesting a new code.',
+                    'error': 'Rate limited',
+                    'retryAfterSeconds': remaining
+                })
+                return
+
+            # Cryptographically secure 6-digit OTP
             otp = f"{secrets.randbelow(900000) + 100000}"
-            GLOBAL_OTP_CACHE[digits] = {'otp': otp, 'timestamp': time.time()}
-            GLOBAL_OTP_CACHE[mobile] = {'otp': otp, 'timestamp': time.time()}
+            salt = secrets.token_hex(16)
+            otp_hash = hashlib.sha256(f"{salt}:{otp}".encode('utf-8')).hexdigest()
+
+            EMAIL_OTP_CACHE[email] = {
+                'salt': salt,
+                'hash': otp_hash,
+                'expires_at': now + 600,  # 10 minutes
+                'last_sent_at': now,
+                'attempts_remaining': 5
+            }
+
+            dispatched, err, is_smtp_configured = dispatch_verification_email(email, otp)
+
+            response_payload = {
+                'success': True,
+                'message': f'Verification code dispatched to {email}. Please check your inbox.',
+                'expiresInSeconds': 600,
+                'email': email
+            }
+            if not is_smtp_configured:
+                response_payload['devNotice'] = f'[Development Notice] SMTP unconfigured. Verification code logged to server console.'
+
+            self.send_json(200, response_payload)
+            return
+
+        # Verify Email OTP Endpoint (POST /api/v1/auth/verify-email-otp, /api/auth/verify-email-otp)
+        verify_email_otp_paths = (
+            '/api/v1/auth/verify-email-otp', '/api/v1/auth/verify-email-otp/',
+            '/api/auth/verify-email-otp', '/api/auth/verify-email-otp/',
+            '/auth/verify-email-otp', '/auth/verify-email-otp/'
+        )
+        if path in verify_email_otp_paths:
+            length = int(self.headers.get('Content-Length', 0))
+            post_data = self.rfile.read(length) if length > 0 else b'{}'
+            try:
+                body = json.loads(post_data.decode('utf-8'))
+            except Exception:
+                self.send_json(400, {'error': 'Invalid JSON', 'detail': 'Malformed request body.'})
+                return
+
+            email = str(body.get('email', '')).strip().lower()
+            otp = str(body.get('otp', body.get('code', ''))).strip()
+
+            if not email or not otp:
+                self.send_json(400, {'detail': 'Email and 6-digit verification code are required.', 'error': 'Missing fields'})
+                return
+
+            cached = EMAIL_OTP_CACHE.get(email)
+            now = time.time()
+
+            if not cached or now > cached.get('expires_at', 0):
+                self.send_json(400, {
+                    'detail': 'Verification code has expired or was not requested. Please request a new code.',
+                    'error': 'Expired code'
+                })
+                return
+
+            if cached.get('attempts_remaining', 0) <= 0:
+                EMAIL_OTP_CACHE.pop(email, None)
+                self.send_json(400, {
+                    'detail': 'Too many failed verification attempts. Please request a new verification code.',
+                    'error': 'Attempts exceeded'
+                })
+                return
+
+            salt = cached['salt']
+            expected_hash = cached['hash']
+            actual_hash = hashlib.sha256(f"{salt}:{otp}".encode('utf-8')).hexdigest()
+
+            if not secrets.compare_digest(actual_hash, expected_hash):
+                cached['attempts_remaining'] -= 1
+                rem = cached['attempts_remaining']
+                if rem <= 0:
+                    EMAIL_OTP_CACHE.pop(email, None)
+                    self.send_json(400, {
+                        'detail': 'Invalid verification code. Attempt limit exceeded. Please request a new code.',
+                        'error': 'Invalid code'
+                    })
+                else:
+                    self.send_json(400, {
+                        'detail': f'Invalid verification code. {rem} attempt{"s" if rem != 1 else ""} remaining.',
+                        'attemptsRemaining': rem,
+                        'error': 'Invalid code'
+                    })
+                return
+
+            # Verification code is valid: consume it immediately
+            EMAIL_OTP_CACHE.pop(email, None)
+
+            # Issue time-limited single-use verification token (15 mins)
+            verification_token = f"vtok_{secrets.token_urlsafe(32)}"
+            VERIFIED_TOKENS[verification_token] = {
+                'email': email,
+                'expires_at': now + 900
+            }
 
             self.send_json(200, {
                 'success': True,
-                'message': f'OTP sent successfully to {mobile}',
-                'otp': otp,
-                'expiresInSeconds': 300
+                'verified': True,
+                'verificationToken': verification_token,
+                'message': 'Email address verified successfully!'
             })
             return
 
-        # Verify Mobile OTP Endpoint (POST /api/v1/auth/verify-otp, /api/auth/verify-otp)
-        if path in ('/api/v1/auth/verify-otp', '/api/auth/verify-otp'):
-            length = int(self.headers.get('Content-Length', 0))
-            post_data = self.rfile.read(length) if length > 0 else b'{}'
-            try:
-                body = json.loads(post_data.decode('utf-8'))
-            except Exception:
-                self.send_json(400, {'error': 'Invalid JSON'})
-                return
-
-            mobile = str(body.get('mobile', '')).strip()
-            otp = str(body.get('otp', '')).strip()
-            digits = re.sub(r'\D', '', mobile)
-
-            cached = GLOBAL_OTP_CACHE.get(digits) or GLOBAL_OTP_CACHE.get(mobile)
-            if (cached and cached['otp'] == otp) or otp in ('123456', '482910', '999999', '000000'):
-                self.send_json(200, {'success': True, 'verified': True, 'message': 'Mobile number verified successfully!'})
-            else:
-                self.send_json(400, {'detail': 'Invalid OTP code. Please enter the 6-digit OTP sent to your phone.'})
-            return
-
         # Registration Endpoint (POST /api/v1/auth/register, /auth/register/, /auth/register, /api/auth/register)
-        if path in ('/api/v1/auth/register', '/auth/register/', '/auth/register', '/api/auth/register'):
+        register_paths = (
+            '/api/v1/auth/register', '/api/v1/auth/register/',
+            '/auth/register/', '/auth/register',
+            '/api/auth/register', '/api/auth/register/'
+        )
+        if path in register_paths:
             length = int(self.headers.get('Content-Length', 0))
             post_data = self.rfile.read(length) if length > 0 else b'{}'
             try:
                 body = json.loads(post_data.decode('utf-8'))
             except Exception:
-                self.send_json(400, {'error': 'Invalid JSON'})
+                self.send_json(400, {'error': 'Invalid JSON', 'detail': 'Malformed request body.'})
                 return
 
             email = str(body.get('email', '')).strip().lower()
             name = str(body.get('name', '')).strip()
-            mobile = str(body.get('mobile', body.get('mobileNumber', ''))).strip()
             username = str(body.get('username', '')).strip().lower()
-            password = str(body.get('password', 'demo12345')).strip()
+            password = str(body.get('password', '')).strip()
+            verification_token = str(body.get('verificationToken', body.get('verification_token', ''))).strip()
 
             if not email:
-                self.send_json(400, {'detail': 'Email is required.', 'error': 'Missing email'})
+                self.send_json(400, {'detail': 'Email address is required.', 'error': 'Missing email'})
+                return
+
+            if not password:
+                self.send_json(400, {'detail': 'Password is required.', 'error': 'Missing password'})
+                return
+
+            if len(password) < 8:
+                self.send_json(400, {
+                    'detail': 'Password must be at least 8 characters long.',
+                    'error': 'Password too short'
+                })
+                return
+
+            # Require valid email OTP verification token
+            now = time.time()
+            v_record = VERIFIED_TOKENS.get(verification_token)
+            if not v_record or v_record.get('email') != email or now > v_record.get('expires_at', 0):
+                self.send_json(400, {
+                    'detail': 'Email verification required. Please verify your email with OTP first.',
+                    'error': 'Unverified email'
+                })
+                return
+
+            # Single-use token: consume immediately
+            VERIFIED_TOKENS.pop(verification_token, None)
+
+            # Check if user already exists
+            existing_user = None
+            for u in DEV_PROFILES.values():
+                if u.get('email', '').strip().lower() == email:
+                    existing_user = u
+                    break
+
+            if existing_user:
+                self.send_json(400, {
+                    'detail': 'An account with this email address already exists. Please sign in instead.',
+                    'error': 'User exists'
+                })
                 return
 
             if not username:
                 derived = re.sub(r'[^a-zA-Z0-9_]', '', email.split('@')[0].lower())
                 username = derived or f"dev_{int(time.time())}"
 
-            # Check if user already exists (idempotent creation)
-            existing_user = get_developer_by_identifier(username) or get_developer_by_identifier(email)
-            if existing_user:
-                new_user = existing_user
-                if mobile:
-                    new_user['mobile'] = mobile
-            else:
-                user_data = {
-                    'name': name or username,
-                    'username': username,
-                    'email': email,
-                    'mobile': mobile,
-                    'password': password
-                }
-                new_user = ensure_user_profile(user_data)
-                save_database()
+            orig_username = username
+            counter = 1
+            while get_developer_by_identifier(username):
+                username = f"{orig_username}_{counter}"
+                counter += 1
+
+            # Securely hash password with Django PBKDF2 hasher
+            hashed_password = make_password(password)
+
+            user_data = {
+                'name': name or username,
+                'username': username,
+                'email': email,
+                'password': hashed_password,
+                'isVerified': True,
+                'authProvider': 'local'
+            }
+            new_user = ensure_user_profile(user_data)
+            save_database()
 
             token = f"devsync_token_{secrets.token_hex(20)}"
             user_summary = {
@@ -1200,7 +1822,6 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
                 'name': new_user['name'],
                 'username': new_user['username'],
                 'email': new_user.get('email', f"{new_user['username']}@devsync.dev"),
-                'mobile': new_user.get('mobile', mobile),
                 'role': new_user.get('role', 'Developer'),
                 'avatar': new_user.get('avatar', ''),
                 'location': new_user.get('location', '')
@@ -1214,17 +1835,372 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
                 'access': token,
                 'token': token,
                 'user': user_summary,
-                'message': 'Account and developer profile created successfully!'
+                'message': f"Account and developer profile created successfully! Welcome to DevSync, {new_user['name']}!"
             })
             return
 
-        # Pin Project Endpoint (POST /api/developers/<username>/pin)
+        # Legacy Mobile OTP fallback (POST /api/v1/auth/send-otp, /api/auth/send-otp)
+        if path in ('/api/v1/auth/send-otp', '/api/auth/send-otp'):
+            length = int(self.headers.get('Content-Length', 0))
+            post_data = self.rfile.read(length) if length > 0 else b'{}'
+            try:
+                body = json.loads(post_data.decode('utf-8'))
+            except Exception:
+                self.send_json(400, {'error': 'Invalid JSON'})
+                return
+
+            email = str(body.get('email', '')).strip().lower()
+            if email:
+                # Forward to email OTP handler
+                self.send_json(400, {'detail': 'Please use /api/v1/auth/send-email-otp for email verification.'})
+                return
+
+            self.send_json(400, {'detail': 'Mobile OTP verification has been deprecated. DevSync now uses Email OTP verification for account setup.'})
+            return
+
+
+        # POST /api/v1/repositories/<repo_id>/upload
+        m_upload = re.match(r'^/api/(?:v1/)?repositories/([^/]+)/upload/?$', path)
+        if m_upload:
+            repo_id = m_upload.group(1)
+            repo = get_repository_by_id_or_name(repo_id)
+            if not repo:
+                self.send_json(404, {'error': f'Repository {repo_id} not found'})
+                return
+            auth_user = self.get_authenticated_user()
+            if not auth_user:
+                self.send_json(401, {'error': 'Authentication required. Please sign in.'})
+                return
+            can_view, role, is_owner, is_maint, is_collab = check_repo_permissions(auth_user, repo)
+            if not is_collab:
+                self.send_json(403, {'error': 'Forbidden: You do not have write permissions to upload files to this repository.'})
+                return
+
+            length = int(self.headers.get('Content-Length', 0))
+            post_data = self.rfile.read(length) if length > 0 else b'{}'
+            try:
+                body = json.loads(post_data.decode('utf-8'))
+            except Exception:
+                self.send_json(400, {'error': 'Invalid JSON', 'detail': 'Malformed request body.'})
+                return
+
+            branch = str(body.get('branch', '')).strip()
+            file_path = str(body.get('filePath', body.get('path', ''))).strip()
+            content = body.get('content', '')
+            commit_msg = str(body.get('commitMessage', body.get('message', ''))).strip()
+            overwrite = bool(body.get('overwrite', False))
+
+            if not branch:
+                self.send_json(400, {'error': 'Missing branch', 'detail': 'Target branch is required.'})
+                return
+            if not file_path:
+                self.send_json(400, {'error': 'Missing path', 'detail': 'Destination file path is required.'})
+                return
+
+            ok, res, status = handle_branch_file_upload(
+                repo, branch, file_path, content, commit_msg, auth_user['username'],
+                overwrite=overwrite, base_data_dir=DATA_DIR
+            )
+            if ok:
+                save_database()
+            self.send_json(status, res)
+            return
+
+        # POST /api/v1/repositories/<repo_id>/attachments
+        m_att_post = re.match(r'^/api/(?:v1/)?repositories/([^/]+)/attachments/?$', path)
+        if m_att_post:
+            repo_id = m_att_post.group(1)
+            repo = get_repository_by_id_or_name(repo_id)
+            if not repo:
+                self.send_json(404, {'error': f'Repository {repo_id} not found'})
+                return
+            auth_user = self.get_authenticated_user()
+            if not auth_user:
+                self.send_json(401, {'error': 'Authentication required'})
+                return
+            can_view, role, is_owner, is_maint, is_collab = check_repo_permissions(auth_user, repo)
+            if not is_collab:
+                self.send_json(403, {'error': 'Forbidden: Write permission required to upload project attachments.'})
+                return
+
+            length = int(self.headers.get('Content-Length', 0))
+            post_data = self.rfile.read(length) if length > 0 else b'{}'
+            try:
+                body = json.loads(post_data.decode('utf-8'))
+            except Exception:
+                self.send_json(400, {'error': 'Invalid JSON'})
+                return
+
+            file_name = str(body.get('name', body.get('fileName', ''))).strip()
+            content = body.get('content', '')
+            file_type = str(body.get('fileType', 'application/octet-stream')).strip()
+            desc = str(body.get('description', '')).strip()
+
+            if not file_name:
+                self.send_json(400, {'error': 'Missing file name'})
+                return
+
+            ok, res, status = handle_attachment_upload(repo, file_name, content, file_type, desc, auth_user['username'], base_data_dir=DATA_DIR)
+            if ok:
+                save_database()
+            self.send_json(status, res)
+            return
+
+        # POST /api/v1/repositories/<repo_id>/members
+        m_mem_post = re.match(r'^/api/(?:v1/)?repositories/([^/]+)/members/?$', path)
+        if m_mem_post:
+            repo_id = m_mem_post.group(1)
+            repo = get_repository_by_id_or_name(repo_id)
+            if not repo:
+                self.send_json(404, {'error': f'Repository {repo_id} not found'})
+                return
+            auth_user = self.get_authenticated_user()
+            if not auth_user:
+                self.send_json(401, {'error': 'Authentication required'})
+                return
+            can_view, role, is_owner, is_maint, is_collab = check_repo_permissions(auth_user, repo)
+            if not (is_owner or is_maint):
+                self.send_json(403, {'error': 'Forbidden: Only owners and maintainers can invite collaborators.'})
+                return
+
+            length = int(self.headers.get('Content-Length', 0))
+            post_data = self.rfile.read(length) if length > 0 else b'{}'
+            try:
+                body = json.loads(post_data.decode('utf-8'))
+            except Exception:
+                self.send_json(400, {'error': 'Invalid JSON'})
+                return
+
+            target_user = str(body.get('username', '')).strip().lower()
+            role_to_assign = str(body.get('role', 'Collaborator')).strip()
+            resp_label = str(body.get('responsibility', 'Contributor')).strip()
+            assigned_tasks = body.get('assignedTasks', [])
+
+            if not target_user:
+                self.send_json(400, {'error': 'Username is required'})
+                return
+
+            dev_target = get_developer_by_identifier(target_user)
+            if not dev_target:
+                self.send_json(404, {'error': f'User @{target_user} does not exist on DevSync.'})
+                return
+
+            valid_roles = ('Owner', 'Maintainer', 'Collaborator', 'Viewer')
+            if role_to_assign not in valid_roles:
+                self.send_json(400, {'error': f'Invalid role. Must be one of {valid_roles}'})
+                return
+
+            if role_to_assign == 'Owner' and not is_owner:
+                self.send_json(403, {'error': 'Forbidden: Only the repository owner can transfer or assign Owner role.'})
+                return
+
+            members = repo.setdefault('members', [])
+            existing_mem = next((m for m in members if m.get('username', '').lower() == target_user), None)
+            now = time.time()
+            if existing_mem:
+                existing_mem['role'] = role_to_assign
+                existing_mem['responsibility'] = resp_label
+                if assigned_tasks:
+                    existing_mem['assignedTasks'] = assigned_tasks
+                action_text = "updated"
+            else:
+                members.append({
+                    'username': target_user,
+                    'role': role_to_assign,
+                    'responsibility': resp_label,
+                    'assignedTasks': assigned_tasks,
+                    'joined_at': now
+                })
+                action_text = "added"
+
+            repo['updated_at'] = now
+            record_activity_event(
+                'collaborator_added',
+                auth_user['username'],
+                repo['name'],
+                title=f"{'Updated' if existing_mem else 'Added'} collaborator @{target_user} as {role_to_assign}",
+                description=f"Assigned responsibility: {resp_label}",
+                visibility=repo.get('visibility', 'Public')
+            )
+            save_database()
+            self.send_json(200 if existing_mem else 201, {
+                'success': True,
+                'message': f"Collaborator @{target_user} successfully {action_text}.",
+                'member': {
+                    'username': target_user,
+                    'role': role_to_assign,
+                    'responsibility': resp_label,
+                    'assignedTasks': assigned_tasks
+                },
+                'membersCount': len(members)
+            })
+            return
+
+        # POST /api/v1/repositories/<repo_id>/branches
+        m_branch_post = re.match(r'^/api/(?:v1/)?repositories/([^/]+)/branches/?$', path)
+        if m_branch_post:
+            repo_id = m_branch_post.group(1)
+            repo = get_repository_by_id_or_name(repo_id)
+            if not repo:
+                self.send_json(404, {'error': f'Repository {repo_id} not found'})
+                return
+            auth_user = self.get_authenticated_user()
+            if not auth_user:
+                self.send_json(401, {'error': 'Authentication required'})
+                return
+            can_view, role, is_owner, is_maint, is_collab = check_repo_permissions(auth_user, repo)
+            if not is_collab:
+                self.send_json(403, {'error': 'Forbidden: Write permission required to create branches.'})
+                return
+
+            length = int(self.headers.get('Content-Length', 0))
+            post_data = self.rfile.read(length) if length > 0 else b'{}'
+            try:
+                body = json.loads(post_data.decode('utf-8'))
+            except Exception:
+                self.send_json(400, {'error': 'Invalid JSON'})
+                return
+
+            new_branch = str(body.get('name', body.get('branch', ''))).strip()
+            from_branch = str(body.get('fromBranch', body.get('from', repo.get('defaultBranch', 'main')))).strip()
+
+            if not new_branch or not re.match(r'^[a-zA-Z0-9_\-\./]+$', new_branch):
+                self.send_json(400, {'error': 'Invalid branch name. Use alphanumeric characters, slashes, dashes.'})
+                return
+
+            if new_branch in repo.get('branches', []):
+                self.send_json(400, {'error': f"Branch '{new_branch}' already exists."})
+                return
+
+            repo.setdefault('branches', []).append(new_branch)
+            source_files = repo.get('files', {}).get(from_branch, [])
+            repo.setdefault('files', {})[new_branch] = [dict(f) for f in source_files]
+            repo['updated_at'] = time.time()
+
+            record_activity_event(
+                'branch_created',
+                auth_user['username'],
+                repo['name'],
+                branch=new_branch,
+                title=f"Created branch {new_branch} from {from_branch}",
+                description=f"Branch initialized with {len(source_files)} files from {from_branch}.",
+                visibility=repo.get('visibility', 'Public')
+            )
+            save_database()
+            self.send_json(201, {
+                'success': True,
+                'message': f"Branch '{new_branch}' created successfully from '{from_branch}'.",
+                'branch': new_branch,
+                'fromBranch': from_branch,
+                'branchesCount': len(repo['branches'])
+            })
+            return
+
+        # POST /api/v1/repositories (create repository)
+        if path in ('/api/v1/repositories', '/api/repositories', '/api/v1/repositories/', '/api/repositories/'):
+            auth_user = self.get_authenticated_user()
+            if not auth_user:
+                self.send_json(401, {'error': 'Authentication required. Please sign in to create a repository.'})
+                return
+
+            length = int(self.headers.get('Content-Length', 0))
+            post_data = self.rfile.read(length) if length > 0 else b'{}'
+            try:
+                body = json.loads(post_data.decode('utf-8'))
+            except Exception:
+                self.send_json(400, {'error': 'Invalid JSON'})
+                return
+
+            name = str(body.get('name', '')).strip()
+            description = str(body.get('description', '')).strip()
+            visibility = 'Private' if str(body.get('visibility', '')).lower() == 'private' else 'Public'
+            init_readme = bool(body.get('initReadme', True))
+            lang = str(body.get('language', 'Python')).strip()
+
+            if not name or not re.match(r'^[a-zA-Z0-9_\-\.]+$', name):
+                self.send_json(400, {'error': 'Invalid repository name. Alphanumeric, dash, and underscore allowed.'})
+                return
+
+            if get_repository_by_id_or_name(name):
+                self.send_json(400, {'error': f"Repository '{name}' already exists."})
+                return
+
+            now = time.time()
+            repo_id = f"repo-{name.lower()}"
+            new_repo = {
+                'id': repo_id,
+                'name': name,
+                'owner': auth_user['username'],
+                'description': description or f"{name} repository on DevSync.",
+                'language': lang,
+                'languageColor': '#3572A5' if lang == 'Python' else '#F59E0B',
+                'visibility': visibility,
+                'defaultBranch': 'main',
+                'created_at': now,
+                'updated_at': now,
+                'stars': 0,
+                'forks': 0,
+                'branches': ['main'],
+                'members': [
+                    {
+                        'username': auth_user['username'],
+                        'role': 'Owner',
+                        'responsibility': 'Project Owner',
+                        'assignedTasks': [],
+                        'joined_at': now
+                    }
+                ],
+                'milestones': [],
+                'tasks': [],
+                'files': {'main': []},
+                'attachments': [],
+                'audit_log': []
+            }
+
+            if init_readme:
+                readme_content = f"# {name}\n\n{description or 'Welcome to ' + name + ' on DevSync.'}\n"
+                new_repo['files']['main'].append({
+                    'path': 'README.md',
+                    'name': 'README.md',
+                    'type': 'file',
+                    'size': len(readme_content),
+                    'updated_at': now,
+                    'last_commit': 'Initial commit with README.md',
+                    'last_actor': auth_user['username'],
+                    'content': readme_content
+                })
+
+            REPOSITORIES[name] = new_repo
+            record_activity_event(
+                'repository_created',
+                auth_user['username'],
+                name,
+                branch='main',
+                title=f"Created {visibility.lower()} repository {name}",
+                description=description,
+                visibility=visibility
+            )
+            save_database()
+            self.send_json(201, {
+                'success': True,
+                'message': f"Repository '{name}' created successfully.",
+                'repository': new_repo
+            })
+            return
+
+        # Pin Project Endpoint (POST /api/developers/<username>/pin, POST /api/v1/developers/<username>/pin)
         if '/pin' in path and ('/api/developers/' in path or '/api/v1/developers/' in path):
             parts = path.split('/')
             username = parts[parts.index('pin') - 1].lower() if 'pin' in parts else ''
             dev = get_developer_by_identifier(username)
             if not dev:
                 self.send_json(404, {'error': 'Developer not found'})
+                return
+
+            auth_user = self.get_authenticated_user()
+            caller = auth_user['username'].lower() if auth_user else self.headers.get('X-DevSync-User', '').strip().lower()
+            if caller != username:
+                self.send_json(403, {'error': 'Forbidden: You can only pin projects on your own profile.'})
                 return
 
             length = int(self.headers.get('Content-Length', 0))
@@ -1235,15 +2211,38 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
             except Exception:
                 repo_id = None
 
+            if not repo_id:
+                self.send_json(400, {'error': 'Project ID is required to pin or unpin.'})
+                return
+
             pinned = dev.get('pinnedProjects', [])
-            if repo_id:
-                if repo_id in pinned:
-                    pinned.remove(repo_id)
-                else:
-                    pinned.append(repo_id)
+            if repo_id in pinned:
+                pinned.remove(repo_id)
+                msg = f"Project '{repo_id}' unpinned from profile."
+                action = 'unpinned'
+            else:
+                if len(pinned) >= 4:
+                    self.send_json(400, {
+                        'error': 'Pin limit reached',
+                        'detail': 'You can pin a maximum of 4 projects on your profile. Please unpin an existing project first.',
+                        'pinnedLimit': 4,
+                        'pinnedCount': len(pinned)
+                    })
+                    return
+                pinned.append(repo_id)
+                msg = f"Project '{repo_id}' pinned to profile successfully!"
+                action = 'pinned'
+
             dev['pinnedProjects'] = pinned
             save_database()
-            self.send_json(200, {'pinnedProjects': pinned})
+            self.send_json(200, {
+                'success': True,
+                'message': msg,
+                'action': action,
+                'pinnedProjects': pinned,
+                'pinnedCount': len(pinned),
+                'pinnedLimit': 4
+            })
             return
 
         # Follow Endpoint (POST /api/developers/<username>/follow)
@@ -1270,6 +2269,75 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
     def do_PATCH(self):
         url_parts = urllib.parse.urlsplit(self.path)
         path = url_parts.path.rstrip('/')
+
+        # PATCH /api/v1/repositories/<repo_id>/members/<username>
+        m_mem_patch = re.match(r'^/api/(?:v1/)?repositories/([^/]+)/members/([^/]+)/?$', path)
+        if m_mem_patch:
+            repo_id = m_mem_patch.group(1)
+            target_username = m_mem_patch.group(2).lower()
+            repo = get_repository_by_id_or_name(repo_id)
+            if not repo:
+                self.send_json(404, {'error': 'Repository not found'})
+                return
+            auth_user = self.get_authenticated_user()
+            if not auth_user:
+                self.send_json(401, {'error': 'Authentication required'})
+                return
+            can_view, role, is_owner, is_maint, is_collab = check_repo_permissions(auth_user, repo)
+            if not (is_owner or is_maint):
+                self.send_json(403, {'error': 'Forbidden: Only owners and maintainers can update member roles.'})
+                return
+
+            length = int(self.headers.get('Content-Length', 0))
+            post_data = self.rfile.read(length) if length > 0 else b'{}'
+            try:
+                body = json.loads(post_data.decode('utf-8'))
+            except Exception:
+                self.send_json(400, {'error': 'Invalid JSON'})
+                return
+
+            members = repo.get('members', [])
+            mem = next((m for m in members if m.get('username', '').lower() == target_username), None)
+            if not mem:
+                self.send_json(404, {'error': f'Member @{target_username} not found in this repository.'})
+                return
+
+            if mem.get('role') == 'Owner' and not is_owner:
+                self.send_json(403, {'error': 'Forbidden: Only repository owner can change owner permissions.'})
+                return
+
+            if 'role' in body:
+                new_role = str(body['role']).strip()
+                if new_role not in ('Owner', 'Maintainer', 'Collaborator', 'Viewer'):
+                    self.send_json(400, {'error': 'Invalid role.'})
+                    return
+                if new_role == 'Owner' and not is_owner:
+                    self.send_json(403, {'error': 'Only owner can assign Owner role.'})
+                    return
+                mem['role'] = new_role
+
+            if 'responsibility' in body:
+                mem['responsibility'] = str(body['responsibility']).strip()
+
+            if 'assignedTasks' in body and isinstance(body['assignedTasks'], list):
+                mem['assignedTasks'] = body['assignedTasks']
+
+            repo['updated_at'] = time.time()
+            record_activity_event(
+                'collaborator_updated',
+                auth_user['username'],
+                repo['name'],
+                title=f"Updated role/responsibility for @{target_username}",
+                description=f"Role: {mem.get('role')} | Responsibility: {mem.get('responsibility')}",
+                visibility=repo.get('visibility', 'Public')
+            )
+            save_database()
+            self.send_json(200, {
+                'success': True,
+                'message': f'Member @{target_username} updated successfully.',
+                'member': mem
+            })
+            return
 
         # Profile Update API Endpoint (PATCH /api/developers/<username>, /api/v1/developers/<username>)
         if path.startswith('/api/developers/') or path.startswith('/api/v1/developers/'):
@@ -1303,6 +2371,60 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
             return
 
         self.serve_custom_error(405)
+
+    def do_DELETE(self):
+        url_parts = urllib.parse.urlsplit(self.path)
+        path = url_parts.path.rstrip('/')
+
+        # Remove repository member: DELETE /api/v1/repositories/<repo_id>/members/<username>
+        m = re.match(r'^/api/(?:v1/)?repositories/([^/]+)/members/([^/]+)/?$', path)
+        if m:
+            repo_id = m.group(1)
+            target_username = m.group(2).lower()
+            repo = get_repository_by_id_or_name(repo_id)
+            if not repo:
+                self.send_json(404, {'error': 'Repository not found'})
+                return
+
+            auth_user = self.get_authenticated_user()
+            if not auth_user:
+                self.send_json(401, {'error': 'Authentication required'})
+                return
+
+            can_view, role, is_owner, is_maint, is_collab = check_repo_permissions(auth_user, repo)
+            if not (is_owner or is_maint):
+                self.send_json(403, {'error': 'Forbidden: Only owners and maintainers can remove members.'})
+                return
+
+            if target_username == repo.get('owner', '').lower():
+                self.send_json(400, {'error': 'Repository owner cannot be removed.'})
+                return
+
+            initial_count = len(repo.get('members', []))
+            repo['members'] = [mem for mem in repo.get('members', []) if mem.get('username', '').lower() != target_username]
+            if len(repo['members']) == initial_count:
+                self.send_json(404, {'error': f'Member @{target_username} not found in this repository.'})
+                return
+
+            repo['updated_at'] = time.time()
+            record_activity_event(
+                'collaborator_removed',
+                auth_user['username'],
+                repo['name'],
+                title=f"Removed collaborator @{target_username}",
+                description=f"Collaborator @{target_username} was removed from {repo['name']}.",
+                visibility=repo.get('visibility', 'Public')
+            )
+            save_database()
+            self.send_json(200, {
+                'success': True,
+                'message': f'Member @{target_username} removed from repository.',
+                'membersCount': len(repo['members'])
+            })
+            return
+
+        self.serve_custom_error(405)
+
 
     def handle_ai_chat(self):
         content_length = int(self.headers.get('Content-Length', 0))
@@ -1359,7 +2481,7 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
         self.send_header('Cache-Control', 'no-cache, must-revalidate')
 
         if code == 405:
-            self.send_header('Allow', 'GET, HEAD, POST, PATCH')
+            self.send_header('Allow', 'GET, HEAD, POST, PATCH, DELETE, OPTIONS')
         elif code == 429:
             self.send_header('Retry-After', '30')
 

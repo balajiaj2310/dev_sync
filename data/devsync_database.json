@@ -5,7 +5,7 @@
       "name": "Naveen Kumar D",
       "username": "naveen3438",
       "email": "naveen@devsync.dev",
-      "password": "demo12345",
+      "password": "pbkdf2_sha256$1500000$mzvUcAZ8XCfuuEKKbUI8d0$5TNjOJHqQh3RwwxVlTSekxzmgiNPLBfiCg7vevfdlsA=",
       "role": "Developer",
       "isVerified": true,
       "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
@@ -358,7 +358,7 @@
       "name": "Balaji",
       "username": "balajikumar",
       "email": "balaji@devsync.dev",
-      "password": "demo12345",
+      "password": "pbkdf2_sha256$1500000$lrvH7BkMMS4Kc2LmFcWpAP$S0RlH7FGM5svCZe0Pd5u2Grm2+or+xcPFKl/LDcVFDc=",
       "role": "Core Contributor",
       "isVerified": true,
       "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80",
@@ -1212,7 +1212,1459 @@
         "pullRequestsCount": 0,
         "issuesCount": 0
       }
+    },
+    "tester_1792420487": {
+      "id": "dev-tester_1792420487",
+      "name": "Test Developer",
+      "username": "tester_1792420487",
+      "email": "tester_1792420487@example.com",
+      "password": "pbkdf2_sha256$1500000$Z442Y3qlhWFQ0KeOg1WrH2$8nuR49KGJ8xvuDGI/2jG9OKSi+8noeRVtw1avTVUeKo=",
+      "role": "Developer",
+      "isVerified": true,
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+      "headline": "Passionate Developer building meaningful web applications and exploring modern technologies.",
+      "bio": "Hello, I am Test Developer. I enjoy building software, collaborating with fellow engineers, and shipping high-quality code on DevSync.",
+      "location": "Bengaluru, India",
+      "website": "https://tester_1792420487.dev",
+      "social": {
+        "github": "https://github.com/tester_1792420487",
+        "linkedin": "https://linkedin.com/in/tester_1792420487",
+        "instagram": "https://instagram.com/tester_1792420487"
+      },
+      "collaborationStatus": "Available for collaboration",
+      "collaborationStatusType": "available",
+      "openToInvitations": true,
+      "education": {
+        "degree": "BCA Student",
+        "institution": "Bengaluru City University",
+        "location": "Bengaluru, India",
+        "field": "Computer Applications",
+        "timeline": "2022 - 2025"
+      },
+      "experience": [
+        {
+          "role": "Full Stack Contributor",
+          "organization": "DevSync Community",
+          "timeline": "2024 - Present",
+          "description": "Building open source developer collaboration tools and web applications."
+        }
+      ],
+      "skills": [
+        {
+          "name": "Python",
+          "category": "Backend",
+          "color": "blue"
+        },
+        {
+          "name": "Django",
+          "category": "Backend",
+          "color": "mint"
+        },
+        {
+          "name": "JavaScript",
+          "category": "Frontend",
+          "color": "amber"
+        },
+        {
+          "name": "React",
+          "category": "Frontend",
+          "color": "cyan"
+        },
+        {
+          "name": "Git",
+          "category": "Tool",
+          "color": "neutral"
+        },
+        {
+          "name": "GitHub",
+          "category": "Tool",
+          "color": "neutral"
+        }
+      ],
+      "pinnedProjects": [
+        "repo-tester_1792420487-core"
+      ],
+      "projects": [
+        {
+          "id": "repo-tester_1792420487-core",
+          "name": "tester_1792420487-workspace",
+          "description": "Personal developer workspace and project repository on DevSync.",
+          "tags": [
+            {
+              "name": "Python",
+              "color": "blue"
+            },
+            {
+              "name": "JavaScript",
+              "color": "amber"
+            }
+          ],
+          "stars": 12,
+          "forks": 3,
+          "updated": "Updated recently",
+          "visibility": "Public",
+          "iconBg": "#0D9488",
+          "relationship": "Owner"
+        }
+      ],
+      "achievements": [
+        {
+          "id": "ach-1-tester_1792420487",
+          "title": "First Project",
+          "description": "Created first public project",
+          "color": "green",
+          "date": "2024"
+        },
+        {
+          "id": "ach-2-tester_1792420487",
+          "title": "Collaborator",
+          "description": "Worked with 5+ developers",
+          "color": "blue",
+          "date": "2024"
+        }
+      ],
+      "activities": [
+        {
+          "id": "act-1-tester_1792420487",
+          "title": "Joined DevSync",
+          "description": "Created account and public profile on DevSync.",
+          "time": "Recently"
+        }
+      ],
+      "teams": [],
+      "collaborators": [],
+      "stats": {
+        "followers": 0,
+        "following": 0,
+        "projects": 1,
+        "teams": 0,
+        "repositoriesCount": 1,
+        "contributionsCount": 0,
+        "pullRequestsCount": 0,
+        "issuesCount": 0
+      }
+    },
+    "tester_1792421766": {
+      "id": "dev-tester_1792421766",
+      "name": "Test Developer",
+      "username": "tester_1792421766",
+      "email": "tester_1792421766@example.com",
+      "password": "pbkdf2_sha256$1500000$hhVLCFjFr0yhvmZiEr2mhr$Kkl6mV4e0UFI6EQ4ousjinjrnGQobXPQkdUjermZ0Co=",
+      "role": "Developer",
+      "isVerified": true,
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+      "headline": "Passionate Developer building meaningful web applications and exploring modern technologies.",
+      "bio": "Hello, I am Test Developer. I enjoy building software, collaborating with fellow engineers, and shipping high-quality code on DevSync.",
+      "location": "Bengaluru, India",
+      "website": "https://tester_1792421766.dev",
+      "social": {
+        "github": "https://github.com/tester_1792421766",
+        "linkedin": "https://linkedin.com/in/tester_1792421766",
+        "instagram": "https://instagram.com/tester_1792421766"
+      },
+      "collaborationStatus": "Available for collaboration",
+      "collaborationStatusType": "available",
+      "openToInvitations": true,
+      "education": {
+        "degree": "BCA Student",
+        "institution": "Bengaluru City University",
+        "location": "Bengaluru, India",
+        "field": "Computer Applications",
+        "timeline": "2022 - 2025"
+      },
+      "experience": [
+        {
+          "role": "Full Stack Contributor",
+          "organization": "DevSync Community",
+          "timeline": "2024 - Present",
+          "description": "Building open source developer collaboration tools and web applications."
+        }
+      ],
+      "skills": [
+        {
+          "name": "Python",
+          "category": "Backend",
+          "color": "blue"
+        },
+        {
+          "name": "Django",
+          "category": "Backend",
+          "color": "mint"
+        },
+        {
+          "name": "JavaScript",
+          "category": "Frontend",
+          "color": "amber"
+        },
+        {
+          "name": "React",
+          "category": "Frontend",
+          "color": "cyan"
+        },
+        {
+          "name": "Git",
+          "category": "Tool",
+          "color": "neutral"
+        },
+        {
+          "name": "GitHub",
+          "category": "Tool",
+          "color": "neutral"
+        }
+      ],
+      "pinnedProjects": [
+        "repo-tester_1792421766-core"
+      ],
+      "projects": [
+        {
+          "id": "repo-tester_1792421766-core",
+          "name": "tester_1792421766-workspace",
+          "description": "Personal developer workspace and project repository on DevSync.",
+          "tags": [
+            {
+              "name": "Python",
+              "color": "blue"
+            },
+            {
+              "name": "JavaScript",
+              "color": "amber"
+            }
+          ],
+          "stars": 12,
+          "forks": 3,
+          "updated": "Updated recently",
+          "visibility": "Public",
+          "iconBg": "#0D9488",
+          "relationship": "Owner"
+        }
+      ],
+      "achievements": [
+        {
+          "id": "ach-1-tester_1792421766",
+          "title": "First Project",
+          "description": "Created first public project",
+          "color": "green",
+          "date": "2024"
+        },
+        {
+          "id": "ach-2-tester_1792421766",
+          "title": "Collaborator",
+          "description": "Worked with 5+ developers",
+          "color": "blue",
+          "date": "2024"
+        }
+      ],
+      "activities": [
+        {
+          "id": "act-1-tester_1792421766",
+          "title": "Joined DevSync",
+          "description": "Created account and public profile on DevSync.",
+          "time": "Recently"
+        }
+      ],
+      "teams": [],
+      "collaborators": [],
+      "stats": {
+        "followers": 0,
+        "following": 0,
+        "projects": 1,
+        "teams": 0,
+        "repositoriesCount": 1,
+        "contributionsCount": 0,
+        "pullRequestsCount": 0,
+        "issuesCount": 0
+      }
+    },
+    "tester_1792422937": {
+      "id": "dev-tester_1792422937",
+      "name": "Test Developer",
+      "username": "tester_1792422937",
+      "email": "tester_1792422937@example.com",
+      "password": "pbkdf2_sha256$1500000$lSL4ubjNFw52UoBF7mW7VD$njd86XqwIn1TbIJ4Qe9N+4eAhscwHb28fuxHMWTZ7w8=",
+      "role": "Developer",
+      "isVerified": true,
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+      "headline": "Passionate Developer building meaningful web applications and exploring modern technologies.",
+      "bio": "Hello, I am Test Developer. I enjoy building software, collaborating with fellow engineers, and shipping high-quality code on DevSync.",
+      "location": "Bengaluru, India",
+      "website": "https://tester_1792422937.dev",
+      "social": {
+        "github": "https://github.com/tester_1792422937",
+        "linkedin": "https://linkedin.com/in/tester_1792422937",
+        "instagram": "https://instagram.com/tester_1792422937"
+      },
+      "collaborationStatus": "Available for collaboration",
+      "collaborationStatusType": "available",
+      "openToInvitations": true,
+      "education": {
+        "degree": "BCA Student",
+        "institution": "Bengaluru City University",
+        "location": "Bengaluru, India",
+        "field": "Computer Applications",
+        "timeline": "2022 - 2025"
+      },
+      "experience": [
+        {
+          "role": "Full Stack Contributor",
+          "organization": "DevSync Community",
+          "timeline": "2024 - Present",
+          "description": "Building open source developer collaboration tools and web applications."
+        }
+      ],
+      "skills": [
+        {
+          "name": "Python",
+          "category": "Backend",
+          "color": "blue"
+        },
+        {
+          "name": "Django",
+          "category": "Backend",
+          "color": "mint"
+        },
+        {
+          "name": "JavaScript",
+          "category": "Frontend",
+          "color": "amber"
+        },
+        {
+          "name": "React",
+          "category": "Frontend",
+          "color": "cyan"
+        },
+        {
+          "name": "Git",
+          "category": "Tool",
+          "color": "neutral"
+        },
+        {
+          "name": "GitHub",
+          "category": "Tool",
+          "color": "neutral"
+        }
+      ],
+      "pinnedProjects": [
+        "repo-tester_1792422937-core"
+      ],
+      "projects": [
+        {
+          "id": "repo-tester_1792422937-core",
+          "name": "tester_1792422937-workspace",
+          "description": "Personal developer workspace and project repository on DevSync.",
+          "tags": [
+            {
+              "name": "Python",
+              "color": "blue"
+            },
+            {
+              "name": "JavaScript",
+              "color": "amber"
+            }
+          ],
+          "stars": 12,
+          "forks": 3,
+          "updated": "Updated recently",
+          "visibility": "Public",
+          "iconBg": "#0D9488",
+          "relationship": "Owner"
+        }
+      ],
+      "achievements": [
+        {
+          "id": "ach-1-tester_1792422937",
+          "title": "First Project",
+          "description": "Created first public project",
+          "color": "green",
+          "date": "2024"
+        },
+        {
+          "id": "ach-2-tester_1792422937",
+          "title": "Collaborator",
+          "description": "Worked with 5+ developers",
+          "color": "blue",
+          "date": "2024"
+        }
+      ],
+      "activities": [
+        {
+          "id": "act-1-tester_1792422937",
+          "title": "Joined DevSync",
+          "description": "Created account and public profile on DevSync.",
+          "time": "Recently"
+        }
+      ],
+      "teams": [],
+      "collaborators": [],
+      "stats": {
+        "followers": 0,
+        "following": 0,
+        "projects": 1,
+        "teams": 0,
+        "repositoriesCount": 1,
+        "contributionsCount": 0,
+        "pullRequestsCount": 0,
+        "issuesCount": 0
+      }
     }
   },
-  "version": "1.0.0"
+  "repositories": {
+    "devsync-core": {
+      "id": "repo-devsync",
+      "name": "devsync-core",
+      "owner": "balajikumar",
+      "description": "Core backend microservices, async worker pipelines, and developer collaboration services for DevSync.",
+      "language": "Python",
+      "languageColor": "#3572A5",
+      "visibility": "Private",
+      "defaultBranch": "main",
+      "created_at": 1789829765.893267,
+      "updated_at": 1792422971.2662702,
+      "stars": 28,
+      "forks": 5,
+      "branches": [
+        "main",
+        "develop",
+        "feature/authentication",
+        "hotfix/session-expiry"
+      ],
+      "members": [
+        {
+          "username": "balajikumar",
+          "role": "Owner",
+          "responsibility": "Backend & Architecture",
+          "assignedTasks": [
+            "Database connection pooling",
+            "Redis session engine"
+          ],
+          "joined_at": 1789829765.893267
+        },
+        {
+          "username": "naveen3438",
+          "role": "Maintainer",
+          "responsibility": "Fullstack & API Integration",
+          "assignedTasks": [
+            "Branch-aware file upload pipeline",
+            "Developer profile endpoints"
+          ],
+          "joined_at": 1790261765.893267
+        },
+        {
+          "username": "priyas",
+          "role": "Collaborator",
+          "responsibility": "Frontend & UI Components",
+          "assignedTasks": [
+            "Project Pulse activity graph",
+            "Repository vertical navigation drawer"
+          ],
+          "joined_at": 1790693765.893267
+        },
+        {
+          "username": "ananyaroy",
+          "role": "Collaborator",
+          "responsibility": "DevOps & Cloud Pipelines",
+          "assignedTasks": [
+            "Docker deployment scripts",
+            "Nginx configuration"
+          ],
+          "joined_at": 1790866565.893267
+        },
+        {
+          "username": "vikramrao",
+          "role": "Viewer",
+          "responsibility": "Quality Assurance & Code Review",
+          "assignedTasks": [
+            "Security review of token exchange"
+          ],
+          "joined_at": 1791557765.893267
+        }
+      ],
+      "milestones": [
+        {
+          "id": "m-1",
+          "title": "v1.0 Core Collaboration Engine",
+          "description": "Initial release with repository management, real-time activity and developer profiles.",
+          "due_date": "2026-11-01",
+          "status": "open",
+          "progress": 75
+        },
+        {
+          "id": "m-2",
+          "title": "v0.9 MVP Infrastructure",
+          "description": "Foundational data models, PBKDF2 hashing, and static page architecture.",
+          "due_date": "2026-10-15",
+          "status": "completed",
+          "completed_at": 1792076165.893267,
+          "progress": 100
+        }
+      ],
+      "tasks": [
+        {
+          "id": "t-1",
+          "title": "Implement branch-aware file uploads with checksum verification",
+          "assigned_to": "naveen3438",
+          "responsibility": "Backend",
+          "status": "completed",
+          "completed_at": 1792335365.893267,
+          "milestone_id": "m-1"
+        },
+        {
+          "id": "t-2",
+          "title": "Build DevSync Project Pulse activity timeline and aggregations",
+          "assigned_to": "priyas",
+          "responsibility": "Frontend",
+          "status": "completed",
+          "completed_at": 1792248965.893267,
+          "milestone_id": "m-1"
+        },
+        {
+          "id": "t-3",
+          "title": "Implement repository vertical navigation sidebar with drawer mode",
+          "assigned_to": "priyas",
+          "responsibility": "Frontend",
+          "status": "completed",
+          "completed_at": 1792162565.893267,
+          "milestone_id": "m-1"
+        },
+        {
+          "id": "t-4",
+          "title": "Enforce repository role permissions on member invitations and deletions",
+          "assigned_to": "balajikumar",
+          "responsibility": "Backend",
+          "status": "completed",
+          "completed_at": 1791989765.893267,
+          "milestone_id": "m-1"
+        },
+        {
+          "id": "t-5",
+          "title": "Add multi-branch code browsing and file tree view",
+          "assigned_to": "naveen3438",
+          "responsibility": "Fullstack",
+          "status": "open",
+          "milestone_id": "m-1"
+        },
+        {
+          "id": "t-6",
+          "title": "Optimize PostgreSQL property graph traversal queries",
+          "assigned_to": "ananyaroy",
+          "responsibility": "DevOps",
+          "status": "open",
+          "milestone_id": "m-1"
+        }
+      ],
+      "files": {
+        "main": [
+          {
+            "path": "apps/api/views.py",
+            "name": "views.py",
+            "type": "file",
+            "size": 3420,
+            "updated_at": 1792414565.893267,
+            "last_commit": "Refactor API endpoints and serializers",
+            "last_actor": "balajikumar",
+            "content": "# DevSync Core API Views\nfrom rest_framework.views import APIView\nfrom rest_framework.response import Response\n\nclass RepositoryListView(APIView):\n    def get(self, request):\n        return Response({\"status\": \"ok\"})\n"
+          },
+          {
+            "path": "apps/core/models.py",
+            "name": "models.py",
+            "type": "file",
+            "size": 2180,
+            "updated_at": 1792335365.893267,
+            "last_commit": "Add branch-aware repository model",
+            "last_actor": "naveen3438",
+            "content": "# DevSync Core Models\nimport uuid\nfrom django.db import models\n\nclass Repository(models.Model):\n    name = models.CharField(max_length=255)\n"
+          },
+          {
+            "path": "config/settings.py",
+            "name": "settings.py",
+            "type": "file",
+            "size": 4120,
+            "updated_at": 1792162565.893267,
+            "last_commit": "Configure PBKDF2 hashers and CORS headers",
+            "last_actor": "balajikumar",
+            "content": "# DevSync Settings\nDEBUG = False\n"
+          },
+          {
+            "path": "manage.py",
+            "name": "manage.py",
+            "type": "file",
+            "size": 820,
+            "updated_at": 1791212165.893267,
+            "last_commit": "Initialize Django application environment",
+            "last_actor": "balajikumar",
+            "content": "#!/usr/bin/env python\nimport os, sys\n"
+          },
+          {
+            "path": "README.md",
+            "name": "README.md",
+            "type": "file",
+            "size": 1450,
+            "updated_at": 1792414565.893267,
+            "last_commit": "Update architectural overview and branch workflows",
+            "last_actor": "balajikumar",
+            "content": "# DevSync Core Services\nHigh performance developer collaboration backend written in Python 3.12, utilizing Django REST Framework, PostgreSQL, and Redis caching.\n\n## Architecture Highlights\n- Branch-aware repository file tree management\n- Real-time DevSync Project Pulse activity timeline\n- Strict role-based permissions matrix (Owner, Maintainer, Collaborator, Viewer)\n"
+          }
+        ],
+        "develop": [
+          {
+            "path": "apps/pulse/engine.py",
+            "name": "engine.py",
+            "type": "file",
+            "size": 2840,
+            "updated_at": 1792420865.893267,
+            "last_commit": "Add time-series aggregation buckets for Project Pulse",
+            "last_actor": "naveen3438",
+            "content": "# DevSync Pulse Engine - Real-time activity timeline calculation\n"
+          },
+          {
+            "path": "README.md",
+            "name": "README.md",
+            "type": "file",
+            "size": 1520,
+            "updated_at": 1792420865.893267,
+            "last_commit": "Update develop branch documentation",
+            "last_actor": "naveen3438",
+            "content": "# DevSync Core (Develop Branch)\nContains bleeding-edge features for testing and validation.\n"
+          },
+          {
+            "path": "services/auth_provider.py",
+            "name": "auth_provider.py",
+            "type": "file",
+            "size": 36,
+            "updated_at": 1792421835.2501814,
+            "last_commit": "Add authentication service provider module",
+            "last_actor": "naveen3438",
+            "sha256": "891db46eb3458220b0b14e13475275304f8091d580143003f669440b4c0102aa",
+            "content": "def authenticate():\n    return True\n"
+          },
+          {
+            "path": "services/auth_provider_1792422001.py",
+            "name": "auth_provider_1792422001.py",
+            "type": "file",
+            "size": 32,
+            "updated_at": 1792422001.6938016,
+            "last_commit": "Update auth_provider logic with authorization",
+            "last_actor": "naveen3438",
+            "sha256": "554ef4ff0ced9f04543c8cc11359b316e7629036515fb7181c9c0f4bf56db71c",
+            "content": "modified code with authorization"
+          },
+          {
+            "path": "services/auth_provider_1792422971.py",
+            "name": "auth_provider_1792422971.py",
+            "type": "file",
+            "size": 32,
+            "updated_at": 1792422971.24078,
+            "last_commit": "Update auth_provider logic with authorization",
+            "last_actor": "naveen3438",
+            "sha256": "554ef4ff0ced9f04543c8cc11359b316e7629036515fb7181c9c0f4bf56db71c",
+            "content": "modified code with authorization"
+          }
+        ],
+        "feature/authentication": [
+          {
+            "path": "apps/auth/otp.py",
+            "name": "otp.py",
+            "type": "file",
+            "size": 1920,
+            "updated_at": 1792416765.893267,
+            "last_commit": "Implement single-use verification token",
+            "last_actor": "naveen3438",
+            "content": "# DevSync Email OTP Module\n"
+          }
+        ]
+      },
+      "attachments": [
+        {
+          "id": "att_6ffbc2f0f06c",
+          "name": "API_Swagger_Specification.json",
+          "size": 20,
+          "uploaded_by": "naveen3438",
+          "uploaded_at": 1792422971.2662702,
+          "file_type": "application/json",
+          "description": "OpenAPI contract specification"
+        },
+        {
+          "id": "att_4be0fcf74bb5",
+          "name": "API_Swagger_Specification.json",
+          "size": 20,
+          "uploaded_by": "naveen3438",
+          "uploaded_at": 1792422001.7076154,
+          "file_type": "application/json",
+          "description": "OpenAPI contract specification"
+        },
+        {
+          "id": "att-1",
+          "name": "devsync_architecture_diagram.pdf",
+          "size": 845200,
+          "uploaded_by": "balajikumar",
+          "uploaded_at": 1792076165.893267,
+          "file_type": "application/pdf",
+          "description": "Comprehensive microservices topology and data flow diagram"
+        },
+        {
+          "id": "att-2",
+          "name": "database_erd_schema.png",
+          "size": 524100,
+          "uploaded_by": "naveen3438",
+          "uploaded_at": 1792248965.893267,
+          "file_type": "image/png",
+          "description": "PostgreSQL relational schema and foreign key mapping"
+        }
+      ],
+      "audit_log": [
+        {
+          "id": "aud_fc7df3377253",
+          "action": "file_overwrite",
+          "branch": "develop",
+          "file_path": "services/auth_provider_1792422971.py",
+          "actor": "naveen3438",
+          "timestamp": 1792422971.24078,
+          "summary": "Update auth_provider logic with authorization",
+          "sha256": "554ef4ff0ced9f04543c8cc11359b316e7629036515fb7181c9c0f4bf56db71c",
+          "size": 32
+        },
+        {
+          "id": "aud_8ea5d5053fde",
+          "action": "file_upload",
+          "branch": "develop",
+          "file_path": "services/auth_provider_1792422971.py",
+          "actor": "naveen3438",
+          "timestamp": 1792422971.189836,
+          "summary": "Add authentication service provider module",
+          "sha256": "891db46eb3458220b0b14e13475275304f8091d580143003f669440b4c0102aa",
+          "size": 36
+        },
+        {
+          "id": "aud_b255f5d6a3ec",
+          "action": "file_overwrite",
+          "branch": "develop",
+          "file_path": "services/auth_provider_1792422001.py",
+          "actor": "naveen3438",
+          "timestamp": 1792422001.6938016,
+          "summary": "Update auth_provider logic with authorization",
+          "sha256": "554ef4ff0ced9f04543c8cc11359b316e7629036515fb7181c9c0f4bf56db71c",
+          "size": 32
+        },
+        {
+          "id": "aud_c4e03798b433",
+          "action": "file_upload",
+          "branch": "develop",
+          "file_path": "services/auth_provider_1792422001.py",
+          "actor": "naveen3438",
+          "timestamp": 1792422001.6610422,
+          "summary": "Add authentication service provider module",
+          "sha256": "891db46eb3458220b0b14e13475275304f8091d580143003f669440b4c0102aa",
+          "size": 36
+        },
+        {
+          "id": "aud_bcbb7cbce5f7",
+          "action": "file_upload",
+          "branch": "develop",
+          "file_path": "services/auth_provider.py",
+          "actor": "naveen3438",
+          "timestamp": 1792421835.2501814,
+          "summary": "Add authentication service provider module",
+          "sha256": "891db46eb3458220b0b14e13475275304f8091d580143003f669440b4c0102aa",
+          "size": 36
+        },
+        {
+          "id": "aud-1",
+          "action": "file_upload",
+          "branch": "develop",
+          "file_path": "apps/pulse/engine.py",
+          "actor": "naveen3438",
+          "timestamp": 1792420865.893267,
+          "summary": "Add time-series aggregation buckets for Project Pulse",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ]
+    },
+    "chaturyanew": {
+      "id": "repo-chaturya",
+      "name": "chaturyanew",
+      "owner": "naveen3438",
+      "description": "Student developers club website built with Django. Event registrations, workshops and community features.",
+      "language": "Python",
+      "languageColor": "#3572A5",
+      "visibility": "Public",
+      "defaultBranch": "main",
+      "created_at": 1788533765.893267,
+      "updated_at": 1792248965.893267,
+      "stars": 28,
+      "forks": 6,
+      "branches": [
+        "main",
+        "develop"
+      ],
+      "members": [
+        {
+          "username": "naveen3438",
+          "role": "Owner",
+          "responsibility": "Lead Maintainer & Backend",
+          "assignedTasks": [
+            "QR code event check-in system",
+            "Registration portal"
+          ],
+          "joined_at": 1788533765.893267
+        },
+        {
+          "username": "priyas",
+          "role": "Collaborator",
+          "responsibility": "Frontend UI",
+          "assignedTasks": [
+            "Event card carousel",
+            "Club registration form"
+          ],
+          "joined_at": 1789829765.893267
+        },
+        {
+          "username": "balajikumar",
+          "role": "Collaborator",
+          "responsibility": "Database & Deployment",
+          "assignedTasks": [
+            "PostgreSQL migration scripts"
+          ],
+          "joined_at": 1790261765.893267
+        }
+      ],
+      "milestones": [
+        {
+          "id": "m-chat-1",
+          "title": "Annual Tech Fest Portal",
+          "description": "Event registration and live leaderboard system",
+          "due_date": "2026-11-15",
+          "status": "open",
+          "progress": 60
+        }
+      ],
+      "tasks": [
+        {
+          "id": "t-chat-1",
+          "title": "Add QR code verification to registration emails",
+          "assigned_to": "naveen3438",
+          "responsibility": "Backend",
+          "status": "completed",
+          "completed_at": 1792248965.893267,
+          "milestone_id": "m-chat-1"
+        },
+        {
+          "id": "t-chat-2",
+          "title": "Design responsive workshop registration cards",
+          "assigned_to": "priyas",
+          "responsibility": "Frontend",
+          "status": "completed",
+          "completed_at": 1792076165.893267,
+          "milestone_id": "m-chat-1"
+        },
+        {
+          "id": "t-chat-3",
+          "title": "Implement live workshop leaderboard",
+          "assigned_to": "naveen3438",
+          "responsibility": "Fullstack",
+          "status": "open",
+          "milestone_id": "m-chat-1"
+        }
+      ],
+      "files": {
+        "main": [
+          {
+            "path": "manage.py",
+            "name": "manage.py",
+            "type": "file",
+            "size": 820,
+            "updated_at": 1791989765.893267,
+            "last_commit": "Initial project setup",
+            "last_actor": "naveen3438",
+            "content": "#!/usr/bin/env python\nimport os, sys\n"
+          },
+          {
+            "path": "events/views.py",
+            "name": "views.py",
+            "type": "file",
+            "size": 2150,
+            "updated_at": 1792248965.893267,
+            "last_commit": "Pushed 4 commits to main: Added registration endpoint with QR code verification.",
+            "last_actor": "naveen3438",
+            "content": "# Chaturya Event Registration Views\n"
+          },
+          {
+            "path": "README.md",
+            "name": "README.md",
+            "type": "file",
+            "size": 980,
+            "updated_at": 1792248965.893267,
+            "last_commit": "Update project setup documentation",
+            "last_actor": "naveen3438",
+            "content": "# chaturyanew\nStudent developers club platform for workshops, hackathons, and event registration.\n"
+          }
+        ],
+        "develop": []
+      },
+      "attachments": [],
+      "audit_log": []
+    },
+    "college-portal": {
+      "id": "repo-college",
+      "name": "college-portal",
+      "owner": "naveen3438",
+      "description": "Multi-tenant college portal for student records, admissions, and academic schedules.",
+      "language": "Python",
+      "languageColor": "#3572A5",
+      "visibility": "Private",
+      "defaultBranch": "main",
+      "created_at": 1787237765.893267,
+      "updated_at": 1791816965.893267,
+      "stars": 15,
+      "forks": 4,
+      "branches": [
+        "main"
+      ],
+      "members": [
+        {
+          "username": "naveen3438",
+          "role": "Owner",
+          "responsibility": "Fullstack & Architecture",
+          "assignedTasks": [
+            "Admissions intake module"
+          ],
+          "joined_at": 1787237765.893267
+        }
+      ],
+      "milestones": [],
+      "tasks": [],
+      "files": {
+        "main": [
+          {
+            "path": "README.md",
+            "name": "README.md",
+            "type": "file",
+            "size": 640,
+            "updated_at": 1791816965.893267,
+            "last_commit": "Initial documentation",
+            "last_actor": "naveen3438",
+            "content": "# College Portal\nMulti-tenant admissions and grading system.\n"
+          }
+        ]
+      },
+      "attachments": [],
+      "audit_log": []
+    },
+    "portfolio-site": {
+      "id": "repo-portfolio",
+      "name": "portfolio-site",
+      "owner": "naveen3438",
+      "description": "Personal developer portfolio website with responsive UI and project showcases.",
+      "language": "JavaScript",
+      "languageColor": "#F59E0B",
+      "visibility": "Public",
+      "defaultBranch": "main",
+      "created_at": 1784645765.893267,
+      "updated_at": 1790607365.893267,
+      "stars": 12,
+      "forks": 3,
+      "branches": [
+        "main"
+      ],
+      "members": [
+        {
+          "username": "naveen3438",
+          "role": "Owner",
+          "responsibility": "Design & Frontend",
+          "assignedTasks": [
+            "Dark mode toggle"
+          ],
+          "joined_at": 1784645765.893267
+        }
+      ],
+      "milestones": [],
+      "tasks": [],
+      "files": {
+        "main": [
+          {
+            "path": "index.html",
+            "name": "index.html",
+            "type": "file",
+            "size": 1840,
+            "updated_at": 1790607365.893267,
+            "last_commit": "Portfolio layout refresh",
+            "last_actor": "naveen3438",
+            "content": "<!DOCTYPE html><html><head><title>Portfolio</title></head><body><h1>Naveen Kumar D</h1></body></html>"
+          }
+        ]
+      },
+      "attachments": [],
+      "audit_log": []
+    }
+  },
+  "activity_events": [
+    {
+      "id": "evt_37d76a4c1603",
+      "type": "attachment_uploaded",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": null,
+      "title": "Uploaded project attachment: API_Swagger_Specification.json",
+      "description": "OpenAPI contract specification",
+      "timestamp": 1792422971.2662904,
+      "visibility": "Private",
+      "metadata": {
+        "attachment_id": "att_6ffbc2f0f06c",
+        "file_name": "API_Swagger_Specification.json",
+        "size": 20
+      },
+      "dedup_hash": "c59c187b710389ec7673cda4fdfa2a9c1b03f3c301260a07ad4513aa665182dc"
+    },
+    {
+      "id": "evt_f41cea96a90b",
+      "type": "file_uploaded",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": "develop",
+      "title": "Uploaded services/auth_provider_1792422971.py to develop",
+      "description": "Add authentication service provider module",
+      "timestamp": 1792422971.189909,
+      "visibility": "Private",
+      "metadata": {
+        "file_path": "services/auth_provider_1792422971.py",
+        "sha256": "891db46eb3458220b0b14e13475275304f8091d580143003f669440b4c0102aa",
+        "size": 36
+      },
+      "dedup_hash": "c269adf7b5b248d84687085a2a3e22c141d1cdaaa2805da80a0a299836d26e27"
+    },
+    {
+      "id": "evt_14b4af2ccc2d",
+      "type": "collaborator_removed",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": null,
+      "title": "Removed collaborator @tarapatel",
+      "description": "Collaborator @tarapatel was removed from devsync-core.",
+      "timestamp": 1792422971.155847,
+      "visibility": "Private",
+      "metadata": {},
+      "dedup_hash": "f1991ddbc1414cb20366194124da6ffae407a92636cfc61a345c31489ed12eb4"
+    },
+    {
+      "id": "evt_de38afea83b9",
+      "type": "collaborator_updated",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": null,
+      "title": "Updated role/responsibility for @tarapatel",
+      "description": "Role: Collaborator | Responsibility: Lead SRE & Security",
+      "timestamp": 1792422971.1336646,
+      "visibility": "Private",
+      "metadata": {},
+      "dedup_hash": "dc3a41f661a25cb9876c34b148fc1dffac11fcff767a9300c3fe1656147dbc86"
+    },
+    {
+      "id": "evt_75544cbf4032",
+      "type": "collaborator_added",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": null,
+      "title": "Added collaborator @tarapatel as Collaborator",
+      "description": "Assigned responsibility: DevOps & SRE",
+      "timestamp": 1792422971.1150057,
+      "visibility": "Private",
+      "metadata": {},
+      "dedup_hash": "312f8c5967a76848bd56e316f40d5ce30ac990c6963ffd03678668c43d0515b2"
+    },
+    {
+      "id": "evt_044431bd7c4a",
+      "type": "attachment_uploaded",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": null,
+      "title": "Uploaded project attachment: API_Swagger_Specification.json",
+      "description": "OpenAPI contract specification",
+      "timestamp": 1792422001.7076335,
+      "visibility": "Private",
+      "metadata": {
+        "attachment_id": "att_4be0fcf74bb5",
+        "file_name": "API_Swagger_Specification.json",
+        "size": 20
+      },
+      "dedup_hash": "0324651f320fe42000ffb0036b199fe987484d3507efa206f8878fc93368899d"
+    },
+    {
+      "id": "evt_2020eabcec6e",
+      "type": "file_uploaded",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": "develop",
+      "title": "Uploaded services/auth_provider_1792422001.py to develop",
+      "description": "Add authentication service provider module",
+      "timestamp": 1792422001.661108,
+      "visibility": "Private",
+      "metadata": {
+        "file_path": "services/auth_provider_1792422001.py",
+        "sha256": "891db46eb3458220b0b14e13475275304f8091d580143003f669440b4c0102aa",
+        "size": 36
+      },
+      "dedup_hash": "61ef04717b0b676bd9158e989e0505b5212e9863be2696939214569ac159345e"
+    },
+    {
+      "id": "evt_1a81180a7306",
+      "type": "collaborator_removed",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": null,
+      "title": "Removed collaborator @tarapatel",
+      "description": "Collaborator @tarapatel was removed from devsync-core.",
+      "timestamp": 1792422001.637965,
+      "visibility": "Private",
+      "metadata": {},
+      "dedup_hash": "6cbea211dc4cabe99ab776d6e9d6c9c5452f26aba259e427677a480a58a42a74"
+    },
+    {
+      "id": "evt_36df7166b597",
+      "type": "collaborator_updated",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": null,
+      "title": "Updated role/responsibility for @tarapatel",
+      "description": "Role: Collaborator | Responsibility: Lead SRE & Security",
+      "timestamp": 1792422001.622922,
+      "visibility": "Private",
+      "metadata": {},
+      "dedup_hash": "23b4bc4e138d8315cc816dc7bb56d498ca5f9c4419b1032118ab2e75b806c1e9"
+    },
+    {
+      "id": "evt_5cfadabe53b3",
+      "type": "collaborator_added",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": null,
+      "title": "Added collaborator @tarapatel as Collaborator",
+      "description": "Assigned responsibility: DevOps & SRE",
+      "timestamp": 1792422001.614311,
+      "visibility": "Private",
+      "metadata": {},
+      "dedup_hash": "811efe23c9ab0deba4eebf4a9f3fb34d9c9e58b22fcd94f33eba528a835e36af"
+    },
+    {
+      "id": "evt_570ff7f780c9",
+      "type": "collaborator_removed",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": null,
+      "title": "Removed collaborator @tarapatel",
+      "description": "Collaborator @tarapatel was removed from devsync-core.",
+      "timestamp": 1792421954.8299043,
+      "visibility": "Private",
+      "metadata": {},
+      "dedup_hash": "07a5bb01053118da6b7084afc4d6b73f8fa5534df6fd4b552d3c3b20cef9cb96"
+    },
+    {
+      "id": "evt_b9af24a5f13b",
+      "type": "collaborator_updated",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": null,
+      "title": "Updated role/responsibility for @tarapatel",
+      "description": "Role: Collaborator | Responsibility: Lead SRE & Security",
+      "timestamp": 1792421954.8134828,
+      "visibility": "Private",
+      "metadata": {},
+      "dedup_hash": "54c8acc6d778761f0470482e2824ccf1adac48f0b712551640fd67ad3b99448f"
+    },
+    {
+      "id": "evt_1b2150e4664e",
+      "type": "collaborator_added",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": null,
+      "title": "Added collaborator @tarapatel as Collaborator",
+      "description": "Assigned responsibility: DevOps & SRE",
+      "timestamp": 1792421954.803678,
+      "visibility": "Private",
+      "metadata": {},
+      "dedup_hash": "667c89f80e10a2450f6cc2691dda85fa868b01e66ba0f47339966393a8b2520d"
+    },
+    {
+      "id": "evt_bf154d572cd7",
+      "type": "file_uploaded",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": "develop",
+      "title": "Uploaded services/auth_provider.py to develop",
+      "description": "Add authentication service provider module",
+      "timestamp": 1792421835.2502527,
+      "visibility": "Private",
+      "metadata": {
+        "file_path": "services/auth_provider.py",
+        "sha256": "891db46eb3458220b0b14e13475275304f8091d580143003f669440b4c0102aa",
+        "size": 36
+      },
+      "dedup_hash": "ed515b48ad48adabfe7ea3e855abb14ea741e4d07ecc9a784a4d206dcbb7bc1c"
+    },
+    {
+      "id": "evt_8fec2461bef0",
+      "type": "collaborator_removed",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": null,
+      "title": "Removed collaborator @tarapatel",
+      "description": "Collaborator @tarapatel was removed from devsync-core.",
+      "timestamp": 1792421835.2279956,
+      "visibility": "Private",
+      "metadata": {},
+      "dedup_hash": "20334389d3be1802669d21d319cc8567fe1e2680272e570b64c3a3800b121652"
+    },
+    {
+      "id": "evt_a1a046ee2585",
+      "type": "collaborator_updated",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": null,
+      "title": "Updated role/responsibility for @tarapatel",
+      "description": "Role: Collaborator | Responsibility: Lead SRE & Security",
+      "timestamp": 1792421835.2155702,
+      "visibility": "Private",
+      "metadata": {},
+      "dedup_hash": "cc0af5a56b7e3a28f5f4063319830993c8f535eacd7b81538d24a4afae4f9824"
+    },
+    {
+      "id": "evt_7fad4d7cf64d",
+      "type": "collaborator_added",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": null,
+      "title": "Added collaborator @tarapatel as Collaborator",
+      "description": "Assigned responsibility: DevOps & SRE",
+      "timestamp": 1792421835.2030096,
+      "visibility": "Private",
+      "metadata": {},
+      "dedup_hash": "ecd96b366e4a95e8eef76e1466114ecd1e4eba3eadc866809d66113a2e637a6b"
+    },
+    {
+      "id": "evt_001",
+      "type": "file_uploaded",
+      "actor": "naveen3438",
+      "actor_name": "Naveen Kumar D",
+      "actor_avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+      "repository": "devsync-core",
+      "branch": "develop",
+      "title": "Uploaded apps/pulse/engine.py to develop",
+      "description": "Added time-series aggregation buckets for Project Pulse real-time graph.",
+      "timestamp": 1792420865.893267,
+      "visibility": "Private",
+      "metadata": {
+        "file_path": "apps/pulse/engine.py",
+        "size": 2840
+      }
+    },
+    {
+      "id": "evt_002",
+      "type": "git_commit",
+      "actor": "balajikumar",
+      "actor_name": "Balaji",
+      "actor_avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80",
+      "repository": "devsync-core",
+      "branch": "main",
+      "title": "Commit e4f912a: Refactor API endpoints and serializers",
+      "description": "Cleaned up DRF serializer interfaces and added PBKDF2 hash auto-upgrading.",
+      "timestamp": 1792414565.893267,
+      "visibility": "Private",
+      "metadata": {
+        "commit_hash": "e4f912a"
+      }
+    },
+    {
+      "id": "evt_003",
+      "type": "task_completed",
+      "actor": "naveen3438",
+      "actor_name": "Naveen Kumar D",
+      "actor_avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+      "repository": "devsync-core",
+      "branch": "develop",
+      "title": "Completed task: Implement branch-aware file uploads with checksum verification",
+      "description": "Tested SHA-256 verification and directory traversal protection.",
+      "timestamp": 1792393765.893267,
+      "visibility": "Private",
+      "metadata": {
+        "task_id": "t-1"
+      }
+    },
+    {
+      "id": "evt_004",
+      "type": "branch_created",
+      "actor": "naveen3438",
+      "actor_name": "Naveen Kumar D",
+      "actor_avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+      "repository": "devsync-core",
+      "branch": "feature/authentication",
+      "title": "Created branch feature/authentication from develop",
+      "description": "Dedicated branch for single-use email OTP verification token flow.",
+      "timestamp": 1792335365.893267,
+      "visibility": "Private",
+      "metadata": {
+        "from_branch": "develop"
+      }
+    },
+    {
+      "id": "evt_005",
+      "type": "git_commit",
+      "actor": "naveen3438",
+      "actor_name": "Naveen Kumar D",
+      "actor_avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+      "repository": "chaturyanew",
+      "branch": "main",
+      "title": "Commit c98b14a: Added registration endpoint with QR code verification",
+      "description": "Student event registration backend module and email dispatcher.",
+      "timestamp": 1792248965.893267,
+      "visibility": "Public",
+      "metadata": {
+        "commit_hash": "c98b14a"
+      }
+    },
+    {
+      "id": "evt_006",
+      "type": "task_completed",
+      "actor": "priyas",
+      "actor_name": "Priya S",
+      "actor_avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=64&q=80",
+      "repository": "devsync-core",
+      "branch": "main",
+      "title": "Completed task: Implement repository vertical navigation sidebar with drawer mode",
+      "description": "Responsive 220px desktop sidebar with touch drawer on mobile.",
+      "timestamp": 1792162565.893267,
+      "visibility": "Private",
+      "metadata": {
+        "task_id": "t-3"
+      }
+    },
+    {
+      "id": "evt_007",
+      "type": "milestone_completed",
+      "actor": "balajikumar",
+      "actor_name": "Balaji",
+      "actor_avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80",
+      "repository": "devsync-core",
+      "branch": "main",
+      "title": "Milestone Completed: v0.9 MVP Infrastructure",
+      "description": "Achieved 100% completion across data models and auth security.",
+      "timestamp": 1792076165.893267,
+      "visibility": "Private",
+      "metadata": {
+        "milestone_id": "m-2"
+      }
+    },
+    {
+      "id": "evt_008",
+      "type": "collaborator_added",
+      "actor": "balajikumar",
+      "actor_name": "Balaji",
+      "actor_avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80",
+      "repository": "devsync-core",
+      "branch": "main",
+      "title": "Added collaborator @naveen3438 as Maintainer",
+      "description": "Assigned Fullstack & API Integration responsibilities.",
+      "timestamp": 1791989765.893267,
+      "visibility": "Private",
+      "metadata": {
+        "collaborator": "naveen3438",
+        "role": "Maintainer"
+      }
+    },
+    {
+      "id": "evt_009",
+      "type": "issue_resolved",
+      "actor": "balajikumar",
+      "actor_name": "Balaji",
+      "actor_avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80",
+      "repository": "devsync-core",
+      "branch": "main",
+      "title": "Resolved Issue #14: Fix token authentication header parsing",
+      "description": "Handled Bearer token case-insensitively and supported cookie sessions.",
+      "timestamp": 1791816965.893267,
+      "visibility": "Private",
+      "metadata": {
+        "issue_number": 14
+      }
+    },
+    {
+      "id": "evt_010",
+      "type": "pull_request_merged",
+      "actor": "balajikumar",
+      "actor_name": "Balaji",
+      "actor_avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80",
+      "repository": "devsync-core",
+      "branch": "main",
+      "title": "Merged PR #8: Universal developer profile model & API",
+      "description": "Integrated skills, projects, and bio persistence in devsync_database.json.",
+      "timestamp": 1791384965.893267,
+      "visibility": "Private",
+      "metadata": {
+        "pr_number": 8
+      }
+    },
+    {
+      "id": "evt_011",
+      "type": "git_commit",
+      "actor": "naveen3438",
+      "actor_name": "Naveen Kumar D",
+      "actor_avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+      "repository": "chaturyanew",
+      "branch": "main",
+      "title": "Commit a12f890: Initialize Django app templates for student registrations",
+      "description": "Added responsive Tailwind and Bootstrap views for club signups.",
+      "timestamp": 1790866565.893267,
+      "visibility": "Public",
+      "metadata": {
+        "commit_hash": "a12f890"
+      }
+    },
+    {
+      "id": "evt_012",
+      "type": "repository_created",
+      "actor": "balajikumar",
+      "actor_name": "Balaji",
+      "actor_avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80",
+      "repository": "devsync-core",
+      "branch": "main",
+      "title": "Created repository devsync-core",
+      "description": "Initialized repository with main branch and README.",
+      "timestamp": 1790261765.893267,
+      "visibility": "Private",
+      "metadata": {
+        "default_branch": "main"
+      }
+    }
+  ],
+  "version": "1.1.0"
 }

@@ -13,7 +13,7 @@ import { initGlobalSearch } from './components/search.js';
 import { initLandingPage } from './pages/landing.js';
 import { initAuthPage } from './pages/auth.js';
 import { initDashboardPage } from './pages/dashboard.js';
-import { initRepositoriesPage } from './pages/repositories.js';
+import { initRepositoriesPage, initRepositoryDetailPage } from './pages/repositories.js';
 import { initPullRequestsPage } from './pages/pull-requests.js';
 import { initIssuesPage } from './pages/issues.js';
 import { initTeamsPage } from './pages/teams.js';
@@ -93,7 +93,11 @@ function boot() {
         initDashboardPage();
         break;
       case 'repositories':
-        initRepositoriesPage();
+        if (document.getElementById('repoDetailRoot') || document.querySelector('.repo-workspace-layout')) {
+          initRepositoryDetailPage();
+        } else {
+          initRepositoriesPage();
+        }
         break;
       case 'pull-requests':
         initPullRequestsPage();

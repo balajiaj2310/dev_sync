@@ -26,21 +26,33 @@
       </a>
       <nav class="public-nav">
         <a href="home.html" class="nav-link-pill">Home</a>
-        <a href="explore.html" class="nav-link-pill">Explore</a>
         <a href="pricing.html" class="nav-link-pill">Pricing</a>
         <a href="contact.html" class="nav-link-pill active">Contact</a>
+        <a href="help.html" class="nav-link-pill">Help</a>
       </nav>
       <div class="public-actions">
         <a href="../auth/sign-in.html" class="btn btn-pill btn-outline">Sign In</a>
-        <a href="../auth/sign-up.html" class="btn btn-pill btn-primary">Get Started &rarr;</a>
+        <a href="../auth/sign-in.html?mode=signup" class="btn btn-pill btn-primary">Get Started &rarr;</a>
       </div>
     </div>
   </header>
 
   <main class="public-content py-6" style="padding: 60px 0;">
-    <div style="max-width: 580px; margin: 0 auto; padding: 0 var(--space-6);">
+    <div style="max-width: 620px; margin: 0 auto; padding: 0 var(--space-6);">
       <h1 class="font-heading" style="font-size: 30px; margin-bottom: 8px; text-align: center;">Get in touch with DevSync</h1>
-      <p class="text-secondary" style="font-size: 14.5px; margin-bottom: 32px; text-align: center;">Have architectural questions, enterprise inquiries, or feature requests? Send us a message.</p>
+      <p class="text-secondary" style="font-size: 14.5px; margin-bottom: 28px; text-align: center;">Have architectural questions, enterprise inquiries, or feedback? Send us a message or email our team directly.</p>
+
+      <!-- Temporary Contact Email Card -->
+      <div class="card" style="margin-bottom: 24px; background: #F8FAFC; border: 1px solid #CBD5E1; padding: 18px 22px; text-align: center;">
+        <span style="font-size: 12px; font-weight: 700; text-transform: uppercase; color: #64748B; letter-spacing: 0.05em; display: block; margin-bottom: 6px;">Temporary Contact Email</span>
+        <a href="mailto:hello@devsync.example" style="font-size: 18px; font-weight: 700; color: #0D9488; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          hello@devsync.example
+        </a>
+        <p style="font-size: 12px; color: #94A3B8; margin: 8px 0 0 0;">
+          <em>Notice: <code>hello@devsync.example</code> is a temporary placeholder email for preview and development inquiries. Click to send an email via your local mail client.</em>
+        </p>
+      </div>
 
       <div class="card">
         <form id="contactForm">
@@ -65,14 +77,16 @@
   <footer class="public-footer">
     <div class="public-footer-inner">
       <div class="footer-brand">
-        <img src="../../../public/images/logo.svg" alt="DevSync" />
+        <a href="home.html" style="display: inline-block;">
+          <img src="../../../public/images/logo.svg" alt="DevSync" />
+        </a>
         <span class="footer-tagline">Build together. Deploy.</span>
       </div>
       <div class="footer-links">
         <a href="home.html" class="footer-link">About</a>
-        <a href="../settings/privacy.html" class="footer-link">Privacy</a>
-        <a href="pricing.html" class="footer-link">Terms</a>
-        <a href="contact.html" class="footer-link">Help</a>
+        <a href="privacy.html" class="footer-link">Privacy Policy</a>
+        <a href="terms.html" class="footer-link">Terms of Service</a>
+        <a href="help.html" class="footer-link">Help</a>
       </div>
     </div>
   </footer>

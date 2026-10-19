@@ -35,6 +35,9 @@ export const ROUTES = {
   get EXPLORE() { return `${getBasePath()}/public/explore.html`; },
   get PRICING() { return `${getBasePath()}/public/pricing.html`; },
   get CONTACT() { return `${getBasePath()}/public/contact.html`; },
+  get TERMS() { return `${getBasePath()}/public/terms.html`; },
+  get PRIVACY() { return `${getBasePath()}/public/privacy.html`; },
+  get HELP() { return `${getBasePath()}/public/help.html`; },
 
   // Auth
   get SIGN_IN() { return `${getBasePath()}/auth/sign-in.html`; },

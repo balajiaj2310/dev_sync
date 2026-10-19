@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>devsync-core — DevSync</title>
+  <title>Repository Workspace — DevSync</title>
   <link rel="icon" type="image/svg+xml" href="../../../public/favicon.svg">
   <link rel="stylesheet" href="../../assets/css/tokens.css">
   <link rel="stylesheet" href="../../assets/css/reset.css">
@@ -24,8 +24,9 @@
   <link rel="stylesheet" href="../../assets/css/devsync-ai.css">
 </head>
 <body data-authenticated="true" data-page="repositories">
-  <div class="app-container">
-    <aside class="app-sidebar">
+  <div class="app-container" id="repoDetailRoot">
+    <!-- Global Sidebar -->
+    <aside class="app-sidebar" aria-label="Global Navigation">
       <div class="sidebar-header">
         <a href="../dashboard/overview.html" class="sidebar-logo">
           <img src="../../../public/images/logo.svg" alt="DevSync" />
@@ -43,12 +44,10 @@
         <a href="../pull-requests/list.html" class="sidebar-link">
           <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 0 1 2 2v7"/><line x1="6" y1="9" x2="6" y2="21"/></svg>
           <span class="sidebar-text">Pull Requests</span>
-          <span class="sidebar-badge">3</span>
         </a>
         <a href="../issues/list.html" class="sidebar-link">
           <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
           <span class="sidebar-text">Issues</span>
-          <span class="sidebar-badge">12</span>
         </a>
         <a href="../teams/members.html" class="sidebar-link">
           <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
@@ -78,6 +77,7 @@
       </nav>
     </aside>
 
+    <!-- App Main Container -->
     <div class="app-main">
       <header class="app-topbar">
         <div class="topbar-left">
@@ -88,7 +88,7 @@
             <span class="topbar-search-icon">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             </span>
-            <input type="text" class="topbar-search-input" placeholder="Search repositories, issues, teams..." />
+            <input type="text" class="topbar-search-input" placeholder="Search repositories, code, teams..." />
           </div>
         </div>
         <div class="topbar-right">
@@ -97,9 +97,9 @@
           </a>
           <div class="dropdown">
             <button class="user-profile-btn" data-dropdown-toggle>
-              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" alt="Balaji" class="user-avatar" />
+              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" alt="Avatar" class="user-avatar" id="topbarAvatar" />
               <div class="user-info">
-                <span class="user-name">Balaji</span>
+                <span class="user-name" id="topbarUsername">Naveen</span>
                 <span class="user-role">Developer</span>
               </div>
             </button>
@@ -115,128 +115,287 @@
       </header>
 
       <main class="app-content">
-        <!-- Repo Header Banner -->
+        <!-- Repository Header Banner -->
         <div class="repo-header">
           <div class="repo-title-row">
             <div class="repo-breadcrumbs">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-              <span>devsync</span> / <strong id="repoNameDisplay">devsync-core</strong>
-              <span class="badge badge-private ml-2">Private</span>
+              <a href="list.html" class="text-secondary text-decoration-none" id="repoOwnerDisplay">devsync</a> / <strong id="repoNameDisplay">devsync-core</strong>
+              <span class="badge badge-private ml-2" id="repoVisibilityBadge">Private</span>
             </div>
             <div class="d-flex align-items-center gap-2">
               <button class="btn btn-outline btn-sm" id="starBtn">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
                 Star <span id="starCount">28</span>
               </button>
-              <button class="btn btn-outline btn-sm">
+              <button class="btn btn-outline btn-sm" id="forkBtn">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>
-                Fork 5
+                Fork <span id="forkCount">5</span>
               </button>
             </div>
           </div>
-          <p class="text-secondary" style="font-size: 14px; margin: 0;">Core backend microservices and asynchronous task pipelines for DevSync.</p>
+          <p class="text-secondary" id="repoDescDisplay" style="font-size: 14px; margin: 0;">Core backend microservices and asynchronous task pipelines for DevSync.</p>
         </div>
 
-        <!-- Repo Subnav Tabs -->
-        <div class="repo-nav-tabs">
-          <a href="detail.html" class="repo-nav-tab active">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-            Code
-          </a>
-          <a href="commits.html" class="repo-nav-tab">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><line x1="1.05" y1="12" x2="7" y2="12"/><line x1="17.01" y1="12" x2="22.96" y2="12"/></svg>
-            Commits (42)
-          </a>
-          <a href="branches.html" class="repo-nav-tab">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>
-            Branches (4)
-          </a>
-          <a href="../pull-requests/list.html" class="repo-nav-tab">Pull Requests</a>
+        <!-- Mobile Repository Menu Toggle -->
+        <div class="d-block d-lg-none mb-3">
+          <button class="btn btn-outline btn-sm w-100 d-flex align-items-center justify-content-between" id="repoSidebarToggle">
+            <span>Repository Workspace Menu</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
         </div>
 
-        <!-- Branch / File Browser Controls -->
-        <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
-          <div class="d-flex align-items-center gap-3">
-            <select class="form-select" style="width: 130px; height: 36px; font-size: 13px;">
-              <option value="main">main &bull; default</option>
-              <option value="develop">develop</option>
-              <option value="feature/auth">feature/auth</option>
-            </select>
-            <span class="text-metadata">4 branches &bull; 1 tag</span>
-          </div>
-          <a href="files.html" class="btn btn-outline btn-sm">Browse full tree &rarr;</a>
-        </div>
-
-        <!-- File Browser Card -->
-        <div class="file-browser-card">
-          <div class="file-commit-header">
-            <div class="d-flex align-items-center gap-2">
-              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=64&q=80" alt="Balaji" style="width: 20px; height: 20px; border-radius: 50%;" />
-              <strong>Balaji</strong>
-              <span class="text-secondary">Refactor API endpoints and serializers</span>
+        <!-- Vertical Repository Workspace Layout -->
+        <div class="repo-workspace-layout" id="repoWorkspaceLayout">
+          <!-- Section 5: Vertical Repository Sidebar -->
+          <aside class="repo-vertical-sidebar" id="repoSidebar">
+            <!-- Sidebar Brand / Context Box -->
+            <div class="repo-sidebar-brand">
+              <div class="repo-sidebar-title">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                <span id="sidebarRepoName">devsync-core</span>
+              </div>
+              <!-- Branch Selector Box -->
+              <div class="repo-sidebar-branch-box">
+                <label class="repo-sidebar-label" for="repoSidebarBranchSelect">Current Branch</label>
+                <div class="repo-branch-select-wrap">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>
+                  <select id="repoSidebarBranchSelect" class="form-select repo-branch-dropdown">
+                    <option value="main">main &bull; default</option>
+                  </select>
+                </div>
+              </div>
             </div>
-            <div class="d-flex align-items-center gap-3 text-secondary">
-              <code style="color: var(--color-text-primary);">e4f912a</code>
-              <span>2 hours ago</span>
-            </div>
-          </div>
 
-          <div class="file-row">
-            <div class="file-name-col">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="#3572A5" stroke="none"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-              <a href="files.html?path=apps" class="table-repo-name">apps</a>
+            <!-- Workspace Section -->
+            <div class="repo-nav-group">
+              <div class="repo-nav-group-label">Workspace</div>
+              <button type="button" class="repo-side-link active" data-repo-tab="overview">
+                <span class="repo-side-link-left">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                  <span>Overview</span>
+                </span>
+              </button>
+              <button type="button" class="repo-side-link" data-repo-tab="files">
+                <span class="repo-side-link-left">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                  <span>Code &amp; Files</span>
+                </span>
+                <span class="repo-side-badge" id="sidebarFileCount">0</span>
+              </button>
+              <button type="button" class="repo-side-link" data-repo-tab="branches">
+                <span class="repo-side-link-left">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>
+                  <span>Branches</span>
+                </span>
+                <span class="repo-side-badge" id="sidebarBranchCount">1</span>
+              </button>
             </div>
-            <span class="text-secondary">Core Django apps module</span>
-            <span class="text-secondary text-right">3 days ago</span>
-          </div>
 
-          <div class="file-row">
-            <div class="file-name-col">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="#3572A5" stroke="none"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-              <a href="files.html?path=config" class="table-repo-name">config</a>
+            <!-- Collaboration Section -->
+            <div class="repo-nav-group">
+              <div class="repo-nav-group-label">Collaboration</div>
+              <button type="button" class="repo-side-link" data-repo-tab="team">
+                <span class="repo-side-link-left">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                  <span>Team</span>
+                </span>
+                <span class="repo-side-badge" id="sidebarTeamCount">0</span>
+              </button>
+              <button type="button" class="repo-side-link" data-repo-tab="pull-requests">
+                <span class="repo-side-link-left">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 0 1 2 2v7"/><line x1="6" y1="9" x2="6" y2="21"/></svg>
+                  <span>Pull Requests</span>
+                </span>
+                <span class="repo-side-badge" id="sidebarPRCount">0</span>
+              </button>
+              <button type="button" class="repo-side-link" data-repo-tab="issues">
+                <span class="repo-side-link-left">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                  <span>Issues</span>
+                </span>
+                <span class="repo-side-badge" id="sidebarIssueCount">0</span>
+              </button>
+              <button type="button" class="repo-side-link" data-repo-tab="activity">
+                <span class="repo-side-link-left">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                  <span>Activity</span>
+                </span>
+              </button>
             </div>
-            <span class="text-secondary">Project settings and WSGI configuration</span>
-            <span class="text-secondary text-right">1 week ago</span>
-          </div>
 
-          <div class="file-row">
-            <div class="file-name-col">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
-              <a href="files.html?file=manage.py" class="table-repo-name">manage.py</a>
+            <!-- Management Section -->
+            <div class="repo-nav-group">
+              <div class="repo-nav-group-label">Management</div>
+              <button type="button" class="repo-side-link" data-repo-tab="settings">
+                <span class="repo-side-link-left">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                  <span>Settings</span>
+                </span>
+              </button>
             </div>
-            <span class="text-secondary">Django command line utility</span>
-            <span class="text-secondary text-right">2 weeks ago</span>
-          </div>
+          </aside>
 
-          <div class="file-row">
-            <div class="file-name-col">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
-              <a href="files.html?file=README.md" class="table-repo-name">README.md</a>
+          <!-- Main Dynamic Content Workspace Area -->
+          <div class="repo-content-area" id="repoContentArea">
+            <div class="text-center py-6">
+              <span class="btn-spinner"></span> Loading repository workspace...
             </div>
-            <span class="text-secondary">Project architectural overview</span>
-            <span class="text-secondary text-right">2 hours ago</span>
-          </div>
-        </div>
-
-        <!-- README Markdown Preview -->
-        <div class="readme-panel">
-          <div class="readme-header">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-            <span>README.md</span>
-          </div>
-          <div class="readme-content">
-            <h2 class="font-heading" style="font-size: 22px; margin-bottom: 8px;">DevSync Core Services</h2>
-            <p style="margin-bottom: 16px;">High performance developer collaboration backend written in Python 3.12, utilizing Django REST Framework, PostgreSQL, and Redis caching.</p>
-            <h3 class="font-heading" style="font-size: 16px; margin-bottom: 8px;">Architecture Highlights</h3>
-            <ul style="list-style: disc; margin-left: 20px; line-height: 1.8;">
-              <li>JWT & OAuth 2.0 Token Authentication endpoints</li>
-              <li>Realtime Redis Pub/Sub community websocket triggers</li>
-              <li>PostgreSQL schema with optimized multi-column indexes</li>
-              <li>Decoupled frontend service layer integration</li>
-            </ul>
           </div>
         </div>
       </main>
+    </div>
+  </div>
+
+  <!-- Branch-Aware File Upload Modal (Section 4) -->
+  <div class="repo-modal" id="uploadModal" role="dialog" aria-modal="true" aria-labelledby="uploadModalTitle">
+    <div class="repo-modal-dialog">
+      <div class="repo-modal-header">
+        <h3 class="font-heading" style="font-size: 18px; margin: 0;" id="uploadModalTitle">Branch-Aware File Upload</h3>
+        <button type="button" class="btn-close" data-close-modal="uploadModal" aria-label="Close">&times;</button>
+      </div>
+      <form id="branchUploadForm">
+        <div class="repo-modal-body">
+          <!-- Target Branch Selection -->
+          <div class="form-group mb-4">
+            <label class="form-label" for="uploadBranchSelect">Target Repository Branch</label>
+            <select id="uploadBranchSelect" class="form-select" required>
+              <option value="main">main</option>
+              <option value="develop">develop</option>
+              <option value="feature/authentication">feature/authentication</option>
+            </select>
+          </div>
+
+          <!-- Branch Notice -->
+          <div class="branch-notice-box" id="uploadBranchNotice">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            <div>Target Branch: <strong id="uploadTargetBranchLabel">main</strong>. Changes will not bleed into other branches.</div>
+          </div>
+
+          <!-- Drag and Drop Dropzone -->
+          <div class="upload-dropzone mb-4" id="uploadDropzone">
+            <input type="file" id="uploadFileInput" class="d-none" />
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2" style="margin-bottom: 8px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <div style="font-weight: 600; font-size: 14px; margin-bottom: 4px;" id="dropzoneText">Drag and drop file here, or click to browse</div>
+            <div class="text-secondary" style="font-size: 12px;">Supported text, scripts, configs &amp; source code up to 10MB</div>
+          </div>
+
+          <!-- File Destination Path -->
+          <div class="form-group mb-3">
+            <label class="form-label" for="uploadFilePath">Destination Path in Repository</label>
+            <input type="text" id="uploadFilePath" class="form-control" placeholder="e.g. src/auth/token_handler.py" required />
+            <div class="form-text text-secondary" style="font-size: 11px;">Path traversal protection enabled (no ../ allowed).</div>
+          </div>
+
+          <!-- Commit Message -->
+          <div class="form-group mb-3">
+            <label class="form-label" for="uploadCommitMessage">Commit Message / Change Summary</label>
+            <input type="text" id="uploadCommitMessage" class="form-control" placeholder="e.g. feat: add token refresh handler" required />
+          </div>
+
+          <!-- Overwrite Conflict Box (Revealed on 409 Conflict) -->
+          <div class="conflict-warning-box d-none" id="uploadConflictBox">
+            <div class="d-flex align-items-center gap-2 mb-2 font-weight-bold">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              <span>File Overwrite Confirmation Required</span>
+            </div>
+            <p style="font-size: 12.5px; margin-bottom: 10px;">
+              A file already exists at this path on branch <strong id="conflictBranchName">main</strong>. Overwriting will replace the existing file content on this branch.
+            </p>
+            <label class="d-flex align-items-center gap-2" style="font-size: 13px; cursor: pointer;">
+              <input type="checkbox" id="confirmOverwriteCheckbox" />
+              <span>I confirm I want to overwrite this file on <span id="conflictBranchNotice">main</span>.</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="repo-modal-footer">
+          <button type="button" class="btn btn-outline btn-sm" data-close-modal="uploadModal">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-sm" id="btnSubmitBranchUpload">Commit &amp; Upload</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Project Attachments Upload Modal (Section 4: Separate from Git files) -->
+  <div class="repo-modal" id="attachmentModal" role="dialog" aria-modal="true" aria-labelledby="attachmentModalTitle">
+    <div class="repo-modal-dialog">
+      <div class="repo-modal-header">
+        <h3 class="font-heading" style="font-size: 18px; margin: 0;" id="attachmentModalTitle">Upload Project Attachment</h3>
+        <button type="button" class="btn-close" data-close-modal="attachmentModal" aria-label="Close">&times;</button>
+      </div>
+      <form id="attachmentUploadForm">
+        <div class="repo-modal-body">
+          <p class="text-secondary mb-4" style="font-size: 13px;">
+            Project attachments are supporting non-Git project assets such as architectural diagrams, PDFs, specifications, and test data.
+          </p>
+          <div class="form-group mb-3">
+            <label class="form-label" for="attachmentFileInput">Select Attachment</label>
+            <input type="file" id="attachmentFileInput" class="form-control" required />
+          </div>
+          <div class="form-group mb-3">
+            <label class="form-label" for="attachmentDescInput">Description / Purpose</label>
+            <input type="text" id="attachmentDescInput" class="form-control" placeholder="e.g. Architecture Blueprint PDF" required />
+          </div>
+        </div>
+        <div class="repo-modal-footer">
+          <button type="button" class="btn btn-outline btn-sm" data-close-modal="attachmentModal">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-sm" id="btnSubmitAttachmentUpload">Upload Attachment</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Invite Collaborator Modal (Section 3) -->
+  <div class="repo-modal" id="inviteModal" role="dialog" aria-modal="true" aria-labelledby="inviteModalTitle">
+    <div class="repo-modal-dialog">
+      <div class="repo-modal-header">
+        <h3 class="font-heading" style="font-size: 18px; margin: 0;" id="inviteModalTitle">Invite Team Collaborator</h3>
+        <button type="button" class="btn-close" data-close-modal="inviteModal" aria-label="Close">&times;</button>
+      </div>
+      <form id="inviteCollaboratorForm">
+        <div class="repo-modal-body">
+          <div class="form-group mb-3">
+            <label class="form-label" for="inviteUsernameInput">Developer Username or Email</label>
+            <input type="text" id="inviteUsernameInput" class="form-control" placeholder="e.g. chaturya" required />
+          </div>
+          <div class="form-group mb-3">
+            <label class="form-label" for="inviteRoleSelect">Repository Role</label>
+            <select id="inviteRoleSelect" class="form-select" required>
+              <option value="Collaborator">Collaborator (Read, branch, push, upload)</option>
+              <option value="Maintainer">Maintainer (Manage members, branches, settings)</option>
+              <option value="Viewer">Viewer (Read-only access)</option>
+            </select>
+          </div>
+          <div class="form-group mb-3">
+            <label class="form-label" for="inviteRespInput">Responsibility Area</label>
+            <input type="text" id="inviteRespInput" class="form-control" placeholder="e.g. Backend, Frontend, Testing, AI" />
+          </div>
+        </div>
+        <div class="repo-modal-footer">
+          <button type="button" class="btn btn-outline btn-sm" data-close-modal="inviteModal">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-sm" id="btnSubmitInvite">Send Invitation</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- File Content Viewer Modal -->
+  <div class="repo-modal" id="fileViewerModal" role="dialog" aria-modal="true" aria-labelledby="fileViewerTitle">
+    <div class="repo-modal-dialog" style="max-width: 780px;">
+      <div class="repo-modal-header">
+        <div>
+          <h3 class="font-heading" style="font-size: 16px; margin: 0;" id="fileViewerTitle">file.py</h3>
+          <span class="text-secondary" style="font-size: 12px;" id="fileViewerSub">branch: main</span>
+        </div>
+        <button type="button" class="btn-close" data-close-modal="fileViewerModal" aria-label="Close">&times;</button>
+      </div>
+      <div class="repo-modal-body" style="padding: 0;">
+        <pre id="fileViewerContent" style="margin: 0; padding: var(--space-4); background: #0c0d0e; color: #e6edf3; font-family: var(--font-mono); font-size: 13px; line-height: 1.5; overflow-x: auto; max-height: 60vh;"></pre>
+      </div>
+      <div class="repo-modal-footer">
+        <button type="button" class="btn btn-outline btn-sm" data-close-modal="fileViewerModal">Close</button>
+      </div>
     </div>
   </div>
 

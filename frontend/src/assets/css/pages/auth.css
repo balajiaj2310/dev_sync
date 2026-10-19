@@ -847,8 +847,11 @@ body[data-page="auth"] {
 }
 
 /* -------------------------------------------------------------
-   MOBILE NUMBER & OTP VERIFICATION FORM STYLES
+/* -------------------------------------------------------------
+   EMAIL OTP VERIFICATION FORM STYLES
 ------------------------------------------------------------- */
+.input-group-email-otp,
+.input-group-email-verify,
 .input-group-mobile {
   display: flex;
   align-items: center;
@@ -898,6 +901,34 @@ body[data-page="auth"] {
   color: #94A3B8;
   cursor: not-allowed;
   box-shadow: none;
+  transform: none;
+}
+
+.btn-verify-otp {
+  height: 46px;
+  padding: 0 16px;
+  background: #0F172A;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 12px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 150ms ease;
+  flex-shrink: 0;
+}
+
+.btn-verify-otp:hover:not(:disabled) {
+  background: #334155;
+  transform: translateY(-1px);
+}
+
+.btn-verify-otp:disabled {
+  background: #E2E8F0;
+  color: #94A3B8;
+  cursor: not-allowed;
   transform: none;
 }
 

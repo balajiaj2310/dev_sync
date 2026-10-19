@@ -14,27 +14,29 @@ import { apiClient } from '../core/api-client.js';
 export function initAuthPage() {
   // Mode: 'signin' or 'signup'
   let currentAuthMode = 'signin';
-  let currentGeneratedOtp = '482910';
-  let isOtpVerified = false;
+  let isEmailVerified = false;
+  let verifiedEmailAddress = '';
+  let emailVerificationToken = '';
   let otpTimerInterval = null;
 
   // DOM Elements
   const tabSignIn = document.getElementById('tabSignIn');
   const tabSignUp = document.getElementById('tabSignUp');
   const groupFullName = document.getElementById('groupFullName');
-  const groupMobile = document.getElementById('groupMobile');
+  const groupEmail = document.getElementById('groupEmail');
   const groupOtp = document.getElementById('groupOtp');
   const groupConfirmPassword = document.getElementById('groupConfirmPassword');
 
   const nameInput = document.getElementById('name');
   const emailInput = document.getElementById('email');
-  const mobileInput = document.getElementById('mobileNumber');
-  const btnSendOtp = document.getElementById('btnSendOtp');
-  const otpInput = document.getElementById('mobileOtp');
+  const btnSendEmailOtp = document.getElementById('btnSendEmailOtp');
+  const emailOtpInput = document.getElementById('emailOtp');
+  const btnVerifyEmailOtp = document.getElementById('btnVerifyEmailOtp');
   const otpSentNotice = document.getElementById('otpSentNotice');
   const otpSentNoticeText = document.getElementById('otpSentNoticeText');
   const otpVerifiedBadge = document.getElementById('otpVerifiedBadge');
   const otpTimerDisplay = document.getElementById('otpTimerDisplay');
+  const termsAgree = document.getElementById('termsAgree');
 
   const passInput = document.getElementById('password');
   const confirmPassInput = document.getElementById('confirmPassword');
@@ -62,11 +64,11 @@ export function initAuthPage() {
         tabSignIn.setAttribute('aria-selected', 'false');
       }
       if (groupFullName) groupFullName.style.display = 'block';
-      if (groupMobile) groupMobile.style.display = 'block';
+      if (btnSendEmailOtp) btnSendEmailOtp.style.display = 'block';
       if (groupOtp) groupOtp.style.display = 'block';
       if (groupConfirmPassword) groupConfirmPassword.style.display = 'block';
 
-      if (labelIdentifier) labelIdentifier.textContent = 'Email Address';
+      if (labelIdentifier) labelIdentifier.textContent = 'Work or Personal Email';
       if (labelPassword) labelPassword.textContent = 'Create Password';
       if (authCardTitle) authCardTitle.textContent = 'Create Account 🚀';
       if (authCardSubtitle) authCardSubtitle.textContent = 'Create your developer profile with verified credentials and collaborate with teams.';
@@ -78,7 +80,7 @@ export function initAuthPage() {
       if (emailInput && emailInput.value === 'balaji@devsync.dev') emailInput.value = '';
       if (passInput && passInput.value === 'demo12345') passInput.value = '';
       if (emailInput) emailInput.placeholder = 'e.g. alex@company.com';
-      if (passInput) passInput.placeholder = 'Create password (min 6 characters)';
+      if (passInput) passInput.placeholder = 'Create password (min 8 characters)';
 
       if (nameInput) nameInput.focus();
     } else {
@@ -91,8 +93,10 @@ export function initAuthPage() {
         tabSignUp.setAttribute('aria-selected', 'false');
       }
       if (groupFullName) groupFullName.style.display = 'none';
-      if (groupMobile) groupMobile.style.display = 'none';
+      if (btnSendEmailOtp) btnSendEmailOtp.style.display = 'none';
       if (groupOtp) groupOtp.style.display = 'none';
+      if (otpSentNotice) otpSentNotice.style.display = 'none';
+      if (otpVerifiedBadge) otpVerifiedBadge.style.display = 'none';
       if (groupConfirmPassword) groupConfirmPassword.style.display = 'none';
 
       if (labelIdentifier) labelIdentifier.textContent = 'Email or Username';
@@ -143,85 +147,146 @@ export function initAuthPage() {
     });
   }
 
-  // Mobile Number & Send OTP Handler
-  if (btnSendOtp && mobileInput) {
-    btnSendOtp.addEventListener('click', async () => {
-      const mobileVal = mobileInput.value.trim();
-      const digits = mobileVal.replace(/\D/g, '');
-
-      if (!mobileVal || digits.length < 10) {
-        mobileInput.classList.add('is-invalid');
-        mobileInput.focus();
-        toastDanger('Please enter a valid 10-digit mobile number to receive OTP.');
-        return;
-      }
-
-      mobileInput.classList.remove('is-invalid');
-      btnSendOtp.disabled = true;
-      btnSendOtp.textContent = 'Sending...';
-
-      try {
-        const res = await apiClient.post('/auth/send-otp', { mobile: mobileVal }).catch(() => null);
-        if (res && res.otp) {
-          currentGeneratedOtp = String(res.otp);
-        } else {
-          // Generate realistic 6-digit OTP locally if backend endpoint not reachable
-          currentGeneratedOtp = String(Math.floor(100000 + Math.random() * 900000));
+  // Invalidate verification if email changes after being verified
+  if (emailInput) {
+    emailInput.addEventListener('input', () => {
+      if (isEmailVerified && emailInput.value.trim().toLowerCase() !== verifiedEmailAddress) {
+        isEmailVerified = false;
+        emailVerificationToken = '';
+        if (otpVerifiedBadge) otpVerifiedBadge.style.display = 'none';
+        if (emailOtpInput) {
+          emailOtpInput.disabled = false;
+          emailOtpInput.value = '';
         }
-
-        if (otpSentNotice && otpSentNoticeText) {
-          otpSentNotice.style.display = 'flex';
-          otpSentNoticeText.textContent = `OTP sent to +91 ${digits}. Demo code: ${currentGeneratedOtp}`;
+        if (btnVerifyEmailOtp) {
+          btnVerifyEmailOtp.disabled = false;
+          btnVerifyEmailOtp.textContent = 'Verify Code';
         }
-
-        toastSuccess(`OTP sent to +91 ${digits}! Your verification code is: ${currentGeneratedOtp}`, 'SMS Dispatched');
-
-        if (otpInput) {
-          otpInput.focus();
-        }
-
-        // Start 30s countdown timer
-        let countdown = 30;
-        btnSendOtp.textContent = `Resend (${countdown}s)`;
-        if (otpTimerInterval) clearInterval(otpTimerInterval);
-        otpTimerInterval = setInterval(() => {
-          countdown--;
-          if (countdown > 0) {
-            btnSendOtp.textContent = `Resend (${countdown}s)`;
-          } else {
-            clearInterval(otpTimerInterval);
-            btnSendOtp.disabled = false;
-            btnSendOtp.textContent = 'Resend OTP';
-          }
-        }, 1000);
-      } catch (err) {
-        btnSendOtp.disabled = false;
-        btnSendOtp.textContent = 'Send OTP';
-        toastDanger('Failed to send OTP. Please check your mobile number.');
       }
     });
   }
 
-  // Live OTP Code Verification
-  if (otpInput) {
-    otpInput.addEventListener('input', () => {
-      const entered = otpInput.value.trim();
-      const validCodes = [currentGeneratedOtp, '123456', '482910', '999999', '000000'];
+  // Email Send OTP Handler
+  if (btnSendEmailOtp && emailInput) {
+    btnSendEmailOtp.addEventListener('click', async () => {
+      const emailVal = emailInput.value.trim().toLowerCase();
 
-      if (entered.length === 6) {
-        if (validCodes.includes(entered)) {
-          isOtpVerified = true;
-          otpInput.classList.remove('is-invalid');
-          if (otpVerifiedBadge) otpVerifiedBadge.style.display = 'inline-flex';
-          if (otpSentNotice) otpSentNotice.style.display = 'none';
-          toastSuccess('Mobile number verified successfully!', 'Verified');
-        } else {
-          isOtpVerified = false;
-          otpInput.classList.add('is-invalid');
-          if (otpVerifiedBadge) otpVerifiedBadge.style.display = 'none';
+      if (!emailVal || !isValidEmail(emailVal)) {
+        emailInput.classList.add('is-invalid');
+        emailInput.focus();
+        toastDanger('Please enter a valid email address to receive OTP.');
+        return;
+      }
+
+      emailInput.classList.remove('is-invalid');
+      btnSendEmailOtp.disabled = true;
+      btnSendEmailOtp.textContent = 'Sending...';
+
+      try {
+        const res = await AuthService.sendEmailOtp(emailVal);
+
+        if (otpSentNotice && otpSentNoticeText) {
+          otpSentNotice.style.display = 'flex';
+          const noticeMsg = res?.devNotice || res?.message || 'Verification code sent to your email. Check your inbox.';
+          otpSentNoticeText.textContent = noticeMsg;
         }
+
+        toastSuccess(res?.message || `Verification code sent to ${emailVal}!`, 'Email Dispatched');
+
+        if (emailOtpInput) {
+          emailOtpInput.focus();
+        }
+
+        // Start 60s countdown timer
+        let countdown = 60;
+        btnSendEmailOtp.textContent = `Resend (${countdown}s)`;
+        if (otpTimerInterval) clearInterval(otpTimerInterval);
+        otpTimerInterval = setInterval(() => {
+          countdown--;
+          if (countdown > 0) {
+            btnSendEmailOtp.textContent = `Resend (${countdown}s)`;
+            if (otpTimerDisplay) otpTimerDisplay.textContent = `Resend in ${countdown}s`;
+          } else {
+            clearInterval(otpTimerInterval);
+            btnSendEmailOtp.disabled = false;
+            btnSendEmailOtp.textContent = 'Resend OTP';
+            if (otpTimerDisplay) otpTimerDisplay.textContent = '';
+          }
+        }, 1000);
+      } catch (err) {
+        btnSendEmailOtp.disabled = false;
+        btnSendEmailOtp.textContent = 'Send OTP';
+        toastDanger(err.message || 'Failed to send verification code. Please check your email address.');
+      }
+    });
+  }
+
+  // Email OTP Verification Handler
+  async function handleVerifyEmailOtp() {
+    if (!emailOtpInput || !emailInput) return;
+    const emailVal = emailInput.value.trim().toLowerCase();
+    const otpVal = emailOtpInput.value.trim();
+
+    if (!emailVal || !isValidEmail(emailVal)) {
+      emailInput.classList.add('is-invalid');
+      emailInput.focus();
+      toastDanger('Please enter a valid email address.');
+      return;
+    }
+
+    if (!otpVal || otpVal.length !== 6) {
+      emailOtpInput.classList.add('is-invalid');
+      emailOtpInput.focus();
+      toastDanger('Please enter the 6-digit OTP received in your email.');
+      return;
+    }
+
+    if (btnVerifyEmailOtp) {
+      btnVerifyEmailOtp.disabled = true;
+      btnVerifyEmailOtp.textContent = 'Verifying...';
+    }
+
+    try {
+      const res = await AuthService.verifyEmailOtp(emailVal, otpVal);
+      if (res && (res.verified || res.verificationToken)) {
+        isEmailVerified = true;
+        verifiedEmailAddress = emailVal;
+        emailVerificationToken = res.verificationToken || 'verified_token';
+        emailOtpInput.classList.remove('is-invalid');
+        if (otpVerifiedBadge) otpVerifiedBadge.style.display = 'inline-flex';
+        if (otpSentNotice) otpSentNotice.style.display = 'none';
+        if (btnVerifyEmailOtp) {
+          btnVerifyEmailOtp.disabled = true;
+          btnVerifyEmailOtp.textContent = 'Verified ✓';
+        }
+        toastSuccess('Email address verified successfully!', 'Verified');
+        if (passInput) passInput.focus();
       } else {
-        if (otpVerifiedBadge) otpVerifiedBadge.style.display = 'none';
+        throw new Error(res?.detail || 'Invalid verification code.');
+      }
+    } catch (err) {
+      isEmailVerified = false;
+      emailVerificationToken = '';
+      emailOtpInput.classList.add('is-invalid');
+      if (otpVerifiedBadge) otpVerifiedBadge.style.display = 'none';
+      if (btnVerifyEmailOtp) {
+        btnVerifyEmailOtp.disabled = false;
+        btnVerifyEmailOtp.textContent = 'Verify Code';
+      }
+      toastDanger(err.message || 'Invalid or expired OTP. Please try again.');
+    }
+  }
+
+  if (btnVerifyEmailOtp) {
+    btnVerifyEmailOtp.addEventListener('click', handleVerifyEmailOtp);
+  }
+
+  if (emailOtpInput) {
+    emailOtpInput.addEventListener('input', () => {
+      const digits = emailOtpInput.value.replace(/\D/g, '');
+      emailOtpInput.value = digits;
+      if (digits.length === 6 && !isEmailVerified) {
+        handleVerifyEmailOtp();
       }
     });
   }
@@ -281,7 +346,7 @@ export function initAuthPage() {
   if (passInput) passInput.addEventListener('input', validatePasswordMatch);
 
   // Clear validation error styling on input
-  [emailInput, passInput, nameInput, mobileInput, otpInput, confirmPassInput].forEach(input => {
+  [emailInput, passInput, nameInput, emailOtpInput, confirmPassInput].forEach(input => {
     if (input) {
       input.addEventListener('input', () => input.classList.remove('is-invalid'));
       input.addEventListener('focus', () => input.classList.remove('is-invalid'));
@@ -350,11 +415,10 @@ export function initAuthPage() {
       }
       if (isSubmitting) return false;
 
-      const emailVal = emailInput ? emailInput.value.trim() : '';
+      const emailVal = emailInput ? emailInput.value.trim().toLowerCase() : '';
       const passVal = passInput ? passInput.value : '';
       const nameVal = nameInput ? nameInput.value.trim() : '';
-      const mobileVal = mobileInput ? mobileInput.value.trim() : '';
-      const otpVal = otpInput ? otpInput.value.trim() : '';
+      const otpVal = emailOtpInput ? emailOtpInput.value.trim() : '';
       const confirmPassVal = confirmPassInput ? confirmPassInput.value : '';
 
       // Create Account Mode Validation
@@ -386,23 +450,12 @@ export function initAuthPage() {
           return false;
         }
 
-        const digits = mobileVal.replace(/\D/g, '');
-        if (!mobileVal || digits.length < 10) {
-          if (mobileInput) {
-            mobileInput.classList.add('is-invalid');
-            mobileInput.focus();
+        if (!isEmailVerified || !emailVerificationToken || verifiedEmailAddress !== emailVal) {
+          if (emailOtpInput) {
+            emailOtpInput.classList.add('is-invalid');
+            emailOtpInput.focus();
           }
-          toastDanger('Please enter a valid 10-digit mobile number.');
-          return false;
-        }
-
-        const validCodes = [currentGeneratedOtp, '123456', '482910', '999999', '000000'];
-        if (!otpVal || !validCodes.includes(otpVal)) {
-          if (otpInput) {
-            otpInput.classList.add('is-invalid');
-            otpInput.focus();
-          }
-          toastDanger('Please enter the 6-digit OTP received on your mobile.');
+          toastDanger('Please verify your email with the verification code sent to your inbox before proceeding.');
           return false;
         }
 
@@ -415,12 +468,12 @@ export function initAuthPage() {
           return false;
         }
 
-        if (passVal.length < 6) {
+        if (passVal.length < 8) {
           if (passInput) {
             passInput.classList.add('is-invalid');
             passInput.focus();
           }
-          toastDanger('Password must be at least 6 characters.');
+          toastDanger('Password must be at least 8 characters.');
           return false;
         }
 
@@ -428,6 +481,11 @@ export function initAuthPage() {
           confirmPassInput.classList.add('is-invalid');
           confirmPassInput.focus();
           toastDanger('Passwords do not match. Please verify your confirm password.');
+          return false;
+        }
+
+        if (termsAgree && !termsAgree.checked) {
+          toastDanger('Please accept the Terms of Service and Privacy Policy to proceed.');
           return false;
         }
       } else {
@@ -473,8 +531,8 @@ export function initAuthPage() {
           res = await AuthService.signUp({
             name: nameVal,
             email: emailVal,
-            mobile: mobileVal,
-            password: passVal
+            password: passVal,
+            verificationToken: emailVerificationToken
           });
         } else {
           res = await AuthService.signIn({ email: emailVal, password: passVal });

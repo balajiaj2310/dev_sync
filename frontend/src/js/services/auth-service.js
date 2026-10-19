@@ -22,6 +22,14 @@ export const AuthService = {
     throw new Error(res?.detail || 'Authentication failed. Please verify your credentials.');
   },
 
+  async sendEmailOtp(email) {
+    return await apiClient.post('/auth/send-email-otp/', { email });
+  },
+
+  async verifyEmailOtp(email, otp) {
+    return await apiClient.post('/auth/verify-email-otp/', { email, otp });
+  },
+
   async signUp(data) {
     try {
       const res = await apiClient.post('/auth/register/', data);
@@ -37,6 +45,9 @@ export const AuthService = {
       }
       return res;
     } catch (err) {
+      if (err.status) {
+        throw err;
+      }
       if (APP_CONFIG.demoMode) {
         const user = await MockAPI.getCurrentUser();
         user.name = data.name || user.name;

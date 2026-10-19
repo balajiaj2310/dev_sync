@@ -272,59 +272,47 @@
               </div>
             </div>
 
-            <!-- Email or Username Input -->
+            <!-- Email Address Input -->
             <div class="form-field-group" id="groupEmail">
               <label class="form-field-label" for="email" id="labelIdentifier">Email or Username</label>
-              <div class="form-input-container">
-                <span class="field-icon-left" aria-hidden="true">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="2" y="4" width="20" height="16" rx="2"></rect>
-                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
-                  </svg>
-                </span>
-                <input type="text" id="email" class="form-text-input" placeholder="Enter your email or username" value="balaji@devsync.dev" required autocomplete="username" />
-              </div>
-            </div>
-
-            <!-- Mobile Number Input (Only for Create Account mode) -->
-            <div class="form-field-group" id="groupMobile" style="display: none;">
-              <label class="form-field-label" for="mobileNumber">Mobile Number</label>
-              <div class="input-group-mobile">
-                <span class="country-code-pill">+91</span>
+              <div class="input-group-email-otp" style="display: flex; gap: 8px;">
                 <div class="form-input-container" style="flex: 1;">
                   <span class="field-icon-left" aria-hidden="true">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
-                      <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                      <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                      <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
                     </svg>
                   </span>
-                  <input type="tel" id="mobileNumber" class="form-text-input" placeholder="e.g. 9876543210" maxlength="15" autocomplete="tel" />
+                  <input type="text" id="email" class="form-text-input" placeholder="Enter your email or username" value="balaji@devsync.dev" required autocomplete="username" />
                 </div>
-                <button type="button" id="btnSendOtp" class="btn-send-otp">Send OTP</button>
+                <button type="button" id="btnSendEmailOtp" class="btn-send-otp" style="display: none;">Send OTP</button>
               </div>
               <div id="otpSentNotice" class="otp-helper-banner" style="display: none;">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                <span id="otpSentNoticeText">OTP sent successfully. Demo code: 482910</span>
+                <span id="otpSentNoticeText">Verification code dispatched to your email. Please check your inbox.</span>
               </div>
             </div>
 
-            <!-- OTP from Mobile Input (Only for Create Account mode) -->
+            <!-- OTP from Email Input (Only for Create Account mode) -->
             <div class="form-field-group" id="groupOtp" style="display: none;">
               <div class="form-field-label-row">
-                <label class="form-field-label" for="mobileOtp">OTP from Mobile</label>
+                <label class="form-field-label" for="emailOtp">Email Verification Code</label>
                 <span id="otpTimerDisplay" style="font-size: 11.5px; color: var(--auth-text-muted);"></span>
               </div>
-              <div class="form-input-container">
-                <span class="field-icon-left" aria-hidden="true">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                  </svg>
-                </span>
-                <input type="text" id="mobileOtp" class="form-text-input" placeholder="Enter 6-digit OTP from SMS" maxlength="6" inputmode="numeric" autocomplete="one-time-code" />
+              <div class="input-group-email-verify" style="display: flex; gap: 8px;">
+                <div class="form-input-container" style="flex: 1;">
+                  <span class="field-icon-left" aria-hidden="true">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    </svg>
+                  </span>
+                  <input type="text" id="emailOtp" class="form-text-input" placeholder="Enter 6-digit code from email" maxlength="6" inputmode="numeric" autocomplete="one-time-code" />
+                </div>
+                <button type="button" id="btnVerifyEmailOtp" class="btn-verify-otp">Verify Code</button>
               </div>
               <div id="otpVerifiedBadge" class="otp-verified-badge" style="display: none;">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                <span>Mobile Number Verified</span>
+                <span>Email Address Verified</span>
               </div>
             </div>
 
@@ -388,7 +376,7 @@
 
           <!-- Terms of Service & Privacy Policy -->
           <p class="card-legal-footer">
-            By signing in, you agree to our <a href="../public/pricing.html">Terms of Service</a> and <a href="../settings/privacy.html">Privacy Policy</a>.
+            By continuing, you agree to our <a href="../public/terms.html">Terms of Service</a> and <a href="../public/privacy.html">Privacy Policy</a>.
           </p>
 
           <!-- Test Credentials Box -->

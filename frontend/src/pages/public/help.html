@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Help &amp; Support — DevSync</title>
+  <link rel="icon" type="image/svg+xml" href="../../../public/favicon.svg">
+  <link rel="stylesheet" href="../../assets/css/tokens.css">
+  <link rel="stylesheet" href="../../assets/css/reset.css">
+  <link rel="stylesheet" href="../../assets/css/typography.css">
+  <link rel="stylesheet" href="../../assets/css/global.css">
+  <link rel="stylesheet" href="../../assets/css/utilities.css">
+  <link rel="stylesheet" href="../../assets/css/layout/header.css">
+  <link rel="stylesheet" href="../../assets/css/layout/footer.css">
+  <link rel="stylesheet" href="../../assets/css/layout/responsive.css">
+  <link rel="stylesheet" href="../../assets/css/components/buttons.css">
+  <link rel="stylesheet" href="../../assets/css/components/cards.css">
+  <link rel="stylesheet" href="../../assets/css/components/badges.css">
+  <link rel="stylesheet" href="../../assets/css/components/notifications.css">
+  <style>
+    .help-hero {
+      text-align: center;
+      padding: 50px var(--space-6) 40px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .help-faq-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-top: 32px;
+    }
+    .help-card {
+      background: #FFFFFF;
+      border: 1px solid #E2E8F0;
+      border-radius: 16px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);
+    }
+    .help-card-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: #E6FFFA;
+      color: #0D9488;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .help-card h3 {
+      font-size: 17px;
+      font-weight: 700;
+      color: #0F172A;
+      margin: 0;
+    }
+    .help-card p {
+      font-size: 13.5px;
+      color: #475569;
+      line-height: 1.6;
+      margin: 0;
+    }
+    .support-placeholder-panel {
+      background: #F8FAFC;
+      border: 1px dashed #CBD5E1;
+      border-radius: 16px;
+      padding: 32px 24px;
+      margin-top: 48px;
+      text-align: center;
+      max-width: 680px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  </style>
+</head>
+<body data-page="help">
+  <!-- Shared Public Header -->
+  <header class="public-header">
+    <div class="public-header-inner">
+      <a href="home.html" class="header-brand" aria-label="DevSync Home">
+        <img src="../../../public/images/logo.svg" alt="DevSync" />
+      </a>
+      <nav class="public-nav">
+        <a href="home.html" class="nav-link-pill">Home</a>
+        <a href="pricing.html" class="nav-link-pill">Pricing</a>
+        <a href="contact.html" class="nav-link-pill">Contact</a>
+        <a href="help.html" class="nav-link-pill active">Help</a>
+      </nav>
+      <div class="public-actions">
+        <a href="../auth/sign-in.html" class="btn btn-pill btn-outline">Sign In</a>
+        <a href="../auth/sign-in.html?mode=signup" class="btn btn-pill btn-primary">Get Started &rarr;</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="public-content">
+    <div class="help-hero">
+      <span class="badge badge-public" style="margin-bottom: 12px; display: inline-flex;">KNOWLEDGE BASE &amp; SUPPORT</span>
+      <h1 class="font-heading" style="font-size: 32px; color: #0F172A; margin-bottom: 12px;">How can we help you build?</h1>
+      <p class="text-secondary" style="font-size: 15px;">Explore guides for account setup, email OTP verification, repository collaboration, and squad management.</p>
+    </div>
+
+    <div style="max-width: 960px; margin: 0 auto; padding: 0 var(--space-6) 60px;">
+      <div class="help-faq-grid">
+        <!-- Card 1: Account & Email OTP -->
+        <div class="help-card">
+          <div class="help-card-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </div>
+          <h3>Email OTP Verification</h3>
+          <p>DevSync uses secure email one-time passwords (OTP) to verify ownership of your email address during registration before setting up your password. OTP codes expire in 10 minutes.</p>
+        </div>
+
+        <!-- Card 2: Repositories & Pull Requests -->
+        <div class="help-card">
+          <div class="help-card-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          </div>
+          <h3>Repositories &amp; Branches</h3>
+          <p>Create public or private repositories, review pull request diffs, track commit history, and configure branch protection rules for your engineering squad.</p>
+        </div>
+
+        <!-- Card 3: Teams & Permissions -->
+        <div class="help-card">
+          <div class="help-card-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <h3>Team Management &amp; Roles</h3>
+          <p>Project owners possess exclusive authority to assign member roles (Owner, Maintainer, Contributor), allocate squad projects, and manage team membership.</p>
+        </div>
+
+        <!-- Card 4: Pricing in INR -->
+        <div class="help-card">
+          <div class="help-card-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          </div>
+          <h3>Pricing &amp; Plans (₹ INR)</h3>
+          <p>DevSync offers developer pricing in Indian Rupees (₹ INR), including a free forever Developer tier and paid Team subscriptions. View our full <a href="pricing.html" style="color: #0D9488; text-decoration: underline;">Pricing Page</a>.</p>
+        </div>
+      </div>
+
+      <!-- Support Infrastructure Placeholder Notice -->
+      <div class="support-placeholder-panel">
+        <h3 style="font-size: 18px; font-weight: 700; color: #0F172A; margin: 0 0 8px 0;">Need Direct Assistance?</h3>
+        <p style="font-size: 14px; color: #64748B; margin: 0 0 16px 0; line-height: 1.6;">
+          Live chat ticketing and automated support systems are currently in development. For questions, bug reports, or evaluation assistance, please reach out directly via our temporary contact address:
+        </p>
+        <div style="margin-bottom: 20px;">
+          <a href="mailto:hello@devsync.example" class="btn btn-pill btn-outline" style="font-size: 14px; padding: 10px 24px; color: #0D9488; border-color: #0D9488;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 6px;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            hello@devsync.example
+          </a>
+        </div>
+        <p style="font-size: 12.5px; color: #94A3B8; margin: 0;">
+          <em>Note: <code>hello@devsync.example</code> is a temporary placeholder contact address for development review. Or send a message using our <a href="contact.html" style="color: #0D9488; text-decoration: underline;">Contact Form</a>.</em>
+        </p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Shared Public Footer -->
+  <footer class="public-footer">
+    <div class="public-footer-inner">
+      <div class="footer-brand">
+        <a href="home.html" style="display: inline-block;">
+          <img src="../../../public/images/logo.svg" alt="DevSync" />
+        </a>
+        <span class="footer-tagline">Build together. Deploy.</span>
+      </div>
+      <div class="footer-links">
+        <a href="home.html" class="footer-link">About</a>
+        <a href="privacy.html" class="footer-link">Privacy Policy</a>
+        <a href="terms.html" class="footer-link">Terms of Service</a>
+        <a href="help.html" class="footer-link active" style="color: #0D9488; font-weight: 600;">Help</a>
+      </div>
+      <div class="footer-socials">
+        <a href="https://github.com" target="_blank" rel="noopener" class="social-icon-btn" aria-label="GitHub">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+        </a>
+        <a href="https://twitter.com" target="_blank" rel="noopener" class="social-icon-btn" aria-label="Twitter">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/></svg>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="../../js/main.js"></script>
+</body>
+</html>

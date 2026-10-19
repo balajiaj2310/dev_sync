@@ -26,51 +26,68 @@
       </a>
       <nav class="public-nav">
         <a href="home.html" class="nav-link-pill">Home</a>
-        <a href="explore.html" class="nav-link-pill">Explore</a>
         <a href="pricing.html" class="nav-link-pill active">Pricing</a>
         <a href="contact.html" class="nav-link-pill">Contact</a>
+        <a href="help.html" class="nav-link-pill">Help</a>
       </nav>
       <div class="public-actions">
         <a href="../auth/sign-in.html" class="btn btn-pill btn-outline">Sign In</a>
-        <a href="../auth/sign-up.html" class="btn btn-pill btn-primary">Get Started &rarr;</a>
+        <a href="../auth/sign-in.html?mode=signup" class="btn btn-pill btn-primary">Get Started &rarr;</a>
       </div>
     </div>
   </header>
 
   <main class="public-content py-6" style="padding: 60px 0;">
-    <div style="max-width: 960px; margin: 0 auto; padding: 0 var(--space-6); text-align: center;">
+    <div style="max-width: 1040px; margin: 0 auto; padding: 0 var(--space-6); text-align: center;">
+      <span class="badge badge-public" style="margin-bottom: 12px; display: inline-flex;">PLANS IN INDIAN RUPEES (₹ INR)</span>
       <h1 class="font-heading" style="font-size: 32px; margin-bottom: 8px;">Simple, transparent developer tiers</h1>
-      <p class="text-secondary" style="font-size: 15px; margin-bottom: 48px;">No hidden per-seat traps. Built for individuals and engineering teams alike.</p>
+      <p class="text-secondary" style="font-size: 15px; margin-bottom: 48px;">No hidden per-seat traps. Built for individual engineers, fast startups, and software squads.</p>
 
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--space-6); text-align: left;">
-        <!-- Community Tier -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: var(--space-6); text-align: left;">
+        <!-- Developer Tier -->
         <div class="card" style="display: flex; flex-direction: column;">
           <h3 class="font-heading" style="font-size: 20px; margin-bottom: 4px;">Developer</h3>
           <p class="text-secondary" style="font-size: 13px; margin-bottom: 24px;">For individual developers and open source projects.</p>
-          <div style="font-family: var(--font-heading); font-size: 36px; font-weight: 800; margin-bottom: 24px;">$0 <span style="font-size: 14px; font-weight: 500; color: var(--color-text-secondary);">/ forever</span></div>
+          <div style="font-family: var(--font-heading); font-size: 36px; font-weight: 800; margin-bottom: 24px;">₹0 <span style="font-size: 14px; font-weight: 500; color: var(--color-text-secondary);">/ forever</span></div>
           <ul style="display: flex; flex-direction: column; gap: 12px; font-size: 13.5px; margin-bottom: 32px; flex: 1;">
             <li>&check; Unlimited public repositories</li>
             <li>&check; 3 private repositories</li>
-            <li>&check; Community Discord channels</li>
+            <li>&check; Community developer channels</li>
             <li>&check; Basic AI coding assistant</li>
+            <li>&check; Public profile and portfolio pins</li>
           </ul>
-          <a href="../auth/sign-up.html" class="btn btn-outline btn-pill w-100">Get Started Free</a>
+          <a href="../auth/sign-in.html?mode=signup" class="btn btn-outline btn-pill w-100">Get Started Free</a>
         </div>
 
-        <!-- Pro Team Tier -->
+        <!-- Team Tier -->
         <div class="card" style="border: 2px solid var(--color-mint-strong); display: flex; flex-direction: column; position: relative;">
-          <span class="badge badge-public" style="position: absolute; top: -12px; right: 20px;">RECOMMENDED</span>
+          <span class="badge badge-public" style="position: absolute; top: -12px; right: 20px;">MOST POPULAR</span>
           <h3 class="font-heading" style="font-size: 20px; margin-bottom: 4px;">Team</h3>
           <p class="text-secondary" style="font-size: 13px; margin-bottom: 24px;">For fast-shipping squads and startup engineering teams.</p>
-          <div style="font-family: var(--font-heading); font-size: 36px; font-weight: 800; margin-bottom: 24px;">$12 <span style="font-size: 14px; font-weight: 500; color: var(--color-text-secondary);">/ user / mo</span></div>
+          <div style="font-family: var(--font-heading); font-size: 36px; font-weight: 800; margin-bottom: 24px;">₹999 <span style="font-size: 14px; font-weight: 500; color: var(--color-text-secondary);">/ user / mo</span></div>
           <ul style="display: flex; flex-direction: column; gap: 12px; font-size: 13.5px; margin-bottom: 32px; flex: 1;">
-            <li>&check; Unlimited public & private repositories</li>
+            <li>&check; Unlimited public &amp; private repositories</li>
             <li>&check; Advanced branch protection rules</li>
-            <li>&check; Team velocity analytics & heatmaps</li>
+            <li>&check; Team velocity analytics &amp; heatmaps</li>
             <li>&check; Priority AI context assistant</li>
-            <li>&check; Custom reviewer workflows</li>
+            <li>&check; Owner-controlled squad role authority</li>
           </ul>
-          <a href="../auth/sign-up.html" class="btn btn-primary btn-pill w-100">Start 14-Day Trial</a>
+          <a href="../auth/sign-in.html?mode=signup" class="btn btn-primary btn-pill w-100">Start 14-Day Trial</a>
+        </div>
+
+        <!-- Enterprise Tier -->
+        <div class="card" style="display: flex; flex-direction: column;">
+          <h3 class="font-heading" style="font-size: 20px; margin-bottom: 4px;">Enterprise</h3>
+          <p class="text-secondary" style="font-size: 13px; margin-bottom: 24px;">For growing tech organizations requiring custom governance.</p>
+          <div style="font-family: var(--font-heading); font-size: 36px; font-weight: 800; margin-bottom: 24px;">₹4,999 <span style="font-size: 14px; font-weight: 500; color: var(--color-text-secondary);">/ org / mo</span></div>
+          <ul style="display: flex; flex-direction: column; gap: 12px; font-size: 13.5px; margin-bottom: 32px; flex: 1;">
+            <li>&check; Everything in Team plan</li>
+            <li>&check; Custom SAML / SSO authentication</li>
+            <li>&check; Organization-wide audit logging</li>
+            <li>&check; 99.9% uptime SLA</li>
+            <li>&check; Dedicated onboarding &amp; support</li>
+          </ul>
+          <a href="contact.html" class="btn btn-outline btn-pill w-100">Contact Sales</a>
         </div>
       </div>
     </div>
@@ -79,14 +96,16 @@
   <footer class="public-footer">
     <div class="public-footer-inner">
       <div class="footer-brand">
-        <img src="../../../public/images/logo.svg" alt="DevSync" />
+        <a href="home.html" style="display: inline-block;">
+          <img src="../../../public/images/logo.svg" alt="DevSync" />
+        </a>
         <span class="footer-tagline">Build together. Deploy.</span>
       </div>
       <div class="footer-links">
         <a href="home.html" class="footer-link">About</a>
-        <a href="../settings/privacy.html" class="footer-link">Privacy</a>
-        <a href="pricing.html" class="footer-link">Terms</a>
-        <a href="contact.html" class="footer-link">Help</a>
+        <a href="privacy.html" class="footer-link">Privacy Policy</a>
+        <a href="terms.html" class="footer-link">Terms of Service</a>
+        <a href="help.html" class="footer-link">Help</a>
       </div>
     </div>
   </footer>

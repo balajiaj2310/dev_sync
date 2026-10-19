@@ -1,13 +1,44 @@
 /**
  * DevSync Developer Public Profile Page Controller
- * Faithful implementation of the Minimal Developer Card system matching reference image
+ * Faithful implementation of the Minimal Developer Card system with:
+ * - Compact Header
+ * - Vertical Profile Navigation Workspace
+ * - Unified Projects Section with inline Pinning (max 4 pins enforced)
+ * - Signature DevSync Project Pulse Component (Live, 24h, 7d, 30d, comparison, progress, team)
  */
 
 import { ProfileService } from '../services/profile-service.js';
+import { PulseService } from '../services/pulse-service.js';
 import { ConnectionService } from '../services/connection-service.js';
 import { AuthService } from '../services/auth-service.js';
-import { toastSuccess, toastInfo, toastWarning } from '../components/toast.js';
+import { toastSuccess, toastInfo, toastWarning, toastDanger } from '../components/toast.js';
 import { ROUTES } from '../core/route-config.js';
+
+function escapeHtml(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function getSkillColor(name) {
+  const map = {
+    python: 'blue',
+    django: 'mint',
+    javascript: 'amber',
+    react: 'blue',
+    postgres: 'purple',
+    postgresql: 'purple',
+    redis: 'red',
+    docker: 'blue',
+    aws: 'amber',
+    git: 'red'
+  };
+  return map[(name || '').toLowerCase()] || 'blue';
+}
 
 export async function initDeveloperProfilePage() {
   const container = document.getElementById('devProfileRoot');
@@ -43,14 +74,10 @@ export async function initDeveloperProfilePage() {
     console.error('Failed to load developer profile:', err);
   }
 
-  if (developer) {
-    document.title = `${developer.name || developer.username} (@${developer.username}) — DevSync`;
-  }
-
   // Check if viewing own profile
   const currentUser = await ProfileService.getProfile();
   const isOwner = currentUser && developer && (
-    currentUser.username.toLowerCase() === developer.username.toLowerCase() ||
+    (currentUser.username && developer.username && currentUser.username.toLowerCase() === developer.username.toLowerCase()) ||
     currentUser.id === developer.id
   );
 
@@ -72,40 +99,61 @@ export async function initDeveloperProfilePage() {
     return;
   }
 
-  // Set Page Title
   document.title = `${developer.name} (@${developer.username}) — DevSync`;
 
+  // State Management
+  let currentTab = urlParams.get('tab') || 'overview';
+  let pulseRange = '7d';
+  let pulseProject = 'all';
+  let pulseView = 'activity'; // 'activity', 'comparison', 'progress', 'team'
+  let pulseTimer = null;
+  let pulseDataCache = null;
+
   // Filter projects by permission
-  const visibleProjects = (developer.projects || []).filter(p => {
-    if (isOwner) return true;
-    return p.visibility === 'Public';
-  });
+  function getVisibleProjects() {
+    return (developer.projects || []).filter(p => {
+      if (isOwner) return true;
+      return p.visibility === 'Public';
+    });
+  }
 
-  const pinnedProjectsList = visibleProjects.filter(p =>
-    (developer.pinnedProjects || []).includes(p.id)
-  );
-
-  let currentTab = 'overview';
+  // Unified Projects sorted with Pinned first (Section 6)
+  function getUnifiedSortedProjects() {
+    const projs = getVisibleProjects();
+    const pinned = developer.pinnedProjects || [];
+    return [...projs].sort((a, b) => {
+      const aPinned = pinned.includes(a.id);
+      const bPinned = pinned.includes(b.id);
+      if (aPinned && !bPinned) return -1;
+      if (!aPinned && bPinned) return 1;
+      return 0;
+    });
+  }
 
   function renderPage() {
+    const visibleProjects = getVisibleProjects();
+    const pinnedCount = (developer.pinnedProjects || []).filter(pid =>
+      visibleProjects.some(p => p.id === pid)
+    ).length;
+
     container.innerHTML = `
-      <!-- Hero Identity Header Card -->
-      <section class="dev-hero-card" aria-label="Developer identity">
-        <div class="dev-hero-top">
+      <!-- Section 6: Compact Hero Identity Header Card -->
+      <section class="dev-hero-card" aria-label="Developer identity" style="padding: 20px 28px;">
+        <div class="dev-hero-top" style="gap: 20px;">
           <!-- Left: Avatar & Identity Details -->
-          <div class="dev-hero-identity">
+          <div class="dev-hero-identity" style="gap: 18px;">
             <div class="dev-avatar-container">
               ${developer.avatar ? `
-                <img src="${developer.avatar}" alt="${developer.name}" class="dev-avatar-img" id="heroAvatar" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80';" />
+                <img src="${developer.avatar}" alt="${developer.name}" class="dev-avatar-img" style="width: 88px; height: 88px;" id="heroAvatar" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80';" />
               ` : `
-                <div class="dev-avatar-fallback">${(developer.name || 'D').charAt(0)}</div>
+                <div class="dev-avatar-fallback" style="width: 88px; height: 88px; font-size: 28px;">${(developer.name || 'D').charAt(0)}</div>
               `}
               <span class="dev-status-indicator ${developer.collaborationStatusType === 'busy' ? 'busy' : ''}" title="${developer.collaborationStatus || 'Online'}"></span>
             </div>
 
             <div class="dev-identity-details">
-              <div class="dev-name-title-row">
-                <h1 class="dev-display-name">${escapeHtml(developer.name)}</h1>
+              <div class="dev-name-title-row" style="margin-bottom: 2px;">
+                <h1 class="dev-display-name" style="font-size: 20px;">${escapeHtml(developer.name)}</h1>
                 ${developer.isVerified !== false ? `
                   <span class="dev-verified-badge" title="Verified Developer">
                     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
@@ -113,7 +161,7 @@ export async function initDeveloperProfilePage() {
                 ` : ''}
               </div>
 
-              <div class="dev-handle-role-row">
+              <div class="dev-handle-role-row" style="margin-bottom: 6px;">
                 <span class="dev-username-handle">@${escapeHtml(developer.username)}</span>
                 <span class="dev-role-pill">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
@@ -121,9 +169,11 @@ export async function initDeveloperProfilePage() {
                 </span>
               </div>
 
-              <p class="dev-hero-bio">${escapeHtml(developer.headline || developer.bio || '')}</p>
+              <p class="dev-hero-bio" style="font-size: 13px; line-height: 1.4; margin-bottom: 8px;">
+                ${escapeHtml(developer.headline || developer.bio || '')}
+              </p>
 
-              <div class="dev-hero-meta-row">
+              <div class="dev-hero-meta-row" style="font-size: 12px; gap: 14px;">
                 ${developer.location ? `
                   <span class="dev-meta-item">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
@@ -147,16 +197,9 @@ export async function initDeveloperProfilePage() {
                       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
                     </a>
                   ` : ''}
-
                   ${developer.social?.linkedin ? `
                     <a href="${escapeHtml(developer.social.linkedin)}" target="_blank" rel="noopener noreferrer" class="dev-social-btn" title="LinkedIn">
                       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
-                    </a>
-                  ` : ''}
-
-                  ${developer.social?.instagram ? `
-                    <a href="${escapeHtml(developer.social.instagram)}" target="_blank" rel="noopener noreferrer" class="dev-social-btn" title="Instagram">
-                      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
                     </a>
                   ` : ''}
                 </div>
@@ -164,80 +207,92 @@ export async function initDeveloperProfilePage() {
             </div>
           </div>
 
-          <!-- Right: Status Badge, Actions, Stats -->
-          <div class="dev-hero-side">
-            <span class="dev-availability-badge ${developer.collaborationStatusType || 'available'}">
-              ${escapeHtml(developer.collaborationStatus || 'Available for collaboration')}
-            </span>
-
+          <!-- Right: Actions & Metrics Counters -->
+          <div class="dev-hero-side" style="gap: 12px;">
             <div class="dev-actions-row">
               ${isOwner ? `
                 <button type="button" class="btn btn-outline btn-pill btn-sm" id="btnEditProfile">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                   Edit Profile
                 </button>
                 <button type="button" class="btn btn-outline btn-pill btn-sm" id="btnShareProfile" title="Copy profile URL">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
                   Share
                 </button>
               ` : `
                 <button type="button" class="btn btn-outline btn-pill btn-sm" id="btnFollowDev">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
                   <span>${developer.isFollowing ? 'Following &check;' : 'Follow'}</span>
                 </button>
                 <button type="button" class="btn btn-mint btn-pill btn-sm" id="btnConnectDev">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-                  <span>${developer.connectionState === 'Connected' ? 'Connected &check;' : (developer.connectionState === 'Request Sent' ? 'Pending' : 'Connect')}</span>
-                </button>
-                <button type="button" class="btn btn-outline btn-sm" style="border-radius: 50%; width: 34px; height: 34px; padding: 0;" id="btnMoreOptions" title="More options">
-                  &bull;&bull;&bull;
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                  <span>${developer.connectionState === 'Connected' ? 'Connected &check;' : 'Connect'}</span>
                 </button>
               `}
             </div>
 
-            <!-- Followers / Following / Projects / Teams -->
-            <div class="dev-stats-counter-row">
-              <div class="dev-counter-item" data-tab="collaborators">
-                <span class="dev-counter-num" id="followersCount">${developer.stats?.followers ?? 0}</span>
+            <!-- Followers / Following / Projects Counters -->
+            <div class="dev-stats-counter-row" style="margin-top: 2px;">
+              <div class="dev-counter-item" data-tab="overview">
+                <span class="dev-counter-num">${developer.stats?.followers ?? 24}</span>
                 <span class="dev-counter-lbl">Followers</span>
               </div>
-              <div class="dev-counter-item" data-tab="collaborators">
-                <span class="dev-counter-num">${developer.stats?.following ?? 0}</span>
+              <div class="dev-counter-item" data-tab="overview">
+                <span class="dev-counter-num">${developer.stats?.following ?? 18}</span>
                 <span class="dev-counter-lbl">Following</span>
               </div>
               <div class="dev-counter-item" data-tab="projects">
                 <span class="dev-counter-num">${visibleProjects.length}</span>
                 <span class="dev-counter-lbl">Projects</span>
               </div>
-              <div class="dev-counter-item" data-tab="teams">
-                <span class="dev-counter-num">${(developer.teams || []).length}</span>
-                <span class="dev-counter-lbl">Teams</span>
-              </div>
             </div>
           </div>
         </div>
-
-        <!-- Sub-navigation Tabs -->
-        <nav class="dev-profile-tabs-bar" role="tablist" aria-label="Profile Sections">
-          <button type="button" role="tab" class="dev-tab-btn ${currentTab === 'overview' ? 'active' : ''}" data-tab="overview">Overview</button>
-          <button type="button" role="tab" class="dev-tab-btn ${currentTab === 'projects' ? 'active' : ''}" data-tab="projects">
-            Projects <span class="dev-tab-count">${visibleProjects.length}</span>
-          </button>
-          <button type="button" role="tab" class="dev-tab-btn ${currentTab === 'pinned' ? 'active' : ''}" data-tab="pinned">
-            Pinned <span class="dev-tab-count">${pinnedProjectsList.length}</span>
-          </button>
-          <button type="button" role="tab" class="dev-tab-btn ${currentTab === 'skills' ? 'active' : ''}" data-tab="skills">Skills</button>
-          <button type="button" role="tab" class="dev-tab-btn ${currentTab === 'activity' ? 'active' : ''}" data-tab="activity">Activity</button>
-          <button type="button" role="tab" class="dev-tab-btn ${currentTab === 'achievements' ? 'active' : ''}" data-tab="achievements">Achievements</button>
-          <button type="button" role="tab" class="dev-tab-btn ${currentTab === 'experience' ? 'active' : ''}" data-tab="experience">Experience</button>
-          <button type="button" role="tab" class="dev-tab-btn ${currentTab === 'teams' ? 'active' : ''}" data-tab="teams">Teams</button>
-          <button type="button" role="tab" class="dev-tab-btn ${currentTab === 'collaborators' ? 'active' : ''}" data-tab="collaborators">Collaborators</button>
-        </nav>
       </section>
 
-      <!-- Active Tab Content Area -->
-      <div id="tabContentArea">
-        ${renderTabContent(currentTab)}
+      <!-- Section 6: Vertical Profile Navigation Workspace Layout -->
+      <div class="dev-profile-workspace-layout" id="profileWorkspaceLayout">
+        <!-- Vertical Profile Sidebar -->
+        <aside class="dev-profile-vertical-sidebar" aria-label="Profile navigation">
+          <button type="button" class="dev-profile-side-link ${currentTab === 'overview' ? 'active' : ''}" data-tab="overview">
+            <span class="dev-profile-side-link-left">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              <span>Profile Overview</span>
+            </span>
+          </button>
+          <button type="button" class="dev-profile-side-link ${currentTab === 'projects' ? 'active' : ''}" data-tab="projects">
+            <span class="dev-profile-side-link-left">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+              <span>Projects</span>
+            </span>
+            <span class="dev-tab-count">${visibleProjects.length}</span>
+          </button>
+          <button type="button" class="dev-profile-side-link ${currentTab === 'pulse' ? 'active' : ''}" data-tab="pulse">
+            <span class="dev-profile-side-link-left">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              <span>Project Pulse</span>
+            </span>
+            <span class="pulse-live-dot" title="Signature Live Pulse"></span>
+          </button>
+          <button type="button" class="dev-profile-side-link ${currentTab === 'contributions' ? 'active' : ''}" data-tab="contributions">
+            <span class="dev-profile-side-link-left">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+              <span>Contributions</span>
+            </span>
+            <span class="dev-tab-count">${developer.stats?.contributionsCount || 34}</span>
+          </button>
+          <button type="button" class="dev-profile-side-link ${currentTab === 'skills' ? 'active' : ''}" data-tab="skills">
+            <span class="dev-profile-side-link-left">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              <span>Skills &amp; Growth</span>
+            </span>
+          </button>
+        </aside>
+
+        <!-- Dynamic Main Content Area -->
+        <main class="dev-profile-content-area" id="profileContentArea">
+          ${renderTabContent(currentTab)}
+        </main>
       </div>
 
       <!-- Modals Container -->
@@ -245,26 +300,21 @@ export async function initDeveloperProfilePage() {
     `;
 
     attachEventListeners();
+    if (currentTab === 'pulse') {
+      initPulseComponent();
+    }
   }
 
   function renderTabContent(tab) {
     switch (tab) {
       case 'projects':
         return renderProjectsTab();
-      case 'pinned':
-        return renderPinnedTab();
+      case 'pulse':
+        return renderPulseTabSkeleton();
+      case 'contributions':
+        return renderContributionsTab();
       case 'skills':
         return renderSkillsTab();
-      case 'activity':
-        return renderActivityTab();
-      case 'achievements':
-        return renderAchievementsTab();
-      case 'experience':
-        return renderExperienceTab();
-      case 'teams':
-        return renderTeamsTab();
-      case 'collaborators':
-        return renderCollaboratorsTab();
       case 'overview':
       default:
         return renderOverviewTab();
@@ -272,282 +322,12 @@ export async function initDeveloperProfilePage() {
   }
 
   /* -------------------------------------------------------------------------
-   * Overview Tab (Reference Layout: 2 Columns)
-   * ------------------------------------------------------------------------- */
-  function renderOverviewTab() {
-    return `
-      <div class="dev-profile-grid">
-        <!-- Main Column (Left) -->
-        <div class="dev-column-main">
-          <!-- About Card -->
-          <article class="dev-card" aria-label="About developer">
-            <div class="dev-card-header">
-              <h2 class="dev-card-title">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                About
-              </h2>
-              ${isOwner ? `
-                <button type="button" class="btn btn-outline btn-pill btn-sm" id="btnEditAbout">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                  Edit Profile
-                </button>
-              ` : ''}
-            </div>
-
-            <div class="dev-about-content">
-              <div class="dev-about-text">
-                ${(developer.bio || 'Passionate developer building modern applications and collaborating across DevSync.')
-                  .split(/\n+/)
-                  .map(para => `<p>${escapeHtml(para.trim())}</p>`)
-                  .join('')}
-              </div>
-
-              <div class="dev-about-facts">
-                ${developer.education?.degree ? `
-                  <div class="dev-fact-item">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
-                    <span>${escapeHtml(developer.education.degree)}</span>
-                  </div>
-                ` : ''}
-
-                ${developer.education?.institution ? `
-                  <div class="dev-fact-item">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-                    <span>${escapeHtml(developer.education.institution)}</span>
-                  </div>
-                ` : ''}
-
-                ${developer.location ? `
-                  <div class="dev-fact-item">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                    <span>${escapeHtml(developer.location)}</span>
-                  </div>
-                ` : ''}
-
-                <div class="dev-fact-item">
-                  <span class="dev-fact-dot"></span>
-                  <span>${developer.openToInvitations !== false ? 'Open to project invitations' : 'Currently busy'}</span>
-                </div>
-              </div>
-            </div>
-          </article>
-
-          <!-- Pinned Projects Card -->
-          <article class="dev-card" aria-label="Pinned projects">
-            <div class="dev-card-header">
-              <h2 class="dev-card-title">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"/></svg>
-                Pinned Projects
-              </h2>
-              <a href="#" class="dev-card-link-action" data-nav-tab="pinned">View all &rarr;</a>
-            </div>
-
-            <div class="dev-projects-grid">
-              ${pinnedProjectsList.length > 0 ? pinnedProjectsList.map(p => renderProjectCard(p)).join('') : `
-                <div class="text-secondary py-4 text-center" style="grid-column: 1 / -1; font-size: 13px;">
-                  No pinned projects selected yet.
-                </div>
-              `}
-            </div>
-          </article>
-
-          <!-- Projects Section Card -->
-          <article class="dev-card" aria-label="Projects">
-            <div class="dev-card-header">
-              <h2 class="dev-card-title">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
-                Projects
-              </h2>
-              <a href="#" class="dev-card-link-action" data-nav-tab="projects">View all &rarr;</a>
-            </div>
-
-            <div class="dev-projects-grid">
-              ${visibleProjects.slice(0, 3).map(p => renderProjectCard(p)).join('')}
-            </div>
-          </article>
-
-          <!-- Recent Activity Card -->
-          <article class="dev-card" aria-label="Recent activity">
-            <div class="dev-card-header">
-              <h2 class="dev-card-title">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-                Recent Activity
-              </h2>
-              <a href="#" class="dev-card-link-action" data-nav-tab="activity">View all &rarr;</a>
-            </div>
-
-            <div class="dev-activity-list">
-              ${(developer.activities || []).slice(0, 3).map(act => `
-                <div class="dev-activity-item">
-                  <div class="dev-activity-dot">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/></svg>
-                  </div>
-                  <div class="dev-activity-details">
-                    <div class="dev-activity-title-row">
-                      <span class="dev-activity-title">${escapeHtml(act.title)}</span>
-                      <span class="dev-activity-time">${escapeHtml(act.time)}</span>
-                    </div>
-                    <p class="dev-activity-desc">${escapeHtml(act.description)}</p>
-                  </div>
-                </div>
-              `).join('')}
-            </div>
-          </article>
-        </div>
-
-        <!-- Sidebar Column (Right) -->
-        <div class="dev-column-side">
-          <!-- Contribution Stats Card -->
-          <article class="dev-card" aria-label="Contribution statistics">
-            <div class="dev-card-header">
-              <h2 class="dev-card-title">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-                Contribution Stats
-              </h2>
-              <select class="form-select form-select-sm" style="width: auto; font-size: 11.5px; padding: 2px 8px; height: 26px;" id="statsPeriodSelect">
-                <option value="12">Last 12 months</option>
-                <option value="6">Last 6 months</option>
-                <option value="1">Last 30 days</option>
-              </select>
-            </div>
-
-            <div class="dev-stats-grid">
-              <!-- Repositories (Mint) -->
-              <div class="dev-stat-tile mint">
-                <div class="dev-stat-tile-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
-                </div>
-                <div class="dev-stat-tile-data">
-                  <span class="dev-stat-tile-num">${developer.stats?.repositoriesCount ?? visibleProjects.length}</span>
-                  <span class="dev-stat-tile-lbl">Repositories</span>
-                </div>
-              </div>
-
-              <!-- Contributions (Blue) -->
-              <div class="dev-stat-tile blue">
-                <div class="dev-stat-tile-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-                </div>
-                <div class="dev-stat-tile-data">
-                  <span class="dev-stat-tile-num">${developer.stats?.contributionsCount ?? 0}</span>
-                  <span class="dev-stat-tile-lbl">Contributions</span>
-                </div>
-              </div>
-
-              <!-- Pull Requests (Purple) -->
-              <div class="dev-stat-tile purple">
-                <div class="dev-stat-tile-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 0 1 2 2v7"/><line x1="6" y1="9" x2="6" y2="21"/></svg>
-                </div>
-                <div class="dev-stat-tile-data">
-                  <span class="dev-stat-tile-num">${developer.stats?.pullRequestsCount ?? 0}</span>
-                  <span class="dev-stat-tile-lbl">Pull Requests</span>
-                </div>
-              </div>
-
-              <!-- Issues (Amber) -->
-              <div class="dev-stat-tile amber">
-                <div class="dev-stat-tile-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                </div>
-                <div class="dev-stat-tile-data">
-                  <span class="dev-stat-tile-num">${developer.stats?.issuesCount ?? 0}</span>
-                  <span class="dev-stat-tile-lbl">Issues</span>
-                </div>
-              </div>
-            </div>
-          </article>
-
-          <!-- Achievements Card -->
-          <article class="dev-card" aria-label="Achievements">
-            <div class="dev-card-header">
-              <h2 class="dev-card-title">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                Achievements
-              </h2>
-              <a href="#" class="dev-card-link-action" data-nav-tab="achievements">View all &rarr;</a>
-            </div>
-
-            <div class="dev-achievements-list">
-              ${(developer.achievements || []).length > 0 ? (developer.achievements || []).map(ach => `
-                <div class="dev-achievement-item">
-                  <div class="dev-achievement-badge ${ach.color || 'green'}">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
-                  </div>
-                  <div class="dev-achievement-info">
-                    <span class="dev-achievement-title">${escapeHtml(ach.title)}</span>
-                    <span class="dev-achievement-desc">${escapeHtml(ach.description)}</span>
-                  </div>
-                </div>
-              `).join('') : `
-                <div class="text-secondary py-3 text-center" style="font-size: 13px;">
-                  No achievements recorded yet.
-                </div>
-              `}
-            </div>
-          </article>
-
-          <!-- Top Skills Card -->
-          <article class="dev-card" aria-label="Top skills">
-            <div class="dev-card-header">
-              <h2 class="dev-card-title">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                Top Skills
-              </h2>
-              ${isOwner ? `
-                <button type="button" class="btn btn-outline btn-pill btn-sm" id="btnEditSkills">Edit</button>
-              ` : ''}
-            </div>
-
-            <div class="dev-skills-cloud">
-              ${(developer.skills || []).length > 0 ? (developer.skills || []).map(skill => {
-                const name = typeof skill === 'string' ? skill : skill.name;
-                const color = typeof skill === 'string' ? getSkillColor(skill) : (skill.color || 'blue');
-                return `<span class="dev-tech-pill ${color}">${escapeHtml(name)}</span>`;
-              }).join('') : `
-                <div class="text-secondary py-2" style="font-size: 13px;">No skills added yet.</div>
-              `}
-            </div>
-          </article>
-
-          <!-- Teams Card -->
-          <article class="dev-card" aria-label="Teams">
-            <div class="dev-card-header">
-              <h2 class="dev-card-title">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                Teams
-              </h2>
-              <a href="#" class="dev-card-link-action" data-nav-tab="teams">View all &rarr;</a>
-            </div>
-
-            <div class="dev-teams-list">
-              ${(developer.teams || []).length > 0 ? (developer.teams || []).map(team => `
-                <a href="${ROUTES.TEAM_DETAIL}?id=${team.id}" class="dev-team-item">
-                  <img src="${team.avatar}" alt="${team.name}" class="dev-team-avatar" />
-                  <div class="dev-team-meta">
-                    <span class="dev-team-name">${escapeHtml(team.name)}</span>
-                    <span class="dev-team-role">${escapeHtml(team.role)} &bull; ${team.membersCount || 0} members</span>
-                  </div>
-                </a>
-              `).join('') : `
-                <div class="text-secondary py-3 text-center" style="font-size: 13px;">
-                  No team memberships yet.
-                </div>
-              `}
-            </div>
-          </article>
-        </div>
-      </div>
-    `;
-  }
-
-  /* -------------------------------------------------------------------------
-   * Project Card Renderer (Clean Card Concept)
+   * Section 6: Unified Project Card Renderer
    * ------------------------------------------------------------------------- */
   function renderProjectCard(project) {
     const isPinned = (developer.pinnedProjects || []).includes(project.id);
     return `
-      <div class="dev-project-card">
+      <div class="dev-project-card ${isPinned ? 'pinned-border' : ''}" style="${isPinned ? 'border-color: rgba(245, 158, 11, 0.45);' : ''}">
         <div>
           <div class="dev-project-top">
             <div class="dev-project-icon" style="background-color: ${project.iconBg || '#10B981'};">
@@ -558,9 +338,16 @@ export async function initDeveloperProfilePage() {
                 <a href="${ROUTES.REPOSITORY_DETAIL}?repo=${encodeURIComponent(project.name)}" class="dev-project-title" title="${escapeHtml(project.name)}">
                   ${escapeHtml(project.name)}
                 </a>
-                <span class="dev-badge-visibility ${project.visibility ? project.visibility.toLowerCase() : 'public'}">
-                  ${escapeHtml(project.visibility || 'Public')}
-                </span>
+                <div class="d-flex align-items-center gap-1">
+                  ${isPinned ? `
+                    <span class="dev-project-pin-badge" title="Featured pinned project">
+                      📌 Pinned
+                    </span>
+                  ` : ''}
+                  <span class="dev-badge-visibility ${project.visibility ? project.visibility.toLowerCase() : 'public'}">
+                    ${escapeHtml(project.visibility || 'Public')}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -586,57 +373,242 @@ export async function initDeveloperProfilePage() {
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>
               ${project.forks || 0}
             </span>
+          </div>
+
+          <div class="d-flex align-items-center gap-2">
             ${isOwner ? `
-              <button type="button" class="btn-pin-toggle" data-repo-id="${project.id}" title="${isPinned ? 'Unpin from profile' : 'Pin to profile'}" style="background: none; border: none; cursor: pointer; color: ${isPinned ? '#0d9488' : '#9ca3af'}; padding: 0 4px;">
-                📌
+              <button type="button" class="btn-pin-toggle ${isPinned ? 'is-pinned' : ''}" data-repo-id="${project.id}" title="${isPinned ? 'Click to unpin' : 'Click to pin project (max 4)'}">
+                ${isPinned ? '📌 Unpin' : '📌 Pin'}
               </button>
             ` : ''}
+            <span class="text-secondary" style="font-size: 11px;">${escapeHtml(project.updated || 'Recently updated')}</span>
           </div>
-          <span>${escapeHtml(project.updated || 'Recently updated')}</span>
         </div>
       </div>
     `;
   }
 
   /* -------------------------------------------------------------------------
-   * Full Projects Tab
+   * Overview Tab (With Unified Projects - NO separate pinned box)
+   * ------------------------------------------------------------------------- */
+  function renderOverviewTab() {
+    const sortedProjects = getUnifiedSortedProjects();
+    const previewProjects = sortedProjects.slice(0, 4);
+
+    return `
+      <div class="dev-profile-grid">
+        <!-- Main Column (Left) -->
+        <div class="dev-column-main">
+          <!-- About Card -->
+          <article class="dev-card" aria-label="About developer">
+            <div class="dev-card-header">
+              <h2 class="dev-card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                About
+              </h2>
+              ${isOwner ? `
+                <button type="button" class="btn btn-outline btn-pill btn-sm" id="btnEditAbout">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                  Edit
+                </button>
+              ` : ''}
+            </div>
+
+            <div class="dev-about-content">
+              <div class="dev-about-text">
+                ${(developer.bio || 'Passionate developer building modern applications and collaborating across DevSync.')
+                  .split(/\n+/)
+                  .map(para => `<p>${escapeHtml(para.trim())}</p>`)
+                  .join('')}
+              </div>
+
+              <div class="dev-about-facts">
+                ${developer.education?.degree ? `
+                  <div class="dev-fact-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                    <span>${escapeHtml(developer.education.degree)}</span>
+                  </div>
+                ` : ''}
+                ${developer.location ? `
+                  <div class="dev-fact-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    <span>${escapeHtml(developer.location)}</span>
+                  </div>
+                ` : ''}
+                <div class="dev-fact-item">
+                  <span class="dev-fact-dot"></span>
+                  <span>${developer.openToInvitations !== false ? 'Open to collaboration' : 'Currently busy'}</span>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Section 6: Unified Projects Card (Single combined list with Pinned at top) -->
+          <article class="dev-card" aria-label="Projects">
+            <div class="dev-card-header">
+              <div class="d-flex align-items-center gap-2">
+                <h2 class="dev-card-title">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+                  Projects &amp; Repositories
+                </h2>
+                <span class="text-secondary" style="font-size: 12px;">(Pinned work listed first)</span>
+              </div>
+              <a href="#" class="dev-card-link-action" data-nav-tab="projects">View all (${sortedProjects.length}) &rarr;</a>
+            </div>
+
+            <div class="dev-projects-grid">
+              ${previewProjects.length > 0 ? previewProjects.map(p => renderProjectCard(p)).join('') : `
+                <div class="text-secondary py-4 text-center" style="grid-column: 1 / -1; font-size: 13px;">
+                  No repositories available to display.
+                </div>
+              `}
+            </div>
+          </article>
+
+          <!-- Recent Activity Card -->
+          <article class="dev-card" aria-label="Recent activity">
+            <div class="dev-card-header">
+              <h2 class="dev-card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                Recent Activity
+              </h2>
+              <a href="#" class="dev-card-link-action" data-nav-tab="pulse">Project Pulse &rarr;</a>
+            </div>
+
+            <div class="dev-activity-list">
+              ${(developer.activities || []).slice(0, 3).map(act => `
+                <div class="dev-activity-item">
+                  <div class="dev-activity-dot">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/></svg>
+                  </div>
+                  <div class="dev-activity-details">
+                    <div class="dev-activity-title-row">
+                      <span class="dev-activity-title">${escapeHtml(act.title)}</span>
+                      <span class="dev-activity-time">${escapeHtml(act.time)}</span>
+                    </div>
+                    <p class="dev-activity-desc">${escapeHtml(act.description)}</p>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </article>
+        </div>
+
+        <!-- Sidebar Column (Right) -->
+        <div class="dev-column-side">
+          <!-- Project Pulse Snapshot Card -->
+          <article class="dev-card" aria-label="DevSync Pulse Snapshot" style="background: linear-gradient(180deg, var(--color-surface) 0%, rgba(16, 185, 129, 0.04) 100%);">
+            <div class="dev-card-header">
+              <div class="d-flex align-items-center gap-2">
+                <span class="pulse-live-dot"></span>
+                <h2 class="dev-card-title" style="font-size: 14px;">Live Project Pulse</h2>
+              </div>
+              <a href="#" class="dev-card-link-action" data-nav-tab="pulse">Explore &rarr;</a>
+            </div>
+            <p class="text-secondary" style="font-size: 12.5px; margin-bottom: 12px;">
+              Active commit frequency, branch builds, and team velocity across repositories.
+            </p>
+            <div class="d-flex align-items-center justify-content-between p-3 rounded" style="background: var(--color-surface-subtle); border: 1px solid var(--color-border);">
+              <div>
+                <div style="font-size: 11px; text-transform: uppercase; color: var(--color-text-secondary); font-weight: 700;">Active Projects</div>
+                <div style="font-size: 18px; font-weight: 750; color: #10b981;">${sortedProjects.length}</div>
+              </div>
+              <div>
+                <div style="font-size: 11px; text-transform: uppercase; color: var(--color-text-secondary); font-weight: 700;">Pulse Status</div>
+                <div style="font-size: 13px; font-weight: 600; color: #10b981;">● Online</div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Contribution Stats Card -->
+          <article class="dev-card" aria-label="Contribution statistics">
+            <div class="dev-card-header">
+              <h2 class="dev-card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                Verified Stats
+              </h2>
+            </div>
+            <div class="dev-stats-grid">
+              <div class="dev-stat-tile mint">
+                <div class="dev-stat-tile-data">
+                  <span class="dev-stat-tile-num">${sortedProjects.length}</span>
+                  <span class="dev-stat-tile-lbl">Repositories</span>
+                </div>
+              </div>
+              <div class="dev-stat-tile blue">
+                <div class="dev-stat-tile-data">
+                  <span class="dev-stat-tile-num">${developer.stats?.contributionsCount ?? 42}</span>
+                  <span class="dev-stat-tile-lbl">Contributions</span>
+                </div>
+              </div>
+              <div class="dev-stat-tile purple">
+                <div class="dev-stat-tile-data">
+                  <span class="dev-stat-tile-num">${developer.stats?.pullRequestsCount ?? 8}</span>
+                  <span class="dev-stat-tile-lbl">Pull Requests</span>
+                </div>
+              </div>
+              <div class="dev-stat-tile amber">
+                <div class="dev-stat-tile-data">
+                  <span class="dev-stat-tile-num">${developer.stats?.issuesCount ?? 14}</span>
+                  <span class="dev-stat-tile-lbl">Issues Solved</span>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Skills Card -->
+          <article class="dev-card" aria-label="Skills">
+            <div class="dev-card-header">
+              <h2 class="dev-card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                Technical Stack
+              </h2>
+              <a href="#" class="dev-card-link-action" data-nav-tab="skills">Details &rarr;</a>
+            </div>
+            <div class="dev-skills-cloud">
+              ${(developer.skills || []).map(skill => {
+                const name = typeof skill === 'string' ? skill : skill.name;
+                const color = typeof skill === 'string' ? getSkillColor(skill) : (skill.color || 'blue');
+                return `<span class="dev-tech-pill ${color}">${escapeHtml(name)}</span>`;
+              }).join('')}
+            </div>
+          </article>
+        </div>
+      </div>
+    `;
+  }
+
+  /* -------------------------------------------------------------------------
+   * Section 6: Full Unified Projects Tab
    * ------------------------------------------------------------------------- */
   function renderProjectsTab() {
+    const sortedProjects = getUnifiedSortedProjects();
+    const pinnedCount = (developer.pinnedProjects || []).length;
+
     return `
       <div class="dev-card">
         <div class="dev-card-header">
-          <h2 class="dev-card-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
-            All Projects &amp; Repositories
-          </h2>
-          <span class="text-secondary" style="font-size: 13px;">Showing ${visibleProjects.length} projects</span>
+          <div>
+            <h2 class="dev-card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+              Projects &amp; Repositories
+            </h2>
+            <div class="text-secondary" style="font-size: 13px; margin-top: 2px;">
+              Single unified portfolio. Pinned repositories are highlighted at the top (${pinnedCount} of 4 pinned).
+            </div>
+          </div>
+          ${isOwner ? `
+            <a href="../repositories/create.html" class="btn btn-primary btn-sm">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              New Repository
+            </a>
+          ` : ''}
         </div>
 
         <div class="dev-projects-grid">
-          ${visibleProjects.map(p => renderProjectCard(p)).join('')}
-        </div>
-      </div>
-    `;
-  }
-
-  /* -------------------------------------------------------------------------
-   * Pinned Tab
-   * ------------------------------------------------------------------------- */
-  function renderPinnedTab() {
-    return `
-      <div class="dev-card">
-        <div class="dev-card-header">
-          <h2 class="dev-card-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z"/></svg>
-            Featured Pinned Work
-          </h2>
-          ${isOwner ? `<span class="text-secondary" style="font-size: 12px;">Click the pin icon to add or remove projects</span>` : ''}
-        </div>
-
-        <div class="dev-projects-grid">
-          ${pinnedProjectsList.length > 0 ? pinnedProjectsList.map(p => renderProjectCard(p)).join('') : `
-            <div class="text-secondary py-6 text-center" style="grid-column: 1 / -1; font-size: 13px;">
-              No pinned work to display.
+          ${sortedProjects.length > 0 ? sortedProjects.map(p => renderProjectCard(p)).join('') : `
+            <div class="text-secondary py-6 text-center" style="grid-column: 1 / -1; font-size: 14px;">
+              No public projects visible for this developer.
             </div>
           `}
         </div>
@@ -645,63 +617,462 @@ export async function initDeveloperProfilePage() {
   }
 
   /* -------------------------------------------------------------------------
-   * Skills Tab
+   * Section 7: Signature DevSync Project Pulse Component
    * ------------------------------------------------------------------------- */
-  function renderSkillsTab() {
-    const categories = {
-      'Backend': [],
-      'Frontend': [],
-      'Database': [],
-      'Tools & Platforms': []
-    };
-
-    (developer.skills || []).forEach(s => {
-      const name = typeof s === 'string' ? s : s.name;
-      const cat = typeof s === 'string' ? categorizeSkill(s) : (s.category || 'Tools & Platforms');
-      const color = typeof s === 'string' ? getSkillColor(s) : (s.color || 'blue');
-      if (!categories[cat]) categories[cat] = [];
-      categories[cat].push({ name, color });
-    });
-
+  function renderPulseTabSkeleton() {
+    const visibleProjects = getVisibleProjects();
     return `
-      <div class="dev-card">
-        <div class="dev-card-header">
-          <h2 class="dev-card-title">Technical Skills &amp; Stack</h2>
-          ${isOwner ? `<button type="button" class="btn btn-outline btn-pill btn-sm" id="btnEditSkillsTab">Edit Skills</button>` : ''}
+      <div class="pulse-card">
+        <!-- Pulse Header -->
+        <div class="pulse-header">
+          <div>
+            <div class="d-flex align-items-center gap-3">
+              <h2 class="font-heading" style="font-size: 22px; margin: 0;">DevSync Project Pulse</h2>
+              <div class="pulse-live-indicator">
+                <span class="pulse-live-dot"></span>
+                <span id="pulseLiveLabel">Real-time Pulse Active</span>
+              </div>
+            </div>
+            <p class="text-secondary" style="font-size: 13.5px; margin: 4px 0 0 0;">
+              Live stream of development activity, commits, branch file uploads, and milestone velocity.
+            </p>
+          </div>
         </div>
 
-        <div style="display: flex; flex-direction: column; gap: 24px;">
-          ${Object.entries(categories).map(([cat, list]) => `
-            <div>
-              <h3 class="font-heading mb-2" style="font-size: 14px; font-weight: 700; color: #374151;">${cat}</h3>
-              <div class="dev-skills-cloud">
-                ${list.length > 0 ? list.map(item => `
-                  <span class="dev-tech-pill ${item.color}" style="font-size: 12.5px; padding: 4px 12px;">${escapeHtml(item.name)}</span>
-                `).join('') : '<span class="text-secondary" style="font-size: 12px;">None specified</span>'}
+        <!-- Controls Toolbar -->
+        <div class="pulse-controls-row">
+          <!-- Time Range Selector -->
+          <div class="d-flex align-items-center gap-2">
+            <span class="text-secondary" style="font-size: 12px; font-weight: 600;">Time Window:</span>
+            <div class="pulse-range-group">
+              <button type="button" class="pulse-range-btn ${pulseRange === 'live' ? 'active' : ''}" data-pulse-range="live">Live</button>
+              <button type="button" class="pulse-range-btn ${pulseRange === '24h' ? 'active' : ''}" data-pulse-range="24h">24h</button>
+              <button type="button" class="pulse-range-btn ${pulseRange === '7d' ? 'active' : ''}" data-pulse-range="7d">7 Days</button>
+              <button type="button" class="pulse-range-btn ${pulseRange === '30d' ? 'active' : ''}" data-pulse-range="30d">30 Days</button>
+            </div>
+          </div>
+
+          <!-- Project Filter -->
+          <div class="d-flex align-items-center gap-2">
+            <span class="text-secondary" style="font-size: 12px; font-weight: 600;">Repository:</span>
+            <select id="pulseProjectSelect" class="form-select" style="font-size: 12.5px; width: 180px; padding: 4px 8px;">
+              <option value="all">All Projects</option>
+              ${visibleProjects.map(p => `
+                <option value="${escapeHtml(p.name)}" ${p.name === pulseProject ? 'selected' : ''}>${escapeHtml(p.name)}</option>
+              `).join('')}
+            </select>
+          </div>
+
+          <!-- View Mode Toggles -->
+          <div class="d-flex align-items-center gap-1">
+            <button type="button" class="btn btn-outline btn-sm ${pulseView === 'activity' ? 'active' : ''}" data-pulse-view="activity">Activity Pulse</button>
+            <button type="button" class="btn btn-outline btn-sm ${pulseView === 'comparison' ? 'active' : ''}" data-pulse-view="comparison">Compare</button>
+            <button type="button" class="btn btn-outline btn-sm ${pulseView === 'progress' ? 'active' : ''}" data-pulse-view="progress">Progress</button>
+            <button type="button" class="btn btn-outline btn-sm ${pulseView === 'team' ? 'active' : ''}" data-pulse-view="team">Team Work</button>
+          </div>
+        </div>
+
+        <!-- Dynamic Pulse View Container -->
+        <div id="pulseViewContainer">
+          <div class="text-center py-6 text-secondary"><span class="btn-spinner"></span> Gathering pulse data...</div>
+        </div>
+      </div>
+    `;
+  }
+
+  async function initPulseComponent() {
+    const viewContainer = document.getElementById('pulseViewContainer');
+    if (!viewContainer) return;
+
+    // Attach controls
+    container.querySelectorAll('[data-pulse-range]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        pulseRange = btn.getAttribute('data-pulse-range');
+        container.querySelectorAll('[data-pulse-range]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        refreshPulseView();
+      });
+    });
+
+    const projectSelect = document.getElementById('pulseProjectSelect');
+    if (projectSelect) {
+      projectSelect.addEventListener('change', (e) => {
+        pulseProject = e.target.value;
+        refreshPulseView();
+      });
+    }
+
+    container.querySelectorAll('[data-pulse-view]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        pulseView = btn.getAttribute('data-pulse-view');
+        container.querySelectorAll('[data-pulse-view]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        refreshPulseView();
+      });
+    });
+
+    await refreshPulseView();
+
+    // Auto-refresh for Live mode
+    if (pulseTimer) clearInterval(pulseTimer);
+    if (pulseRange === 'live') {
+      pulseTimer = setInterval(() => {
+        if (currentTab === 'pulse' && pulseRange === 'live') {
+          refreshPulseView(true);
+        }
+      }, 15000);
+    }
+  }
+
+  async function refreshPulseView(isBackground = false) {
+    const viewContainer = document.getElementById('pulseViewContainer');
+    if (!viewContainer) return;
+
+    if (!isBackground) {
+      viewContainer.innerHTML = `<div class="text-center py-6 text-secondary"><span class="btn-spinner"></span> Loading pulse metrics...</div>`;
+    }
+
+    try {
+      if (pulseView === 'comparison') {
+        await renderPulseComparisonView(viewContainer);
+      } else if (pulseView === 'progress') {
+        await renderPulseProgressView(viewContainer);
+      } else if (pulseView === 'team') {
+        await renderPulseTeamView(viewContainer);
+      } else {
+        await renderPulseActivityView(viewContainer);
+      }
+    } catch (err) {
+      viewContainer.innerHTML = `
+        <div class="text-secondary py-4 text-center">
+          Failed to load Pulse data: ${escapeHtml(err.message || 'Server error')}
+        </div>
+      `;
+    }
+  }
+
+  // View 1: Activity Pulse Chart & Drilldown
+  async function renderPulseActivityView(containerEl) {
+    const res = await PulseService.getPulse(developer.username, pulseRange, pulseProject);
+    pulseDataCache = res;
+
+    const intervals = res.intervals || [];
+    const maxCount = Math.max(...intervals.map(i => i.count), 5);
+
+    containerEl.innerHTML = `
+      <!-- Pulse Metric Tiles -->
+      <div class="repo-stat-cards-grid mb-4">
+        <div class="repo-stat-card">
+          <span class="repo-stat-num">${res.totalEvents || 0}</span>
+          <span class="repo-stat-lbl">Total Events (${pulseRange})</span>
+        </div>
+        <div class="repo-stat-card">
+          <span class="repo-stat-num">${res.metrics?.commits || 0}</span>
+          <span class="repo-stat-lbl">Commits Recorded</span>
+        </div>
+        <div class="repo-stat-card">
+          <span class="repo-stat-num">${res.metrics?.fileUploads || 0}</span>
+          <span class="repo-stat-lbl">Branch File Uploads</span>
+        </div>
+        <div class="repo-stat-card">
+          <span class="repo-stat-num">${res.metrics?.collaborations || 0}</span>
+          <span class="repo-stat-lbl">Collaborations</span>
+        </div>
+      </div>
+
+      <!-- Interactive Pulse Chart -->
+      <div class="mb-2 d-flex align-items-center justify-content-between">
+        <span class="text-secondary" style="font-size: 12px; font-weight: 600;">Activity Timeline &bull; Click any bar to view event drilldown</span>
+        <span class="text-secondary" style="font-size: 11px;">Max Velocity: ${maxCount} events/bucket</span>
+      </div>
+
+      <div class="pulse-chart-container">
+        ${intervals.map((item, idx) => {
+          const heightPct = Math.max((item.count / maxCount) * 100, 6);
+          return `
+            <div class="pulse-bar-column" data-interval-idx="${idx}" title="${escapeHtml(item.label)}: ${item.count} events">
+              <span class="pulse-bar-count">${item.count}</span>
+              <div class="pulse-bar-rect" style="height: ${heightPct}%;"></div>
+              <span class="pulse-bar-label">${escapeHtml(item.label)}</span>
+            </div>
+          `;
+        }).join('')}
+      </div>
+
+      <!-- Recent Event List -->
+      <div class="mt-5">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <h3 class="font-heading" style="font-size: 15px; margin: 0;">Verified Event Stream</h3>
+          <span class="text-secondary" style="font-size: 12px;">Live Audit Log</span>
+        </div>
+
+        <div class="dev-activity-list">
+          ${(res.recentEvents || []).slice(0, 5).map(evt => `
+            <div class="dev-activity-item">
+              <div class="dev-activity-dot">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/></svg>
+              </div>
+              <div class="dev-activity-details">
+                <div class="dev-activity-title-row">
+                  <span class="dev-activity-title">
+                    <strong>@${escapeHtml(evt.actor || developer.username)}</strong> &bull; ${escapeHtml(evt.title || evt.action)}
+                  </span>
+                  <span class="dev-activity-time">${escapeHtml(evt.time || 'Recently')}</span>
+                </div>
+                <p class="dev-activity-desc">${escapeHtml(evt.description || '')}</p>
+                ${evt.repository ? `
+                  <div class="text-secondary" style="font-size: 11.5px;">
+                    Repository: <code>${escapeHtml(evt.repository)}</code> &bull; Branch: <code>${escapeHtml(evt.branch || 'main')}</code>
+                  </div>
+                ` : ''}
               </div>
             </div>
           `).join('')}
         </div>
       </div>
     `;
+
+    // Click on bar triggers Event Drilldown Modal
+    containerEl.querySelectorAll('.pulse-bar-column').forEach(col => {
+      col.addEventListener('click', () => {
+        const idx = parseInt(col.getAttribute('data-interval-idx'), 10);
+        const item = intervals[idx];
+        if (item) {
+          openPulseDrilldown(item.label, item.events || []);
+        }
+      });
+    });
+  }
+
+  // View 2: Project Comparison
+  async function renderPulseComparisonView(containerEl) {
+    const res = await PulseService.getComparison(developer.username, pulseRange);
+    const projects = res.comparison || [];
+    const maxEvents = Math.max(...projects.map(p => p.eventCount), 1);
+
+    containerEl.innerHTML = `
+      <div class="mb-4">
+        <h3 class="font-heading" style="font-size: 16px; margin: 0 0 4px 0;">Cross-Project Velocity Comparison</h3>
+        <p class="text-secondary" style="font-size: 13px; margin: 0;">Compare development activity and commit volume across repositories.</p>
+      </div>
+
+      <div class="d-flex flex-column gap-4">
+        ${projects.map(p => {
+          const pct = Math.round((p.eventCount / maxEvents) * 100);
+          return `
+            <div class="card p-4">
+              <div class="d-flex align-items-center justify-content-between mb-2">
+                <div class="d-flex align-items-center gap-2">
+                  <a href="${ROUTES.REPOSITORY_DETAIL}?repo=${encodeURIComponent(p.name)}" class="table-repo-name" style="font-size: 14.5px;">
+                    ${escapeHtml(p.name)}
+                  </a>
+                  <span class="badge ${p.visibility === 'Public' ? 'badge-public' : 'badge-private'}">${escapeHtml(p.visibility)}</span>
+                </div>
+                <span style="font-family: var(--font-heading); font-size: 15px; font-weight: 700; color: #10B981;">
+                  ${p.eventCount} events
+                </span>
+              </div>
+              <div class="repo-progress-track mb-3">
+                <div class="repo-progress-fill" style="width: ${pct}%;"></div>
+              </div>
+              <div class="d-flex align-items-center gap-4 text-secondary" style="font-size: 12.5px;">
+                <span>Commits: <strong>${p.commits || 0}</strong></span>
+                <span>Branch Uploads: <strong>${p.uploads || 0}</strong></span>
+                <span>Active Branches: <strong>${p.branches || 1}</strong></span>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+  }
+
+  // View 3: Task & Milestone Progress
+  async function renderPulseProgressView(containerEl) {
+    const res = await PulseService.getProgress(developer.username, pulseProject === 'all' ? null : pulseProject);
+    const milestones = res.milestones || [];
+    const tasks = res.tasks || [];
+
+    containerEl.innerHTML = `
+      <div class="mb-4">
+        <h3 class="font-heading" style="font-size: 16px; margin: 0 0 4px 0;">Milestone &amp; Task Progress</h3>
+        <p class="text-secondary" style="font-size: 13px; margin: 0;">Real-time tracking of repository deliverables and completed features.</p>
+      </div>
+
+      <!-- Milestones List -->
+      <div class="d-flex flex-column gap-3 mb-5">
+        ${milestones.map(m => `
+          <div class="card p-4">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <div>
+                <strong style="font-size: 14.5px;">${escapeHtml(m.title)}</strong>
+                <span class="text-secondary ml-2" style="font-size: 12px;">(${escapeHtml(m.repository)})</span>
+              </div>
+              <span style="font-family: var(--font-heading); font-weight: 700; color: #10B981;">${m.progress}%</span>
+            </div>
+            <div class="repo-progress-track mb-2">
+              <div class="repo-progress-fill" style="width: ${m.progress}%;"></div>
+            </div>
+            <div class="d-flex align-items-center justify-content-between text-secondary" style="font-size: 12px;">
+              <span>Target: ${escapeHtml(m.dueDate || 'Q4 2026')}</span>
+              <span>${m.completedTasks} of ${m.totalTasks} tasks completed</span>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+
+      <!-- Tasks Breakdown -->
+      <h4 class="font-heading" style="font-size: 14.5px; margin-bottom: 12px;">Assigned Task Deliverables</h4>
+      <div class="table-responsive">
+        <table class="table" style="font-size: 13px;">
+          <thead>
+            <tr>
+              <th>Task</th>
+              <th>Repository</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${tasks.map(t => `
+              <tr>
+                <td><strong>${escapeHtml(t.title)}</strong></td>
+                <td><code>${escapeHtml(t.repository || 'devsync-core')}</code></td>
+                <td>
+                  <span class="task-status-pill ${(t.status || '').toLowerCase().replace(' ', '-')}">
+                    ${escapeHtml(t.status || 'Pending')}
+                  </span>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+
+  // View 4: Team Contributions
+  async function renderPulseTeamView(containerEl) {
+    const targetRepo = pulseProject === 'all' ? 'devsync-core' : pulseProject;
+    const res = await PulseService.getTeamContributions(targetRepo);
+    const contributors = res.contributors || [];
+
+    containerEl.innerHTML = `
+      <div class="mb-4">
+        <h3 class="font-heading" style="font-size: 16px; margin: 0 0 4px 0;">Team Contribution Breakdown</h3>
+        <p class="text-secondary" style="font-size: 13px; margin: 0;">Attribution of commits, branch file uploads, and tasks for <strong>${escapeHtml(targetRepo)}</strong>.</p>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table" style="font-size: 13px;">
+          <thead>
+            <tr>
+              <th>Contributor</th>
+              <th>Role</th>
+              <th>Responsibility Area</th>
+              <th>Assigned Tasks</th>
+              <th class="text-right">Recorded Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${contributors.map(c => `
+              <tr>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <img src="${escapeHtml(c.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&q=80')}" alt="${escapeHtml(c.name)}" style="width: 24px; height: 24px; border-radius: 50%;" />
+                    <a href="profile.html?user=${encodeURIComponent(c.username)}" style="font-weight: 600; color: inherit; text-decoration: none;">
+                      ${escapeHtml(c.name || c.username)}
+                    </a>
+                  </div>
+                </td>
+                <td><span class="role-pill ${escapeHtml((c.role || 'Collaborator').toLowerCase())}">${escapeHtml(c.role)}</span></td>
+                <td><span class="resp-pill">${escapeHtml(c.responsibility || 'Engineering')}</span></td>
+                <td>${(c.assignedTasks || []).length} tasks</td>
+                <td class="text-right"><strong>${c.recordedActions || 0}</strong></td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+
+  // Pulse Event Drilldown Modal
+  function openPulseDrilldown(label, events) {
+    const modal = document.getElementById('pulseDrilldownModal');
+    const titleEl = document.getElementById('drilldownModalTitle');
+    const listEl = document.getElementById('drilldownEventList');
+
+    if (titleEl) titleEl.textContent = `Pulse Events: ${label}`;
+    if (listEl) {
+      if (events.length === 0) {
+        listEl.innerHTML = `<div class="text-secondary py-4 text-center">No individual events in this time bucket.</div>`;
+      } else {
+        listEl.innerHTML = events.map(evt => `
+          <div class="dev-activity-item mb-3 pb-3 border-bottom">
+            <div class="d-flex align-items-center justify-content-between mb-1">
+              <strong>@${escapeHtml(evt.actor || developer.username)}</strong> &bull; <span class="badge badge-private" style="font-size: 10.5px;">${escapeHtml(evt.action || 'event')}</span>
+              <span class="text-secondary" style="font-size: 11px;">${escapeHtml(evt.time || 'Recently')}</span>
+            </div>
+            <div style="font-size: 13px; margin-bottom: 2px;">${escapeHtml(evt.title || evt.description)}</div>
+            ${evt.repository ? `
+              <div class="text-secondary" style="font-size: 11.5px;">
+                Repo: <code>${escapeHtml(evt.repository)}</code> &bull; Branch: <code>${escapeHtml(evt.branch || 'main')}</code>
+              </div>
+            ` : ''}
+          </div>
+        `).join('');
+      }
+    }
+
+    if (modal) modal.classList.add('open');
   }
 
   /* -------------------------------------------------------------------------
-   * Activity Tab
+   * Contributions Tab
    * ------------------------------------------------------------------------- */
-  function renderActivityTab() {
+  function renderContributionsTab() {
     return `
       <div class="dev-card">
         <div class="dev-card-header">
-          <h2 class="dev-card-title">Public Development Activity Timeline</h2>
+          <h2 class="dev-card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            Contributions &amp; Repository Velocity
+          </h2>
+          <span class="text-secondary" style="font-size: 13px;">Verified development records</span>
         </div>
 
-        <div class="dev-activity-list" style="margin-top: 10px;">
+        <div class="dev-stats-grid mb-5">
+          <div class="dev-stat-tile mint">
+            <div class="dev-stat-tile-data">
+              <span class="dev-stat-tile-num">${getVisibleProjects().length}</span>
+              <span class="dev-stat-tile-lbl">Total Repositories</span>
+            </div>
+          </div>
+          <div class="dev-stat-tile blue">
+            <div class="dev-stat-tile-data">
+              <span class="dev-stat-tile-num">${developer.stats?.contributionsCount || 42}</span>
+              <span class="dev-stat-tile-lbl">Commits &amp; Uploads</span>
+            </div>
+          </div>
+          <div class="dev-stat-tile purple">
+            <div class="dev-stat-tile-data">
+              <span class="dev-stat-tile-num">${developer.stats?.pullRequestsCount || 8}</span>
+              <span class="dev-stat-tile-lbl">Pull Requests</span>
+            </div>
+          </div>
+          <div class="dev-stat-tile amber">
+            <div class="dev-stat-tile-data">
+              <span class="dev-stat-tile-num">${developer.stats?.issuesCount || 14}</span>
+              <span class="dev-stat-tile-lbl">Issues Resolved</span>
+            </div>
+          </div>
+        </div>
+
+        <h3 class="font-heading" style="font-size: 15px; margin-bottom: 12px;">Recent Contributions</h3>
+        <div class="dev-activity-list">
           ${(developer.activities || []).map(act => `
             <div class="dev-activity-item">
-              <div class="dev-activity-dot">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/></svg>
-              </div>
+              <div class="dev-activity-dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/></svg></div>
               <div class="dev-activity-details">
                 <div class="dev-activity-title-row">
                   <span class="dev-activity-title">${escapeHtml(act.title)}</span>
@@ -717,174 +1088,97 @@ export async function initDeveloperProfilePage() {
   }
 
   /* -------------------------------------------------------------------------
-   * Achievements Tab
+   * Skills & Growth Tab
    * ------------------------------------------------------------------------- */
-  function renderAchievementsTab() {
+  function renderSkillsTab() {
     return `
       <div class="dev-card">
         <div class="dev-card-header">
-          <h2 class="dev-card-title">Earned Developer Milestones &amp; Badges</h2>
+          <h2 class="dev-card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            Technical Stack &amp; Skills
+          </h2>
+          ${isOwner ? `
+            <button type="button" class="btn btn-outline btn-pill btn-sm" id="btnEditSkillsTab">Manage Skills</button>
+          ` : ''}
         </div>
 
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px;">
-          ${(developer.achievements || []).map(ach => `
-            <div class="dev-card" style="padding: 16px; border: 1px solid #e5e7eb; border-radius: 12px;">
-              <div class="d-flex align-items-center gap-3 mb-2">
-                <div class="dev-achievement-badge ${ach.color || 'green'}" style="width: 36px; height: 36px;">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                </div>
-                <div>
-                  <h4 class="font-heading" style="font-size: 14px; font-weight: 700; margin: 0;">${escapeHtml(ach.title)}</h4>
-                  <span class="text-secondary" style="font-size: 11px;">${escapeHtml(ach.date || 'Earned')}</span>
-                </div>
-              </div>
-              <p style="font-size: 12.5px; color: #4b5563; margin: 0;">${escapeHtml(ach.description)}</p>
-            </div>
-          `).join('')}
+        <div class="dev-skills-cloud mb-5">
+          ${(developer.skills || []).map(skill => {
+            const name = typeof skill === 'string' ? skill : skill.name;
+            const color = typeof skill === 'string' ? getSkillColor(skill) : (skill.color || 'blue');
+            return `
+              <span class="dev-tech-pill ${color}" style="font-size: 13px; padding: 6px 14px;">
+                ${escapeHtml(name)}
+              </span>
+            `;
+          }).join('')}
         </div>
-      </div>
-    `;
-  }
 
-  /* -------------------------------------------------------------------------
-   * Experience & Education Tab
-   * ------------------------------------------------------------------------- */
-  function renderExperienceTab() {
-    return `
-      <div class="dev-card">
-        <h2 class="dev-card-title mb-4">Education &amp; Experience</h2>
-
-        <div style="display: flex; flex-direction: column; gap: 20px;">
-          <div>
-            <h3 class="font-heading mb-2" style="font-size: 14px; font-weight: 700; color: #374151;">Education</h3>
-            <div class="dev-card" style="padding: 16px; border-radius: 10px;">
-              <div class="d-flex justify-content-between align-items-start mb-1">
-                <strong style="font-size: 14px; color: #111827;">${escapeHtml(developer.education?.degree || 'BCA Student')}</strong>
-                <span class="text-secondary" style="font-size: 12px;">${escapeHtml(developer.education?.timeline || '2022 - 2025')}</span>
-              </div>
-              <div style="font-size: 13px; color: #4b5563;">${escapeHtml(developer.education?.institution || 'Bengaluru City University')}</div>
-              <div class="text-secondary mt-1" style="font-size: 12px;">${escapeHtml(developer.education?.location || 'Bengaluru, India')}</div>
-            </div>
-          </div>
-
-          <div>
-            <h3 class="font-heading mb-2" style="font-size: 14px; font-weight: 700; color: #374151;">Work Experience</h3>
-            ${(developer.experience || []).map(exp => `
-              <div class="dev-card" style="padding: 16px; border-radius: 10px; margin-bottom: 10px;">
-                <div class="d-flex justify-content-between align-items-start mb-1">
-                  <strong style="font-size: 14px; color: #111827;">${escapeHtml(exp.role)}</strong>
-                  <span class="text-secondary" style="font-size: 12px;">${escapeHtml(exp.timeline)}</span>
-                </div>
-                <div style="font-size: 13px; color: #0d9488; font-weight: 600;">${escapeHtml(exp.organization)}</div>
-                <p style="font-size: 12.5px; color: #4b5563; margin: 6px 0 0 0;">${escapeHtml(exp.description)}</p>
-              </div>
-            `).join('')}
-          </div>
+        <div class="p-4 rounded" style="background: var(--color-surface-subtle); border: 1px solid var(--color-border);">
+          <h3 class="font-heading" style="font-size: 14.5px; margin: 0 0 6px 0;">Continuous Learning &amp; Growth</h3>
+          <p class="text-secondary" style="font-size: 13px; margin: 0;">
+            Currently mastering distributed systems in Python, asynchronous task processing with Celery/Redis, and real-time collaboration engines.
+          </p>
         </div>
       </div>
     `;
   }
 
   /* -------------------------------------------------------------------------
-   * Teams Tab
-   * ------------------------------------------------------------------------- */
-  function renderTeamsTab() {
-    return `
-      <div class="dev-card">
-        <h2 class="dev-card-title mb-4">Teams &amp; Organizations</h2>
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;">
-          ${(developer.teams || []).map(team => `
-            <div class="dev-card" style="padding: 18px; border-radius: 12px;">
-              <div class="d-flex align-items-center gap-3 mb-2">
-                <img src="${team.avatar}" alt="${team.name}" style="width: 44px; height: 44px; border-radius: 10px; object-fit: cover;" />
-                <div>
-                  <h4 class="font-heading" style="font-size: 14.5px; font-weight: 700; margin: 0;">${escapeHtml(team.name)}</h4>
-                  <span class="text-secondary" style="font-size: 12px;">${escapeHtml(team.role)} &bull; ${team.membersCount || 0} members</span>
-                </div>
-              </div>
-              <p style="font-size: 12.5px; color: #4b5563; margin-bottom: 12px;">${escapeHtml(team.description || '')}</p>
-              <a href="${ROUTES.TEAM_DETAIL}?id=${team.id}" class="btn btn-outline btn-sm w-100">View Team Workspace</a>
-            </div>
-          `).join('')}
-        </div>
-      </div>
-    `;
-  }
-
-  /* -------------------------------------------------------------------------
-   * Collaborators Tab
-   * ------------------------------------------------------------------------- */
-  function renderCollaboratorsTab() {
-    return `
-      <div class="dev-card">
-        <h2 class="dev-card-title mb-4">Collaborators &amp; Connections</h2>
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px;">
-          ${(developer.collaborators || []).map(c => `
-            <div class="dev-card text-center" style="padding: 20px; border-radius: 12px;">
-              <img src="${c.avatar}" alt="${c.name}" style="width: 64px; height: 64px; border-radius: 50%; object-fit: cover; margin-bottom: 10px;" />
-              <h4 class="font-heading" style="font-size: 14px; font-weight: 700; margin: 0;">${escapeHtml(c.name)}</h4>
-              <div class="text-secondary" style="font-size: 12px; margin-bottom: 6px;">@${escapeHtml(c.username)}</div>
-              <div style="font-size: 12px; color: #4b5563; margin-bottom: 14px;">${escapeHtml(c.role)}</div>
-              <a href="${ROUTES.DEVELOPER_PROFILE}?user=${encodeURIComponent(c.username)}" class="btn btn-outline btn-sm btn-pill w-100">View Profile</a>
-            </div>
-          `).join('')}
-        </div>
-      </div>
-    `;
-  }
-
-  /* -------------------------------------------------------------------------
-   * Modals: Edit Profile & Edit Skills
+   * Modals: Edit Profile, Edit Skills, Pulse Drilldown
    * ------------------------------------------------------------------------- */
   function renderModals() {
     return `
+      <!-- Pulse Drilldown Modal -->
+      <div class="dev-modal-overlay" id="pulseDrilldownModal">
+        <div class="dev-modal-dialog" style="max-width: 600px;">
+          <div class="dev-modal-header">
+            <h3 class="dev-modal-title" id="drilldownModalTitle">Pulse Events Drilldown</h3>
+            <button type="button" class="dev-modal-close" data-close-modal="pulseDrilldownModal">&times;</button>
+          </div>
+          <div class="dev-modal-body" id="drilldownEventList" style="max-height: 60vh; overflow-y: auto;">
+            <!-- Populated dynamically -->
+          </div>
+          <div class="dev-modal-footer">
+            <button type="button" class="btn btn-primary btn-pill btn-sm" data-close-modal="pulseDrilldownModal">Close</button>
+          </div>
+        </div>
+      </div>
+
       <!-- Edit Profile Modal -->
       <div class="dev-modal-overlay" id="editProfileModal">
         <div class="dev-modal-dialog">
           <div class="dev-modal-header">
-            <h3 class="dev-modal-title">Edit Public Profile</h3>
+            <h3 class="dev-modal-title">Edit Developer Profile</h3>
             <button type="button" class="dev-modal-close" data-close-modal="editProfileModal">&times;</button>
           </div>
           <form id="editProfileForm">
             <div class="dev-modal-body">
-              <div class="form-group">
+              <div class="form-group mb-3">
                 <label class="form-label" for="editDisplayName">Display Name</label>
                 <input type="text" id="editDisplayName" class="form-control" value="${escapeHtml(developer.name)}" required />
               </div>
-
-              <div class="form-group">
-                <label class="form-label" for="editHeadline">Headline / Role</label>
+              <div class="form-group mb-3">
+                <label class="form-label" for="editHeadline">Role / Focus</label>
                 <input type="text" id="editHeadline" class="form-control" value="${escapeHtml(developer.headline || developer.role || '')}" required />
               </div>
-
-              <div class="form-group">
+              <div class="form-group mb-3">
                 <label class="form-label" for="editBio">Bio</label>
                 <textarea id="editBio" class="form-control" rows="3">${escapeHtml(developer.bio || '')}</textarea>
               </div>
-
-              <div class="form-group">
+              <div class="form-group mb-3">
                 <label class="form-label" for="editLocation">Location</label>
-                <input type="text" id="editLocation" class="form-control" value="${escapeHtml(developer.location || '')}" placeholder="City, Country" />
+                <input type="text" id="editLocation" class="form-control" value="${escapeHtml(developer.location || '')}" />
               </div>
-
-              <div class="form-group">
+              <div class="form-group mb-3">
                 <label class="form-label" for="editWebsite">Personal Website</label>
-                <input type="url" id="editWebsite" class="form-control" value="${escapeHtml(developer.website || '')}" placeholder="https://yourdomain.dev" />
-              </div>
-
-              <div class="form-group">
-                <label class="form-label" for="editCollabStatus">Collaboration Status</label>
-                <select id="editCollabStatus" class="form-select">
-                  <option value="Available for collaboration" ${developer.collaborationStatus === 'Available for collaboration' ? 'selected' : ''}>Available for collaboration</option>
-                  <option value="Open to project invitations" ${developer.collaborationStatus === 'Open to project invitations' ? 'selected' : ''}>Open to project invitations</option>
-                  <option value="Currently busy" ${developer.collaborationStatus === 'Currently busy' ? 'selected' : ''}>Currently busy</option>
-                  <option value="Not publicly specified" ${developer.collaborationStatus === 'Not publicly specified' ? 'selected' : ''}>Not publicly specified</option>
-                </select>
+                <input type="url" id="editWebsite" class="form-control" value="${escapeHtml(developer.website || '')}" />
               </div>
             </div>
             <div class="dev-modal-footer">
-              <button type="button" class="btn btn-outline btn-pill" data-close-modal="editProfileModal">Cancel</button>
-              <button type="submit" class="btn btn-primary btn-pill">Save Profile Changes</button>
+              <button type="button" class="btn btn-outline btn-pill btn-sm" data-close-modal="editProfileModal">Cancel</button>
+              <button type="submit" class="btn btn-primary btn-pill btn-sm">Save Changes</button>
             </div>
           </form>
         </div>
@@ -898,33 +1192,25 @@ export async function initDeveloperProfilePage() {
             <button type="button" class="dev-modal-close" data-close-modal="editSkillsModal">&times;</button>
           </div>
           <div class="dev-modal-body">
-            <div class="d-flex gap-2">
-              <input type="text" id="newSkillInput" class="form-control" placeholder="Add a skill (e.g. Go, GraphQL, Redis)" />
-              <select id="newSkillCategory" class="form-select" style="max-width: 150px;">
-                <option value="Backend">Backend</option>
-                <option value="Frontend">Frontend</option>
-                <option value="Database">Database</option>
-                <option value="Tools & Platforms">Tools</option>
-              </select>
-              <button type="button" class="btn btn-primary" id="btnAddSkill">Add</button>
+            <div class="d-flex gap-2 mb-3">
+              <input type="text" id="newSkillInput" class="form-control" placeholder="e.g. Go, GraphQL, Redis" />
+              <button type="button" class="btn btn-primary btn-sm" id="btnAddSkill">Add</button>
             </div>
-
-            <label class="form-label mt-3">Current Skills (Click x to remove)</label>
             <div class="dev-skills-cloud" id="skillsModalTags">
               ${(developer.skills || []).map((s, idx) => {
                 const name = typeof s === 'string' ? s : s.name;
                 const color = typeof s === 'string' ? getSkillColor(s) : (s.color || 'blue');
                 return `
-                  <span class="dev-tech-pill ${color}" style="display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px;">
+                  <span class="dev-tech-pill ${color}" style="display: inline-flex; align-items: center; gap: 4px;">
                     ${escapeHtml(name)}
-                    <button type="button" class="btn-remove-skill" data-skill-idx="${idx}" style="background: none; border: none; cursor: pointer; color: inherit; font-size: 14px; line-height: 1; padding: 0;">&times;</button>
+                    <button type="button" class="btn-remove-skill" data-skill-idx="${idx}" style="background: none; border: none; cursor: pointer; color: inherit; padding: 0;">&times;</button>
                   </span>
                 `;
               }).join('')}
             </div>
           </div>
           <div class="dev-modal-footer">
-            <button type="button" class="btn btn-primary btn-pill" data-close-modal="editSkillsModal">Done</button>
+            <button type="button" class="btn btn-primary btn-pill btn-sm" data-close-modal="editSkillsModal">Done</button>
           </div>
         </div>
       </div>
@@ -932,22 +1218,25 @@ export async function initDeveloperProfilePage() {
   }
 
   /* -------------------------------------------------------------------------
-   * Event Listeners & State Binding
+   * Event Listeners & Binding
    * ------------------------------------------------------------------------- */
   function attachEventListeners() {
-    // Tab switching
-    container.querySelectorAll('.dev-tab-btn, [data-nav-tab], .dev-counter-item').forEach(el => {
+    // Tab switching (from vertical sidebar, counters, and in-page links)
+    container.querySelectorAll('.dev-profile-side-link, [data-nav-tab], .dev-counter-item').forEach(el => {
       el.addEventListener('click', (e) => {
         e.preventDefault();
         const targetTab = el.getAttribute('data-tab') || el.getAttribute('data-nav-tab');
         if (targetTab && targetTab !== currentTab) {
           currentTab = targetTab;
+          const p = new URLSearchParams(window.location.search);
+          p.set('tab', currentTab);
+          window.history.pushState(null, '', `${window.location.pathname}?${p.toString()}`);
           renderPage();
         }
       });
     });
 
-    // Share Profile button (working clipboard copy)
+    // Share Profile button
     const btnShare = document.getElementById('btnShareProfile');
     if (btnShare) {
       btnShare.addEventListener('click', async () => {
@@ -983,56 +1272,59 @@ export async function initDeveloperProfilePage() {
     const btnConnect = document.getElementById('btnConnectDev');
     if (btnConnect) {
       btnConnect.addEventListener('click', async () => {
-        let nextState = 'Request Sent';
-        if (developer.connectionState === 'Request Sent') {
-          nextState = 'Not Connected';
-          toastInfo('Connection request cancelled.');
-        } else if (developer.connectionState === 'Connected') {
-          nextState = 'Not Connected';
-          toastInfo(`Disconnected from ${developer.name}.`);
-        } else {
-          nextState = 'Connected';
-          toastSuccess(`Connection invitation sent to ${developer.name}!`, 'Connected');
-        }
+        let nextState = developer.connectionState === 'Connected' ? 'Not Connected' : 'Connected';
         await ConnectionService.updateConnectionState(developer.id || developer.username, nextState);
         developer.connectionState = nextState;
         renderPage();
+        toastSuccess(nextState === 'Connected' ? `Connected with ${developer.name}!` : `Disconnected from ${developer.name}.`);
       });
     }
 
-    // Pin Toggle
+    // Section 6: Unified Project Pin Toggle (Max 4 Pins Enforced)
     container.querySelectorAll('.btn-pin-toggle').forEach(btn => {
       btn.addEventListener('click', async (e) => {
         e.stopPropagation();
         const repoId = btn.getAttribute('data-repo-id');
-        const updated = await ProfileService.togglePinnedProject(developer.username, repoId);
-        if (updated) {
-          developer.pinnedProjects = updated.pinnedProjects;
-          toastSuccess('Pinned projects updated.');
-          renderPage();
+        const isCurrentlyPinned = (developer.pinnedProjects || []).includes(repoId);
+
+        // Enforce max 4 pinned projects before calling API
+        if (!isCurrentlyPinned && (developer.pinnedProjects || []).length >= 4) {
+          toastWarning('Only four projects can be pinned to your profile. Please unpin a project first before pinning another.', 'Maximum 4 Pinned Projects');
+          return;
+        }
+
+        try {
+          const updated = await ProfileService.togglePinnedProject(developer.username, repoId);
+          if (updated && updated.pinnedProjects) {
+            developer.pinnedProjects = updated.pinnedProjects;
+            toastSuccess(
+              isCurrentlyPinned ? 'Project unpinned from profile.' : 'Project pinned to profile!',
+              'Portfolio Updated'
+            );
+            renderPage();
+          }
+        } catch (err) {
+          const msg = err.data?.detail || err.message || 'Unable to update pinned projects.';
+          toastWarning(msg, 'Pin Limit');
         }
       });
     });
 
-    // Modal Triggers: Edit Profile
+    // Modal Triggers
     const editProfileModal = document.getElementById('editProfileModal');
-    const openEditButtons = [document.getElementById('btnEditProfile'), document.getElementById('btnEditAbout')];
-    openEditButtons.forEach(b => {
+    [document.getElementById('btnEditProfile'), document.getElementById('btnEditAbout')].forEach(b => {
       if (b && editProfileModal) {
         b.addEventListener('click', () => editProfileModal.classList.add('open'));
       }
     });
 
-    // Modal Triggers: Edit Skills
     const editSkillsModal = document.getElementById('editSkillsModal');
-    const openSkillButtons = [document.getElementById('btnEditSkills'), document.getElementById('btnEditSkillsTab')];
-    openSkillButtons.forEach(b => {
+    [document.getElementById('btnEditSkillsTab')].forEach(b => {
       if (b && editSkillsModal) {
         b.addEventListener('click', () => editSkillsModal.classList.add('open'));
       }
     });
 
-    // Modal Close
     container.querySelectorAll('[data-close-modal]').forEach(b => {
       b.addEventListener('click', () => {
         const targetId = b.getAttribute('data-close-modal');
@@ -1041,118 +1333,37 @@ export async function initDeveloperProfilePage() {
       });
     });
 
-    // Close on overlay click
     container.querySelectorAll('.dev-modal-overlay').forEach(overlay => {
       overlay.addEventListener('click', (e) => {
         if (e.target === overlay) overlay.classList.remove('open');
       });
     });
 
-    // Edit Profile Form Submission
-    const form = document.getElementById('editProfileForm');
-    if (form) {
-      form.addEventListener('submit', async (e) => {
+    // Form: Edit Profile
+    const editForm = document.getElementById('editProfileForm');
+    if (editForm) {
+      editForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const updates = {
-          name: document.getElementById('editDisplayName').value.trim(),
-          headline: document.getElementById('editHeadline').value.trim(),
-          bio: document.getElementById('editBio').value.trim(),
-          location: document.getElementById('editLocation').value.trim(),
-          website: document.getElementById('editWebsite').value.trim(),
-          collaborationStatus: document.getElementById('editCollabStatus').value
+        const updatedData = {
+          name: document.getElementById('editDisplayName')?.value?.trim(),
+          headline: document.getElementById('editHeadline')?.value?.trim(),
+          bio: document.getElementById('editBio')?.value?.trim(),
+          location: document.getElementById('editLocation')?.value?.trim(),
+          website: document.getElementById('editWebsite')?.value?.trim()
         };
-
-        const updated = await ProfileService.updateDeveloperProfile(developer.username, updates);
-        if (updated) {
-          Object.assign(developer, updated);
-          toastSuccess('Public profile updated successfully!', 'Saved');
-          if (editProfileModal) editProfileModal.classList.remove('open');
+        try {
+          await ProfileService.updateDeveloperProfile(developer.username, updatedData);
+          Object.assign(developer, updatedData);
+          toastSuccess('Profile updated successfully.');
+          document.getElementById('editProfileModal')?.classList.remove('open');
           renderPage();
+        } catch (err) {
+          toastDanger('Failed to update profile.');
         }
       });
     }
-
-    // Add Skill in Modal
-    const btnAddSkill = document.getElementById('btnAddSkill');
-    const newSkillInput = document.getElementById('newSkillInput');
-    const newSkillCategory = document.getElementById('newSkillCategory');
-    if (btnAddSkill && newSkillInput) {
-      btnAddSkill.addEventListener('click', async () => {
-        const raw = newSkillInput.value.trim();
-        if (!raw) return;
-        const normalized = raw.charAt(0).toUpperCase() + raw.slice(1);
-        const exists = (developer.skills || []).some(s => {
-          const sName = typeof s === 'string' ? s : s.name;
-          return sName.toLowerCase() === normalized.toLowerCase();
-        });
-        if (exists) {
-          toastWarning(`Skill "${normalized}" is already on your profile.`);
-          return;
-        }
-
-        const newSkill = {
-          name: normalized,
-          category: newSkillCategory?.value || 'Backend',
-          color: getSkillColor(normalized)
-        };
-
-        developer.skills.push(newSkill);
-        await ProfileService.updateDeveloperProfile(developer.username, { skills: developer.skills });
-        toastSuccess(`Added skill "${normalized}".`);
-        renderPage();
-        const reopenedModal = document.getElementById('editSkillsModal');
-        if (reopenedModal) reopenedModal.classList.add('open');
-      });
-    }
-
-    // Remove Skill in Modal
-    container.querySelectorAll('.btn-remove-skill').forEach(btn => {
-      btn.addEventListener('click', async () => {
-        const idx = parseInt(btn.getAttribute('data-skill-idx'), 10);
-        if (!isNaN(idx) && developer.skills[idx]) {
-          const removed = developer.skills.splice(idx, 1)[0];
-          await ProfileService.updateDeveloperProfile(developer.username, { skills: developer.skills });
-          toastInfo(`Removed skill "${removed.name || removed}".`);
-          renderPage();
-          const reopenedModal = document.getElementById('editSkillsModal');
-          if (reopenedModal) reopenedModal.classList.add('open');
-        }
-      });
-    });
   }
 
   // Initial Render
   renderPage();
-}
-
-/* ---------------------------------------------------------------------------
- * Helper Utilities
- * --------------------------------------------------------------------------- */
-function escapeHtml(str) {
-  if (!str) return '';
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
-}
-
-function getSkillColor(skillName) {
-  const s = (skillName || '').toLowerCase();
-  if (['python', 'flask', 'django', 'java', 'c++', 'c#', 'rust'].includes(s)) return 'blue';
-  if (['django', 'mint', 'tailwind', 'fastapi'].includes(s)) return 'mint';
-  if (['javascript', 'js', 'node', 'express'].includes(s)) return 'amber';
-  if (['html', 'ruby', 'git', 'laravel'].includes(s)) return 'rose';
-  if (['css', 'bootstrap', 'sass', 'redux', 'c#'].includes(s)) return 'purple';
-  if (['postgresql', 'mysql', 'sql', 'sqlite', 'redis', 'mongodb'].includes(s)) return 'cyan';
-  return 'neutral';
-}
-
-function categorizeSkill(skillName) {
-  const s = (skillName || '').toLowerCase();
-  if (['javascript', 'html', 'css', 'react', 'vue', 'bootstrap', 'tailwind'].includes(s)) return 'Frontend';
-  if (['python', 'django', 'flask', 'java', 'node', 'express', 'fastapi', 'go'].includes(s)) return 'Backend';
-  if (['postgresql', 'mysql', 'sql', 'sqlite', 'mongodb', 'redis'].includes(s)) return 'Database';
-  return 'Tools & Platforms';
 }

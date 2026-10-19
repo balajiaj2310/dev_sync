@@ -52,12 +52,14 @@ export const ProfileService = {
 
   async togglePinnedProject(username, projectId) {
     try {
-      const res = await apiClient.post(`/developers/${username}/pin/`, { projectId });
-      if (res) return res;
+      return await apiClient.post(`/developers/${username}/pin`, { projectId });
     } catch (err) {
+      if (err.data && err.data.detail) {
+        throw err;
+      }
       console.warn('[ProfileService] togglePinnedProject API failed, falling back:', err);
+      return await MockAPI.togglePinnedProject(username, projectId);
     }
-    return await MockAPI.togglePinnedProject(username, projectId);
   },
 
   async toggleFollow(username) {
