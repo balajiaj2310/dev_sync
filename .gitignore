@@ -11,6 +11,9 @@ Thumbs.db
 .vscode/
 .idea/
 
+# Test temporary artifacts & cache
+.pytest_cache/
+
 # Environment secrets
 .env
 .env.local
@@ -22,8 +25,9 @@ Thumbs.db
 media/
 staticfiles/
 
+# Data & local runtime artifacts
+data/
+!data/devsync_database.json
+
 # Local backups
 backups/
-
-# Test temporary artifacts
-data/.test_last_otp.txt
