@@ -5,13 +5,13 @@
       "name": "Naveen Kumar D",
       "username": "naveen3438",
       "email": "naveen@devsync.dev",
-      "password": "pbkdf2_sha256$1500000$mzvUcAZ8XCfuuEKKbUI8d0$5TNjOJHqQh3RwwxVlTSekxzmgiNPLBfiCg7vevfdlsA=",
+      "password": "pbkdf2_sha256$1500000$VfKPLPyNGTziDGXWfn9TUM$axmzMfZEt2qyK+Kj4U0n+2IEJL4AO+tLO6UC51GnU1g=",
       "role": "Developer",
       "isVerified": true,
-      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
-      "headline": "BCA student and passionate developer focused on building meaningful web applications and exploring new technologies. Interested in full-stack development, open source and developer communities.",
+      "avatar": "/public/images/avatars/avatar_naveen3438_479e0b5aef1b.png",
+      "headline": "Full-Stack Engineer & DevSync Contributor",
       "bio": "I'm a BCA student at Bengaluru City University with a strong interest in web development, backend systems and developer tools. I enjoy building real world projects, learning new technologies and collaborating with other developers. Currently exploring Django, Flask and cloud deployment. My goal is to work on impactful projects and contribute to open source.",
-      "location": "Bengaluru, India",
+      "location": "Bengaluru, Karnataka, India",
       "website": "https://naveenkumar.dev",
       "social": {
         "github": "https://github.com/naveen3438",
@@ -37,71 +37,14 @@
         }
       ],
       "skills": [
-        {
-          "name": "Python",
-          "category": "Backend",
-          "color": "blue"
-        },
-        {
-          "name": "Django",
-          "category": "Backend",
-          "color": "mint"
-        },
-        {
-          "name": "Flask",
-          "category": "Backend",
-          "color": "blue"
-        },
-        {
-          "name": "Java",
-          "category": "Backend",
-          "color": "blue"
-        },
-        {
-          "name": "JavaScript",
-          "category": "Frontend",
-          "color": "amber"
-        },
-        {
-          "name": "HTML",
-          "category": "Frontend",
-          "color": "rose"
-        },
-        {
-          "name": "CSS",
-          "category": "Frontend",
-          "color": "purple"
-        },
-        {
-          "name": "MySQL",
-          "category": "Database",
-          "color": "cyan"
-        },
-        {
-          "name": "Git",
-          "category": "Tool",
-          "color": "neutral"
-        },
-        {
-          "name": "GitHub",
-          "category": "Tool",
-          "color": "neutral"
-        },
-        {
-          "name": "Bootstrap",
-          "category": "Frontend",
-          "color": "purple"
-        },
-        {
-          "name": "SQL",
-          "category": "Database",
-          "color": "cyan"
-        }
+        "Python",
+        "Django",
+        "JavaScript",
+        "Docker"
       ],
       "pinnedProjects": [
         "repo-chaturya",
-        "repo-college",
-        "repo-portfolio"
+        "repo-college"
       ],
       "projects": [
         {
@@ -342,6 +285,188 @@
           "role": "ML Engineer"
         }
       ],
+      "mobile": "",
+      "mobileVerified": false,
+      "emailVerified": true,
+      "passwordLastChanged": "Just now",
+      "security_audit_log": [
+        {
+          "id": "sec-f437229bb984",
+          "action": "session_revocation",
+          "description": "Revoked 1 active session(s) across other devices.",
+          "ip": "127.0.0.1",
+          "device": "API Client / Unknown OS",
+          "timestamp": "2026-10-20 16:07:45 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-89240d7749dd",
+          "action": "password_change",
+          "description": "Password changed successfully via Settings.",
+          "ip": "127.0.0.1",
+          "device": "API Client / Unknown OS",
+          "timestamp": "2026-10-20 16:07:45 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-474d4ace2a75",
+          "action": "password_change",
+          "description": "Password changed successfully via Settings.",
+          "ip": "127.0.0.1",
+          "device": "API Client / Unknown OS",
+          "timestamp": "2026-10-20 16:07:42 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-bbae6f8873e7",
+          "action": "login",
+          "description": "Signed in successfully via API Client / Unknown OS",
+          "ip": "127.0.0.1",
+          "device": "API Client / Unknown OS",
+          "timestamp": "2026-10-20 16:07:35 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-d482e8688ed7",
+          "action": "session_revocation",
+          "description": "Revoked 1 active session(s) across other devices.",
+          "ip": "127.0.0.1",
+          "device": "API Client / Unknown OS",
+          "timestamp": "2026-10-20 16:06:49 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-09585d69005f",
+          "action": "password_change",
+          "description": "Password changed successfully via Settings.",
+          "ip": "127.0.0.1",
+          "device": "API Client / Unknown OS",
+          "timestamp": "2026-10-20 16:06:49 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-199654453fc2",
+          "action": "password_change",
+          "description": "Password changed successfully via Settings.",
+          "ip": "127.0.0.1",
+          "device": "API Client / Unknown OS",
+          "timestamp": "2026-10-20 16:06:45 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-7b9049202f86",
+          "action": "login",
+          "description": "Signed in successfully via API Client / Unknown OS",
+          "ip": "127.0.0.1",
+          "device": "API Client / Unknown OS",
+          "timestamp": "2026-10-20 16:06:39 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-eb3a26a2cfe2",
+          "action": "session_revocation",
+          "description": "Revoked 0 active session(s) across other devices.",
+          "ip": "127.0.0.1",
+          "device": "API Client / Unknown OS",
+          "timestamp": "2026-10-20 16:06:09 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-c0367dcca810",
+          "action": "password_change",
+          "description": "Password changed successfully via Settings.",
+          "ip": "127.0.0.1",
+          "device": "API Client / Unknown OS",
+          "timestamp": "2026-10-20 16:06:09 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-1fa505015a33",
+          "action": "password_change",
+          "description": "Password changed successfully via Settings.",
+          "ip": "127.0.0.1",
+          "device": "API Client / Unknown OS",
+          "timestamp": "2026-10-20 16:06:06 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-d2805790d12c",
+          "action": "login",
+          "description": "Signed in successfully via API Client / Unknown OS",
+          "ip": "127.0.0.1",
+          "device": "API Client / Unknown OS",
+          "timestamp": "2026-10-20 16:06:00 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-ab585bde",
+          "action": "account_setup",
+          "description": "DevSync developer account initialized.",
+          "ip": "127.0.0.1",
+          "device": "Web Browser",
+          "timestamp": "2026-10-20 16:04:00 UTC",
+          "time_ago": "Account setup",
+          "status": "success"
+        }
+      ],
+      "notification_preferences": {
+        "direct_messages": {
+          "in_app": true,
+          "email": true
+        },
+        "mentions": {
+          "in_app": true,
+          "email": true
+        },
+        "team_invitations": {
+          "in_app": true,
+          "email": true
+        },
+        "task_assignments": {
+          "in_app": true,
+          "email": true
+        },
+        "task_deadlines": {
+          "in_app": true,
+          "email": false
+        },
+        "weekly_digest": {
+          "in_app": false,
+          "email": false
+        }
+      },
+      "general_preferences": {
+        "language": "en",
+        "timezone": "Asia/Kolkata",
+        "theme": "light",
+        "compact_density": false,
+        "inline_diffs": true,
+        "tab_size": 2,
+        "editor_font": "JetBrains Mono",
+        "default_page": "overview",
+        "tabSize": 4,
+        "editorFont": "JetBrains Mono"
+      },
+      "visibility_controls": {
+        "profile": "public",
+        "email": "private",
+        "mobile": "private",
+        "location": "public",
+        "website": "public",
+        "activity_graph": "public"
+      },
       "stats": {
         "followers": 24,
         "following": 18,
@@ -468,6 +593,81 @@
       ],
       "teams": [],
       "collaborators": [],
+      "mobile": "",
+      "mobileVerified": false,
+      "emailVerified": true,
+      "passwordLastChanged": "Recently",
+      "security_audit_log": [
+        {
+          "id": "sec-08d318d07ff7",
+          "action": "login",
+          "description": "Signed in successfully via Microsoft Edge / Windows",
+          "ip": "127.0.0.1",
+          "device": "Microsoft Edge / Windows",
+          "timestamp": "2026-10-20 16:12:54 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-9a5bbfa7",
+          "action": "account_setup",
+          "description": "DevSync developer account initialized.",
+          "ip": "127.0.0.1",
+          "device": "Web Browser",
+          "timestamp": "2026-10-20 16:04:00 UTC",
+          "time_ago": "Account setup",
+          "status": "success"
+        }
+      ],
+      "notification_preferences": {
+        "direct_messages": {
+          "in_app": true,
+          "email": true
+        },
+        "mentions": {
+          "in_app": true,
+          "email": true
+        },
+        "team_invitations": {
+          "in_app": true,
+          "email": true
+        },
+        "task_assignments": {
+          "in_app": true,
+          "email": false
+        },
+        "task_deadlines": {
+          "in_app": true,
+          "email": true
+        },
+        "weekly_digest": {
+          "in_app": false,
+          "email": false
+        }
+      },
+      "general_preferences": {
+        "language": "en",
+        "timezone": "Asia/Kolkata",
+        "theme": "light",
+        "compact_density": false,
+        "inline_diffs": true,
+        "tab_size": 2,
+        "editor_font": "JetBrains Mono",
+        "default_page": "overview",
+        "compactDensity": false,
+        "tabSize": 2,
+        "editorFont": "JetBrains Mono",
+        "inlineDiffs": true,
+        "defaultStartPage": "overview"
+      },
+      "visibility_controls": {
+        "profile": "public",
+        "email": "private",
+        "mobile": "private",
+        "location": "public",
+        "website": "public",
+        "activity_graph": "public"
+      },
       "stats": {
         "followers": 32,
         "following": 15,
@@ -586,6 +786,66 @@
       ],
       "teams": [],
       "collaborators": [],
+      "mobile": "",
+      "mobileVerified": false,
+      "emailVerified": true,
+      "passwordLastChanged": "Recently",
+      "security_audit_log": [
+        {
+          "id": "sec-9cae6744",
+          "action": "account_setup",
+          "description": "DevSync developer account initialized.",
+          "ip": "127.0.0.1",
+          "device": "Web Browser",
+          "timestamp": "2026-10-20 16:04:00 UTC",
+          "time_ago": "Account setup",
+          "status": "success"
+        }
+      ],
+      "notification_preferences": {
+        "direct_messages": {
+          "in_app": true,
+          "email": true
+        },
+        "mentions": {
+          "in_app": true,
+          "email": true
+        },
+        "team_invitations": {
+          "in_app": true,
+          "email": true
+        },
+        "task_assignments": {
+          "in_app": true,
+          "email": false
+        },
+        "task_deadlines": {
+          "in_app": true,
+          "email": true
+        },
+        "weekly_digest": {
+          "in_app": false,
+          "email": false
+        }
+      },
+      "general_preferences": {
+        "language": "en",
+        "timezone": "Asia/Kolkata (IST)",
+        "theme": "light",
+        "compact_density": false,
+        "inline_diffs": true,
+        "tab_size": 2,
+        "editor_font": "JetBrains Mono",
+        "default_page": "overview"
+      },
+      "visibility_controls": {
+        "profile": "public",
+        "email": "private",
+        "mobile": "private",
+        "location": "public",
+        "website": "public",
+        "activity_graph": "public"
+      },
       "stats": {
         "followers": 19,
         "following": 12,
@@ -704,6 +964,66 @@
       ],
       "teams": [],
       "collaborators": [],
+      "mobile": "",
+      "mobileVerified": false,
+      "emailVerified": true,
+      "passwordLastChanged": "Recently",
+      "security_audit_log": [
+        {
+          "id": "sec-9faffc00",
+          "action": "account_setup",
+          "description": "DevSync developer account initialized.",
+          "ip": "127.0.0.1",
+          "device": "Web Browser",
+          "timestamp": "2026-10-20 16:04:00 UTC",
+          "time_ago": "Account setup",
+          "status": "success"
+        }
+      ],
+      "notification_preferences": {
+        "direct_messages": {
+          "in_app": true,
+          "email": true
+        },
+        "mentions": {
+          "in_app": true,
+          "email": true
+        },
+        "team_invitations": {
+          "in_app": true,
+          "email": true
+        },
+        "task_assignments": {
+          "in_app": true,
+          "email": false
+        },
+        "task_deadlines": {
+          "in_app": true,
+          "email": true
+        },
+        "weekly_digest": {
+          "in_app": false,
+          "email": false
+        }
+      },
+      "general_preferences": {
+        "language": "en",
+        "timezone": "Asia/Kolkata (IST)",
+        "theme": "light",
+        "compact_density": false,
+        "inline_diffs": true,
+        "tab_size": 2,
+        "editor_font": "JetBrains Mono",
+        "default_page": "overview"
+      },
+      "visibility_controls": {
+        "profile": "public",
+        "email": "private",
+        "mobile": "private",
+        "location": "public",
+        "website": "public",
+        "activity_graph": "public"
+      },
       "stats": {
         "followers": 28,
         "following": 14,
@@ -822,6 +1142,66 @@
       ],
       "teams": [],
       "collaborators": [],
+      "mobile": "",
+      "mobileVerified": false,
+      "emailVerified": true,
+      "passwordLastChanged": "Recently",
+      "security_audit_log": [
+        {
+          "id": "sec-f6d92ada",
+          "action": "account_setup",
+          "description": "DevSync developer account initialized.",
+          "ip": "127.0.0.1",
+          "device": "Web Browser",
+          "timestamp": "2026-10-20 16:04:00 UTC",
+          "time_ago": "Account setup",
+          "status": "success"
+        }
+      ],
+      "notification_preferences": {
+        "direct_messages": {
+          "in_app": true,
+          "email": true
+        },
+        "mentions": {
+          "in_app": true,
+          "email": true
+        },
+        "team_invitations": {
+          "in_app": true,
+          "email": true
+        },
+        "task_assignments": {
+          "in_app": true,
+          "email": false
+        },
+        "task_deadlines": {
+          "in_app": true,
+          "email": true
+        },
+        "weekly_digest": {
+          "in_app": false,
+          "email": false
+        }
+      },
+      "general_preferences": {
+        "language": "en",
+        "timezone": "Asia/Kolkata (IST)",
+        "theme": "light",
+        "compact_density": false,
+        "inline_diffs": true,
+        "tab_size": 2,
+        "editor_font": "JetBrains Mono",
+        "default_page": "overview"
+      },
+      "visibility_controls": {
+        "profile": "public",
+        "email": "private",
+        "mobile": "private",
+        "location": "public",
+        "website": "public",
+        "activity_graph": "public"
+      },
       "stats": {
         "followers": 35,
         "following": 20,
@@ -940,6 +1320,66 @@
       ],
       "teams": [],
       "collaborators": [],
+      "mobile": "",
+      "mobileVerified": false,
+      "emailVerified": true,
+      "passwordLastChanged": "Recently",
+      "security_audit_log": [
+        {
+          "id": "sec-46b67be4",
+          "action": "account_setup",
+          "description": "DevSync developer account initialized.",
+          "ip": "127.0.0.1",
+          "device": "Web Browser",
+          "timestamp": "2026-10-20 16:04:00 UTC",
+          "time_ago": "Account setup",
+          "status": "success"
+        }
+      ],
+      "notification_preferences": {
+        "direct_messages": {
+          "in_app": true,
+          "email": true
+        },
+        "mentions": {
+          "in_app": true,
+          "email": true
+        },
+        "team_invitations": {
+          "in_app": true,
+          "email": true
+        },
+        "task_assignments": {
+          "in_app": true,
+          "email": false
+        },
+        "task_deadlines": {
+          "in_app": true,
+          "email": true
+        },
+        "weekly_digest": {
+          "in_app": false,
+          "email": false
+        }
+      },
+      "general_preferences": {
+        "language": "en",
+        "timezone": "Asia/Kolkata (IST)",
+        "theme": "light",
+        "compact_density": false,
+        "inline_diffs": true,
+        "tab_size": 2,
+        "editor_font": "JetBrains Mono",
+        "default_page": "overview"
+      },
+      "visibility_controls": {
+        "profile": "public",
+        "email": "private",
+        "mobile": "private",
+        "location": "public",
+        "website": "public",
+        "activity_graph": "public"
+      },
       "stats": {
         "followers": 45,
         "following": 22,
@@ -1071,6 +1511,66 @@
       ],
       "teams": [],
       "collaborators": [],
+      "mobile": "",
+      "mobileVerified": false,
+      "emailVerified": true,
+      "passwordLastChanged": "Recently",
+      "security_audit_log": [
+        {
+          "id": "sec-4b0217ad",
+          "action": "account_setup",
+          "description": "DevSync developer account initialized.",
+          "ip": "127.0.0.1",
+          "device": "Web Browser",
+          "timestamp": "2026-10-20 16:04:00 UTC",
+          "time_ago": "Account setup",
+          "status": "success"
+        }
+      ],
+      "notification_preferences": {
+        "direct_messages": {
+          "in_app": true,
+          "email": true
+        },
+        "mentions": {
+          "in_app": true,
+          "email": true
+        },
+        "team_invitations": {
+          "in_app": true,
+          "email": true
+        },
+        "task_assignments": {
+          "in_app": true,
+          "email": false
+        },
+        "task_deadlines": {
+          "in_app": true,
+          "email": true
+        },
+        "weekly_digest": {
+          "in_app": false,
+          "email": false
+        }
+      },
+      "general_preferences": {
+        "language": "en",
+        "timezone": "Asia/Kolkata (IST)",
+        "theme": "light",
+        "compact_density": false,
+        "inline_diffs": true,
+        "tab_size": 2,
+        "editor_font": "JetBrains Mono",
+        "default_page": "overview"
+      },
+      "visibility_controls": {
+        "profile": "public",
+        "email": "private",
+        "mobile": "private",
+        "location": "public",
+        "website": "public",
+        "activity_graph": "public"
+      },
       "stats": {
         "followers": 0,
         "following": 0,
@@ -1202,6 +1702,66 @@
       ],
       "teams": [],
       "collaborators": [],
+      "mobile": "",
+      "mobileVerified": false,
+      "emailVerified": true,
+      "passwordLastChanged": "Recently",
+      "security_audit_log": [
+        {
+          "id": "sec-dea65439",
+          "action": "account_setup",
+          "description": "DevSync developer account initialized.",
+          "ip": "127.0.0.1",
+          "device": "Web Browser",
+          "timestamp": "2026-10-20 16:04:00 UTC",
+          "time_ago": "Account setup",
+          "status": "success"
+        }
+      ],
+      "notification_preferences": {
+        "direct_messages": {
+          "in_app": true,
+          "email": true
+        },
+        "mentions": {
+          "in_app": true,
+          "email": true
+        },
+        "team_invitations": {
+          "in_app": true,
+          "email": true
+        },
+        "task_assignments": {
+          "in_app": true,
+          "email": false
+        },
+        "task_deadlines": {
+          "in_app": true,
+          "email": true
+        },
+        "weekly_digest": {
+          "in_app": false,
+          "email": false
+        }
+      },
+      "general_preferences": {
+        "language": "en",
+        "timezone": "Asia/Kolkata (IST)",
+        "theme": "light",
+        "compact_density": false,
+        "inline_diffs": true,
+        "tab_size": 2,
+        "editor_font": "JetBrains Mono",
+        "default_page": "overview"
+      },
+      "visibility_controls": {
+        "profile": "public",
+        "email": "private",
+        "mobile": "private",
+        "location": "public",
+        "website": "public",
+        "activity_graph": "public"
+      },
       "stats": {
         "followers": 0,
         "following": 0,
@@ -1333,6 +1893,66 @@
       ],
       "teams": [],
       "collaborators": [],
+      "mobile": "",
+      "mobileVerified": false,
+      "emailVerified": true,
+      "passwordLastChanged": "Recently",
+      "security_audit_log": [
+        {
+          "id": "sec-775262ba",
+          "action": "account_setup",
+          "description": "DevSync developer account initialized.",
+          "ip": "127.0.0.1",
+          "device": "Web Browser",
+          "timestamp": "2026-10-20 16:04:00 UTC",
+          "time_ago": "Account setup",
+          "status": "success"
+        }
+      ],
+      "notification_preferences": {
+        "direct_messages": {
+          "in_app": true,
+          "email": true
+        },
+        "mentions": {
+          "in_app": true,
+          "email": true
+        },
+        "team_invitations": {
+          "in_app": true,
+          "email": true
+        },
+        "task_assignments": {
+          "in_app": true,
+          "email": false
+        },
+        "task_deadlines": {
+          "in_app": true,
+          "email": true
+        },
+        "weekly_digest": {
+          "in_app": false,
+          "email": false
+        }
+      },
+      "general_preferences": {
+        "language": "en",
+        "timezone": "Asia/Kolkata (IST)",
+        "theme": "light",
+        "compact_density": false,
+        "inline_diffs": true,
+        "tab_size": 2,
+        "editor_font": "JetBrains Mono",
+        "default_page": "overview"
+      },
+      "visibility_controls": {
+        "profile": "public",
+        "email": "private",
+        "mobile": "private",
+        "location": "public",
+        "website": "public",
+        "activity_graph": "public"
+      },
       "stats": {
         "followers": 0,
         "following": 0,
@@ -1464,6 +2084,66 @@
       ],
       "teams": [],
       "collaborators": [],
+      "mobile": "",
+      "mobileVerified": false,
+      "emailVerified": true,
+      "passwordLastChanged": "Recently",
+      "security_audit_log": [
+        {
+          "id": "sec-ded1901e",
+          "action": "account_setup",
+          "description": "DevSync developer account initialized.",
+          "ip": "127.0.0.1",
+          "device": "Web Browser",
+          "timestamp": "2026-10-20 16:04:00 UTC",
+          "time_ago": "Account setup",
+          "status": "success"
+        }
+      ],
+      "notification_preferences": {
+        "direct_messages": {
+          "in_app": true,
+          "email": true
+        },
+        "mentions": {
+          "in_app": true,
+          "email": true
+        },
+        "team_invitations": {
+          "in_app": true,
+          "email": true
+        },
+        "task_assignments": {
+          "in_app": true,
+          "email": false
+        },
+        "task_deadlines": {
+          "in_app": true,
+          "email": true
+        },
+        "weekly_digest": {
+          "in_app": false,
+          "email": false
+        }
+      },
+      "general_preferences": {
+        "language": "en",
+        "timezone": "Asia/Kolkata (IST)",
+        "theme": "light",
+        "compact_density": false,
+        "inline_diffs": true,
+        "tab_size": 2,
+        "editor_font": "JetBrains Mono",
+        "default_page": "overview"
+      },
+      "visibility_controls": {
+        "profile": "public",
+        "email": "private",
+        "mobile": "private",
+        "location": "public",
+        "website": "public",
+        "activity_graph": "public"
+      },
       "stats": {
         "followers": 0,
         "following": 0,
@@ -1595,6 +2275,66 @@
       ],
       "teams": [],
       "collaborators": [],
+      "mobile": "",
+      "mobileVerified": false,
+      "emailVerified": true,
+      "passwordLastChanged": "Recently",
+      "security_audit_log": [
+        {
+          "id": "sec-08855421",
+          "action": "account_setup",
+          "description": "DevSync developer account initialized.",
+          "ip": "127.0.0.1",
+          "device": "Web Browser",
+          "timestamp": "2026-10-20 16:04:00 UTC",
+          "time_ago": "Account setup",
+          "status": "success"
+        }
+      ],
+      "notification_preferences": {
+        "direct_messages": {
+          "in_app": true,
+          "email": true
+        },
+        "mentions": {
+          "in_app": true,
+          "email": true
+        },
+        "team_invitations": {
+          "in_app": true,
+          "email": true
+        },
+        "task_assignments": {
+          "in_app": true,
+          "email": false
+        },
+        "task_deadlines": {
+          "in_app": true,
+          "email": true
+        },
+        "weekly_digest": {
+          "in_app": false,
+          "email": false
+        }
+      },
+      "general_preferences": {
+        "language": "en",
+        "timezone": "Asia/Kolkata (IST)",
+        "theme": "light",
+        "compact_density": false,
+        "inline_diffs": true,
+        "tab_size": 2,
+        "editor_font": "JetBrains Mono",
+        "default_page": "overview"
+      },
+      "visibility_controls": {
+        "profile": "public",
+        "email": "private",
+        "mobile": "private",
+        "location": "public",
+        "website": "public",
+        "activity_graph": "public"
+      },
       "stats": {
         "followers": 0,
         "following": 0,
@@ -1726,6 +2466,66 @@
       ],
       "teams": [],
       "collaborators": [],
+      "mobile": "",
+      "mobileVerified": false,
+      "emailVerified": true,
+      "passwordLastChanged": "Recently",
+      "security_audit_log": [
+        {
+          "id": "sec-d243d029",
+          "action": "account_setup",
+          "description": "DevSync developer account initialized.",
+          "ip": "127.0.0.1",
+          "device": "Web Browser",
+          "timestamp": "2026-10-20 16:04:00 UTC",
+          "time_ago": "Account setup",
+          "status": "success"
+        }
+      ],
+      "notification_preferences": {
+        "direct_messages": {
+          "in_app": true,
+          "email": true
+        },
+        "mentions": {
+          "in_app": true,
+          "email": true
+        },
+        "team_invitations": {
+          "in_app": true,
+          "email": true
+        },
+        "task_assignments": {
+          "in_app": true,
+          "email": false
+        },
+        "task_deadlines": {
+          "in_app": true,
+          "email": true
+        },
+        "weekly_digest": {
+          "in_app": false,
+          "email": false
+        }
+      },
+      "general_preferences": {
+        "language": "en",
+        "timezone": "Asia/Kolkata (IST)",
+        "theme": "light",
+        "compact_density": false,
+        "inline_diffs": true,
+        "tab_size": 2,
+        "editor_font": "JetBrains Mono",
+        "default_page": "overview"
+      },
+      "visibility_controls": {
+        "profile": "public",
+        "email": "private",
+        "mobile": "private",
+        "location": "public",
+        "website": "public",
+        "activity_graph": "public"
+      },
       "stats": {
         "followers": 0,
         "following": 0,
@@ -1857,6 +2657,257 @@
       ],
       "teams": [],
       "collaborators": [],
+      "mobile": "",
+      "mobileVerified": false,
+      "emailVerified": true,
+      "passwordLastChanged": "Recently",
+      "security_audit_log": [
+        {
+          "id": "sec-184a60cd",
+          "action": "account_setup",
+          "description": "DevSync developer account initialized.",
+          "ip": "127.0.0.1",
+          "device": "Web Browser",
+          "timestamp": "2026-10-20 16:04:00 UTC",
+          "time_ago": "Account setup",
+          "status": "success"
+        }
+      ],
+      "notification_preferences": {
+        "direct_messages": {
+          "in_app": true,
+          "email": true
+        },
+        "mentions": {
+          "in_app": true,
+          "email": true
+        },
+        "team_invitations": {
+          "in_app": true,
+          "email": true
+        },
+        "task_assignments": {
+          "in_app": true,
+          "email": false
+        },
+        "task_deadlines": {
+          "in_app": true,
+          "email": true
+        },
+        "weekly_digest": {
+          "in_app": false,
+          "email": false
+        }
+      },
+      "general_preferences": {
+        "language": "en",
+        "timezone": "Asia/Kolkata (IST)",
+        "theme": "light",
+        "compact_density": false,
+        "inline_diffs": true,
+        "tab_size": 2,
+        "editor_font": "JetBrains Mono",
+        "default_page": "overview"
+      },
+      "visibility_controls": {
+        "profile": "public",
+        "email": "private",
+        "mobile": "private",
+        "location": "public",
+        "website": "public",
+        "activity_graph": "public"
+      },
+      "stats": {
+        "followers": 0,
+        "following": 0,
+        "projects": 1,
+        "teams": 0,
+        "repositoriesCount": 1,
+        "contributionsCount": 0,
+        "pullRequestsCount": 0,
+        "issuesCount": 0
+      }
+    },
+    "tester_1792510724": {
+      "id": "dev-tester_1792510724",
+      "name": "Test Developer",
+      "username": "tester_1792510724",
+      "email": "tester_1792510724@example.com",
+      "password": "pbkdf2_sha256$1500000$Qp8y9nokmOHu4Gx6QSOyrO$c9EVdPkATS3HAyqaen/EGTeGgi/h93D5swbEyj2AEIM=",
+      "role": "Developer",
+      "isVerified": true,
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+      "headline": "Passionate Developer building meaningful web applications and exploring modern technologies.",
+      "bio": "Hello, I am Test Developer. I enjoy building software, collaborating with fellow engineers, and shipping high-quality code on DevSync.",
+      "location": "Bengaluru, India",
+      "website": "https://tester_1792510724.dev",
+      "social": {
+        "github": "https://github.com/tester_1792510724",
+        "linkedin": "https://linkedin.com/in/tester_1792510724",
+        "instagram": "https://instagram.com/tester_1792510724"
+      },
+      "collaborationStatus": "Available for collaboration",
+      "collaborationStatusType": "available",
+      "openToInvitations": true,
+      "education": {
+        "degree": "BCA Student",
+        "institution": "Bengaluru City University",
+        "location": "Bengaluru, India",
+        "field": "Computer Applications",
+        "timeline": "2022 - 2025"
+      },
+      "experience": [
+        {
+          "role": "Full Stack Contributor",
+          "organization": "DevSync Community",
+          "timeline": "2024 - Present",
+          "description": "Building open source developer collaboration tools and web applications."
+        }
+      ],
+      "skills": [
+        {
+          "name": "Python",
+          "category": "Backend",
+          "color": "blue"
+        },
+        {
+          "name": "Django",
+          "category": "Backend",
+          "color": "mint"
+        },
+        {
+          "name": "JavaScript",
+          "category": "Frontend",
+          "color": "amber"
+        },
+        {
+          "name": "React",
+          "category": "Frontend",
+          "color": "cyan"
+        },
+        {
+          "name": "Git",
+          "category": "Tool",
+          "color": "neutral"
+        },
+        {
+          "name": "GitHub",
+          "category": "Tool",
+          "color": "neutral"
+        }
+      ],
+      "pinnedProjects": [
+        "repo-tester_1792510724-core"
+      ],
+      "projects": [
+        {
+          "id": "repo-tester_1792510724-core",
+          "name": "tester_1792510724-workspace",
+          "description": "Personal developer workspace and project repository on DevSync.",
+          "tags": [
+            {
+              "name": "Python",
+              "color": "blue"
+            },
+            {
+              "name": "JavaScript",
+              "color": "amber"
+            }
+          ],
+          "stars": 12,
+          "forks": 3,
+          "updated": "Updated recently",
+          "visibility": "Public",
+          "iconBg": "#0D9488",
+          "relationship": "Owner"
+        }
+      ],
+      "achievements": [
+        {
+          "id": "ach-1-tester_1792510724",
+          "title": "First Project",
+          "description": "Created first public project",
+          "color": "green",
+          "date": "2024"
+        },
+        {
+          "id": "ach-2-tester_1792510724",
+          "title": "Collaborator",
+          "description": "Worked with 5+ developers",
+          "color": "blue",
+          "date": "2024"
+        }
+      ],
+      "activities": [
+        {
+          "id": "act-1-tester_1792510724",
+          "title": "Joined DevSync",
+          "description": "Created account and public profile on DevSync.",
+          "time": "Recently"
+        }
+      ],
+      "teams": [],
+      "collaborators": [],
+      "mobile": "",
+      "mobileVerified": false,
+      "emailVerified": true,
+      "passwordLastChanged": "Recently",
+      "security_audit_log": [
+        {
+          "id": "sec-df9f7828",
+          "action": "account_setup",
+          "description": "DevSync developer account initialized.",
+          "ip": "127.0.0.1",
+          "device": "Web Browser",
+          "timestamp": "2026-10-20 16:04:00 UTC",
+          "time_ago": "Account setup",
+          "status": "success"
+        }
+      ],
+      "notification_preferences": {
+        "direct_messages": {
+          "in_app": true,
+          "email": true
+        },
+        "mentions": {
+          "in_app": true,
+          "email": true
+        },
+        "team_invitations": {
+          "in_app": true,
+          "email": true
+        },
+        "task_assignments": {
+          "in_app": true,
+          "email": false
+        },
+        "task_deadlines": {
+          "in_app": true,
+          "email": true
+        },
+        "weekly_digest": {
+          "in_app": false,
+          "email": false
+        }
+      },
+      "general_preferences": {
+        "language": "en",
+        "timezone": "Asia/Kolkata (IST)",
+        "theme": "light",
+        "compact_density": false,
+        "inline_diffs": true,
+        "tab_size": 2,
+        "editor_font": "JetBrains Mono",
+        "default_page": "overview"
+      },
+      "visibility_controls": {
+        "profile": "public",
+        "email": "private",
+        "mobile": "private",
+        "location": "public",
+        "website": "public",
+        "activity_graph": "public"
+      },
       "stats": {
         "followers": 0,
         "following": 0,
@@ -1880,7 +2931,7 @@
       "visibility": "Private",
       "defaultBranch": "main",
       "created_at": 1789829765.893267,
-      "updated_at": 1792426723.7985103,
+      "updated_at": 1792509811.6455839,
       "stars": 28,
       "forks": 5,
       "branches": [
@@ -2141,6 +3192,17 @@
             "last_actor": "naveen3438",
             "sha256": "554ef4ff0ced9f04543c8cc11359b316e7629036515fb7181c9c0f4bf56db71c",
             "content": "modified code with authorization"
+          },
+          {
+            "path": "services/auth_provider_1792509811.py",
+            "name": "auth_provider_1792509811.py",
+            "type": "file",
+            "size": 32,
+            "updated_at": 1792509811.6035585,
+            "last_commit": "Update auth_provider logic with authorization",
+            "last_actor": "naveen3438",
+            "sha256": "554ef4ff0ced9f04543c8cc11359b316e7629036515fb7181c9c0f4bf56db71c",
+            "content": "modified code with authorization"
           }
         ],
         "feature/authentication": [
@@ -2157,6 +3219,15 @@
         ]
       },
       "attachments": [
+        {
+          "id": "att_df94c7a15f32",
+          "name": "API_Swagger_Specification.json",
+          "size": 20,
+          "uploaded_by": "naveen3438",
+          "uploaded_at": 1792509811.6455839,
+          "file_type": "application/json",
+          "description": "OpenAPI contract specification"
+        },
         {
           "id": "att_6d88d38404f7",
           "name": "API_Swagger_Specification.json",
@@ -2213,6 +3284,28 @@
         }
       ],
       "audit_log": [
+        {
+          "id": "aud_4086694805b9",
+          "action": "file_overwrite",
+          "branch": "develop",
+          "file_path": "services/auth_provider_1792509811.py",
+          "actor": "naveen3438",
+          "timestamp": 1792509811.6035585,
+          "summary": "Update auth_provider logic with authorization",
+          "sha256": "554ef4ff0ced9f04543c8cc11359b316e7629036515fb7181c9c0f4bf56db71c",
+          "size": 32
+        },
+        {
+          "id": "aud_edeab6e8b0e7",
+          "action": "file_upload",
+          "branch": "develop",
+          "file_path": "services/auth_provider_1792509811.py",
+          "actor": "naveen3438",
+          "timestamp": 1792509811.571442,
+          "summary": "Add authentication service provider module",
+          "sha256": "891db46eb3458220b0b14e13475275304f8091d580143003f669440b4c0102aa",
+          "size": 36
+        },
         {
           "id": "aud_33432006613b",
           "action": "file_overwrite",
@@ -2542,6 +3635,89 @@
     }
   },
   "activity_events": [
+    {
+      "id": "evt_0e200067aa2c",
+      "type": "attachment_uploaded",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": null,
+      "title": "Uploaded project attachment: API_Swagger_Specification.json",
+      "description": "OpenAPI contract specification",
+      "timestamp": 1792509811.6455839,
+      "visibility": "Private",
+      "metadata": {
+        "attachment_id": "att_df94c7a15f32",
+        "file_name": "API_Swagger_Specification.json",
+        "size": 20
+      },
+      "dedup_hash": "38bd5dec16b92eed19edac354d65d595fa9b31cad24624e45eaa4c38b6339d46"
+    },
+    {
+      "id": "evt_90aab893ff73",
+      "type": "file_uploaded",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": "develop",
+      "title": "Uploaded services/auth_provider_1792509811.py to develop",
+      "description": "Add authentication service provider module",
+      "timestamp": 1792509811.571442,
+      "visibility": "Private",
+      "metadata": {
+        "file_path": "services/auth_provider_1792509811.py",
+        "sha256": "891db46eb3458220b0b14e13475275304f8091d580143003f669440b4c0102aa",
+        "size": 36
+      },
+      "dedup_hash": "31a5b8de13f98d9354d9f8fc4bf9ef36a1d5f7b39c27eed0aa33f69aae3fc52a"
+    },
+    {
+      "id": "evt_3b0bb453129d",
+      "type": "collaborator_removed",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": null,
+      "title": "Removed collaborator @tarapatel",
+      "description": "Collaborator @tarapatel was removed from devsync-core.",
+      "timestamp": 1792509811.5220923,
+      "visibility": "Private",
+      "metadata": {},
+      "dedup_hash": "85b9ba407c663bde8cedf866a6655b0c9494b2ba7af407170946f80b7f668b67"
+    },
+    {
+      "id": "evt_3dc8df97779a",
+      "type": "collaborator_updated",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": null,
+      "title": "Updated role/responsibility for @tarapatel",
+      "description": "Role: Collaborator | Responsibility: Lead SRE & Security",
+      "timestamp": 1792509811.5056179,
+      "visibility": "Private",
+      "metadata": {},
+      "dedup_hash": "b38bee20a02e73194730ad2c3c193bd7610348ef41f2aed56eefc952d3cbe82b"
+    },
+    {
+      "id": "evt_058eb1e27633",
+      "type": "collaborator_added",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": null,
+      "title": "Added collaborator @tarapatel as Collaborator",
+      "description": "Assigned responsibility: DevOps & SRE",
+      "timestamp": 1792509811.4892755,
+      "visibility": "Private",
+      "metadata": {},
+      "dedup_hash": "a82cd42314c6c17a49e5d977073573dc09b64c9bcf93fce3752f98dbf3fb1dac"
+    },
     {
       "id": "evt_525889ea3520",
       "type": "attachment_uploaded",

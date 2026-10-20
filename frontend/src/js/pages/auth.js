@@ -577,16 +577,17 @@ export function initAuthPage() {
     authForm.addEventListener('submit', handleFormSubmit);
   }
 
-  // Preserve Forgot Password Form if on forgot password page
+  // Password Recovery Flows (Forgot & Reset Password)
   const forgotForm = document.getElementById('forgotPasswordForm');
   if (forgotForm) {
     forgotForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const emailInput = forgotForm.querySelector('#email');
+      const idInput = forgotForm.querySelector('#recoveryIdentifier') || forgotForm.querySelector('#email');
       const submitBtn = forgotForm.querySelector('button[type="submit"]');
+      const val = (idInput?.value || '').trim();
 
-      if (!isValidEmail(emailInput.value)) {
-        toastDanger('Please enter a valid email address.');
+      if (!val) {
+        toastDanger('Please enter your email, username, or mobile number.');
         return;
       }
 
@@ -594,27 +595,47 @@ export function initAuthPage() {
       submitBtn.innerHTML = '<span class="btn-spinner"></span> Sending Instructions...';
 
       try {
-        const res = await AuthService.requestPasswordReset(emailInput.value);
-        toastSuccess(res.message, 'Reset Link Dispatched');
-        submitBtn.innerHTML = 'Instructions Sent &check;';
+        const res = await AuthService.forgotPassword(val);
+        toastSuccess(res.message || 'If an account matches, recovery instructions have been sent.', 'Recovery Code Dispatched');
+        submitBtn.innerHTML = 'Code Sent &check;';
+        setTimeout(() => {
+          window.location.href = `reset-password.html?identifier=${encodeURIComponent(val)}`;
+        }, 1200);
       } catch (err) {
-        toastDanger(err.message || 'Failed to dispatch reset instructions.');
+        toastDanger(err.message || 'Failed to dispatch recovery instructions.');
         submitBtn.disabled = false;
-        submitBtn.innerHTML = 'Send Reset Instructions';
+        submitBtn.innerHTML = 'Send Recovery Code &rarr;';
       }
     });
   }
 
-  // Preserve Reset Password Form if on reset password page
   const resetForm = document.getElementById('resetPasswordForm');
   if (resetForm) {
-    resetForm.addEventListener('submit', (e) => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const prefillId = urlParams.get('identifier') || '';
+    const idInput = resetForm.querySelector('#resetIdentifier');
+    if (idInput && prefillId) {
+      idInput.value = prefillId;
+    }
+
+    resetForm.addEventListener('submit', async (e) => {
       e.preventDefault();
+      const identifier = (resetForm.querySelector('#resetIdentifier')?.value || '').trim();
+      const code = (resetForm.querySelector('#resetCode')?.value || '').trim();
       const passInput = resetForm.querySelector('#newPassword');
       const confirmInput = resetForm.querySelector('#confirmPassword');
+      const submitBtn = resetForm.querySelector('button[type="submit"]');
 
+      if (!identifier) {
+        toastDanger('Please provide your account identifier.');
+        return;
+      }
+      if (!code || code.length !== 6) {
+        toastDanger('Please enter the 6-digit recovery code.');
+        return;
+      }
       if (!isValidPassword(passInput.value)) {
-        toastDanger('Password must be at least 8 characters.');
+        toastDanger('Password must be at least 8 characters with letters and numbers.');
         return;
       }
       if (passInput.value !== confirmInput.value) {
@@ -622,8 +643,25 @@ export function initAuthPage() {
         return;
       }
 
-      toastSuccess('Password updated successfully! Please sign in.', 'Password Reset');
-      setTimeout(() => navigateTo(ROUTES.SIGN_IN), 800);
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span class="btn-spinner"></span> Verifying & Updating...';
+
+      try {
+        // Step 1: Verify 6-digit OTP to get reset token
+        const verifyRes = await AuthService.verifyRecoveryOtp(identifier, code);
+        if (!verifyRes || !verifyRes.reset_token) {
+          throw new Error(verifyRes?.error || 'Verification failed. Please check the code.');
+        }
+
+        // Step 2: Reset password using the verified single-use reset token
+        const resetRes = await AuthService.resetPassword(verifyRes.reset_token, passInput.value);
+        toastSuccess(resetRes.message || 'Password updated successfully! Please sign in with your new password.', 'Password Reset Complete');
+        setTimeout(() => navigateTo(ROUTES.SIGN_IN), 1200);
+      } catch (err) {
+        toastDanger(err.message || 'Failed to update password. Code may have expired or is invalid.');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = 'Update Password &rarr;';
+      }
     });
   }
 }
