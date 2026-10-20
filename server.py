@@ -35,13 +35,14 @@ if not settings.configured:
             'django.contrib.auth.hashers.Argon2PasswordHasher',
             'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
         ],
-        EMAIL_BACKEND=os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend' if os.environ.get('EMAIL_HOST') else 'django.core.mail.backends.console.EmailBackend'),
+        EMAIL_BACKEND=os.environ.get('EMAIL_BACKEND') or ('django.core.mail.backends.smtp.EmailBackend' if (os.environ.get('EMAIL_HOST', '').strip()) else 'django.core.mail.backends.console.EmailBackend'),
         EMAIL_HOST=os.environ.get('EMAIL_HOST', 'localhost'),
-        EMAIL_PORT=int(os.environ.get('EMAIL_PORT', 587)),
+        EMAIL_PORT=int(os.environ.get('EMAIL_PORT', 587) or 587),
         EMAIL_USE_TLS=os.environ.get('EMAIL_USE_TLS', 'True').lower() in ('true', '1'),
         EMAIL_HOST_USER=os.environ.get('EMAIL_HOST_USER', ''),
         EMAIL_HOST_PASSWORD=os.environ.get('EMAIL_HOST_PASSWORD', ''),
         DEFAULT_FROM_EMAIL=os.environ.get('DEFAULT_FROM_EMAIL', 'DevSync Security <security@devsync.example>'),
+        EMAIL_TIMEOUT=int(os.environ.get('EMAIL_TIMEOUT', 4) or 4),
     )
     django.setup()
 
@@ -54,6 +55,19 @@ GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET', '').strip()
 
 import backend_issues_prs_chat
 import backend_voice_ai
+from backend_settings import (
+    SMSProvider, OTPManager, PasswordRecoveryManager,
+    parse_device_string, add_audit_log, get_user_active_sessions,
+    revoke_single_session, revoke_all_other_sessions,
+    validate_username, validate_password_strength,
+    strip_exif_and_sanitize_image, sanitize_public_profile,
+    get_default_notifications, calculate_notifications_summary,
+    reauth_manager, totp_manager
+)
+
+otp_manager = OTPManager()
+recovery_manager = PasswordRecoveryManager(otp_manager)
+NOTIFICATIONS = []
 from backend_collaboration import (
     REPOSITORIES, ACTIVITY_EVENTS, get_repository_by_id_or_name, check_repo_permissions,
     record_activity_event, aggregate_pulse, get_pulse_events, get_pulse_comparison,
@@ -510,7 +524,8 @@ def save_database():
                 'profiles': DEV_PROFILES,
                 'repositories': REPOSITORIES,
                 'activity_events': ACTIVITY_EVENTS,
-                'version': '1.2.0'
+                'notifications': NOTIFICATIONS,
+                'version': '1.3.0'
             }
             backend_issues_prs_chat.export_state_to_data(dump_data)
             json.dump(dump_data, f, indent=2)
@@ -541,6 +556,16 @@ def load_database():
                     print(f"[Database] Loaded {len(ACTIVITY_EVENTS)} activity events from disk.")
                 backend_issues_prs_chat.load_state_from_data(data)
                 print(f"[Database] Loaded issues, PRs, teams, and chat state from disk.")
+                global NOTIFICATIONS
+                loaded_notifs = data.get('notifications', [])
+                if loaded_notifs:
+                    NOTIFICATIONS.clear()
+                    NOTIFICATIONS.extend(loaded_notifs)
+                    print(f"[Database] Loaded {len(NOTIFICATIONS)} notifications from disk.")
+                else:
+                    NOTIFICATIONS.clear()
+                    NOTIFICATIONS.extend(get_default_notifications())
+                    print(f"[Database] Initialized {len(NOTIFICATIONS)} default notifications.")
         except Exception as e:
             print(f"[Database] Warning: Could not read {DB_FILE}: {e}")
 
@@ -644,7 +669,49 @@ def ensure_user_profile(user_data):
             {'id': f'act-1-{username}', 'title': 'Joined DevSync', 'description': f'Created account and public profile on DevSync.', 'time': 'Recently'}
         ],
         'teams': existing.get('teams') or [],
-        'collaborators': existing.get('collaborators') or []
+        'collaborators': existing.get('collaborators') or [],
+        'mobile': existing.get('mobile', user_data.get('mobile', '')),
+        'mobileVerified': existing.get('mobileVerified', False),
+        'emailVerified': existing.get('emailVerified', True),
+        'passwordLastChanged': existing.get('passwordLastChanged', 'Recently'),
+        'security_audit_log': existing.get('security_audit_log') or [
+            {
+                'id': f"sec-{secrets.token_hex(4)}",
+                'action': 'account_setup',
+                'description': 'DevSync developer account initialized.',
+                'ip': '127.0.0.1',
+                'device': 'Web Browser',
+                'timestamp': time.strftime("%Y-%m-%d %H:%M:%S UTC", time.gmtime()),
+                'time_ago': 'Account setup',
+                'status': 'success'
+            }
+        ],
+        'notification_preferences': existing.get('notification_preferences') or {
+            'direct_messages': {'in_app': True, 'email': True},
+            'mentions': {'in_app': True, 'email': True},
+            'team_invitations': {'in_app': True, 'email': True},
+            'task_assignments': {'in_app': True, 'email': False},
+            'task_deadlines': {'in_app': True, 'email': True},
+            'weekly_digest': {'in_app': False, 'email': False}
+        },
+        'general_preferences': existing.get('general_preferences') or {
+            'language': 'en',
+            'timezone': 'Asia/Kolkata (IST)',
+            'theme': 'light',
+            'compact_density': False,
+            'inline_diffs': True,
+            'tab_size': 2,
+            'editor_font': 'JetBrains Mono',
+            'default_page': 'overview'
+        },
+        'visibility_controls': existing.get('visibility_controls') or {
+            'profile': 'public',
+            'email': 'private',
+            'mobile': 'private',
+            'location': 'public',
+            'website': 'public',
+            'activity_graph': 'public'
+        }
     }
 
     # Ensure user has a personal workspace project if none exists
@@ -798,17 +865,32 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(content)
 
-    def get_authenticated_user(self):
+    def get_session_token(self):
         auth_header = self.headers.get('Authorization', '').strip()
-        token = None
         if auth_header.startswith('Bearer '):
-            token = auth_header[len('Bearer '):].strip()
-        elif 'devsync_session=' in self.headers.get('Cookie', ''):
-            m = re.search(r'devsync_session=([^;]+)', self.headers.get('Cookie', ''))
+            return auth_header[len('Bearer '):].strip()
+        cookie_hdr = self.headers.get('Cookie', '')
+        if 'devsync_session=' in cookie_hdr:
+            m = re.search(r'devsync_session=([^;]+)', cookie_hdr)
             if m:
-                token = m.group(1).strip()
+                return m.group(1).strip()
+        return None
 
+    def get_authenticated_user(self):
+        token = self.get_session_token()
         if token and token in ACTIVE_SESSIONS:
+            ACTIVE_SESSIONS[token]['last_active'] = time.time()
+            dev = get_developer_by_identifier(ACTIVE_SESSIONS[token]['username'])
+            if dev:
+                ACTIVE_SESSIONS[token]['user'] = {
+                    'id': dev['id'],
+                    'name': dev['name'],
+                    'username': dev['username'],
+                    'email': dev.get('email', f"{dev['username']}@devsync.dev"),
+                    'role': dev.get('role', 'Developer'),
+                    'avatar': dev.get('avatar', ''),
+                    'location': dev.get('location', '')
+                }
             return ACTIVE_SESSIONS[token]['user']
 
         # Fallback to X-DevSync-User header
@@ -880,6 +962,132 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
             self.end_headers()
             return
 
+        # Canonical GitHub-Style Public Profile Routing (/u/<username> and /u/<username>/)
+        m_u_page = re.match(r'^/u/([^/]+)/?$', path)
+        if m_u_page:
+            u_ident = m_u_page.group(1).strip().lower()
+            dev = get_developer_by_identifier(u_ident)
+            if dev:
+                profile_html = os.path.join(FRONTEND_DIR, 'src', 'pages', 'developers', 'profile.html')
+                if os.path.exists(profile_html):
+                    self.serve_html_file(profile_html)
+                    return
+            else:
+                self.serve_custom_error(404)
+                return
+
+        # Public Profile API Endpoint (GET /api/v1/u/<username> or /api/u/<username>)
+        m_u_api = re.match(r'^/api/(?:v1/)?u/([^/]+)/?$', path)
+        if m_u_api:
+            u_ident = m_u_api.group(1).strip().lower()
+            dev = get_developer_by_identifier(u_ident)
+            if not dev:
+                self.send_json(404, {'error': f'Developer @{u_ident} not found'})
+                return
+            auth_user = self.get_authenticated_user()
+            caller = auth_user['username'].lower() if auth_user else self.headers.get('X-DevSync-User', '').strip().lower()
+            sanitized = sanitize_public_profile(dev, caller_username=caller, repositories=REPOSITORIES, activity_events=ACTIVITY_EVENTS)
+            self.send_json(200, sanitized)
+            return
+
+        # Settings Security Status Endpoint (GET /api/v1/auth/security, /api/v1/settings/security)
+        if path in ('/api/v1/auth/security', '/api/v1/auth/security/', '/api/v1/settings/security', '/api/v1/settings/security/'):
+            auth_user = self.get_authenticated_user()
+            if not auth_user:
+                self.send_json(401, {'detail': 'Authentication required. Please sign in.'})
+                return
+            dev = get_developer_by_identifier(auth_user['username'])
+            if not dev:
+                self.send_json(404, {'detail': 'User profile not found.'})
+                return
+            curr_token = self.get_session_token()
+            user_sessions = get_user_active_sessions(ACTIVE_SESSIONS, auth_user['username'], curr_token)
+            sec_data = {
+                'email': dev.get('email', f"{auth_user['username']}@devsync.dev"),
+                'emailVerified': dev.get('emailVerified', True),
+                'mobile': dev.get('mobile', ''),
+                'mobileVerified': dev.get('mobileVerified', False),
+                'passwordConfigured': True,
+                'passwordLastChanged': dev.get('passwordLastChanged', 'Recently'),
+                'twoFactorEnabled': False,
+                'twoFactorStatus': 'Disabled [LATER]',
+                'sessionsCount': len(user_sessions),
+                'alerts': dev.get('security_alerts', {
+                    'newSignIn': True,
+                    'passwordChange': True,
+                    'emailChange': True,
+                    'sessionRevocation': True
+                })
+            }
+            self.send_json(200, sec_data)
+            return
+
+        # Active Sessions List Endpoint (GET /api/v1/auth/sessions, /api/v1/settings/sessions)
+        if path in ('/api/v1/auth/sessions', '/api/v1/auth/sessions/', '/api/v1/settings/sessions', '/api/v1/settings/sessions/'):
+            auth_user = self.get_authenticated_user()
+            if not auth_user:
+                self.send_json(401, {'detail': 'Authentication required. Please sign in.'})
+                return
+            curr_token = self.get_session_token()
+            sessions_list = get_user_active_sessions(ACTIVE_SESSIONS, auth_user['username'], curr_token)
+            self.send_json(200, sessions_list)
+            return
+
+        # Security Audit Logs Endpoint (GET /api/v1/auth/login-history, /api/v1/settings/audit-logs)
+        if path in ('/api/v1/auth/login-history', '/api/v1/auth/login-history/', '/api/v1/settings/audit-logs', '/api/v1/settings/audit-logs/'):
+            auth_user = self.get_authenticated_user()
+            if not auth_user:
+                self.send_json(401, {'detail': 'Authentication required.'})
+                return
+            dev = get_developer_by_identifier(auth_user['username'])
+            logs = dev.get('security_audit_log', []) if dev else []
+            self.send_json(200, logs)
+            return
+
+        # Connected Apps Endpoint (GET /api/v1/auth/connected-apps, /api/v1/settings/connected-apps)
+        if path in ('/api/v1/auth/connected-apps', '/api/v1/auth/connected-apps/', '/api/v1/settings/connected-apps', '/api/v1/settings/connected-apps/'):
+            auth_user = self.get_authenticated_user()
+            if not auth_user:
+                self.send_json(401, {'detail': 'Authentication required.'})
+                return
+            dev = get_developer_by_identifier(auth_user['username'])
+            connected = []
+            if GOOGLE_CLIENT_ID:
+                connected.append({
+                    'id': 'app-google',
+                    'name': 'Google Account OAuth',
+                    'permissions': 'Identity verification, primary email',
+                    'connectedDate': 'Active',
+                    'icon': 'google'
+                })
+            if dev and dev.get('social', {}).get('github'):
+                connected.append({
+                    'id': 'app-github',
+                    'name': 'GitHub Profile Link',
+                    'permissions': 'Public profile sync',
+                    'connectedDate': 'Active',
+                    'icon': 'github'
+                })
+            self.send_json(200, connected)
+            return
+
+        # Preferences & Settings Endpoint (GET /api/v1/auth/preferences, /api/v1/settings/preferences)
+        if path in ('/api/v1/auth/preferences', '/api/v1/auth/preferences/', '/api/v1/settings/preferences', '/api/v1/settings/preferences/'):
+            auth_user = self.get_authenticated_user()
+            if not auth_user:
+                self.send_json(401, {'detail': 'Authentication required.'})
+                return
+            dev = get_developer_by_identifier(auth_user['username'])
+            if not dev:
+                self.send_json(404, {'detail': 'User profile not found.'})
+                return
+            self.send_json(200, {
+                'general': dev.get('general_preferences', {}),
+                'notifications': dev.get('notification_preferences', {}),
+                'visibility': dev.get('visibility_controls', {})
+            })
+            return
+
         # Dedicated test API routes for testing HTTP error responses
         if path.startswith('/api/error/'):
             code_str = path.split('/api/error/')[-1]
@@ -926,6 +1134,24 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
             '/assistant/': 'src/pages/assistant/index.html',
             '/ai/assistant': 'src/pages/assistant/index.html',
             '/assistant/index.html': 'src/pages/assistant/index.html',
+            '/notifications': 'src/pages/notifications/index.html',
+            '/notifications/': 'src/pages/notifications/index.html',
+            '/settings/security': 'src/pages/settings/security.html',
+            '/settings/security/': 'src/pages/settings/security.html',
+            '/settings/security/password': 'src/pages/settings/change-password.html',
+            '/settings/security/password/': 'src/pages/settings/change-password.html',
+            '/forgot-password': 'src/pages/auth/forgot-password.html',
+            '/forgot-password/': 'src/pages/auth/forgot-password.html',
+            '/auth/forgot-password': 'src/pages/auth/forgot-password.html',
+            '/auth/forgot-password/': 'src/pages/auth/forgot-password.html',
+            '/verify-code': 'src/pages/auth/verify-code.html',
+            '/verify-code/': 'src/pages/auth/verify-code.html',
+            '/auth/verify-code': 'src/pages/auth/verify-code.html',
+            '/auth/verify-code/': 'src/pages/auth/verify-code.html',
+            '/reset-password': 'src/pages/auth/reset-password.html',
+            '/reset-password/': 'src/pages/auth/reset-password.html',
+            '/auth/reset-password': 'src/pages/auth/reset-password.html',
+            '/auth/reset-password/': 'src/pages/auth/reset-password.html',
 
         }
         if path in route_map:
@@ -933,6 +1159,46 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
             if os.path.exists(target):
                 self.serve_html_file(target)
                 return
+
+        # Security Overview Endpoint (GET /api/v1/auth/security/overview, /api/v1/settings/security/overview)
+        if path in ('/api/v1/auth/security/overview', '/api/v1/auth/security/overview/', '/api/v1/settings/security/overview', '/api/v1/settings/security/overview/'):
+            auth_user = self.get_authenticated_user()
+            if not auth_user:
+                self.send_json(401, {'error': 'Authentication required. Please sign in.'})
+                return
+            dev = get_developer_by_identifier(auth_user['username'])
+            if not dev:
+                self.send_json(404, {'error': 'User not found.'})
+                return
+            curr_token = self.get_session_token()
+            user_sessions = get_user_active_sessions(ACTIVE_SESSIONS, auth_user['username'], curr_token)
+            
+            pwd_last_changed = dev.get('passwordLastChanged', 'Recently')
+            if isinstance(pwd_last_changed, (int, float)):
+                pwd_last_changed = time.strftime("%b %d, %Y", time.gmtime(pwd_last_changed))
+
+            self.send_json(200, {
+                'success': True,
+                'password_configured': True,
+                'password_last_changed': pwd_last_changed,
+                'two_factor_enabled': bool(dev.get('two_factor_enabled', False)),
+                'two_factor_type': dev.get('two_factor_type', 'Authenticator App (TOTP)' if dev.get('two_factor_enabled') else 'Not Enabled'),
+                'active_sessions_count': max(1, len(user_sessions)),
+                'recovery_codes_count': len(dev.get('two_factor_recovery_codes', [])),
+                'registered_email': dev.get('email', ''),
+                'registered_mobile': dev.get('mobile', ''),
+                'security_events_count': len(dev.get('security_audit_log', []))
+            })
+            return
+
+        # Notifications API Endpoint (GET /api/v1/notifications/ and /api/notifications/)
+        if path in ('/api/v1/notifications', '/api/v1/notifications/', '/api/notifications', '/api/notifications/'):
+            summary = calculate_notifications_summary(NOTIFICATIONS)
+            self.send_json(200, {
+                'notifications': NOTIFICATIONS,
+                'summary': summary
+            })
+            return
 
         # Authenticated Session Status Endpoint (GET /api/v1/auth/me, /api/auth/me, /users/me/, /api/v1/users/me)
         if path in ('/api/v1/auth/me', '/api/auth/me', '/users/me', '/users/me/', '/api/v1/users/me', '/api/v1/user/profile'):
@@ -1429,13 +1695,8 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
             caller = auth_user['username'].lower() if auth_user else self.headers.get('X-DevSync-User', '').strip().lower()
             is_owner = (caller == dev['username'].lower())
 
-            profile_copy = json.loads(json.dumps(dev))
-            profile_copy.pop('password', None)
-            if not is_owner:
-                profile_copy['projects'] = [p for p in profile_copy.get('projects', []) if p.get('visibility') == 'Public']
-                profile_copy.pop('email', None)
-
-            self.send_json(200, profile_copy)
+            sanitized = sanitize_public_profile(dev, caller_username=caller, repositories=REPOSITORIES, activity_events=ACTIVITY_EVENTS)
+            self.send_json(200, sanitized)
             return
 
         # Canonical Developer Profile Page Routing: /developers/<username> and /developers/<username>/
@@ -1544,6 +1805,787 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
                 self.send_json(500, {'ok': False, 'error': 'Failed to synthesize speech.'})
             return
 
+        # ----------------------------------------------------------------------
+        # Notifications System Actions (mark-read, mark-unread, connection-action)
+        # ----------------------------------------------------------------------
+        if path in ('/api/v1/notifications/mark-read', '/api/v1/notifications/mark-read/', '/api/notifications/mark-read', '/api/notifications/mark-read/'):
+            length = int(self.headers.get('Content-Length', 0))
+            body = json.loads(self.rfile.read(length).decode('utf-8')) if length > 0 else {}
+            notif_id = body.get('id')
+            if notif_id:
+                for n in NOTIFICATIONS:
+                    if n.get('id') == notif_id:
+                        n['unread'] = False
+                        break
+            else:
+                for n in NOTIFICATIONS:
+                    n['unread'] = False
+            save_database()
+            summary = calculate_notifications_summary(NOTIFICATIONS)
+            self.send_json(200, {'success': True, 'summary': summary})
+            return
+
+        if path in ('/api/v1/notifications/mark-unread', '/api/v1/notifications/mark-unread/', '/api/notifications/mark-unread', '/api/notifications/mark-unread/'):
+            length = int(self.headers.get('Content-Length', 0))
+            body = json.loads(self.rfile.read(length).decode('utf-8')) if length > 0 else {}
+            notif_id = body.get('id')
+            if notif_id:
+                for n in NOTIFICATIONS:
+                    if n.get('id') == notif_id:
+                        n['unread'] = True
+                        break
+            save_database()
+            summary = calculate_notifications_summary(NOTIFICATIONS)
+            self.send_json(200, {'success': True, 'summary': summary})
+            return
+
+        if path in ('/api/v1/notifications/connection-action', '/api/v1/notifications/connection-action/', '/api/notifications/connection-action', '/api/notifications/connection-action/'):
+            length = int(self.headers.get('Content-Length', 0))
+            body = json.loads(self.rfile.read(length).decode('utf-8')) if length > 0 else {}
+            notif_id = body.get('notification_id')
+            action = body.get('action') # 'accept' or 'decline'
+            target_dev = None
+            for n in NOTIFICATIONS:
+                if n.get('id') == notif_id:
+                    n['connection_status'] = 'accepted' if action == 'accept' else 'declined'
+                    n['unread'] = False
+                    target_dev = n.get('connection_developer_id')
+                    break
+            save_database()
+            summary = calculate_notifications_summary(NOTIFICATIONS)
+            self.send_json(200, {'success': True, 'action': action, 'developer_id': target_dev, 'summary': summary})
+            return
+
+        # ======================================================================
+        # DevSync Protected Password & Security Handlers
+        # ======================================================================
+
+        # A. Re-authenticate account holder (POST /api/v1/auth/security/reauthenticate)
+        if path in ('/api/v1/auth/security/reauthenticate', '/api/v1/auth/security/reauthenticate/', '/api/v1/auth/reauthenticate', '/api/v1/auth/reauthenticate/'):
+            auth_user = self.get_authenticated_user()
+            if not auth_user:
+                self.send_json(401, {'error': 'Authentication required. Please sign in.'})
+                return
+            dev = get_developer_by_identifier(auth_user['username'])
+            if not dev:
+                self.send_json(404, {'error': 'User not found.'})
+                return
+            length = int(self.headers.get('Content-Length', 0))
+            body = json.loads(self.rfile.read(length).decode('utf-8')) if length > 0 else {}
+            password = str(body.get('password', '')).strip()
+            if not password or not check_password(password, dev['password']):
+                add_audit_log(dev, 'Re-authentication Failed', self.client_address[0], parse_device_string(self.headers.get('User-Agent', '')), 'failed')
+                save_database()
+                self.send_json(400, {'error': 'Incorrect password. Verification challenge failed.'})
+                return
+            
+            reauth_token, ttl = reauth_manager.issue_token(dev['username'])
+            add_audit_log(dev, 'Re-authentication Successful', self.client_address[0], parse_device_string(self.headers.get('User-Agent', '')), 'success')
+            save_database()
+            self.send_json(200, {
+                'success': True,
+                'reauth_token': reauth_token,
+                'expires_in': ttl,
+                'message': 'Identity verified. You may proceed with sensitive security changes.'
+            })
+            return
+
+        # B. Protected Change Password with Re-auth Token (POST /api/v1/auth/password/change-protected)
+        if path in ('/api/v1/auth/password/change-protected', '/api/v1/auth/password/change-protected/'):
+            auth_user = self.get_authenticated_user()
+            if not auth_user:
+                self.send_json(401, {'error': 'Authentication required. Please sign in.'})
+                return
+            dev = get_developer_by_identifier(auth_user['username'])
+            if not dev:
+                self.send_json(404, {'error': 'User not found.'})
+                return
+            length = int(self.headers.get('Content-Length', 0))
+            body = json.loads(self.rfile.read(length).decode('utf-8')) if length > 0 else {}
+            
+            reauth_token = str(body.get('reauth_token', '')).strip()
+            valid, msg = reauth_manager.validate_token(dev['username'], reauth_token)
+            if not valid:
+                self.send_json(401, {'error': msg})
+                return
+            
+            current_pass = str(body.get('current_password', body.get('currentPassword', ''))).strip()
+            if not current_pass or not check_password(current_pass, dev['password']):
+                self.send_json(400, {'error': 'Current password verification failed.'})
+                return
+            
+            new_pass = str(body.get('new_password', body.get('newPassword', ''))).strip()
+            confirm_pass = str(body.get('confirm_password', body.get('confirmPassword', ''))).strip()
+
+            if confirm_pass and confirm_pass != new_pass:
+                self.send_json(400, {'error': 'New passwords do not match.'})
+                return
+
+            if new_pass == current_pass:
+                self.send_json(400, {'error': 'New password cannot be the same as current password.'})
+                return
+            val_ok, val_err = validate_password_strength(new_pass)
+            if not val_ok:
+                self.send_json(400, {'error': val_err})
+                return
+
+            # Apply change using Django PBKDF2 hasher
+            dev['password'] = make_password(new_pass)
+            dev['passwordLastChanged'] = time.time()
+            reauth_manager.consume_token(dev['username'], reauth_token)
+
+            # Revoke other sessions if requested
+            if body.get('revoke_other_sessions', True):
+                curr_tok = self.get_session_token()
+                revoke_all_other_sessions(ACTIVE_SESSIONS, dev['username'], curr_tok)
+
+            add_audit_log(dev, 'Password Changed (Protected Workflow)', self.client_address[0], parse_device_string(self.headers.get('User-Agent', '')), 'success')
+            save_database()
+
+            # Send email confirmation
+            user_email = dev.get('email', '')
+            if user_email and send_mail:
+                try:
+                    send_mail(
+                        subject="Security Alert: Your DevSync Password Was Changed",
+                        message=f"Hello {dev.get('name', dev['username'])},\n\nYour DevSync account password was successfully updated through the protected security workflow.\n\nIf you did not perform this change, please contact security immediately.\n\n— The DevSync Security Team",
+                        from_email=DEFAULT_FROM_EMAIL,
+                        recipient_list=[user_email],
+                        fail_silently=True
+                    )
+                except Exception as mail_err:
+                    print(f"[Mail Warning] {mail_err}")
+
+            self.send_json(200, {
+                'success': True,
+                'message': 'Password successfully updated. Confirmation email has been sent.'
+            })
+            return
+
+        # C. 2FA Setup Initiation (POST /api/v1/auth/2fa/setup)
+        if path in ('/api/v1/auth/2fa/setup', '/api/v1/auth/2fa/setup/'):
+            auth_user = self.get_authenticated_user()
+            if not auth_user:
+                self.send_json(401, {'error': 'Authentication required. Please sign in.'})
+                return
+            dev = get_developer_by_identifier(auth_user['username'])
+            if not dev:
+                self.send_json(404, {'error': 'User not found.'})
+                return
+            length = int(self.headers.get('Content-Length', 0))
+            body = json.loads(self.rfile.read(length).decode('utf-8')) if length > 0 else {}
+            
+            # Require re-auth token or current password
+            reauth_token = str(body.get('reauth_token', '')).strip()
+            password = str(body.get('password', '')).strip()
+            if reauth_token:
+                valid, msg = reauth_manager.validate_token(dev['username'], reauth_token)
+                if not valid:
+                    self.send_json(401, {'error': msg})
+                    return
+            elif password:
+                if not check_password(password, dev['password']):
+                    self.send_json(400, {'error': 'Incorrect password.'})
+                    return
+            else:
+                self.send_json(400, {'error': 'Re-authentication authorization is required to configure 2FA.'})
+                return
+
+            secret = totp_manager.generate_secret()
+            dev['_pending_2fa_secret'] = secret
+            uri = totp_manager.get_provisioning_uri(dev['username'], secret)
+            save_database()
+            formatted_key = " ".join([secret[i:i+4] for i in range(0, len(secret), 4)])
+            self.send_json(200, {
+                'success': True,
+                'secret': secret,
+                'formatted_key': formatted_key,
+                'provisioning_uri': uri,
+                'message': '2FA enrollment initialized. Verify a 6-digit code from your authenticator app to enable.'
+            })
+            return
+
+        # D. 2FA Verification & Activation (POST /api/v1/auth/2fa/enable)
+        if path in ('/api/v1/auth/2fa/enable', '/api/v1/auth/2fa/enable/'):
+            auth_user = self.get_authenticated_user()
+            if not auth_user:
+                self.send_json(401, {'error': 'Authentication required. Please sign in.'})
+                return
+            dev = get_developer_by_identifier(auth_user['username'])
+            if not dev:
+                self.send_json(404, {'error': 'User not found.'})
+                return
+            length = int(self.headers.get('Content-Length', 0))
+            body = json.loads(self.rfile.read(length).decode('utf-8')) if length > 0 else {}
+            
+            code = str(body.get('code', '')).strip()
+            secret = str(body.get('secret', '')).strip() or dev.get('_pending_2fa_secret')
+            if not secret:
+                self.send_json(400, {'error': 'No 2FA enrollment session found. Please initialize setup again.'})
+                return
+
+            if not totp_manager.verify_code(secret, code):
+                self.send_json(400, {'error': 'Invalid 6-digit verification code. Please check the code in your authenticator app.'})
+                return
+
+            plain_codes, hashed_codes = totp_manager.generate_recovery_codes()
+            dev['two_factor_enabled'] = True
+            dev['two_factor_secret'] = secret
+            dev['two_factor_recovery_codes'] = hashed_codes
+            dev['two_factor_type'] = 'Authenticator App (TOTP)'
+            dev.pop('_pending_2fa_secret', None)
+
+            add_audit_log(dev, 'Two-Factor Authentication Enabled', self.client_address[0], parse_device_string(self.headers.get('User-Agent', '')), 'success')
+            save_database()
+
+            # Email notification
+            user_email = dev.get('email', '')
+            if user_email and send_mail:
+                try:
+                    send_mail(
+                        subject="Security Alert: Two-Factor Authentication Enabled",
+                        message=f"Hello {dev.get('name', dev['username'])},\n\nTwo-Factor Authentication (TOTP) was enabled on your DevSync account.\n\n— The DevSync Security Team",
+                        from_email=DEFAULT_FROM_EMAIL,
+                        recipient_list=[user_email],
+                        fail_silently=True
+                    )
+                except Exception:
+                    pass
+
+            self.send_json(200, {
+                'success': True,
+                'recovery_codes': plain_codes,
+                'message': 'Two-Factor Authentication is now enabled. Please store your recovery codes in a secure location.'
+            })
+            return
+
+        # E. 2FA Disable (POST /api/v1/auth/2fa/disable)
+        if path in ('/api/v1/auth/2fa/disable', '/api/v1/auth/2fa/disable/'):
+            auth_user = self.get_authenticated_user()
+            if not auth_user:
+                self.send_json(401, {'error': 'Authentication required. Please sign in.'})
+                return
+            dev = get_developer_by_identifier(auth_user['username'])
+            if not dev:
+                self.send_json(404, {'error': 'User not found.'})
+                return
+            length = int(self.headers.get('Content-Length', 0))
+            body = json.loads(self.rfile.read(length).decode('utf-8')) if length > 0 else {}
+            
+            password = str(body.get('password', '')).strip()
+            reauth_token = str(body.get('reauth_token', '')).strip()
+            if reauth_token:
+                valid, msg = reauth_manager.validate_token(dev['username'], reauth_token)
+                if not valid:
+                    self.send_json(401, {'error': msg})
+                    return
+            elif password:
+                if not check_password(password, dev['password']):
+                    self.send_json(400, {'error': 'Incorrect password. Verification challenge failed.'})
+                    return
+            else:
+                self.send_json(400, {'error': 'Password verification is required to disable Two-Factor Authentication.'})
+                return
+
+            dev['two_factor_enabled'] = False
+            dev.pop('two_factor_secret', None)
+            dev.pop('two_factor_recovery_codes', None)
+            dev['two_factor_type'] = 'Not Enabled'
+
+            add_audit_log(dev, 'Two-Factor Authentication Disabled', self.client_address[0], parse_device_string(self.headers.get('User-Agent', '')), 'warning')
+            save_database()
+
+            self.send_json(200, {
+                'success': True,
+                'message': 'Two-Factor Authentication has been disabled.'
+            })
+            return
+
+        # F. Regenerate Recovery Codes (POST /api/v1/auth/2fa/recovery-codes/regenerate)
+        if path in ('/api/v1/auth/2fa/recovery-codes/regenerate', '/api/v1/auth/2fa/recovery-codes/regenerate/'):
+            auth_user = self.get_authenticated_user()
+            if not auth_user:
+                self.send_json(401, {'error': 'Authentication required. Please sign in.'})
+                return
+            dev = get_developer_by_identifier(auth_user['username'])
+            if not dev:
+                self.send_json(404, {'error': 'User not found.'})
+                return
+            if not dev.get('two_factor_enabled'):
+                self.send_json(400, {'error': 'Two-Factor Authentication is not enabled on this account.'})
+                return
+            length = int(self.headers.get('Content-Length', 0))
+            body = json.loads(self.rfile.read(length).decode('utf-8')) if length > 0 else {}
+            
+            password = str(body.get('password', '')).strip()
+            reauth_token = str(body.get('reauth_token', '')).strip()
+            if reauth_token:
+                valid, msg = reauth_manager.validate_token(dev['username'], reauth_token)
+                if not valid:
+                    self.send_json(401, {'error': msg})
+                    return
+            elif password:
+                if not check_password(password, dev['password']):
+                    self.send_json(400, {'error': 'Incorrect password.'})
+                    return
+            else:
+                self.send_json(400, {'error': 'Password verification is required to regenerate recovery codes.'})
+                return
+
+            plain_codes, hashed_codes = totp_manager.generate_recovery_codes()
+            dev['two_factor_recovery_codes'] = hashed_codes
+            add_audit_log(dev, '2FA Recovery Codes Regenerated', self.client_address[0], parse_device_string(self.headers.get('User-Agent', '')), 'success')
+            save_database()
+
+            self.send_json(200, {
+                'success': True,
+                'recovery_codes': plain_codes,
+                'message': 'Fresh recovery codes generated. Your previous codes are now invalid.'
+            })
+            return
+
+        # ======================================================================
+        # DevSync Settings System, Security & Password Recovery Handlers
+        # ======================================================================
+
+        # 1. Change Password Endpoint (POST /api/v1/auth/password/change, /api/v1/settings/password)
+        if path in ('/api/v1/auth/password/change', '/api/v1/auth/password/change/', '/api/v1/settings/password', '/api/v1/settings/password/'):
+            auth_user = self.get_authenticated_user()
+            if not auth_user:
+                self.send_json(401, {'error': 'Authentication required. Please sign in.'})
+                return
+            dev = get_developer_by_identifier(auth_user['username'])
+            if not dev:
+                self.send_json(404, {'error': 'User not found.'})
+                return
+
+            length = int(self.headers.get('Content-Length', 0))
+            body = json.loads(self.rfile.read(length).decode('utf-8')) if length > 0 else {}
+            curr_pass = str(body.get('currentPassword', body.get('current_password', ''))).strip()
+            new_pass = str(body.get('newPassword', body.get('new_password', ''))).strip()
+
+            if not curr_pass:
+                self.send_json(400, {'error': 'Current password is required.'})
+                return
+
+            # Verify current password re-auth
+            stored_pass = dev.get('password', '')
+            if not check_password(curr_pass, stored_pass) and curr_pass != stored_pass:
+                self.send_json(400, {'error': 'Current password is incorrect. Please verify and try again.'})
+                return
+
+            # Check password strength
+            valid, err = validate_password_strength(new_pass)
+            if not valid:
+                self.send_json(400, {'error': err})
+                return
+
+            # Ensure new != old
+            if check_password(new_pass, stored_pass) or new_pass == curr_pass:
+                self.send_json(400, {'error': 'New password cannot be the same as your current password.'})
+                return
+
+            dev['password'] = make_password(new_pass)
+            dev['passwordLastChanged'] = 'Just now'
+            add_audit_log(dev, 'password_change', "Password changed successfully via Settings.", self.client_address[0], parse_device_string(self.headers.get('User-Agent', '')), 'success')
+            save_database()
+
+            # Dispatch notification email to user's registered address
+            user_email = dev.get('email', '')
+            if user_email:
+                try:
+                    send_mail(
+                        "Security Alert: Your DevSync Password Was Changed",
+                        f"Hello {dev.get('name', dev.get('username'))},\n\nThis is a confirmation that your DevSync account password was changed just now.\nIf you did not perform this change, please contact security immediately.\n\n— The DevSync Security Team",
+                        settings.DEFAULT_FROM_EMAIL,
+                        [user_email],
+                        fail_silently=True
+                    )
+                except Exception:
+                    pass
+
+            self.send_json(200, {'success': True, 'message': 'Password updated successfully.'})
+            return
+
+        # 2. Email Change Flow (Two-Step with OTP to New Email)
+        if path in ('/api/v1/auth/email/request-change', '/api/v1/auth/email/request-change/', '/api/v1/settings/email/request-change'):
+            auth_user = self.get_authenticated_user()
+            if not auth_user:
+                self.send_json(401, {'error': 'Authentication required.'})
+                return
+            dev = get_developer_by_identifier(auth_user['username'])
+            if not dev:
+                self.send_json(404, {'error': 'User not found.'})
+                return
+
+            length = int(self.headers.get('Content-Length', 0))
+            body = json.loads(self.rfile.read(length).decode('utf-8')) if length > 0 else {}
+            curr_pass = str(body.get('password', body.get('currentPassword', ''))).strip()
+            new_email = str(body.get('new_email', body.get('email', ''))).strip().lower()
+
+            # Password re-auth check
+            if not curr_pass or (not check_password(curr_pass, dev.get('password', '')) and curr_pass != dev.get('password', '')):
+                self.send_json(400, {'error': 'Current password is incorrect. Verification required to change email.'})
+                return
+
+            # Email format check
+            if not re.match(r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', new_email):
+                self.send_json(400, {'error': 'Please provide a valid new email address.'})
+                return
+
+            if new_email == dev.get('email', '').lower():
+                self.send_json(400, {'error': 'New email is identical to your current registered email.'})
+                return
+
+            # Check uniqueness across profiles
+            for d in DEV_PROFILES.values():
+                if d.get('email', '').lower() == new_email and d.get('username') != dev.get('username'):
+                    self.send_json(400, {'error': f'The email {new_email} is already in use by another account.'})
+                    return
+
+            ok, msg, otp, status = otp_manager.send_otp(new_email, metadata={'username': dev['username'], 'old_email': dev.get('email', '')})
+            if not ok:
+                self.send_json(status, {'error': msg})
+                return
+
+            # Dispatch OTP to new email address
+            try:
+                send_mail("DevSync Email Change Verification Code", f"""Hello,
+
+Your 6-digit confirmation code to change your DevSync account email to {new_email} is: {otp}
+
+This code will expire in 10 minutes.
+
+— DevSync Security Team""",
+                    settings.DEFAULT_FROM_EMAIL,
+                    [new_email],
+                    fail_silently=False
+                )
+            except Exception as e:
+                print(f"[Email Change] Notice: Dispatch to {new_email} with code {otp}: {e}")
+
+            self.send_json(200, {
+                'success': True,
+                'requires_otp': True,
+                'message': f'Verification code dispatched to {new_email}. Please enter the code to complete the update.'
+            })
+            return
+
+        if path in ('/api/v1/auth/email/confirm-change', '/api/v1/auth/email/confirm-change/', '/api/v1/auth/email/verify-change', '/api/v1/settings/email/confirm-change'):
+            auth_user = self.get_authenticated_user()
+            if not auth_user:
+                self.send_json(401, {'error': 'Authentication required.'})
+                return
+            dev = get_developer_by_identifier(auth_user['username'])
+            if not dev:
+                self.send_json(404, {'error': 'User not found.'})
+                return
+
+            length = int(self.headers.get('Content-Length', 0))
+            body = json.loads(self.rfile.read(length).decode('utf-8')) if length > 0 else {}
+            new_email = str(body.get('new_email', body.get('email', ''))).strip().lower()
+            code = str(body.get('otp', body.get('code', ''))).strip()
+
+            ok, msg, meta, status = otp_manager.verify_otp(new_email, code)
+            if not ok:
+                self.send_json(status, {'error': msg})
+                return
+
+            old_email = dev.get('email', '')
+            dev['email'] = new_email
+            dev['emailVerified'] = True
+            add_audit_log(dev, 'email_change', f"Primary email updated from {old_email} to {new_email}", self.client_address[0], parse_device_string(self.headers.get('User-Agent', '')), 'success')
+            save_database()
+
+            # Send alert to OLD email
+            if old_email:
+                try:
+                    send_mail("Security Alert: Your DevSync Account Email Was Changed", f"""Hello,
+
+The email address associated with your DevSync account (@{dev.get('username')}) has been changed to {new_email}.
+If you did not authorize this change, please contact security immediately.
+
+— The DevSync Security Team""",
+                        settings.DEFAULT_FROM_EMAIL,
+                        [old_email],
+                        fail_silently=True
+                    )
+                except Exception:
+                    pass
+
+            self.send_json(200, {
+                'success': True,
+                'email': new_email,
+                'message': 'Email address successfully updated and verified.'
+            })
+            return
+
+        # Resend Email Verification
+        if path in ('/api/v1/auth/email/resend-verification', '/api/v1/auth/email/resend-verification/'):
+            auth_user = self.get_authenticated_user()
+            if not auth_user:
+                self.send_json(401, {'error': 'Authentication required.'})
+                return
+            dev = get_developer_by_identifier(auth_user['username'])
+            if not dev:
+                self.send_json(404, {'error': 'User not found.'})
+                return
+            user_email = dev.get('email', '')
+            ok, msg, otp, status = otp_manager.send_otp(user_email)
+            if not ok:
+                self.send_json(status, {'error': msg})
+                return
+            try:
+                send_mail("DevSync Email Verification Code", f"""Hello,
+
+Your DevSync verification code is: {otp}
+
+Valid for 10 minutes.
+
+— The DevSync Security Team""",
+                    settings.DEFAULT_FROM_EMAIL,
+                    [user_email],
+                    fail_silently=True
+                )
+            except Exception:
+                pass
+            self.send_json(200, {'success': True, 'message': f'Verification code dispatched to {user_email}.'})
+            return
+
+        # 3. Mobile Number Change (with Explicit SMS Provider Check)
+        if path in ('/api/v1/auth/mobile/request-change', '/api/v1/auth/mobile/request-change/', '/api/v1/settings/mobile/request-change'):
+            auth_user = self.get_authenticated_user()
+            if not auth_user:
+                self.send_json(401, {'error': 'Authentication required.'})
+                return
+            dev = get_developer_by_identifier(auth_user['username'])
+            if not dev:
+                self.send_json(404, {'error': 'User not found.'})
+                return
+
+            length = int(self.headers.get('Content-Length', 0))
+            body = json.loads(self.rfile.read(length).decode('utf-8')) if length > 0 else {}
+            curr_pass = str(body.get('password', body.get('currentPassword', ''))).strip()
+            mobile = str(body.get('mobile', '')).strip()
+
+            # Password re-auth check
+            if not curr_pass or (not check_password(curr_pass, dev.get('password', '')) and curr_pass != dev.get('password', '')):
+                self.send_json(400, {'error': 'Current password is incorrect. Verification required to modify mobile number.'})
+                return
+
+            # Explicit check for SMS Provider config
+            if not SMSProvider.is_configured():
+                self.send_json(400, {
+                    'error': 'SMS provider unconfigured. Please configure TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, and TWILIO_PHONE_NUMBER environment variables to enable SMS verification.',
+                    'configured': False
+                })
+                return
+
+            ok, err = SMSProvider.send_sms(mobile, f"DevSync: Mobile verification code requested.")
+            if not ok:
+                self.send_json(400, {'error': err})
+                return
+
+            self.send_json(200, {'success': True, 'message': f'SMS verification code dispatched to {mobile}.'})
+            return
+
+        # 4. Session Revocation (POST /api/v1/auth/sessions/revoke, /api/v1/auth/sessions/revoke-others)
+        if path in ('/api/v1/auth/sessions/revoke', '/api/v1/auth/sessions/revoke/', '/api/v1/settings/sessions/revoke'):
+            auth_user = self.get_authenticated_user()
+            if not auth_user:
+                self.send_json(401, {'error': 'Authentication required.'})
+                return
+            length = int(self.headers.get('Content-Length', 0))
+            body = json.loads(self.rfile.read(length).decode('utf-8')) if length > 0 else {}
+            session_id = str(body.get('sessionId', body.get('id', ''))).strip()
+            curr_token = self.get_session_token()
+            ok, res = revoke_single_session(ACTIVE_SESSIONS, auth_user['username'], session_id, curr_token)
+            if not ok:
+                self.send_json(404, {'error': res})
+                return
+            self.send_json(200, {'success': True, 'message': 'Session revoked successfully.', 'isCurrent': res.get('isCurrent', False)})
+            return
+
+        if path in ('/api/v1/auth/sessions/revoke-others', '/api/v1/auth/sessions/revoke-others/', '/api/v1/settings/sessions/revoke-others'):
+            auth_user = self.get_authenticated_user()
+            if not auth_user:
+                self.send_json(401, {'error': 'Authentication required.'})
+                return
+            curr_token = self.get_session_token()
+            dev = get_developer_by_identifier(auth_user['username'])
+            count = revoke_all_other_sessions(ACTIVE_SESSIONS, auth_user['username'], curr_token)
+            if dev:
+                add_audit_log(dev, 'session_revocation', f"Revoked {count} active session(s) across other devices.", self.client_address[0], parse_device_string(self.headers.get('User-Agent', '')), 'success')
+                save_database()
+            self.send_json(200, {'success': True, 'revokedCount': count, 'message': f'Signed out {count} other active session(s).'})
+            return
+
+        # 5. Account Deletion (POST /api/v1/auth/account/delete, /api/v1/settings/account/delete)
+        if path in ('/api/v1/auth/account/delete', '/api/v1/auth/account/delete/', '/api/v1/settings/account/delete'):
+            auth_user = self.get_authenticated_user()
+            if not auth_user:
+                self.send_json(401, {'error': 'Authentication required.'})
+                return
+            dev = get_developer_by_identifier(auth_user['username'])
+            if not dev:
+                self.send_json(404, {'error': 'User not found.'})
+                return
+
+            length = int(self.headers.get('Content-Length', 0))
+            body = json.loads(self.rfile.read(length).decode('utf-8')) if length > 0 else {}
+            curr_pass = str(body.get('password', body.get('currentPassword', ''))).strip()
+            confirmation = str(body.get('confirmation', '')).strip()
+
+            # Password re-auth check
+            if not curr_pass or (not check_password(curr_pass, dev.get('password', '')) and curr_pass != dev.get('password', '')):
+                self.send_json(400, {'error': 'Current password is incorrect. Verification required to delete account.'})
+                return
+
+            # Explicit confirmation check
+            if confirmation != dev.get('username') and confirmation != 'DELETE':
+                self.send_json(400, {'error': f"Please type '{dev.get('username')}' or 'DELETE' to confirm account deletion."})
+                return
+
+            target_username = dev.get('username')
+            # Clean up user from DEV_PROFILES
+            DEV_PROFILES.pop(target_username, None)
+            # Clean up active sessions
+            tokens_to_remove = [tok for tok, s in ACTIVE_SESSIONS.items() if s.get('username', '').lower() == target_username.lower()]
+            for tok in tokens_to_remove:
+                ACTIVE_SESSIONS.pop(tok, None)
+
+            # Clean up repo memberships
+            for repo in REPOSITORIES.values():
+                repo['members'] = [m for m in repo.get('members', []) if m.get('username', '').lower() != target_username.lower()]
+
+            save_database()
+            self.send_json(200, {'success': True, 'message': 'Your account has been deleted successfully.'})
+            return
+
+        # 6. Password Recovery Endpoints (Forgot Password -> OTP -> Reset)
+        if path in ('/api/v1/auth/password/forgot', '/api/v1/auth/password/forgot/'):
+            length = int(self.headers.get('Content-Length', 0))
+            body = json.loads(self.rfile.read(length).decode('utf-8')) if length > 0 else {}
+            identifier = str(body.get('identifier', body.get('email', ''))).strip()
+
+            if not identifier:
+                self.send_json(400, {'error': 'Please enter your registered email, username, or mobile number.'})
+                return
+
+            status, msg = recovery_manager.request_recovery(identifier, DEV_PROFILES, send_mail, settings.DEFAULT_FROM_EMAIL)
+            self.send_json(status, {'message': msg, 'success': (status == 200)})
+            return
+
+        if path in ('/api/v1/auth/password/verify-recovery-otp', '/api/v1/auth/password/verify-recovery-otp/'):
+            length = int(self.headers.get('Content-Length', 0))
+            body = json.loads(self.rfile.read(length).decode('utf-8')) if length > 0 else {}
+            identifier = str(body.get('identifier', body.get('email', ''))).strip()
+            code = str(body.get('code', body.get('otp', ''))).strip()
+
+            if not identifier or not code:
+                self.send_json(400, {'error': 'Identifier and verification code are required.'})
+                return
+
+            ok, msg, rst_token = recovery_manager.verify_recovery_code(identifier, code)
+            if not ok:
+                self.send_json(400, {'error': msg})
+                return
+
+            self.send_json(200, {
+                'success': True,
+                'reset_token': rst_token,
+                'message': 'Code verified. You can now set your new password.'
+            })
+            return
+
+        if path in ('/api/v1/auth/password/reset', '/api/v1/auth/password/reset/'):
+            length = int(self.headers.get('Content-Length', 0))
+            body = json.loads(self.rfile.read(length).decode('utf-8')) if length > 0 else {}
+            rst_token = str(body.get('reset_token', body.get('token', ''))).strip()
+            new_pass = str(body.get('new_password', body.get('newPassword', ''))).strip()
+
+            if not rst_token or not new_pass:
+                self.send_json(400, {'error': 'Reset token and new password are required.'})
+                return
+
+            status, msg = recovery_manager.reset_password(
+                rst_token, new_pass, DEV_PROFILES, ACTIVE_SESSIONS, save_database,
+                send_mail, settings.DEFAULT_FROM_EMAIL, self.client_address[0],
+                self.headers.get('User-Agent', '')
+            )
+            self.send_json(status, {'success': (status == 200), 'message': msg if status == 200 else None, 'error': msg if status != 200 else None})
+            return
+
+        # 7. Avatar Upload Endpoint (POST /api/v1/settings/avatar, /api/v1/user/avatar)
+        if path in ('/api/v1/settings/avatar', '/api/v1/settings/avatar/', '/api/v1/user/avatar', '/api/v1/user/avatar/'):
+            auth_user = self.get_authenticated_user()
+            if not auth_user:
+                self.send_json(401, {'error': 'Authentication required.'})
+                return
+            dev = get_developer_by_identifier(auth_user['username'])
+            if not dev:
+                self.send_json(404, {'error': 'User not found.'})
+                return
+
+            length = int(self.headers.get('Content-Length', 0))
+            if length > 5 * 1024 * 1024:
+                self.send_json(400, {'error': 'Avatar file exceeds maximum size limit of 5MB.'})
+                return
+
+            post_data = self.rfile.read(length) if length > 0 else b'{}'
+            try:
+                body = json.loads(post_data.decode('utf-8'))
+                raw_data = body.get('data', '')
+                filename = body.get('name', 'avatar.png')
+            except Exception:
+                self.send_json(400, {'error': 'Invalid JSON format for avatar upload.'})
+                return
+
+            if not raw_data:
+                self.send_json(400, {'error': 'Missing image data.'})
+                return
+
+            import base64
+            # Handle data URL scheme (e.g. data:image/png;base64,...)
+            if ';base64,' in raw_data:
+                header_part, base64_data = raw_data.split(';base64,', 1)
+                mime = header_part.split(':')[-1]
+                ext = mime.split('/')[-1].replace('jpeg', 'jpg')
+            else:
+                base64_data = raw_data
+                ext = os.path.splitext(filename)[-1].lstrip('.') or 'png'
+
+            try:
+                image_bytes = base64.b64decode(base64_data)
+            except Exception:
+                self.send_json(400, {'error': 'Invalid base64 image data.'})
+                return
+
+            if len(image_bytes) > 5 * 1024 * 1024:
+                self.send_json(400, {'error': 'Image exceeds 5MB size limit.'})
+                return
+
+            try:
+                sanitized_bytes = strip_exif_and_sanitize_image(image_bytes, ext)
+            except Exception as e:
+                self.send_json(400, {'error': f'Image validation failed: {str(e)}'})
+                return
+
+            avatar_filename = f"avatar_{dev['username']}_{secrets.token_hex(6)}.{ext}"
+            avatar_dir = os.path.join(FRONTEND_DIR, 'public', 'images', 'avatars')
+            os.makedirs(avatar_dir, exist_ok=True)
+            avatar_path = os.path.join(avatar_dir, avatar_filename)
+            with open(avatar_path, 'wb') as f:
+                f.write(sanitized_bytes)
+
+            avatar_url = f"/public/images/avatars/{avatar_filename}"
+            dev['avatar'] = avatar_url
+            save_database()
+            self.send_json(200, {'success': True, 'avatar': avatar_url, 'message': 'Avatar updated successfully.'})
+            return
+
+        url_parts = urllib.parse.urlsplit(self.path)
+        path = url_parts.path.rstrip('/')
         # AI Assistant Chat Endpoint
         if path in ('/api/ai/chat', '/api/v1/ai/chat', '/assistant/chat', '/assistant/chat/'):
             self.handle_ai_chat()
@@ -1612,6 +2654,11 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
 
             # Valid credentials: create token and active session
             token = f"devsync_token_{secrets.token_hex(20)}"
+            session_id = f"sess_{secrets.token_hex(10)}"
+            user_agent = self.headers.get('User-Agent', '')
+            client_ip = self.client_address[0]
+            device = parse_device_string(user_agent)
+
             user_summary = {
                 'id': matched_user['id'],
                 'name': matched_user['name'],
@@ -1622,26 +2669,49 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
                 'location': matched_user.get('location', '')
             }
             ACTIVE_SESSIONS[token] = {
+                'id': session_id,
+                'token': token,
                 'username': matched_user['username'].lower(),
                 'user': user_summary,
-                'created': time.time()
+                'device': device,
+                'ip': client_ip,
+                'created': time.time(),
+                'last_active': time.time()
             }
+            add_audit_log(matched_user, 'login', f"Signed in successfully via {device}", client_ip, device, 'success')
+            save_database()
 
-            self.send_json(200, {
+            # Set HttpOnly, SameSite Session Cookie
+            resp_data = json.dumps({
                 'access': token,
                 'token': token,
                 'user': user_summary,
                 'message': f"Welcome back, {matched_user['name']}!"
-            })
+            }).encode('utf-8')
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json; charset=utf-8')
+            self.send_header('Content-Length', str(len(resp_data)))
+            self.send_header('Set-Cookie', f"devsync_session={token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=2592000")
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.send_header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-DevSync-User')
+            self.end_headers()
+            self.wfile.write(resp_data)
+            return
             return
 
         # Authentication Logout Endpoint
         if path in ('/api/v1/auth/logout', '/api/auth/logout'):
-            auth_header = self.headers.get('Authorization', '')
-            if auth_header.startswith('Bearer '):
-                token = auth_header[len('Bearer '):].strip()
+            token = self.get_session_token()
+            if token:
                 ACTIVE_SESSIONS.pop(token, None)
-            self.send_json(200, {'success': True, 'message': 'Logged out successfully.'})
+            resp_data = json.dumps({'success': True, 'message': 'Logged out successfully.'}).encode('utf-8')
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json; charset=utf-8')
+            self.send_header('Content-Length', str(len(resp_data)))
+            self.send_header('Set-Cookie', "devsync_session=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0")
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+            self.wfile.write(resp_data)
             return
 
         # Google OAuth Sign-In Endpoint (POST /api/v1/auth/google, /api/auth/google)
@@ -2417,6 +3487,81 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
         if backend_issues_prs_chat.handle_patch(self, path, url_parts, self.get_authenticated_user(), save_database):
             return
 
+        # Update Settings Preferences (PATCH /api/v1/auth/preferences, /api/v1/settings/preferences, /api/v1/auth/alerts)
+        if path in ('/api/v1/auth/preferences', '/api/v1/auth/preferences/', '/api/v1/settings/preferences', '/api/v1/settings/preferences/', '/api/v1/auth/alerts', '/api/v1/auth/alerts/'):
+            auth_user = self.get_authenticated_user()
+            if not auth_user:
+                self.send_json(401, {'error': 'Authentication required.'})
+                return
+            dev = get_developer_by_identifier(auth_user['username'])
+            if not dev:
+                self.send_json(404, {'error': 'User not found.'})
+                return
+
+            length = int(self.headers.get('Content-Length', 0))
+            body = json.loads(self.rfile.read(length).decode('utf-8')) if length > 0 else {}
+
+            if 'general' in body and isinstance(body['general'], dict):
+                dev.setdefault('general_preferences', {}).update(body['general'])
+            if 'notifications' in body and isinstance(body['notifications'], dict):
+                dev.setdefault('notification_preferences', {}).update(body['notifications'])
+            if 'visibility' in body and isinstance(body['visibility'], dict):
+                dev.setdefault('visibility_controls', {}).update(body['visibility'])
+            if 'alerts' in body and isinstance(body['alerts'], dict):
+                dev.setdefault('security_alerts', {}).update(body['alerts'])
+
+            save_database()
+            self.send_json(200, {
+                'success': True,
+                'message': 'Preferences saved successfully.',
+                'general': dev.get('general_preferences', {}),
+                'notifications': dev.get('notification_preferences', {}),
+                'visibility': dev.get('visibility_controls', {})
+            })
+            return
+
+        # Current User Profile Update (PATCH /users/me, /api/v1/users/me, /api/v1/settings/profile)
+        if path in ('/users/me', '/users/me/', '/api/v1/users/me', '/api/v1/users/me/', '/api/v1/settings/profile', '/api/v1/settings/profile/'):
+            auth_user = self.get_authenticated_user()
+            if not auth_user:
+                self.send_json(401, {'error': 'Authentication required.'})
+                return
+            dev = get_developer_by_identifier(auth_user['username'])
+            if not dev:
+                self.send_json(404, {'error': 'User not found.'})
+                return
+
+            length = int(self.headers.get('Content-Length', 0))
+            body = json.loads(self.rfile.read(length).decode('utf-8')) if length > 0 else {}
+
+            # Handle Username Update (with validation)
+            if 'username' in body and body['username']:
+                new_u = str(body['username']).strip()
+                valid, err = validate_username(new_u, dev['username'], DEV_PROFILES)
+                if not valid:
+                    self.send_json(400, {'error': err})
+                    return
+                if new_u.lower() != dev['username'].lower():
+                    old_u = dev['username']
+                    dev['username'] = new_u.lower()
+                    DEV_PROFILES[new_u.lower()] = DEV_PROFILES.pop(old_u)
+                    # Update active session username
+                    curr_tok = self.get_session_token()
+                    if curr_tok and curr_tok in ACTIVE_SESSIONS:
+                        ACTIVE_SESSIONS[curr_tok]['username'] = new_u.lower()
+
+            for field in ('name', 'headline', 'bio', 'location', 'website', 'social', 'skills', 'collaborationStatus', 'collaborationStatusType', 'openToInvitations'):
+                if field in body:
+                    dev[field] = body[field]
+
+            save_database()
+            clean_profile = json.loads(json.dumps(dev))
+            clean_profile.pop('password', None)
+            self.send_json(200, clean_profile)
+            return
+
+        url_parts = urllib.parse.urlsplit(self.path)
+        path = url_parts.path.rstrip('/')
         # PATCH /api/v1/repositories/<repo_id>/members/<username>
         m_mem_patch = re.match(r'^/api/(?:v1/)?repositories/([^/]+)/members/([^/]+)/?$', path)
         if m_mem_patch:
@@ -2527,6 +3672,35 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
         if backend_issues_prs_chat.handle_delete(self, path, url_parts, self.get_authenticated_user(), save_database):
             return
 
+        # Delete notification via DELETE: /api/v1/notifications/<notif_id>
+        m_notif = re.match(r'^/api/(?:v1/)?notifications/([^/]+)/?$', path)
+        if m_notif:
+            notif_id = m_notif.group(1)
+            global NOTIFICATIONS
+            NOTIFICATIONS = [n for n in NOTIFICATIONS if n.get('id') != notif_id]
+            save_database()
+            summary = calculate_notifications_summary(NOTIFICATIONS)
+            self.send_json(200, {'success': True, 'deleted': notif_id, 'summary': summary})
+            return
+
+        # Revoke session via DELETE: /api/v1/auth/sessions/<session_id>
+        m_sess = re.match(r'^/api/(?:v1/)?auth/sessions/([^/]+)/?$', path)
+        if m_sess:
+            auth_user = self.get_authenticated_user()
+            if not auth_user:
+                self.send_json(401, {'error': 'Authentication required'})
+                return
+            session_id = m_sess.group(1)
+            curr_token = self.get_session_token()
+            ok, res = revoke_single_session(ACTIVE_SESSIONS, auth_user['username'], session_id, curr_token)
+            if not ok:
+                self.send_json(404, {'error': res})
+                return
+            self.send_json(200, {'success': True, 'message': 'Session revoked successfully.'})
+            return
+
+        url_parts = urllib.parse.urlsplit(self.path)
+        path = url_parts.path.rstrip('/')
         # Remove repository member: DELETE /api/v1/repositories/<repo_id>/members/<username>
         m = re.match(r'^/api/(?:v1/)?repositories/([^/]+)/members/([^/]+)/?$', path)
         if m:

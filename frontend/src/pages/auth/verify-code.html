@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verify Recovery Code — DevSync</title>
+  <link rel="icon" type="image/svg+xml" href="../../../public/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../assets/css/tokens.css">
+  <link rel="stylesheet" href="../../assets/css/reset.css">
+  <link rel="stylesheet" href="../../assets/css/typography.css">
+  <link rel="stylesheet" href="../../assets/css/global.css">
+  <link rel="stylesheet" href="../../assets/css/utilities.css">
+  <link rel="stylesheet" href="../../assets/css/layout/header.css">
+  <link rel="stylesheet" href="../../assets/css/layout/footer.css">
+  <link rel="stylesheet" href="../../assets/css/layout/responsive.css">
+  <link rel="stylesheet" href="../../assets/css/components/buttons.css">
+  <link rel="stylesheet" href="../../assets/css/components/forms.css">
+  <link rel="stylesheet" href="../../assets/css/components/cards.css">
+  <link rel="stylesheet" href="../../assets/css/components/notifications.css">
+  <link rel="stylesheet" href="../../assets/css/pages/auth.css">
+  <link rel="stylesheet" href="../../assets/css/pages/recovery.css">
+</head>
+<body data-page="auth">
+  <!-- Public Top Navigation Header (Natural DevSync Brand Logo + Back Action) -->
+  <header class="public-header">
+    <div class="public-header-inner">
+      <a href="../public/home.html" class="header-brand" aria-label="DevSync Home">
+        <img src="../../../public/images/logo.svg" alt="DevSync" />
+      </a>
+      <div class="public-actions">
+        <a href="sign-in.html" class="btn btn-pill btn-outline btn-sm">&larr; Back to Sign In</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Centered Recovery Card Container (Max-Width 460px) -->
+  <main class="recovery-page-wrapper">
+    <div class="recovery-card" role="region" aria-label="Verify Recovery Code">
+      <!-- Correct Iconography: Security Shield / Key Icon (NOT DevSync Brand Logo) -->
+      <div class="recovery-icon-bubble" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <circle cx="12" cy="11" r="2.5"/>
+          <line x1="12" y1="13.5" x2="12" y2="16"/>
+        </svg>
+      </div>
+
+      <!-- Step B: Heading & Supporting Description -->
+      <h1 class="recovery-title">Verify recovery code</h1>
+      <p class="recovery-subtitle">
+        Enter the 6-digit verification code sent to your registered account.
+      </p>
+
+      <!-- Account Identifier Summary -->
+      <div id="targetSummaryNotice" class="recovery-security-notice" style="display: none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+          <polyline points="22,6 12,13 2,6"/>
+        </svg>
+        <span id="targetSummaryText">Code dispatched to registered destination.</span>
+      </div>
+
+      <!-- Step B Form -->
+      <form id="verifyCodeForm" class="auth-form" novalidate>
+        <!-- Hidden or fallback input for non-JS / paste accessibility -->
+        <div class="recovery-form-group">
+          <label class="recovery-label" for="otpInputMaster">6-Digit Verification Code</label>
+          
+          <!-- Accessible 6-Box Segmented Inputs -->
+          <div class="recovery-otp-inputs" role="group" aria-label="Enter 6 digit verification code">
+            <input type="text" class="recovery-otp-box" maxlength="1" pattern="[0-9]" inputmode="numeric" autocomplete="one-time-code" data-index="0" aria-label="Digit 1" autofocus />
+            <input type="text" class="recovery-otp-box" maxlength="1" pattern="[0-9]" inputmode="numeric" data-index="1" aria-label="Digit 2" />
+            <input type="text" class="recovery-otp-box" maxlength="1" pattern="[0-9]" inputmode="numeric" data-index="2" aria-label="Digit 3" />
+            <input type="text" class="recovery-otp-box" maxlength="1" pattern="[0-9]" inputmode="numeric" data-index="3" aria-label="Digit 4" />
+            <input type="text" class="recovery-otp-box" maxlength="1" pattern="[0-9]" inputmode="numeric" data-index="4" aria-label="Digit 5" />
+            <input type="text" class="recovery-otp-box" maxlength="1" pattern="[0-9]" inputmode="numeric" data-index="5" aria-label="Digit 5" />
+          </div>
+
+          <!-- Hidden master value for programmatic accessibility -->
+          <input type="hidden" id="otpInputMaster" name="code" value="" />
+
+          <!-- Expiration Countdown & Resend Controls -->
+          <div class="recovery-meta-row">
+            <span>Expires in <strong id="recoveryCountdown" class="recovery-countdown">10:00</strong></span>
+            <button type="button" id="btnResendCode" class="recovery-resend-btn" disabled>
+              Resend in <span id="resendSeconds">60</span>s
+            </button>
+          </div>
+
+          <!-- Status / Error Messages (Attempts remaining, invalid, expired) -->
+          <div id="verifyStatusMsg" class="recovery-feedback-msg error" style="display: none;"></div>
+        </div>
+
+        <button type="submit" class="recovery-btn-primary" id="btnVerifyCode">
+          <span>Verify Code</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </button>
+
+        <a href="forgot-password.html" class="recovery-btn-outline" id="btnBackToForgot">
+          &larr; Use a different email or username
+        </a>
+      </form>
+    </div>
+  </main>
+
+  <!-- Clean Footer (Natural Spacing, No Excessive Whitespace) -->
+  <footer class="public-footer">
+    <div class="public-footer-inner">
+      <div class="footer-brand">
+        <img src="../../../public/images/logo.svg" alt="DevSync" />
+      </div>
+      <p class="footer-copy">&copy; 2026 DevSync. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container position-fixed bottom-0 end-0 p-3"></div>
+
+  <!-- JavaScript Entry Point -->
+  <script type="module" src="../../js/main.js"></script>
+</body>
+</html>

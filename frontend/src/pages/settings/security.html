@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Password & Security — DevSync</title>
+  <link rel="icon" type="image/svg+xml" href="../../../public/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../../assets/css/tokens.css">
+  <link rel="stylesheet" href="../../assets/css/reset.css">
+  <link rel="stylesheet" href="../../assets/css/typography.css">
+  <link rel="stylesheet" href="../../assets/css/global.css">
+  <link rel="stylesheet" href="../../assets/css/layout/header.css">
+  <link rel="stylesheet" href="../../assets/css/layout/sidebar.css">
+  <link rel="stylesheet" href="../../assets/css/components/buttons.css">
+  <link rel="stylesheet" href="../../assets/css/components/cards.css">
+  <link rel="stylesheet" href="../../assets/css/components/badges.css">
+  <link rel="stylesheet" href="../../assets/css/components/dropdowns.css">
+  <link rel="stylesheet" href="../../assets/css/pages/settings.css">
+  <link rel="stylesheet" href="../../assets/css/layout/responsive.css">
+</head>
+<body data-authenticated="false" data-page="settings">
+  <div class="app-container">
+    <!-- Authenticated DevSync Sidebar -->
+    <aside class="app-sidebar" aria-label="Main Navigation">
+      <div class="sidebar-header">
+        <a href="../dashboard/overview.html" class="sidebar-logo">
+          <img src="../../../public/images/logo.svg" alt="DevSync" />
+        </a>
+      </div>
+      <nav class="sidebar-nav-container">
+        <a href="../dashboard/overview.html" class="sidebar-link">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          <span class="sidebar-text">Overview</span>
+        </a>
+        <a href="../repositories/list.html" class="sidebar-link">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          <span class="sidebar-text">Repositories</span>
+        </a>
+        <a href="../pull-requests/list.html" class="sidebar-link">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 0 1 2 2v7"/><line x1="6" y1="9" x2="6" y2="21"/></svg>
+          <span class="sidebar-text">Pull Requests</span>
+        </a>
+        <a href="../issues/list.html" class="sidebar-link">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span class="sidebar-text">Issues</span>
+        </a>
+        <a href="../teams/members.html" class="sidebar-link">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <span class="sidebar-text">Teams</span>
+        </a>
+        <a href="../developers/discover.html" class="sidebar-link">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m9.17 14.83-4.24 4.24"/></svg>
+          <span class="sidebar-text">Developers</span>
+        </a>
+        <a href="../community/index.html" class="sidebar-link">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <span class="sidebar-text">Discussions</span>
+        </a>
+        <a href="../analytics/index.html" class="sidebar-link">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          <span class="sidebar-text">Analytics</span>
+        </a>
+        <div class="sidebar-divider"></div>
+        <a href="../assistant/index.html" class="sidebar-link">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <span class="sidebar-text">AI Assistant</span>
+        </a>
+        <a href="account.html" class="sidebar-link active">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <span class="sidebar-text">Settings</span>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="app-main">
+      <header class="app-topbar">
+        <div class="topbar-left">
+          <button class="mobile-menu-toggle" aria-label="Toggle mobile menu">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
+          <div class="topbar-search-box">
+            <span class="topbar-search-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </span>
+            <input type="text" class="topbar-search-input" placeholder="Search security options..." />
+            <span class="topbar-shortcut-badge">Ctrl K</span>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <a href="../notifications/index.html" class="topbar-icon-btn" aria-label="Notifications">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          </a>
+          <div class="dropdown">
+            <button class="user-profile-btn" data-dropdown-toggle>
+              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" alt="Avatar" class="user-avatar" />
+              <div class="user-info">
+                <span class="user-name">Developer</span>
+                <span class="user-role">Member</span>
+              </div>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="dropdown-menu profile-dropdown-menu">
+              <a href="account.html" class="dropdown-item">Account Settings</a>
+              <a href="security.html" class="dropdown-item">Password &amp; Security</a>
+              <div class="dropdown-divider"></div>
+              <button class="dropdown-item text-danger" data-action="sign-out">Sign Out</button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Page Body -->
+      <main class="page-body">
+        <div class="settings-container">
+          <!-- Breadcrumb (Section 4) -->
+          <nav aria-label="breadcrumb" class="mb-3">
+            <ol class="breadcrumb" style="font-size: 13px;">
+              <li class="breadcrumb-item"><a href="account.html" style="color: #626A66; text-decoration: none;">Settings</a></li>
+              <li class="breadcrumb-item active" aria-current="page" style="color: #111111; font-weight: 600;">Password and Security</li>
+            </ol>
+          </nav>
+
+          <!-- Page Header -->
+          <div class="settings-header d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+            <div>
+              <h1 class="settings-title">Password and Security</h1>
+              <p class="settings-subtitle">Manage your password, authentication methods, active sessions and account recovery.</p>
+            </div>
+            <a href="account.html" class="btn btn-secondary btn-sm d-inline-flex align-items-center gap-1">
+              &larr; Back to Settings
+            </a>
+          </div>
+
+          <div class="row g-4">
+            <!-- Left Column: Core Authentication & Credentials -->
+            <div class="col-lg-7">
+              
+              <!-- 1. Password Section (Section 5) -->
+              <div class="settings-card mb-4">
+                <div class="settings-card-header d-flex justify-content-between align-items-start">
+                  <div>
+                    <h2 class="card-title" style="font-size: 16px;">Password</h2>
+                    <p class="card-subtitle">Ensure your account is using a long, random password to stay secure.</p>
+                  </div>
+                  <span class="badge badge-mint font-monospace" style="font-size: 11px;">ENCRYPTED (PBKDF2)</span>
+                </div>
+                <div class="settings-card-body">
+                  <div class="p-3 mb-3 d-flex align-items-center justify-content-between" style="background: #F7FAF8; border: 1px solid #D8DEDB; border-radius: 8px;">
+                    <div class="d-flex align-items-center gap-3">
+                      <div style="width: 36px; height: 36px; border-radius: 8px; background: #E8FBF3; color: #21865B; display: flex; align-items: center; justify-content: center;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                      </div>
+                      <div>
+                        <div style="font-size: 13.5px; font-weight: 600; color: #111111;">Account Password</div>
+                        <div id="sec-password-timestamp" style="font-size: 12px; color: #626A66;">Last changed recently</div>
+                      </div>
+                    </div>
+                    <a href="change-password.html" class="btn btn-primary btn-sm">
+                      Change Password &rarr;
+                    </a>
+                  </div>
+                  <p class="mb-0" style="font-size: 12px; color: #626A66;">
+                    Password updates require identity verification through your current credentials, automatically notify your registered email, and terminate stale sessions.
+                  </p>
+                </div>
+              </div>
+
+              <!-- 2. Two-Factor Authentication (Section 7) -->
+              <div class="settings-card mb-4" id="2fa">
+                <div class="settings-card-header d-flex justify-content-between align-items-start">
+                  <div>
+                    <h2 class="card-title" style="font-size: 16px;">Two-Factor Authentication (2FA)</h2>
+                    <p class="card-subtitle">Add an extra layer of defense using an RFC 6238 Time-based One-Time Password (TOTP) authenticator app.</p>
+                  </div>
+                  <span id="badge-2fa-status" class="badge bg-secondary-subtle text-secondary" style="font-size: 11px;">Not Enabled</span>
+                </div>
+                <div class="settings-card-body">
+                  <div class="p-3 mb-3 d-flex align-items-center justify-content-between flex-wrap gap-2" style="background: #F7FAF8; border: 1px solid #D8DEDB; border-radius: 8px;">
+                    <div class="d-flex align-items-center gap-3">
+                      <div style="width: 36px; height: 36px; border-radius: 8px; background: #E8FBF3; color: #21865B; display: flex; align-items: center; justify-content: center;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                      </div>
+                      <div>
+                        <div style="font-size: 13.5px; font-weight: 600; color: #111111;">Authenticator App (TOTP)</div>
+                        <div id="sec-2fa-desc" style="font-size: 12px; color: #626A66;">Google Authenticator, Authy, 1Password, or Apple Passwords</div>
+                      </div>
+                    </div>
+                    <div id="sec-2fa-actions">
+                      <button id="btn-open-2fa-setup" class="btn btn-primary btn-sm">
+                        Enable 2FA
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- 2FA Active Management Controls (Hidden when disabled) -->
+                  <div id="sec-2fa-active-panel" style="display: none;">
+                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 pt-2 border-top">
+                      <div>
+                        <span style="font-size: 12.5px; font-weight: 600; color: #111111;">Emergency Recovery Codes:</span>
+                        <span id="sec-recovery-count" class="ms-1 badge badge-mint">8 active</span>
+                      </div>
+                      <div class="d-flex gap-2">
+                        <button id="btn-regen-recovery" class="btn btn-secondary btn-sm">Regenerate Codes</button>
+                        <button id="btn-disable-2fa" class="btn btn-outline-danger btn-sm">Disable 2FA</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 3. Active Sessions and Devices (Section 8) -->
+              <div class="settings-card mb-4" id="sessions">
+                <div class="settings-card-header d-flex justify-content-between align-items-start">
+                  <div>
+                    <h2 class="card-title" style="font-size: 16px;">Active Sessions &amp; Devices</h2>
+                    <p class="card-subtitle">Devices and browsers currently authenticated to your account.</p>
+                  </div>
+                  <button id="btn-revoke-other-sessions" class="btn btn-outline-danger btn-sm">
+                    Sign Out Other Sessions
+                  </button>
+                </div>
+                <div class="settings-card-body p-0">
+                  <div id="sec-sessions-table-container">
+                    <div class="text-center py-4 text-muted">
+                      <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                      Loading sessions...
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Right Column: Recovery, Audit Log & Security Alerts -->
+            <div class="col-lg-5">
+              
+              <!-- 4. Account Recovery Options (Section 10) -->
+              <div class="settings-card mb-4">
+                <div class="settings-card-header">
+                  <h2 class="card-title" style="font-size: 16px;">Account Recovery</h2>
+                  <p class="card-subtitle">Backup credentials if you lose access to your primary authenticator device.</p>
+                </div>
+                <div class="settings-card-body">
+                  <div class="mb-3">
+                    <div class="d-flex align-items-center justify-content-between mb-1">
+                      <span style="font-size: 13px; font-weight: 600;">Registered Email</span>
+                      <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 10px;">Primary Channel</span>
+                    </div>
+                    <div id="sec-recovery-email" style="font-size: 12.5px; color: #626A66; font-family: monospace;">naveen@devsync.dev</div>
+                  </div>
+                  <div class="mb-3 pt-2 border-top">
+                    <div class="d-flex align-items-center justify-content-between mb-1">
+                      <span style="font-size: 13px; font-weight: 600;">One-Time Recovery Codes</span>
+                      <span id="sec-recovery-badge" class="badge bg-secondary-subtle text-secondary" style="font-size: 10px;">Requires 2FA</span>
+                    </div>
+                    <div style="font-size: 12px; color: #626A66;">
+                      Store printed or offline backup codes in a password vault to regain access if your phone is lost.
+                    </div>
+                  </div>
+                  <p class="mb-0 pt-2 border-top" style="font-size: 11.5px; color: #7B8580;">
+                    Note: DevSync never dispatches OTPs via unencrypted channels or exposes raw recovery keys without re-authentication.
+                  </p>
+                </div>
+              </div>
+
+              <!-- 5. Security Alerts Preferences (Section 9) -->
+              <div class="settings-card mb-4">
+                <div class="settings-card-header">
+                  <h2 class="card-title" style="font-size: 16px;">Security Alerts</h2>
+                  <p class="card-subtitle">Notify your email immediately upon high-risk security events.</p>
+                </div>
+                <div class="settings-card-body">
+                  <div class="form-check form-switch mb-3">
+                    <input class="form-check-input sec-alert-toggle" type="checkbox" id="alert-password-change" checked />
+                    <label class="form-check-label" for="alert-password-change" style="font-size: 13px; font-weight: 500;">
+                      Password Change Alerts
+                    </label>
+                    <div style="font-size: 11.5px; color: #626A66;">Immediate dispatch when credentials update.</div>
+                  </div>
+                  <div class="form-check form-switch mb-3">
+                    <input class="form-check-input sec-alert-toggle" type="checkbox" id="alert-2fa-change" checked />
+                    <label class="form-check-label" for="alert-2fa-change" style="font-size: 13px; font-weight: 500;">
+                      2FA Configuration Changes
+                    </label>
+                    <div style="font-size: 11.5px; color: #626A66;">Alert when two-factor authentication is modified.</div>
+                  </div>
+                  <div class="form-check form-switch mb-0">
+                    <input class="form-check-input sec-alert-toggle" type="checkbox" id="alert-session-revoked" checked />
+                    <label class="form-check-label" for="alert-session-revoked" style="font-size: 13px; font-weight: 500;">
+                      Session Revocation Notices
+                    </label>
+                    <div style="font-size: 11.5px; color: #626A66;">Notice when signed out from other locations.</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 6. Login Activity & Security Audit Log (Section 9) -->
+              <div class="settings-card mb-4" id="audit">
+                <div class="settings-card-header d-flex justify-content-between align-items-center">
+                  <div>
+                    <h2 class="card-title" style="font-size: 16px;">Recent Login Activity</h2>
+                    <p class="card-subtitle">Audit trail of recent authentications and security modifications.</p>
+                  </div>
+                  <button id="btn-refresh-audit" class="btn btn-sm btn-link p-0 text-decoration-none" style="font-size: 12px; color: #21865B;">
+                    Refresh
+                  </button>
+                </div>
+                <div class="settings-card-body p-0">
+                  <div id="sec-audit-log-container" style="max-height: 320px; overflow-y: auto;">
+                    <div class="text-center py-4 text-muted">
+                      <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                      Loading audit log...
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 7. Connected Applications (Section 4) -->
+              <div class="settings-card mb-4">
+                <div class="settings-card-header">
+                  <h2 class="card-title" style="font-size: 16px;">Connected Applications</h2>
+                  <p class="card-subtitle">Third-party integrations with authorized API access.</p>
+                </div>
+                <div class="settings-card-body text-center py-4">
+                  <div style="width: 44px; height: 44px; border-radius: 50%; background: #F3F4F6; color: #6B7280; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 8px;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+                  </div>
+                  <div style="font-size: 13px; font-weight: 600; color: #111111;">No Connected Apps</div>
+                  <div style="font-size: 12px; color: #626A66; max-width: 280px; margin: 4px auto 0 auto;">No third-party applications or developer tokens currently have access to your account.</div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Re-authentication Modal -->
+  <div class="modal fade" id="modal-reauth" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 420px;">
+      <div class="modal-content" style="border-radius: 12px; border: 1px solid #D8DEDB;">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title" style="font-family: var(--font-heading); font-size: 16px; font-weight: 700;">Confirm Password to Continue</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body pt-2">
+          <p style="font-size: 13px; color: #626A66; margin-bottom: 16px;">
+            For your security, please verify your account password before managing sensitive protection settings.
+          </p>
+          <div class="form-group mb-3">
+            <label for="modal-reauth-password" class="form-label" style="font-size: 12.5px; font-weight: 600;">Current Password</label>
+            <input type="password" id="modal-reauth-password" class="form-control" placeholder="Enter current password" autocomplete="current-password" />
+            <div id="modal-reauth-error" class="text-danger mt-1" style="font-size: 12px; display: none;"></div>
+          </div>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" id="btn-modal-reauth-confirm" class="btn btn-primary btn-sm">Confirm Identity</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2FA Enrollment Modal -->
+  <div class="modal fade" id="modal-2fa-setup" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 480px;">
+      <div class="modal-content" style="border-radius: 12px; border: 1px solid #D8DEDB;">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title" style="font-family: var(--font-heading); font-size: 16px; font-weight: 700;">Set Up Two-Factor Authentication</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body pt-2">
+          <!-- Step A: Setup Key -->
+          <div id="setup-2fa-step-code">
+            <p style="font-size: 13px; color: #626A66; margin-bottom: 12px;">
+              Enter this manual setup key into your authenticator app (Google Authenticator, Microsoft Authenticator, Authy, or 1Password):
+            </p>
+            <div class="p-3 mb-3 text-center" style="background: #F7FAF8; border: 1px dashed #A8F0D0; border-radius: 8px;">
+              <div id="setup-2fa-key-display" style="font-family: monospace; font-size: 15px; font-weight: 700; color: #111111; letter-spacing: 0.1em; user-select: all;">
+                ---- ---- ---- ----
+              </div>
+              <button type="button" id="btn-copy-setup-key" class="btn btn-sm btn-outline-secondary mt-2" style="font-size: 11px;">
+                Copy Setup Key
+              </button>
+            </div>
+            <div class="form-group mb-3">
+              <label for="setup-2fa-verify-input" class="form-label" style="font-size: 12.5px; font-weight: 600;">6-Digit Verification Code</label>
+              <input type="text" id="setup-2fa-verify-input" class="form-control text-center font-monospace" placeholder="000000" maxlength="6" style="font-size: 18px; letter-spacing: 0.3em;" />
+              <div id="setup-2fa-error" class="text-danger mt-1" style="font-size: 12px; display: none;"></div>
+            </div>
+            <div class="d-flex justify-content-end gap-2">
+              <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+              <button type="button" id="btn-verify-enable-2fa" class="btn btn-primary btn-sm">Verify &amp; Activate 2FA</button>
+            </div>
+          </div>
+
+          <!-- Step B: Recovery Codes Presentation (Shown upon successful activation) -->
+          <div id="setup-2fa-step-recovery" style="display: none;">
+            <div class="text-center mb-3">
+              <div style="width: 44px; height: 44px; border-radius: 50%; background: #E8FBF3; color: #21865B; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 8px;">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <h6 style="font-weight: 700; color: #111111; margin-bottom: 4px;">2FA Successfully Enabled!</h6>
+              <p style="font-size: 12.5px; color: #626A66; margin-bottom: 0;">Save these backup recovery codes now. They will not be shown again.</p>
+            </div>
+            <div id="recovery-codes-grid" class="p-3 mb-3" style="background: #F7FAF8; border: 1px solid #D8DEDB; border-radius: 8px; display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; font-family: monospace; font-size: 13px; font-weight: 600;">
+              <!-- Generated codes injected here -->
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+              <button type="button" id="btn-copy-recovery-codes" class="btn btn-outline-secondary btn-sm" style="font-size: 12px;">Copy All Codes</button>
+              <button type="button" class="btn btn-primary btn-sm" data-bs-dismiss="modal">I Have Saved Them</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container" class="toast-container position-fixed bottom-0 end-0 p-3"></div>
+
+  <!-- Main scripts -->
+  <script type="module" src="../../js/main.js"></script>
+  <script type="module">
+    import { SettingsService } from '../../js/services/settings-service.js';
+    import { toastSuccess, toastDanger, toastInfo } from '../../js/components/toast.js';
+
+    let currentPendingSecret = null;
+    let cachedReauthToken = null;
+
+    async function loadSecurityData() {
+      try {
+        const [overview, sessions, audit] = await Promise.all([
+          SettingsService.getSecurityOverview(),
+          SettingsService.getActiveSessions(),
+          SettingsService.getLoginHistory()
+        ]);
+
+        // 1. Password Card
+        const pwdTs = document.getElementById('sec-password-timestamp');
+        if (pwdTs) pwdTs.textContent = `Last changed: ${overview.password_last_changed || 'Recently'}`;
+
+        // 2. 2FA Status Card
+        const badge2fa = document.getElementById('badge-2fa-status');
+        const actions2fa = document.getElementById('sec-2fa-actions');
+        const active2faPanel = document.getElementById('sec-2fa-active-panel');
+        const recoveryCount = document.getElementById('sec-recovery-count');
+        const recoveryBadge = document.getElementById('sec-recovery-badge');
+
+        if (overview.two_factor_enabled) {
+          if (badge2fa) {
+            badge2fa.className = 'badge badge-mint font-monospace';
+            badge2fa.textContent = 'Active (TOTP)';
+          }
+          if (actions2fa) actions2fa.innerHTML = `<span class="badge bg-success-subtle text-success p-2">Protected &check;</span>`;
+          if (active2faPanel) active2faPanel.style.display = 'block';
+          if (recoveryCount) recoveryCount.textContent = `${overview.recovery_codes_count || 8} active`;
+          if (recoveryBadge) {
+            recoveryBadge.className = 'badge badge-mint';
+            recoveryBadge.textContent = 'Active Protection';
+          }
+        } else {
+          if (badge2fa) {
+            badge2fa.className = 'badge bg-secondary-subtle text-secondary';
+            badge2fa.textContent = 'Not Enabled';
+          }
+          if (actions2fa) actions2fa.innerHTML = `<button id="btn-open-2fa-setup" class="btn btn-primary btn-sm">Enable 2FA</button>`;
+          if (active2faPanel) active2faPanel.style.display = 'none';
+          if (recoveryBadge) {
+            recoveryBadge.className = 'badge bg-secondary-subtle text-secondary';
+            recoveryBadge.textContent = 'Requires 2FA';
+          }
+          const open2faBtn = document.getElementById('btn-open-2fa-setup');
+          if (open2faBtn) open2faBtn.addEventListener('click', promptReauthFor2fa);
+        }
+
+        // 3. Sessions List
+        renderSessions(sessions);
+
+        // 4. Audit Log
+        renderAudit(audit);
+
+        // 5. Recovery Email
+        const recEmail = document.getElementById('sec-recovery-email');
+        if (recEmail) recEmail.textContent = overview.registered_email || 'No email set';
+
+      } catch (err) {
+        console.error('Failed to load security overview:', err);
+      }
+    }
+
+    function renderSessions(sessions) {
+      const container = document.getElementById('sec-sessions-table-container');
+      if (!container) return;
+
+      if (!sessions || sessions.length === 0) {
+        container.innerHTML = `<div class="p-4 text-center text-muted" style="font-size: 13px;">No active sessions recorded.</div>`;
+        return;
+      }
+
+      container.innerHTML = `
+        <div class="list-group list-group-flush">
+          ${sessions.map(s => `
+            <div class="list-group-item d-flex align-items-center justify-content-between p-3" style="background: transparent;">
+              <div class="d-flex align-items-center gap-3">
+                <div style="width: 34px; height: 34px; border-radius: 8px; background: #F3F4F6; display: flex; align-items: center; justify-content: center; color: #4B5563;">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                </div>
+                <div>
+                  <div class="d-flex align-items-center gap-2">
+                    <span style="font-size: 13px; font-weight: 600; color: #111111;">${escapeHtml(s.device || 'Desktop Device')}</span>
+                    ${s.isCurrent ? '<span class="badge badge-mint font-monospace" style="font-size: 10px;">CURRENT SESSION</span>' : ''}
+                  </div>
+                  <div style="font-size: 11.5px; color: #626A66;">${escapeHtml(s.browser || 'Unknown')} • ${escapeHtml(s.ip || '127.0.0.1')} • Active ${escapeHtml(s.lastActive || 'recently')}</div>
+                </div>
+              </div>
+              <div>
+                ${!s.isCurrent ? `<button class="btn btn-outline-danger btn-sm btn-revoke-session" data-id="${s.id}" style="font-size: 11.5px;">Revoke</button>` : '<span class="badge bg-light text-muted border" style="font-size: 11px;">Active Now</span>'}
+              </div>
+            </div>
+          `).join('')}
+        </div>`;
+
+      container.querySelectorAll('.btn-revoke-session').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const sid = btn.getAttribute('data-id');
+          if (confirm('Are you sure you want to revoke this session? That device will be signed out.')) {
+            try {
+              await SettingsService.revokeSession(sid);
+              toastSuccess('Session revoked.');
+              loadSecurityData();
+            } catch (err) {
+              toastDanger(err.message || 'Could not revoke session.');
+            }
+          }
+        });
+      });
+    }
+
+    function renderAudit(logs) {
+      const container = document.getElementById('sec-audit-log-container');
+      if (!container) return;
+
+      if (!logs || logs.length === 0) {
+        container.innerHTML = `<div class="p-3 text-center text-muted" style="font-size: 12.5px;">No recent security events.</div>`;
+        return;
+      }
+
+      container.innerHTML = `
+        <div class="list-group list-group-flush">
+          ${logs.map(log => `
+            <div class="list-group-item p-3 d-flex align-items-center justify-content-between" style="background: transparent; font-size: 12.5px;">
+              <div>
+                <div style="font-weight: 600; color: #111111;">${escapeHtml(log.action)}</div>
+                <div style="font-size: 11px; color: #626A66;">${escapeHtml(log.device || 'Client')} • ${escapeHtml(log.ip || '127.0.0.1')}</div>
+              </div>
+              <div class="text-end">
+                <span class="badge ${log.status === 'success' ? 'badge-mint' : 'bg-danger-subtle text-danger'}" style="font-size: 10px;">${escapeHtml(log.status)}</span>
+                <div style="font-size: 10.5px; color: #8C9691; margin-top: 2px;">${escapeHtml(log.time)}</div>
+              </div>
+            </div>
+          `).join('')}
+        </div>`;
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    // 2FA Setup Flow
+    function promptReauthFor2fa() {
+      const modalEl = document.getElementById('modal-reauth');
+      const bsModal = new bootstrap.Modal(modalEl);
+      const confirmBtn = document.getElementById('btn-modal-reauth-confirm');
+      const pwdInput = document.getElementById('modal-reauth-password');
+      const errorDiv = document.getElementById('modal-reauth-error');
+
+      pwdInput.value = '';
+      errorDiv.style.display = 'none';
+
+      confirmBtn.onclick = async () => {
+        const pwd = pwdInput.value.trim();
+        if (!pwd) return;
+        confirmBtn.disabled = true;
+        try {
+          const res = await SettingsService.reauthenticate(pwd);
+          cachedReauthToken = res.reauth_token;
+          bsModal.hide();
+
+          // Initialize 2FA Setup with reauth token
+          const setupRes = await SettingsService.setupTwoFactor({ reauthToken: cachedReauthToken });
+          currentPendingSecret = setupRes.secret;
+          document.getElementById('setup-2fa-key-display').textContent = setupRes.formatted_key || setupRes.secret;
+
+          // Open 2FA setup modal
+          const modal2fa = new bootstrap.Modal(document.getElementById('modal-2fa-setup'));
+          document.getElementById('setup-2fa-step-code').style.display = 'block';
+          document.getElementById('setup-2fa-step-recovery').style.display = 'none';
+          document.getElementById('setup-2fa-verify-input').value = '';
+          modal2fa.show();
+        } catch (err) {
+          errorDiv.textContent = err.message || 'Incorrect password.';
+          errorDiv.style.display = 'block';
+        } finally {
+          confirmBtn.disabled = false;
+        }
+      };
+
+      bsModal.show();
+    }
+
+    // Copy Setup Key button
+    document.getElementById('btn-copy-setup-key')?.addEventListener('click', () => {
+      const keyText = document.getElementById('setup-2fa-key-display').textContent.replace(/\s+/g, '');
+      navigator.clipboard.writeText(keyText);
+      toastInfo('Setup key copied to clipboard.');
+    });
+
+    // Verify & Enable 2FA button
+    document.getElementById('btn-verify-enable-2fa')?.addEventListener('click', async () => {
+      const codeInput = document.getElementById('setup-2fa-verify-input');
+      const errDiv = document.getElementById('setup-2fa-error');
+      const code = codeInput.value.trim();
+
+      if (code.length !== 6) {
+        errDiv.textContent = 'Please enter a 6-digit code.';
+        errDiv.style.display = 'block';
+        return;
+      }
+      errDiv.style.display = 'none';
+
+      try {
+        const res = await SettingsService.enableTwoFactor({ code, secret: currentPendingSecret });
+        toastSuccess('Two-Factor Authentication is now enabled!');
+
+        // Populate recovery codes
+        const grid = document.getElementById('recovery-codes-grid');
+        grid.innerHTML = (res.recovery_codes || []).map(c => `<div>${escapeHtml(c)}</div>`).join('');
+
+        // Switch to Step B
+        document.getElementById('setup-2fa-step-code').style.display = 'none';
+        document.getElementById('setup-2fa-step-recovery').style.display = 'block';
+        loadSecurityData();
+      } catch (err) {
+        errDiv.textContent = err.message || 'Invalid verification code. Please check your authenticator app.';
+        errDiv.style.display = 'block';
+      }
+    });
+
+    // Copy Recovery Codes
+    document.getElementById('btn-copy-recovery-codes')?.addEventListener('click', () => {
+      const codes = Array.from(document.querySelectorAll('#recovery-codes-grid div')).map(el => el.textContent).join('\n');
+      navigator.clipboard.writeText(codes);
+      toastSuccess('Recovery codes copied to clipboard.');
+    });
+
+    // Disable 2FA
+    document.getElementById('btn-disable-2fa')?.addEventListener('click', async () => {
+      const pwd = prompt('Please enter your account password to confirm disabling Two-Factor Authentication:');
+      if (!pwd) return;
+      try {
+        await SettingsService.disableTwoFactor({ password: pwd });
+        toastSuccess('Two-Factor Authentication disabled.');
+        loadSecurityData();
+      } catch (err) {
+        toastDanger(err.message || 'Could not disable 2FA.');
+      }
+    });
+
+    // Regenerate Recovery Codes
+    document.getElementById('btn-regen-recovery')?.addEventListener('click', async () => {
+      const pwd = prompt('Enter your password to regenerate your 2FA recovery codes:');
+      if (!pwd) return;
+      try {
+        const res = await SettingsService.regenerateRecoveryCodes({ password: pwd });
+        alert('Fresh recovery codes generated:\n\n' + (res.recovery_codes || []).join('\n') + '\n\nPlease store these in your password manager.');
+        toastSuccess('Recovery codes regenerated.');
+        loadSecurityData();
+      } catch (err) {
+        toastDanger(err.message || 'Could not regenerate recovery codes.');
+      }
+    });
+
+    // Sign out other sessions
+    document.getElementById('btn-revoke-other-sessions')?.addEventListener('click', async () => {
+      if (confirm('Are you sure you want to sign out of all other sessions? Other devices will be disconnected.')) {
+        try {
+          await SettingsService.revokeAllOtherSessions();
+          toastSuccess('Signed out of all other sessions.');
+          loadSecurityData();
+        } catch (err) {
+          toastDanger(err.message || 'Could not revoke sessions.');
+        }
+      }
+    });
+
+    // Refresh audit
+    document.getElementById('btn-refresh-audit')?.addEventListener('click', async () => {
+      try {
+        const audit = await SettingsService.getLoginHistory();
+        renderAudit(audit);
+        toastInfo('Audit log refreshed.');
+      } catch (_) {}
+    });
+
+    // Initial load
+    loadSecurityData();
+  </script>
+</body>
+</html>

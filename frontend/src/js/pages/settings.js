@@ -809,26 +809,57 @@ export async function initSettingsPage() {
     if (summaryHandle) summaryHandle.textContent = `@${user.username || 'user'}`;
     if (summaryRole) summaryRole.textContent = `${user.role || 'Developer'} &bull; Member`;
 
+    // Profile links in summary
+    const btnSummPub = document.getElementById('btnSummaryPublicProfile');
+    const btnSummVis = document.getElementById('btnSummaryVisitorPreview');
+    if (btnSummPub && user.username) btnSummPub.href = `/u/${user.username}`;
+    if (btnSummVis && user.username) btnSummVis.href = `/u/${user.username}?preview=visitor`;
+
     // Preferences inputs
+    const langEl = document.getElementById('genLanguage');
+    const tzEl = document.getElementById('genTimezone');
     const compactDensityEl = document.getElementById('genCompactDensity');
     const tabSizeEl = document.getElementById('genTabSize');
     const editorFontEl = document.getElementById('genEditorFont');
     const inlineDiffsEl = document.getElementById('genInlineDiffs');
     const defaultPageEl = document.getElementById('genDefaultPage');
-    const prReviewsEl = document.getElementById('genPrefPrReviews');
-    const friendReqsEl = document.getElementById('genPrefFriendRequests');
-    const mentionsEl = document.getElementById('genPrefMentions');
-    const weeklyDigestEl = document.getElementById('genPrefWeeklyDigest');
 
-    if (compactDensityEl) compactDensityEl.checked = Boolean(prefs.compactDensity);
-    if (tabSizeEl) tabSizeEl.value = prefs.tabSize || '2';
-    if (editorFontEl) editorFontEl.value = prefs.editorFont || 'JetBrains Mono';
-    if (inlineDiffsEl) inlineDiffsEl.checked = prefs.inlineDiffs !== false;
-    if (defaultPageEl) defaultPageEl.value = prefs.defaultStartPage || 'overview';
-    if (prReviewsEl) prReviewsEl.checked = prefs.prefPrReviews !== false;
-    if (friendReqsEl) friendReqsEl.checked = prefs.prefFriendRequests !== false;
-    if (mentionsEl) mentionsEl.checked = prefs.prefMentions !== false;
-    if (weeklyDigestEl) weeklyDigestEl.checked = Boolean(prefs.prefWeeklyDigest);
+    const genPrefs = prefs.general || prefs;
+    if (langEl) langEl.value = genPrefs.language || 'en';
+    if (tzEl) tzEl.value = genPrefs.timezone || 'Asia/Kolkata';
+    if (compactDensityEl) compactDensityEl.checked = Boolean(genPrefs.compactDensity || genPrefs.compact_density);
+    if (tabSizeEl) tabSizeEl.value = String(genPrefs.tabSize || genPrefs.tab_size || '2');
+    if (editorFontEl) editorFontEl.value = genPrefs.editorFont || genPrefs.editor_font || 'JetBrains Mono';
+    if (inlineDiffsEl) inlineDiffsEl.checked = (genPrefs.inlineDiffs ?? genPrefs.inline_diffs) !== false;
+    if (defaultPageEl) defaultPageEl.value = genPrefs.defaultStartPage || genPrefs.default_page || 'overview';
+
+    // Notification Matrix (Event x Channel)
+    const notifs = prefs.notifications || prefs;
+    const dmInApp = document.getElementById('notif_dm_inapp');
+    const dmEmail = document.getElementById('notif_dm_email');
+    const menInApp = document.getElementById('notif_mentions_inapp');
+    const menEmail = document.getElementById('notif_mentions_email');
+    const invInApp = document.getElementById('notif_invites_inapp');
+    const invEmail = document.getElementById('notif_invites_email');
+    const taskInApp = document.getElementById('notif_tasks_inapp');
+    const taskEmail = document.getElementById('notif_tasks_email');
+    const deadInApp = document.getElementById('notif_deadlines_inapp');
+    const deadEmail = document.getElementById('notif_deadlines_email');
+    const digInApp = document.getElementById('notif_digest_inapp');
+    const digEmail = document.getElementById('notif_digest_email');
+
+    if (dmInApp) dmInApp.checked = notifs.direct_messages?.in_app ?? true;
+    if (dmEmail) dmEmail.checked = notifs.direct_messages?.email ?? true;
+    if (menInApp) menInApp.checked = notifs.mentions?.in_app ?? true;
+    if (menEmail) menEmail.checked = notifs.mentions?.email ?? true;
+    if (invInApp) invInApp.checked = notifs.team_invitations?.in_app ?? true;
+    if (invEmail) invEmail.checked = notifs.team_invitations?.email ?? true;
+    if (taskInApp) taskInApp.checked = notifs.task_assignments?.in_app ?? true;
+    if (taskEmail) taskEmail.checked = notifs.task_assignments?.email ?? false;
+    if (deadInApp) deadInApp.checked = notifs.task_deadlines?.in_app ?? true;
+    if (deadEmail) deadEmail.checked = notifs.task_deadlines?.email ?? true;
+    if (digInApp) digInApp.checked = notifs.weekly_digest?.in_app ?? false;
+    if (digEmail) digEmail.checked = notifs.weekly_digest?.email ?? false;
   }
 
   const btnSaveGeneralSettings = document.getElementById('btnSaveGeneralSettings');
@@ -838,15 +869,41 @@ export async function initSettingsPage() {
       btnSaveGeneralSettings.textContent = 'Saving...';
 
       const payload = {
-        compactDensity: document.getElementById('genCompactDensity')?.checked ?? false,
-        tabSize: document.getElementById('genTabSize')?.value || '2',
-        editorFont: document.getElementById('genEditorFont')?.value || 'JetBrains Mono',
-        inlineDiffs: document.getElementById('genInlineDiffs')?.checked ?? true,
-        defaultStartPage: document.getElementById('genDefaultPage')?.value || 'overview',
-        prefPrReviews: document.getElementById('genPrefPrReviews')?.checked ?? true,
-        prefFriendRequests: document.getElementById('genPrefFriendRequests')?.checked ?? true,
-        prefMentions: document.getElementById('genPrefMentions')?.checked ?? true,
-        prefWeeklyDigest: document.getElementById('genPrefWeeklyDigest')?.checked ?? false
+        general: {
+          language: document.getElementById('genLanguage')?.value || 'en',
+          timezone: document.getElementById('genTimezone')?.value || 'Asia/Kolkata',
+          compactDensity: document.getElementById('genCompactDensity')?.checked ?? false,
+          tabSize: Number(document.getElementById('genTabSize')?.value || 2),
+          editorFont: document.getElementById('genEditorFont')?.value || 'JetBrains Mono',
+          inlineDiffs: document.getElementById('genInlineDiffs')?.checked ?? true,
+          defaultStartPage: document.getElementById('genDefaultPage')?.value || 'overview'
+        },
+        notifications: {
+          direct_messages: {
+            in_app: document.getElementById('notif_dm_inapp')?.checked ?? true,
+            email: document.getElementById('notif_dm_email')?.checked ?? true
+          },
+          mentions: {
+            in_app: document.getElementById('notif_mentions_inapp')?.checked ?? true,
+            email: document.getElementById('notif_mentions_email')?.checked ?? true
+          },
+          team_invitations: {
+            in_app: document.getElementById('notif_invites_inapp')?.checked ?? true,
+            email: document.getElementById('notif_invites_email')?.checked ?? true
+          },
+          task_assignments: {
+            in_app: document.getElementById('notif_tasks_inapp')?.checked ?? true,
+            email: document.getElementById('notif_tasks_email')?.checked ?? false
+          },
+          task_deadlines: {
+            in_app: document.getElementById('notif_deadlines_inapp')?.checked ?? true,
+            email: document.getElementById('notif_deadlines_email')?.checked ?? true
+          },
+          weekly_digest: {
+            in_app: document.getElementById('notif_digest_inapp')?.checked ?? false,
+            email: document.getElementById('notif_digest_email')?.checked ?? false
+          }
+        }
       };
 
       try {
@@ -938,6 +995,10 @@ export async function initSettingsPage() {
     if (githubEl) githubEl.value = user.social?.github || '';
     if (linkedinEl) linkedinEl.value = user.social?.linkedin || '';
     if (instagramEl) instagramEl.value = user.social?.instagram || '';
+    const visitorBtn = document.getElementById('btnViewProfileVisitor');
+    if (visitorBtn && user.username) {
+      visitorBtn.href = `/u/${user.username}?preview=visitor`;
+    }
   }
 
   // Profile avatar upload preview

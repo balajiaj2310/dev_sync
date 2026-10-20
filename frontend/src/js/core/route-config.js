@@ -43,6 +43,7 @@ export const ROUTES = {
   get SIGN_IN() { return `${getBasePath()}/auth/sign-in.html`; },
   get SIGN_UP() { return `${getBasePath()}/auth/sign-up.html`; },
   get FORGOT_PASSWORD() { return `${getBasePath()}/auth/forgot-password.html`; },
+  get VERIFY_CODE() { return `${getBasePath()}/auth/verify-code.html`; },
   get RESET_PASSWORD() { return `${getBasePath()}/auth/reset-password.html`; },
 
   // Dashboard & Apps

@@ -74,9 +74,10 @@ export async function initDeveloperProfilePage() {
     console.error('Failed to load developer profile:', err);
   }
 
-  // Check if viewing own profile
+  // Check if viewing own profile or previewing as visitor
+  const isPreviewVisitor = urlParams.get('preview') === 'visitor';
   const currentUser = await ProfileService.getProfile();
-  const isOwner = currentUser && developer && (
+  const isOwner = !isPreviewVisitor && currentUser && developer && (
     (currentUser.username && developer.username && currentUser.username.toLowerCase() === developer.username.toLowerCase()) ||
     currentUser.id === developer.id
   );
@@ -138,7 +139,17 @@ export async function initDeveloperProfilePage() {
       visibleProjects.some(p => p.id === pid)
     ).length;
 
-    container.innerHTML = `
+    const visitorBanner = isPreviewVisitor ? `
+      <div style="background-color: var(--color-mint-soft); border: 1px solid var(--color-mint-strong); border-radius: 8px; padding: 12px 18px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; box-shadow: var(--shadow-sm);">
+        <div style="display: flex; align-items: center; gap: 10px; font-size: 13.5px; color: var(--color-text-primary);">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--color-focus);"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          <span><strong>Visitor Preview Mode:</strong> You are viewing your public profile exactly as external visitors see it. Private fields (email, mobile, security history) are hidden.</span>
+        </div>
+        <a href="../settings/account.html?section=profile" class="btn btn-outline btn-sm">Exit Preview</a>
+      </div>
+    ` : '';
+
+    container.innerHTML = visitorBanner + `
       <!-- Section 6: Compact Hero Identity Header Card -->
       <section class="dev-hero-card" aria-label="Developer identity" style="padding: 20px 28px;">
         <div class="dev-hero-top" style="gap: 20px;">

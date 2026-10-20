@@ -577,53 +577,411 @@ export function initAuthPage() {
     authForm.addEventListener('submit', handleFormSubmit);
   }
 
-  // Preserve Forgot Password Form if on forgot password page
+  // =========================================================================
+  // PASSWORD RECOVERY FLOW (STEPS A, B, C, & D)
+  // =========================================================================
+
+  // -------------------------------------------------------------
+  // STEP A: FORGOT PASSWORD (REQUEST RECOVERY CODE)
+  // -------------------------------------------------------------
   const forgotForm = document.getElementById('forgotPasswordForm');
   if (forgotForm) {
+    const idInput = forgotForm.querySelector('#recoveryIdentifier') || forgotForm.querySelector('#email');
+    const submitBtn = forgotForm.querySelector('button[type="submit"]') || document.getElementById('btnSendRecovery');
+    const errorMsg = document.getElementById('identifierError');
+
     forgotForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const emailInput = forgotForm.querySelector('#email');
-      const submitBtn = forgotForm.querySelector('button[type="submit"]');
+      const val = (idInput?.value || '').trim();
 
-      if (!isValidEmail(emailInput.value)) {
-        toastDanger('Please enter a valid email address.');
+      if (!val) {
+        if (errorMsg) {
+          errorMsg.textContent = 'Please enter your registered email address or username.';
+          errorMsg.style.display = 'block';
+        }
+        idInput?.classList.add('is-invalid');
+        idInput?.focus();
+        return;
+      }
+
+      if (errorMsg) errorMsg.style.display = 'none';
+      idInput?.classList.remove('is-invalid');
+
+      submitBtn.disabled = true;
+      const originalBtnHTML = submitBtn.innerHTML;
+      submitBtn.innerHTML = '<span class="btn-spinner"></span> Sending Code...';
+
+      try {
+        const res = await AuthService.forgotPassword(val);
+        // Store identifier in sessionStorage without leaking into URL query string
+        sessionStorage.setItem('devsync_recovery_identifier', val);
+        sessionStorage.setItem('devsync_otp_sent_at', Date.now().toString());
+
+        toastSuccess(res.message || 'If an account matches, a recovery code has been sent.', 'Recovery Code Dispatched');
+        submitBtn.innerHTML = 'Code Sent &check;';
+        
+        setTimeout(() => {
+          navigateTo(ROUTES.VERIFY_CODE || 'verify-code.html');
+        }, 800);
+      } catch (err) {
+        toastDanger(err.message || 'Failed to dispatch recovery code.');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnHTML;
+      }
+    });
+
+    idInput?.addEventListener('input', () => {
+      if (errorMsg) errorMsg.style.display = 'none';
+      idInput.classList.remove('is-invalid');
+    });
+  }
+
+  // -------------------------------------------------------------
+  // STEP B: VERIFY RECOVERY CODE (6-DIGIT OTP & COOLDOWN TIMERS)
+  // -------------------------------------------------------------
+  const verifyCodeForm = document.getElementById('verifyCodeForm');
+  if (verifyCodeForm) {
+    const recoveryIdentifier = sessionStorage.getItem('devsync_recovery_identifier') || '';
+    const targetSummary = document.getElementById('targetSummaryNotice');
+    const targetText = document.getElementById('targetSummaryText');
+    const otpBoxes = Array.from(verifyCodeForm.querySelectorAll('.recovery-otp-box'));
+    const masterOtpInput = document.getElementById('otpInputMaster');
+    const countdownEl = document.getElementById('recoveryCountdown');
+    const resendBtn = document.getElementById('btnResendCode');
+    const resendSecEl = document.getElementById('resendSeconds');
+    const statusMsg = document.getElementById('verifyStatusMsg');
+    const submitBtn = verifyCodeForm.querySelector('button[type="submit"]') || document.getElementById('btnVerifyCode');
+
+    if (recoveryIdentifier && targetSummary && targetText) {
+      targetSummary.style.display = 'flex';
+      // Mask identifier slightly for privacy
+      let masked = recoveryIdentifier;
+      if (recoveryIdentifier.includes('@')) {
+        const parts = recoveryIdentifier.split('@');
+        masked = `${parts[0].slice(0, 2)}***@${parts[1]}`;
+      }
+      targetText.textContent = `A 6-digit verification code was sent to ${masked}.`;
+    }
+
+    // 10-Minute Expiration Countdown
+    let expiryRemaining = 600; // 10 minutes
+    const expiryInterval = setInterval(() => {
+      expiryRemaining--;
+      if (expiryRemaining <= 0) {
+        clearInterval(expiryInterval);
+        if (countdownEl) countdownEl.textContent = 'Expired';
+        if (statusMsg) {
+          statusMsg.textContent = 'Your recovery code has expired. Please request a new code.';
+          statusMsg.style.display = 'block';
+        }
+        submitBtn.disabled = true;
+      } else {
+        const mins = Math.floor(expiryRemaining / 60);
+        const secs = expiryRemaining % 60;
+        if (countdownEl) {
+          countdownEl.textContent = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        }
+      }
+    }, 1000);
+
+    // 60-Second Resend Cooldown Timer
+    let cooldownRemaining = 60;
+    const cooldownInterval = setInterval(() => {
+      cooldownRemaining--;
+      if (cooldownRemaining <= 0) {
+        clearInterval(cooldownInterval);
+        if (resendBtn) {
+          resendBtn.disabled = false;
+          resendBtn.textContent = 'Resend Code';
+        }
+      } else {
+        if (resendSecEl) resendSecEl.textContent = cooldownRemaining.toString();
+      }
+    }, 1000);
+
+    // Resend Action Click
+    if (resendBtn) {
+      resendBtn.addEventListener('click', async () => {
+        if (!recoveryIdentifier) {
+          toastDanger('No recovery identifier found. Please return to step 1.');
+          return;
+        }
+        resendBtn.disabled = true;
+        resendBtn.textContent = 'Resending...';
+        try {
+          const res = await AuthService.forgotPassword(recoveryIdentifier);
+          toastSuccess(res.message || 'Fresh recovery code dispatched.', 'Code Sent');
+          // Reset cooldown
+          cooldownRemaining = 60;
+          resendBtn.innerHTML = 'Resend in <span id="resendSeconds">60</span>s';
+          // Clear current OTP boxes
+          otpBoxes.forEach(b => { b.value = ''; });
+          otpBoxes[0]?.focus();
+          if (statusMsg) statusMsg.style.display = 'none';
+        } catch (err) {
+          toastDanger(err.message || 'Failed to resend code.');
+          resendBtn.disabled = false;
+          resendBtn.textContent = 'Resend Code';
+        }
+      });
+    }
+
+    // Accessible 6-Digit Segmented Box Behavior (Type, Paste, Arrows, Backspace)
+    function updateMasterCode() {
+      const fullCode = otpBoxes.map(b => b.value.trim()).join('');
+      if (masterOtpInput) masterOtpInput.value = fullCode;
+      return fullCode;
+    }
+
+    otpBoxes.forEach((box, idx) => {
+      box.addEventListener('input', (e) => {
+        const val = box.value.replace(/[^0-9]/g, '');
+        box.value = val ? val[0] : '';
+        if (box.value && idx < otpBoxes.length - 1) {
+          otpBoxes[idx + 1].focus();
+        }
+        updateMasterCode();
+        if (statusMsg) statusMsg.style.display = 'none';
+      });
+
+      box.addEventListener('keydown', (e) => {
+        if (e.key === 'Backspace' && !box.value && idx > 0) {
+          otpBoxes[idx - 1].focus();
+        } else if (e.key === 'ArrowLeft' && idx > 0) {
+          otpBoxes[idx - 1].focus();
+        } else if (e.key === 'ArrowRight' && idx < otpBoxes.length - 1) {
+          otpBoxes[idx + 1].focus();
+        }
+      });
+
+      box.addEventListener('paste', (e) => {
+        e.preventDefault();
+        const pasted = (e.clipboardData || window.clipboardData).getData('text').replace(/[^0-9]/g, '');
+        if (pasted) {
+          for (let i = 0; i < otpBoxes.length; i++) {
+            otpBoxes[i].value = pasted[i] || '';
+          }
+          const nextFocus = Math.min(pasted.length, otpBoxes.length - 1);
+          otpBoxes[nextFocus]?.focus();
+          updateMasterCode();
+          if (statusMsg) statusMsg.style.display = 'none';
+        }
+      });
+    });
+
+    // Form Submission
+    verifyCodeForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const code = updateMasterCode();
+
+      if (!code || code.length !== 6) {
+        if (statusMsg) {
+          statusMsg.textContent = 'Please enter the complete 6-digit verification code.';
+          statusMsg.style.display = 'block';
+        }
+        const firstEmpty = otpBoxes.find(b => !b.value.trim()) || otpBoxes[0];
+        firstEmpty?.focus();
         return;
       }
 
       submitBtn.disabled = true;
-      submitBtn.innerHTML = '<span class="btn-spinner"></span> Sending Instructions...';
+      const origBtnHTML = submitBtn.innerHTML;
+      submitBtn.innerHTML = '<span class="btn-spinner"></span> Verifying Code...';
 
       try {
-        const res = await AuthService.requestPasswordReset(emailInput.value);
-        toastSuccess(res.message, 'Reset Link Dispatched');
-        submitBtn.innerHTML = 'Instructions Sent &check;';
+        const idToVerify = recoveryIdentifier || sessionStorage.getItem('devsync_recovery_identifier') || '';
+        const verifyRes = await AuthService.verifyRecoveryOtp(idToVerify, code);
+
+        if (!verifyRes || !verifyRes.reset_token) {
+          throw new Error(verifyRes?.error || 'Verification failed. Please check the code.');
+        }
+
+        clearInterval(expiryInterval);
+        // Save verified reset_token safely in sessionStorage
+        sessionStorage.setItem('devsync_reset_token', verifyRes.reset_token);
+        toastSuccess('Code verified successfully! You may now set your new password.', 'Identity Verified');
+        submitBtn.innerHTML = 'Verified &check;';
+
+        setTimeout(() => {
+          navigateTo(ROUTES.RESET_PASSWORD || 'reset-password.html');
+        }, 700);
       } catch (err) {
-        toastDanger(err.message || 'Failed to dispatch reset instructions.');
+        if (statusMsg) {
+          statusMsg.textContent = err.message || 'Invalid verification code. Please check the code and try again.';
+          statusMsg.style.display = 'block';
+        }
+        toastDanger(err.message || 'Verification failed.');
         submitBtn.disabled = false;
-        submitBtn.innerHTML = 'Send Reset Instructions';
+        submitBtn.innerHTML = origBtnHTML;
       }
     });
   }
 
-  // Preserve Reset Password Form if on reset password page
+  // -------------------------------------------------------------
+  // STEP C & D: SET NEW PASSWORD & SUCCESS CONFIRMATION
+  // -------------------------------------------------------------
   const resetForm = document.getElementById('resetPasswordForm');
   if (resetForm) {
-    resetForm.addEventListener('submit', (e) => {
+    const sectionSetNewPassword = document.getElementById('sectionSetNewPassword');
+    const sectionSuccessState = document.getElementById('sectionSuccessState');
+    const passInput = resetForm.querySelector('#newPassword');
+    const confirmInput = resetForm.querySelector('#confirmPassword');
+    const mismatchError = document.getElementById('passwordMismatchError');
+    const strengthFill = document.getElementById('strengthFill');
+    const strengthLabel = document.getElementById('strengthLabel');
+    const strengthCriteria = document.getElementById('strengthCriteria');
+    const submitBtn = resetForm.querySelector('button[type="submit"]') || document.getElementById('btnSubmitReset');
+    const fallbackGroup = document.getElementById('fallbackCodeGroup');
+
+    // Show/Hide Password Controls
+    const toggleBtns = resetForm.querySelectorAll('.recovery-password-toggle');
+    toggleBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetId = btn.getAttribute('data-target');
+        const targetInput = document.getElementById(targetId);
+        if (!targetInput) return;
+        const isPass = targetInput.type === 'password';
+        targetInput.type = isPass ? 'text' : 'password';
+        btn.innerHTML = isPass
+          ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`
+          : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+      });
+    });
+
+    // Genuine Password Strength Calculator
+    function calculateStrength(pwd) {
+      if (!pwd) return { score: 0, label: 'Enter password', fillClass: '', criteria: 'Min. 8 chars' };
+      let score = 0;
+      if (pwd.length >= 8) score++;
+      if (pwd.length >= 10) score++;
+      if (/[a-z]/.test(pwd) && /[A-Z]/.test(pwd)) score++;
+      if (/[0-9]/.test(pwd)) score++;
+      if (/[^a-zA-Z0-9]/.test(pwd)) score++;
+
+      if (score < 2 || pwd.length < 8) {
+        return { score: 1, label: 'Weak', fillClass: 'strength-weak', criteria: 'Needs 8+ chars & numbers' };
+      } else if (score < 4) {
+        return { score: 2, label: 'Good', fillClass: 'strength-medium', criteria: 'Add symbols for strong' };
+      } else {
+        return { score: 3, label: 'Strong', fillClass: 'strength-strong', criteria: 'Excellent security' };
+      }
+    }
+
+    passInput?.addEventListener('input', () => {
+      const res = calculateStrength(passInput.value);
+      if (strengthFill) {
+        strengthFill.className = `recovery-strength-fill ${res.fillClass}`;
+      }
+      if (strengthLabel) {
+        strengthLabel.textContent = res.label;
+      }
+      if (strengthCriteria) {
+        strengthCriteria.textContent = res.criteria;
+      }
+      checkMismatch();
+    });
+
+    function checkMismatch() {
+      if (!confirmInput || !passInput) return true;
+      if (confirmInput.value && passInput.value !== confirmInput.value) {
+        if (mismatchError) mismatchError.style.display = 'block';
+        confirmInput.classList.add('is-invalid');
+        return false;
+      } else {
+        if (mismatchError) mismatchError.style.display = 'none';
+        confirmInput.classList.remove('is-invalid');
+        return true;
+      }
+    }
+
+    confirmInput?.addEventListener('input', checkMismatch);
+
+    // If user arrived directly without verified token in sessionStorage:
+    const activeResetToken = sessionStorage.getItem('devsync_reset_token');
+    const urlParams = new URLSearchParams(window.location.search);
+    const directCode = urlParams.get('code');
+    const directId = urlParams.get('identifier');
+
+    if (!activeResetToken && (directCode || directId)) {
+      if (fallbackGroup) fallbackGroup.style.display = 'block';
+      const idFld = document.getElementById('resetIdentifier');
+      const codeFld = document.getElementById('resetCode');
+      if (idFld && directId) idFld.value = directId;
+      if (codeFld && directCode) codeFld.value = directCode;
+    }
+
+    // Submit Password Reset
+    resetForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const passInput = resetForm.querySelector('#newPassword');
-      const confirmInput = resetForm.querySelector('#confirmPassword');
+      const newPass = (passInput?.value || '').trim();
+      const confirmPass = (confirmInput?.value || '').trim();
 
-      if (!isValidPassword(passInput.value)) {
-        toastDanger('Password must be at least 8 characters.');
-        return;
-      }
-      if (passInput.value !== confirmInput.value) {
-        toastDanger('Passwords do not match.');
+      if (!newPass || newPass.length < 8) {
+        toastDanger('Password must be at least 8 characters with letters and numbers.');
+        passInput?.focus();
         return;
       }
 
-      toastSuccess('Password updated successfully! Please sign in.', 'Password Reset');
-      setTimeout(() => navigateTo(ROUTES.SIGN_IN), 800);
+      if (newPass !== confirmPass) {
+        if (mismatchError) mismatchError.style.display = 'block';
+        confirmInput?.focus();
+        return;
+      }
+
+      let rToken = sessionStorage.getItem('devsync_reset_token');
+
+      // If no token in session, check fallback verification
+      if (!rToken) {
+        const idFld = document.getElementById('resetIdentifier');
+        const codeFld = document.getElementById('resetCode');
+        const fallbackId = (idFld?.value || '').trim();
+        const fallbackCode = (codeFld?.value || '').trim();
+
+        if (fallbackId && fallbackCode) {
+          submitBtn.disabled = true;
+          submitBtn.innerHTML = '<span class="btn-spinner"></span> Verifying Code...';
+          try {
+            const vRes = await AuthService.verifyRecoveryOtp(fallbackId, fallbackCode);
+            rToken = vRes?.reset_token;
+          } catch (vErr) {
+            toastDanger(vErr.message || 'Code verification failed.');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Reset Password &rarr;';
+            return;
+          }
+        } else {
+          toastDanger('No verified recovery session found. Please request a verification code first.');
+          setTimeout(() => {
+            navigateTo(ROUTES.FORGOT_PASSWORD || 'forgot-password.html');
+          }, 1200);
+          return;
+        }
+      }
+
+      submitBtn.disabled = true;
+      const origBtnHTML = submitBtn.innerHTML;
+      submitBtn.innerHTML = '<span class="btn-spinner"></span> Updating Password...';
+
+      try {
+        const resetRes = await AuthService.resetPassword(rToken, newPass);
+        
+        // Clear sensitive session tokens
+        sessionStorage.removeItem('devsync_reset_token');
+        sessionStorage.removeItem('devsync_recovery_identifier');
+
+        // STEP D: SHOW CLEAN SUCCESS STATE (NEVER AUTO-SIGN IN)
+        if (sectionSetNewPassword && sectionSuccessState) {
+          sectionSetNewPassword.style.display = 'none';
+          sectionSuccessState.style.display = 'block';
+        } else {
+          toastSuccess(resetRes.message || 'Password reset successfully! Please sign in with your new password.', 'Password Reset Complete');
+          setTimeout(() => navigateTo(ROUTES.SIGN_IN), 1500);
+        }
+      } catch (err) {
+        toastDanger(err.message || 'Failed to reset password. Token may have expired or new password matches current password.');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = origBtnHTML;
+      }
     });
   }
 }
