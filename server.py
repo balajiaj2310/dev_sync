@@ -20,6 +20,13 @@ import hashlib
 import django
 from django.conf import settings
 
+# Load environment configuration from .env if present
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except Exception:
+    pass
+
 if not settings.configured:
     settings.configure(
         PASSWORD_HASHERS=[
@@ -45,11 +52,13 @@ from django.core.mail import send_mail
 GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID', '').strip()
 GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET', '').strip()
 
+import backend_issues_prs_chat
+import backend_voice_ai
 from backend_collaboration import (
     REPOSITORIES, ACTIVITY_EVENTS, get_repository_by_id_or_name, check_repo_permissions,
     record_activity_event, aggregate_pulse, get_pulse_events, get_pulse_comparison,
     get_pulse_progress, get_pulse_team_contributions, handle_branch_file_upload,
-    handle_attachment_upload, sanitize_file_path
+    handle_attachment_upload, sanitize_file_path, calculate_contribution_intelligence
 )
 
 def dispatch_verification_email(email, otp):
@@ -497,12 +506,14 @@ def save_database():
     try:
         os.makedirs(DATA_DIR, exist_ok=True)
         with open(DB_FILE, 'w', encoding='utf-8') as f:
-            json.dump({
+            dump_data = {
                 'profiles': DEV_PROFILES,
                 'repositories': REPOSITORIES,
                 'activity_events': ACTIVITY_EVENTS,
-                'version': '1.1.0'
-            }, f, indent=2)
+                'version': '1.2.0'
+            }
+            backend_issues_prs_chat.export_state_to_data(dump_data)
+            json.dump(dump_data, f, indent=2)
     except Exception as e:
         print(f"[Database] Warning: Failed to save database: {e}")
 
@@ -528,6 +539,8 @@ def load_database():
                     ACTIVITY_EVENTS.clear()
                     ACTIVITY_EVENTS.extend(loaded_events)
                     print(f"[Database] Loaded {len(ACTIVITY_EVENTS)} activity events from disk.")
+                backend_issues_prs_chat.load_state_from_data(data)
+                print(f"[Database] Loaded issues, PRs, teams, and chat state from disk.")
         except Exception as e:
             print(f"[Database] Warning: Could not read {DB_FILE}: {e}")
 
@@ -824,6 +837,10 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
         url_parts = urllib.parse.urlsplit(self.path)
         path = url_parts.path.rstrip('/')
 
+        # Issues, PRs, Teams, and Chat GET dispatch
+        if backend_issues_prs_chat.handle_get(self, path, url_parts, self.get_authenticated_user()):
+            return
+
         # Root redirect (directs to DevSync Home landing page)
         if path in ('', '/', '/index.html', '/home'):
             self.send_response(302)
@@ -892,6 +909,7 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
             '/register': 'src/pages/auth/sign-up.html',
             '/auth/sign-up': 'src/pages/auth/sign-up.html',
             '/dashboard': 'src/pages/dashboard/overview.html',
+            '/analytics': 'src/pages/analytics/index.html',
             '/overview': 'src/pages/dashboard/overview.html',
             '/developers': 'src/pages/developers/discover.html',
             '/developers/discover': 'src/pages/developers/discover.html',
@@ -904,6 +922,11 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
             '/settings/account': 'src/pages/settings/account.html',
             '/settings/privacy': 'src/pages/settings/privacy.html',
             '/settings/preferences': 'src/pages/settings/preferences.html',
+            '/assistant': 'src/pages/assistant/index.html',
+            '/assistant/': 'src/pages/assistant/index.html',
+            '/ai/assistant': 'src/pages/assistant/index.html',
+            '/assistant/index.html': 'src/pages/assistant/index.html',
+
         }
         if path in route_map:
             target = os.path.join(FRONTEND_DIR, route_map[path].replace('/', os.sep))
@@ -921,6 +944,39 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
             return
 
         # Google OAuth Config Endpoint (GET /api/v1/auth/google/config, /api/auth/google/config)
+        
+        # AI Voice Assistant Token & Context Endpoints (GET /api/v1/ai/voice/token, /api/v1/ai/voice/context)
+        if path in ('/api/v1/ai/voice/token', '/api/ai/voice/token'):
+            auth_user = self.get_authenticated_user() or DEV_PROFILES.get('dev-balaji')
+            token_res = backend_voice_ai.create_live_ephemeral_token()
+            status_code = 200 if token_res.get('ok') else 500
+            self.send_json(status_code, token_res)
+            return
+
+        if path in ('/api/v1/ai/voice/context', '/api/ai/voice/context'):
+            auth_user = self.get_authenticated_user() or DEV_PROFILES.get('dev-balaji')
+            query = urllib.parse.parse_qs(url_parts.query)
+            repo_id = query.get('repo', ['devsync-core'])[0]
+            branch = query.get('branch', ['main'])[0]
+            pulse_data = calculate_contribution_intelligence(auth_user['username']) if auth_user else None
+            system_instruction = backend_voice_ai.build_system_instruction(
+                user_profile=auth_user,
+                active_repo=repo_id,
+                active_branch=branch,
+                repos=REPOSITORIES,
+                prs=backend_issues_prs_chat.PULL_REQUESTS,
+                issues=backend_issues_prs_chat.ISSUES,
+                pulse_data=pulse_data
+            )
+            self.send_json(200, {
+                'ok': True,
+                'systemInstruction': system_instruction,
+                'user': auth_user['username'] if auth_user else 'developer',
+                'activeRepo': repo_id,
+                'activeBranch': branch
+            })
+            return
+
         if path in ('/api/v1/auth/google/config', '/api/auth/google/config'):
             self.send_json(200, {
                 'configured': bool(GOOGLE_CLIENT_ID),
@@ -1034,7 +1090,35 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
             self.send_json(200, pulse)
             return
 
-        # ------------------------------------------------------------------
+                # GET /api/v1/developers/<username>/contribution-intelligence
+        if '/contribution-intelligence' in path and ('/api/developers/' in path or '/api/v1/developers/' in path):
+            prefix = '/api/v1/developers/' if '/api/v1/developers/' in path else '/api/developers/'
+            sub = path[path.find(prefix) + len(prefix):]
+            username = sub.split('/contribution-intelligence')[0].strip().lower()
+            query = urllib.parse.parse_qs(url_parts.query)
+            range_type = query.get('range', ['30d'])[0]
+            project_filter = query.get('project', ['all'])[0]
+            auth_user = self.get_authenticated_user()
+            caller = auth_user['username'].lower() if auth_user else self.headers.get('X-DevSync-User', '').strip().lower()
+
+            intel = calculate_contribution_intelligence(username, range_type=range_type, project_filter=project_filter, caller_username=caller)
+            self.send_json(200, intel)
+            return
+
+        # GET /api/v1/analytics/contribution-intelligence
+        if path in ('/api/v1/analytics/contribution-intelligence', '/api/analytics/contribution-intelligence'):
+            query = urllib.parse.parse_qs(url_parts.query)
+            range_type = query.get('range', ['30d'])[0]
+            project_filter = query.get('project', ['all'])[0]
+            auth_user = self.get_authenticated_user()
+            caller = auth_user['username'].lower() if auth_user else self.headers.get('X-DevSync-User', '').strip().lower()
+            target_user = query.get('user', [caller or 'naveen3438'])[0]
+
+            intel = calculate_contribution_intelligence(target_user, range_type=range_type, project_filter=project_filter, caller_username=caller)
+            self.send_json(200, intel)
+            return
+
+# ------------------------------------------------------------------
         # Repositories & Collaboration Endpoints
         # ------------------------------------------------------------------
         # GET /api/v1/repositories/<repo_id>/members
@@ -1401,8 +1485,67 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
         url_parts = urllib.parse.urlsplit(self.path)
         path = url_parts.path.rstrip('/')
 
+        # Issues, PRs, Teams, and Chat POST dispatch
+        if backend_issues_prs_chat.handle_post(self, path, url_parts, self.get_authenticated_user(), DEV_PROFILES, REPOSITORIES, save_database):
+            return
+
+        # AI Voice Assistant Endpoints
+        if path in ('/api/v1/ai/voice/token', '/api/ai/voice/token'):
+            token_res = backend_voice_ai.create_live_ephemeral_token()
+            status_code = 200 if token_res.get('ok') else 500
+            self.send_json(status_code, token_res)
+            return
+
+        if path in ('/api/v1/ai/voice/context', '/api/ai/voice/context'):
+            auth_user = self.get_authenticated_user() or DEV_PROFILES.get('dev-balaji')
+            length = int(self.headers.get('Content-Length', 0))
+            post_data = self.rfile.read(length) if length > 0 else b'{}'
+            try:
+                body = json.loads(post_data.decode('utf-8'))
+            except Exception:
+                body = {}
+            repo_id = body.get('repo', 'devsync-core')
+            branch = body.get('branch', 'main')
+            pulse_data = calculate_contribution_intelligence(auth_user['username']) if auth_user else None
+            system_instruction = backend_voice_ai.build_system_instruction(
+                user_profile=auth_user,
+                active_repo=repo_id,
+                active_branch=branch,
+                repos=REPOSITORIES,
+                prs=backend_issues_prs_chat.PULL_REQUESTS,
+                issues=backend_issues_prs_chat.ISSUES,
+                pulse_data=pulse_data
+            )
+            self.send_json(200, {
+                'ok': True,
+                'systemInstruction': system_instruction,
+                'user': auth_user['username'] if auth_user else 'developer',
+                'activeRepo': repo_id,
+                'activeBranch': branch
+            })
+            return
+
+        if path in ('/api/v1/ai/voice/synthesize', '/api/ai/voice/synthesize'):
+            length = int(self.headers.get('Content-Length', 0))
+            post_data = self.rfile.read(length) if length > 0 else b'{}'
+            try:
+                body = json.loads(post_data.decode('utf-8'))
+            except Exception:
+                body = {}
+            text = body.get('text', '').strip()
+            voice_name = body.get('voiceName', 'Puck')
+            if not text:
+                self.send_json(400, {'ok': False, 'error': 'Missing text to synthesize'})
+                return
+            audio_res = backend_voice_ai.synthesize_speech(text, voice_name=voice_name)
+            if audio_res:
+                self.send_json(200, {'ok': True, **audio_res})
+            else:
+                self.send_json(500, {'ok': False, 'error': 'Failed to synthesize speech.'})
+            return
+
         # AI Assistant Chat Endpoint
-        if path == '/api/ai/chat':
+        if path in ('/api/ai/chat', '/api/v1/ai/chat', '/assistant/chat', '/assistant/chat/'):
             self.handle_ai_chat()
             return
 
@@ -2270,6 +2413,10 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
         url_parts = urllib.parse.urlsplit(self.path)
         path = url_parts.path.rstrip('/')
 
+        # Issues, PRs, Teams, and Chat PATCH dispatch
+        if backend_issues_prs_chat.handle_patch(self, path, url_parts, self.get_authenticated_user(), save_database):
+            return
+
         # PATCH /api/v1/repositories/<repo_id>/members/<username>
         m_mem_patch = re.match(r'^/api/(?:v1/)?repositories/([^/]+)/members/([^/]+)/?$', path)
         if m_mem_patch:
@@ -2376,6 +2523,10 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
         url_parts = urllib.parse.urlsplit(self.path)
         path = url_parts.path.rstrip('/')
 
+        # Issues, PRs, Teams, and Chat DELETE dispatch
+        if backend_issues_prs_chat.handle_delete(self, path, url_parts, self.get_authenticated_user(), save_database):
+            return
+
         # Remove repository member: DELETE /api/v1/repositories/<repo_id>/members/<username>
         m = re.match(r'^/api/(?:v1/)?repositories/([^/]+)/members/([^/]+)/?$', path)
         if m:
@@ -2433,7 +2584,24 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
             body = json.loads(post_data.decode('utf-8'))
         except Exception:
             body = {}
-        message = body.get('message', '').strip()
+        message = body.get('message', body.get('prompt', '')).strip()
+
+        # Build grounded context
+        auth_user = self.get_authenticated_user() or DEV_PROFILES.get('dev-balaji')
+        pulse_data = calculate_contribution_intelligence(auth_user['username']) if auth_user else None
+        context_instruction = backend_voice_ai.build_system_instruction(
+            user_profile=auth_user,
+            repos=REPOSITORIES,
+            prs=backend_issues_prs_chat.PULL_REQUESTS,
+            issues=backend_issues_prs_chat.ISSUES,
+            pulse_data=pulse_data
+        )
+
+        # Try Gemini API text model first
+        gemini_reply = backend_voice_ai.generate_gemini_text_chat(message, context_instruction=context_instruction)
+        if gemini_reply:
+            self.send_json(200, {"reply": gemini_reply, "source": "gemini"})
+            return
 
         lower = message.lower()
         if 'debug' in lower or 'error' in lower:
@@ -2455,7 +2623,7 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
             reply = (f"DevSync AI Assistant received your message: \"{message}\".\n\n"
                      "I am connected and ready to help you manage repositories, review pull requests, or debug code issues across your DevSync workspace!")
 
-        self.send_json(200, {"reply": reply})
+        self.send_json(200, {"reply": reply, "source": "local"})
 
     def serve_custom_error(self, code):
         error_file_map = {

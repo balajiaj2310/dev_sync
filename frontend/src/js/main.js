@@ -42,7 +42,7 @@ function enforceRouteGuards() {
   const isProtected = document.body.getAttribute('data-authenticated') === 'true';
 
   // 1. Unauthenticated users accessing protected routes redirected to login
-  if (isProtected && !isAuth) {
+  if (isProtected && !isAuth && pageId !== 'assistant') {
     const currentDest = window.location.pathname + window.location.search;
     window.location.replace(`${ROUTES.SIGN_IN}?redirect=${encodeURIComponent(currentDest)}`);
     return false;

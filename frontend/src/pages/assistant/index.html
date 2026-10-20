@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Coding Assistant — DevSync</title>
+  <title>AI Voice & Coding Studio — DevSync</title>
   <link rel="icon" type="image/svg+xml" href="../../../public/favicon.svg">
   <link rel="stylesheet" href="../../assets/css/tokens.css">
   <link rel="stylesheet" href="../../assets/css/reset.css">
@@ -20,9 +20,8 @@
   <link rel="stylesheet" href="../../assets/css/components/dropdowns.css">
   <link rel="stylesheet" href="../../assets/css/components/notifications.css">
   <link rel="stylesheet" href="../../assets/css/pages/assistant.css">
-  <link rel="stylesheet" href="../../assets/css/devsync-ai.css">
 </head>
-<body data-authenticated="true" data-page="assistant">
+<body data-authenticated="false" data-page="assistant">
   <div class="app-container">
     <aside class="app-sidebar">
       <div class="sidebar-header">
@@ -50,7 +49,7 @@
         <div class="topbar-left">
           <button class="mobile-menu-toggle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
           <div class="topbar-search-box">
-            <input type="text" class="topbar-search-input" placeholder="Search..." />
+            <input type="text" class="topbar-search-input" placeholder="Search repositories, code, pull requests..." />
           </div>
         </div>
         <div class="topbar-right">
@@ -59,58 +58,251 @@
         </div>
       </header>
 
-      <main class="app-content p-0" style="padding: 16px var(--space-8);">
-        <div class="assistant-layout">
-          <!-- Left History Sidebar -->
-          <div class="assistant-history-sidebar">
-            <div class="p-4" style="border-bottom: 1px solid var(--color-border); display: flex; align-items: center; justify-content: space-between;">
-              <span style="font-weight: 700; font-size: 13.5px;">Chats</span>
-              <button id="btnNewChat" class="btn btn-outline btn-sm">+ New</button>
+      <main class="app-content" style="padding: 16px var(--space-8);">
+        <!-- Assistant Page Top Header -->
+        <div class="assistant-page-header">
+          <div class="d-flex align-items-center gap-3">
+            <div class="assistant-mode-tabs" role="tablist">
+              <button class="assistant-tab-btn active" id="tabVoiceBtn" data-target="paneVoice">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                Voice Assistant
+              </button>
+              <button class="assistant-tab-btn" id="tabChatBtn" data-target="paneChat">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                AI Chat
+              </button>
             </div>
-            <div class="p-3 d-flex flex-column gap-1">
-              <button class="btn btn-ghost btn-sm text-left w-100 active" style="background-color: var(--color-mint); font-weight: 600;">PR #42 Architecture Review</button>
-              <button class="btn btn-ghost btn-sm text-left w-100">Django CSRF Debugging</button>
-              <button class="btn btn-ghost btn-sm text-left w-100">Database Index Proposal</button>
-            </div>
+            <span class="badge badge-public" id="topActiveContextBadge">Context: devsync-core (main)</span>
           </div>
 
-          <!-- Main Assistant Conversation -->
-          <div class="assistant-main-chat">
-            <div class="assistant-header">
-              <div class="d-flex align-items-center gap-2">
-                <span class="badge badge-public">Context: devsync-core (main)</span>
-              </div>
-              <span class="text-secondary" style="font-size: 12px;">DevSync AI Engine v1.0</span>
+          <div class="d-flex align-items-center gap-3">
+            <div class="assistant-provider-badge">
+              <span class="provider-live-dot"></span>
+              Google Gemini Live &bull; gemini-3.8-live
             </div>
+          </div>
+        </div>
 
-            <div class="assistant-messages-container" id="assistantMessages">
-              <div class="assistant-bubble-ai">
-                <strong>Hello Balaji!</strong> I am your DevSync AI Coding Assistant. Select a suggestion below or describe any coding challenge:
-                <div class="prompt-chips-grid">
-                  <div class="prompt-chip" data-prompt="Explain the architecture of this project">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-                    Explain this code
+        <div class="assistant-workspace">
+          <!-- ===================================================================
+               TAB PANE 1: VOICE ASSISTANT STUDIO
+               =================================================================== -->
+          <div class="tab-pane active" id="paneVoice">
+            <div class="voice-studio-grid">
+              <!-- Left Sidebar: Project Context & Settings -->
+              <div class="voice-panel-card">
+                <div class="voice-panel-title">
+                  <span>Project Context</span>
+                  <button id="btnRefreshContext" class="btn btn-ghost btn-sm p-1" title="Refresh Context"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></button>
+                </div>
+
+                <div class="context-select-group">
+                  <label class="context-label" for="voiceRepoSelect">Active Repository</label>
+                  <select id="voiceRepoSelect" class="context-select">
+                    <option value="devsync-core" selected>devsync-core</option>
+                    <option value="repo-ai">AI Chatbot</option>
+                    <option value="repo-cloud">DevSync Cloud Engine</option>
+                  </select>
+                </div>
+
+                <div class="context-select-group">
+                  <label class="context-label" for="voiceBranchSelect">Branch</label>
+                  <select id="voiceBranchSelect" class="context-select">
+                    <option value="main" selected>main</option>
+                    <option value="develop">develop</option>
+                    <option value="feature/oauth">feature/oauth</option>
+                  </select>
+                </div>
+
+                <div class="pulse-summary-chip">
+                  <div class="context-label" style="color: #065F46;">Project Pulse Score</div>
+                  <div class="pulse-summary-score">84 <span style="font-size: 13px; font-weight: 500;">/ 100</span></div>
+                  <div class="pulse-summary-meta">&bull; Velocity: 88 &bull; Quality: 92 &bull; Collab: 85</div>
+                </div>
+
+                <div class="mt-4 pt-3" style="border-top: 1px solid var(--color-border);">
+                  <div class="voice-panel-title" style="border: none; padding: 0; margin-bottom: 8px;">
+                    <span>Voice Settings</span>
                   </div>
-                  <div class="prompt-chip" data-prompt="How do I resolve a Django CSRF error?">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
-                    Help me debug this error
+
+                  <div class="context-select-group">
+                    <label class="context-label" for="voicePersonaSelect">Voice Persona</label>
+                    <select id="voicePersonaSelect" class="context-select">
+                      <option value="Puck" selected>Puck (Upbeat & Clear)</option>
+                      <option value="Charon">Charon (Informative & Calm)</option>
+                      <option value="Kore">Kore (Firm & Articulate)</option>
+                      <option value="Fenrir">Fenrir (Dynamic & Fast)</option>
+                      <option value="Aoede">Aoede (Breezy & Natural)</option>
+                    </select>
                   </div>
-                  <div class="prompt-chip" data-prompt="Suggest unit tests for authentication">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-                    Suggest tests for this function
+
+                  <div class="context-select-group">
+                    <label class="context-label" for="voiceLangSelect">Language</label>
+                    <select id="voiceLangSelect" class="context-select">
+                      <option value="en-US" selected>English (US)</option>
+                      <option value="en-GB">English (UK)</option>
+                      <option value="es-ES">Spanish</option>
+                      <option value="fr-FR">French</option>
+                      <option value="de-DE">German</option>
+                      <option value="hi-IN">Hindi</option>
+                      <option value="ja-JP">Japanese</option>
+                    </select>
                   </div>
-                  <div class="prompt-chip" data-prompt="Draft commit message for REST API refactoring">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><line x1="1.05" y1="12" x2="7" y2="12"/><line x1="17.01" y1="12" x2="22.96" y2="12"/></svg>
-                    Draft a commit message
+                </div>
+              </div>
+
+              <!-- Center Hero: The Voice Orb & Controls -->
+              <div class="voice-hero-card">
+                <div class="voice-status-header">
+                  <div class="voice-status-pill" id="voiceStatusPill">
+                    <span class="status-bullet"></span>
+                    <span id="voiceStatusText">Ready to Connect</span>
+                  </div>
+                  <div class="voice-session-timer" id="voiceSessionTimer">00:00</div>
+                </div>
+
+                <!-- Central Animated Reactive Voice Orb -->
+                <div class="voice-orb-wrapper" id="voiceOrbWrapper">
+                  <div class="orb-ring orb-ring-1"></div>
+                  <div class="orb-ring orb-ring-2"></div>
+                  <div class="voice-orb state-idle" id="voiceOrb" title="Click to start voice conversation">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                      <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                      <line x1="12" y1="19" x2="12" y2="23"/>
+                      <line x1="8" y1="23" x2="16" y2="23"/>
+                    </svg>
+                  </div>
+                </div>
+
+                <!-- Soundwave frequency visualizer -->
+                <div class="soundwave-visualizer" id="soundwaveVisualizer">
+                  <div class="soundwave-bar"></div>
+                  <div class="soundwave-bar"></div>
+                  <div class="soundwave-bar"></div>
+                  <div class="soundwave-bar"></div>
+                  <div class="soundwave-bar"></div>
+                  <div class="soundwave-bar"></div>
+                  <div class="soundwave-bar"></div>
+                </div>
+
+                <!-- Bottom Session Controls -->
+                <div class="voice-controls-bar">
+                  <button id="btnToggleMute" class="btn-voice-secondary" title="Mute Microphone" disabled>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="1" y1="1" x2="23" y2="23"/><path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"/><path d="M17 16.95A7 7 0 0 1 5 12v-2m14 0v2a7 7 0 0 1-.11 1.23"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                  </button>
+
+                  <button id="btnVoiceAction" class="btn-voice-primary">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                    <span id="btnVoiceActionText">Start Voice Assistant</span>
+                  </button>
+
+                  <button id="btnEndSession" class="btn-voice-secondary" title="End Session" disabled>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Right Sidebar: Real-time Transcript & Quick Voice Commands -->
+              <div class="voice-panel-card">
+                <div class="voice-panel-title">
+                  <span>Conversation Transcript</span>
+                  <div class="d-flex gap-1">
+                    <button id="btnCopyTranscript" class="btn btn-ghost btn-sm p-1" title="Copy Transcript"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+                    <button id="btnClearTranscript" class="btn btn-ghost btn-sm p-1" title="Clear Transcript"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></button>
+                  </div>
+                </div>
+
+                <div class="voice-transcript-container" id="voiceTranscriptContainer">
+                  <div class="transcript-empty-state" id="transcriptEmptyState">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="1.5" style="margin-bottom: 8px;"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                    <div>Start a session or tap a quick voice command below to begin pairing.</div>
+                  </div>
+                </div>
+
+                <!-- Quick Voice Commands -->
+                <div class="quick-commands-section">
+                  <div class="context-label">Quick Voice Commands</div>
+                  <div class="quick-commands-list">
+                    <button class="quick-cmd-btn" data-command="Summarize open pull requests in devsync-core">
+                      <svg class="quick-cmd-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 0 1 2 2v7"/><line x1="6" y1="9" x2="6" y2="21"/></svg>
+                      Summarize open pull requests
+                    </button>
+                    <button class="quick-cmd-btn" data-command="What is our current Project Pulse score and metrics?">
+                      <svg class="quick-cmd-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                      What is our Project Pulse score?
+                    </button>
+                    <button class="quick-cmd-btn" data-command="Review active issues and bug priorities">
+                      <svg class="quick-cmd-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                      Review active issues
+                    </button>
+                    <button class="quick-cmd-btn" data-command="Explain the architecture of devsync-core">
+                      <svg class="quick-cmd-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                      Explain DevSync architecture
+                    </button>
                   </div>
                 </div>
               </div>
             </div>
+          </div>
 
-            <!-- Composer Bar -->
-            <div class="chat-input-bar">
-              <input type="text" id="assistantInput" class="chat-input-field" placeholder="Ask AI Assistant about your code, PRs, or tests..." />
-              <button id="assistantSendBtn" class="btn btn-primary btn-pill btn-sm">Send &rarr;</button>
+          <!-- ===================================================================
+               TAB PANE 2: AI TEXT CHAT (PRESERVED & GROUNDED)
+               =================================================================== -->
+          <div class="tab-pane" id="paneChat">
+            <div class="assistant-layout">
+              <!-- Left History Sidebar -->
+              <div class="assistant-history-sidebar">
+                <div class="p-4" style="border-bottom: 1px solid var(--color-border); display: flex; align-items: center; justify-content: space-between;">
+                  <span style="font-weight: 700; font-size: 13.5px;">Chats</span>
+                  <button id="btnNewChat" class="btn btn-outline btn-sm">+ New</button>
+                </div>
+                <div class="p-3 d-flex flex-column gap-1">
+                  <button class="btn btn-ghost btn-sm text-left w-100 active" style="background-color: var(--color-mint); font-weight: 600;">PR #42 Architecture Review</button>
+                  <button class="btn btn-ghost btn-sm text-left w-100">Django CSRF Debugging</button>
+                  <button class="btn btn-ghost btn-sm text-left w-100">Database Index Proposal</button>
+                </div>
+              </div>
+
+              <!-- Main Assistant Conversation -->
+              <div class="assistant-main-chat">
+                <div class="assistant-header">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="badge badge-public">Context: devsync-core (main)</span>
+                  </div>
+                  <span class="text-secondary" style="font-size: 12px;">Powered by Google Gemini 3.6 Flash</span>
+                </div>
+
+                <div class="assistant-messages-container" id="assistantMessages">
+                  <div class="assistant-bubble-ai">
+                    <strong>Hello Balaji!</strong> I am your DevSync AI Coding Assistant. Select a suggestion below or describe any coding challenge:
+                    <div class="prompt-chips-grid">
+                      <div class="prompt-chip" data-prompt="Explain the architecture of this project">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                        Explain this code
+                      </div>
+                      <div class="prompt-chip" data-prompt="How do I resolve a Django CSRF error?">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+                        Help me debug this error
+                      </div>
+                      <div class="prompt-chip" data-prompt="Suggest unit tests for authentication">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                        Suggest tests for this function
+                      </div>
+                      <div class="prompt-chip" data-prompt="Draft commit message for REST API refactoring">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><line x1="1.05" y1="12" x2="7" y2="12"/><line x1="17.01" y1="12" x2="22.96" y2="12"/></svg>
+                        Draft a commit message
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Composer Bar -->
+                <div class="chat-input-bar">
+                  <input type="text" id="assistantInput" class="chat-input-field" placeholder="Ask AI Assistant about your code, PRs, or tests..." />
+                  <button id="assistantSendBtn" class="btn btn-primary btn-pill btn-sm">Send &rarr;</button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -119,16 +311,5 @@
   </div>
 
   <script type="module" src="../../js/main.js"></script>
-  <!-- DevSync Floating AI Assistant Widget -->
-  <script>
-    window.DEVSYNC_AI_CONFIG = {
-      endpoint: "/api/ai/chat",
-      getAuthHeaders: () => {
-        const token = window.DevSyncAuth?.getAccessToken?.() || localStorage.getItem('devsync_auth_token');
-        return token ? { Authorization: `Bearer ${token}` } : {};
-      }
-    };
-  </script>
-  <script defer src="../../js/devsync-ai.js"></script>
 </body>
 </html>

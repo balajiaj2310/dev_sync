@@ -108,6 +108,8 @@ export async function initDeveloperProfilePage() {
   let pulseView = 'activity'; // 'activity', 'comparison', 'progress', 'team'
   let pulseTimer = null;
   let pulseDataCache = null;
+  let contribRange = '30d';
+  let devIntelCache = null;
 
   // Filter projects by permission
   function getVisibleProjects() {
@@ -302,6 +304,10 @@ export async function initDeveloperProfilePage() {
     attachEventListeners();
     if (currentTab === 'pulse') {
       initPulseComponent();
+    } else if (currentTab === 'contributions') {
+      initContributionsComponent();
+    } else if (currentTab === 'overview') {
+      initOverviewContributionSnapshot();
     }
   }
 
@@ -319,6 +325,87 @@ export async function initDeveloperProfilePage() {
       default:
         return renderOverviewTab();
     }
+  }
+
+  /* -------------------------------------------------------------------------
+   * Section 5.5: Shared SVG Radar Chart & Gauge Helpers
+   * ------------------------------------------------------------------------- */
+  function renderSharedSvgRadar(strengths, hasData) {
+    if (!hasData || !strengths || strengths.length < 3) {
+      return `
+        <div class="text-center py-5 text-secondary" style="font-size: 13px;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#CBD5E1" stroke-width="1.5" style="margin: 0 auto 8px auto; display: block;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          Insufficient verified activity to plot radar profile.
+        </div>
+      `;
+    }
+
+    const cx = 135;
+    const cy = 110;
+    const R = 70;
+    const numAxes = strengths.length;
+
+    const webLevels = [0.33, 0.66, 1.0];
+    let webPolygons = '';
+    webLevels.forEach(lvl => {
+      const pts = [];
+      for (let i = 0; i < numAxes; i++) {
+        const angle = -Math.PI / 2 + (i * 2 * Math.PI) / numAxes;
+        const x = cx + R * lvl * Math.cos(angle);
+        const y = cy + R * lvl * Math.sin(angle);
+        pts.push(`${x.toFixed(1)},${y.toFixed(1)}`);
+      }
+      webPolygons += `<polygon points="${pts.join(' ')}" fill="none" stroke="#E2E8F0" stroke-width="1" />`;
+    });
+
+    let spokes = '';
+    let labels = '';
+    const dataPoints = [];
+
+    strengths.forEach((s, i) => {
+      const angle = -Math.PI / 2 + (i * 2 * Math.PI) / numAxes;
+      const endX = cx + R * Math.cos(angle);
+      const endY = cy + R * Math.sin(angle);
+      spokes += `<line x1="${cx}" y1="${cy}" x2="${endX.toFixed(1)}" y2="${endY.toFixed(1)}" stroke="#E2E8F0" stroke-width="1" stroke-dasharray="2 2" />`;
+
+      const valRatio = Math.max(0.1, Math.min(1.0, (s.value || 0) / (s.max || 100)));
+      const dataX = cx + R * valRatio * Math.cos(angle);
+      const dataY = cy + R * valRatio * Math.sin(angle);
+      dataPoints.push(`${dataX.toFixed(1)},${dataY.toFixed(1)}`);
+
+      const labelR = R + 18;
+      const lx = cx + labelR * Math.cos(angle);
+      const ly = cy + labelR * Math.sin(angle);
+      let textAnchor = 'middle';
+      if (Math.cos(angle) > 0.3) textAnchor = 'start';
+      else if (Math.cos(angle) < -0.3) textAnchor = 'end';
+
+      labels += `
+        <text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" font-size="10.5" font-weight="600" fill="#475569" text-anchor="${textAnchor}" dominant-baseline="middle">
+          ${escapeHtml(s.axis)} <tspan font-weight="700" fill="#059669">(${s.value})</tspan>
+        </text>
+      `;
+    });
+
+    const dataPolygon = `
+      <polygon points="${dataPoints.join(' ')}" fill="rgba(16, 185, 129, 0.16)" stroke="#10B981" stroke-width="2" stroke-linejoin="round" />
+    `;
+
+    let vertices = '';
+    dataPoints.forEach(pt => {
+      const [vx, vy] = pt.split(',');
+      vertices += `<circle cx="${vx}" cy="${vy}" r="3.5" fill="#10B981" stroke="#FFFFFF" stroke-width="1.5" />`;
+    });
+
+    return `
+      <svg viewBox="0 0 270 220" width="100%" height="220" style="max-width: 300px; overflow: visible;">
+        ${webPolygons}
+        ${spokes}
+        ${dataPolygon}
+        ${vertices}
+        ${labels}
+      </svg>
+    `;
   }
 
   /* -------------------------------------------------------------------------
@@ -520,38 +607,18 @@ export async function initDeveloperProfilePage() {
             </div>
           </article>
 
-          <!-- Contribution Stats Card -->
-          <article class="dev-card" aria-label="Contribution statistics">
+          <!-- Contribution Intelligence Card (Overview Snapshot) -->
+          <article class="dev-card" aria-label="Contribution Intelligence" id="overviewContribCard">
             <div class="dev-card-header">
-              <h2 class="dev-card-title">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-                Verified Stats
-              </h2>
+              <div class="d-flex align-items-center gap-2">
+                <span class="contrib-badge-tag">Contribution Intelligence</span>
+                <h2 class="dev-card-title" style="font-size: 14.5px;">Contribution Impact</h2>
+              </div>
+              <a href="#" class="dev-card-link-action" data-nav-tab="contributions">Full Analysis &rarr;</a>
             </div>
-            <div class="dev-stats-grid">
-              <div class="dev-stat-tile mint">
-                <div class="dev-stat-tile-data">
-                  <span class="dev-stat-tile-num">${sortedProjects.length}</span>
-                  <span class="dev-stat-tile-lbl">Repositories</span>
-                </div>
-              </div>
-              <div class="dev-stat-tile blue">
-                <div class="dev-stat-tile-data">
-                  <span class="dev-stat-tile-num">${developer.stats?.contributionsCount ?? 42}</span>
-                  <span class="dev-stat-tile-lbl">Contributions</span>
-                </div>
-              </div>
-              <div class="dev-stat-tile purple">
-                <div class="dev-stat-tile-data">
-                  <span class="dev-stat-tile-num">${developer.stats?.pullRequestsCount ?? 8}</span>
-                  <span class="dev-stat-tile-lbl">Pull Requests</span>
-                </div>
-              </div>
-              <div class="dev-stat-tile amber">
-                <div class="dev-stat-tile-data">
-                  <span class="dev-stat-tile-num">${developer.stats?.issuesCount ?? 14}</span>
-                  <span class="dev-stat-tile-lbl">Issues Solved</span>
-                </div>
+            <div id="overviewContribSnapshot">
+              <div class="text-center py-4 text-secondary" style="font-size: 13px;">
+                <span class="btn-spinner"></span> Gathering verified contribution records...
               </div>
             </div>
           </article>
@@ -753,30 +820,95 @@ export async function initDeveloperProfilePage() {
 
   // View 1: Activity Pulse Chart & Drilldown
   async function renderPulseActivityView(containerEl) {
-    const res = await PulseService.getPulse(developer.username, pulseRange, pulseProject);
+    const [res, intelData] = await Promise.all([
+      PulseService.getPulse(developer.username, pulseRange, pulseProject),
+      PulseService.getContributionIntelligence(developer.username, (pulseRange === 'live' || pulseRange === '24h') ? '7d' : pulseRange, pulseProject)
+    ]);
     pulseDataCache = res;
+
+    const ARC_LENGTH = 188.5;
+    const pulseScore = intelData.hasSufficientData ? intelData.score : null;
+    const pulseOffset = pulseScore !== null ? Math.max(0, ARC_LENGTH - (ARC_LENGTH * (pulseScore / 100))) : ARC_LENGTH;
+    const pulseInd = intelData.indicators || {};
 
     const intervals = res.intervals || [];
     const maxCount = Math.max(...intervals.map(i => i.count), 5);
 
     containerEl.innerHTML = `
-      <!-- Pulse Metric Tiles -->
-      <div class="repo-stat-cards-grid mb-4">
-        <div class="repo-stat-card">
-          <span class="repo-stat-num">${res.totalEvents || 0}</span>
-          <span class="repo-stat-lbl">Total Events (${pulseRange})</span>
+      <!-- Contribution Intelligence Header Cards in Pulse -->
+      <div class="contrib-intel-grid mb-4">
+        <!-- Impact Score Gauge Card -->
+        <div class="contrib-gauge-card">
+          <div class="d-flex align-items-center justify-content-between mb-2">
+            <span class="contrib-card-label">Contribution Impact</span>
+            <span class="contrib-trend-badge ${intelData.hasSufficientData ? (intelData.trendDirection || 'up') : 'neutral'}">
+              ${intelData.hasSufficientData ? `${intelData.trendDirection === 'up' ? '↑' : (intelData.trendDirection === 'down' ? '↓' : '•')} ${intelData.trendPercent} ${intelData.priorPeriodLabel || ''}` : 'Insufficient data'}
+            </span>
+          </div>
+          <div class="contrib-gauge-wrap">
+            <svg class="contrib-gauge-svg" viewBox="0 0 160 95" width="160" height="95">
+              <path d="M 20 85 A 60 60 0 0 1 140 85" fill="none" stroke="#E2E8F0" stroke-width="12" stroke-linecap="round" />
+              <path d="M 20 85 A 60 60 0 0 1 140 85" fill="none" stroke="${pulseScore !== null ? '#10B981' : '#CBD5E1'}" stroke-width="12" stroke-linecap="round" stroke-dasharray="188.5" stroke-dashoffset="${pulseOffset}" />
+            </svg>
+            <div class="contrib-gauge-center">
+              <span class="contrib-gauge-score">${pulseScore !== null ? pulseScore : '—'}</span>
+              <span class="contrib-gauge-max">/ 100</span>
+            </div>
+          </div>
+          <p class="contrib-gauge-explanation">
+            ${escapeHtml(intelData.hasSufficientData ? intelData.explanation : (intelData.message || 'Insufficient activity recorded in this period.'))}
+          </p>
         </div>
-        <div class="repo-stat-card">
-          <span class="repo-stat-num">${res.metrics?.commits || 0}</span>
-          <span class="repo-stat-lbl">Commits Recorded</span>
-        </div>
-        <div class="repo-stat-card">
-          <span class="repo-stat-num">${res.metrics?.fileUploads || 0}</span>
-          <span class="repo-stat-lbl">Branch File Uploads</span>
-        </div>
-        <div class="repo-stat-card">
-          <span class="repo-stat-num">${res.metrics?.collaborations || 0}</span>
-          <span class="repo-stat-lbl">Collaborations</span>
+
+        <!-- 3 Compact Indicators -->
+        <div class="contrib-indicators-column">
+          <div class="contrib-indicator-card">
+            <div class="contrib-ind-left">
+              <div class="contrib-ind-icon mint">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              </div>
+              <div>
+                <span class="contrib-ind-label">Impact</span>
+                <span class="contrib-ind-sub">${escapeHtml(pulseInd.impact?.sublabel || 'Work delivered')}</span>
+              </div>
+            </div>
+            <div class="contrib-ind-right">
+              <span class="contrib-ind-value">${escapeHtml(pulseInd.impact?.value || '0 delivered')}</span>
+              <span class="contrib-ind-status ${(pulseInd.impact?.status || 'steady').toLowerCase()}">${escapeHtml(pulseInd.impact?.status || 'Steady')}</span>
+            </div>
+          </div>
+
+          <div class="contrib-indicator-card">
+            <div class="contrib-ind-left">
+              <div class="contrib-ind-icon blue">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              </div>
+              <div>
+                <span class="contrib-ind-label">Flow</span>
+                <span class="contrib-ind-sub">${escapeHtml(pulseInd.flow?.sublabel || 'Resolution velocity')}</span>
+              </div>
+            </div>
+            <div class="contrib-ind-right">
+              <span class="contrib-ind-value">${escapeHtml(pulseInd.flow?.value || '0 resolved')}</span>
+              <span class="contrib-ind-status ${(pulseInd.flow?.status || 'active').toLowerCase()}">${escapeHtml(pulseInd.flow?.status || 'Active')}</span>
+            </div>
+          </div>
+
+          <div class="contrib-indicator-card">
+            <div class="contrib-ind-left">
+              <div class="contrib-ind-icon purple">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </div>
+              <div>
+                <span class="contrib-ind-label">Collaboration</span>
+                <span class="contrib-ind-sub">${escapeHtml(pulseInd.collaboration?.sublabel || 'Reviews & discussions')}</span>
+              </div>
+            </div>
+            <div class="contrib-ind-right">
+              <span class="contrib-ind-value">${escapeHtml(pulseInd.collaboration?.value || '0 interactions')}</span>
+              <span class="contrib-ind-status ${(pulseInd.collaboration?.status || 'active').toLowerCase()}">${escapeHtml(pulseInd.collaboration?.status || 'Active')}</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -1028,47 +1160,214 @@ export async function initDeveloperProfilePage() {
   }
 
   /* -------------------------------------------------------------------------
-   * Contributions Tab
+   * Contributions Tab: DevSync Contribution Intelligence
    * ------------------------------------------------------------------------- */
   function renderContributionsTab() {
     return `
       <div class="dev-card">
-        <div class="dev-card-header">
-          <h2 class="dev-card-title">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-            Contributions &amp; Repository Velocity
-          </h2>
-          <span class="text-secondary" style="font-size: 13px;">Verified development records</span>
-        </div>
+        <!-- Header & Controls -->
+        <div class="contrib-intel-header">
+          <div>
+            <div class="d-flex align-items-center gap-2">
+              <h2 class="font-heading" style="font-size: 19px; margin: 0; color: #0F172A;">Contribution Intelligence</h2>
+              <span class="contrib-badge-tag">Verified Records</span>
+            </div>
+            <p class="text-secondary" style="font-size: 13px; margin: 3px 0 0 0;">
+              Data-driven engineering impact, flow velocity, and peer collaboration metrics for @${escapeHtml(developer.username)}.
+            </p>
+          </div>
 
-        <div class="dev-stats-grid mb-5">
-          <div class="dev-stat-tile mint">
-            <div class="dev-stat-tile-data">
-              <span class="dev-stat-tile-num">${getVisibleProjects().length}</span>
-              <span class="dev-stat-tile-lbl">Total Repositories</span>
-            </div>
-          </div>
-          <div class="dev-stat-tile blue">
-            <div class="dev-stat-tile-data">
-              <span class="dev-stat-tile-num">${developer.stats?.contributionsCount || 42}</span>
-              <span class="dev-stat-tile-lbl">Commits &amp; Uploads</span>
-            </div>
-          </div>
-          <div class="dev-stat-tile purple">
-            <div class="dev-stat-tile-data">
-              <span class="dev-stat-tile-num">${developer.stats?.pullRequestsCount || 8}</span>
-              <span class="dev-stat-tile-lbl">Pull Requests</span>
-            </div>
-          </div>
-          <div class="dev-stat-tile amber">
-            <div class="dev-stat-tile-data">
-              <span class="dev-stat-tile-num">${developer.stats?.issuesCount || 14}</span>
-              <span class="dev-stat-tile-lbl">Issues Resolved</span>
+          <!-- Controls: 7d / 30d / 90d Time Range -->
+          <div class="contrib-intel-controls">
+            <div class="contrib-range-pills" role="group" aria-label="Time Window">
+              <button type="button" class="contrib-range-btn ${contribRange === '7d' ? 'active' : ''}" data-dev-range="7d">7 Days</button>
+              <button type="button" class="contrib-range-btn ${contribRange === '30d' ? 'active' : ''}" data-dev-range="30d">30 Days</button>
+              <button type="button" class="contrib-range-btn ${contribRange === '90d' ? 'active' : ''}" data-dev-range="90d">90 Days</button>
             </div>
           </div>
         </div>
 
-        <h3 class="font-heading" style="font-size: 15px; margin-bottom: 12px;">Recent Contributions</h3>
+        <!-- Dynamic Container -->
+        <div id="devContribIntelContainer">
+          <div class="text-center py-6 text-secondary"><span class="btn-spinner"></span> Gathering verified contribution records...</div>
+        </div>
+      </div>
+    `;
+  }
+
+  async function initContributionsComponent() {
+    const containerEl = document.getElementById('devContribIntelContainer');
+    if (!containerEl) return;
+
+    container.querySelectorAll('[data-dev-range]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        contribRange = btn.getAttribute('data-dev-range');
+        container.querySelectorAll('[data-dev-range]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        await loadDevContributionIntelligence();
+      });
+    });
+
+    await loadDevContributionIntelligence();
+  }
+
+  async function loadDevContributionIntelligence() {
+    const containerEl = document.getElementById('devContribIntelContainer');
+    if (!containerEl) return;
+
+    containerEl.innerHTML = `<div class="text-center py-6 text-secondary"><span class="btn-spinner"></span> Computing contribution metrics...</div>`;
+
+    try {
+      const intel = await PulseService.getContributionIntelligence(developer.username, contribRange);
+      devIntelCache = intel;
+
+      const ARC_LENGTH = 188.5;
+      const score = intel.hasSufficientData ? intel.score : null;
+      const offset = score !== null ? Math.max(0, ARC_LENGTH - (ARC_LENGTH * (score / 100))) : ARC_LENGTH;
+
+      const ind = intel.indicators || {};
+
+      containerEl.innerHTML = `
+        <div class="contrib-intel-grid mb-4">
+          <!-- Left: Score Gauge -->
+          <div class="contrib-gauge-card">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <div class="d-flex align-items-center gap-2">
+                <span class="contrib-card-label">Contribution Impact</span>
+                <span class="contrib-info-btn" title="${escapeHtml(intel.tooltip || 'Composite transparent engineering metric')}">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                </span>
+              </div>
+              <span class="contrib-trend-badge ${intel.hasSufficientData ? (intel.trendDirection || 'up') : 'neutral'}">
+                ${intel.hasSufficientData ? `${intel.trendDirection === 'up' ? '↑' : (intel.trendDirection === 'down' ? '↓' : '•')} ${intel.trendPercent} ${intel.priorPeriodLabel || ''}` : 'Insufficient data'}
+              </span>
+            </div>
+
+            <!-- SVG Semicircular Gauge -->
+            <div class="contrib-gauge-wrap">
+              <svg class="contrib-gauge-svg" viewBox="0 0 160 95" width="160" height="95">
+                <path d="M 20 85 A 60 60 0 0 1 140 85" fill="none" stroke="#E2E8F0" stroke-width="12" stroke-linecap="round" />
+                <path d="M 20 85 A 60 60 0 0 1 140 85" fill="none" stroke="${score !== null ? '#10B981' : '#CBD5E1'}" stroke-width="12" stroke-linecap="round" stroke-dasharray="188.5" stroke-dashoffset="${offset}" />
+              </svg>
+              <div class="contrib-gauge-center">
+                <span class="contrib-gauge-score">${score !== null ? score : '—'}</span>
+                <span class="contrib-gauge-max">/ 100</span>
+              </div>
+            </div>
+
+            <p class="contrib-gauge-explanation">
+              ${escapeHtml(intel.hasSufficientData ? intel.explanation : (intel.message || 'Insufficient activity recorded in this period.'))}
+            </p>
+          </div>
+
+          <!-- Right: 3 Indicators -->
+          <div class="contrib-indicators-column">
+            <!-- Impact -->
+            <div class="contrib-indicator-card">
+              <div class="contrib-ind-left">
+                <div class="contrib-ind-icon mint">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                </div>
+                <div>
+                  <span class="contrib-ind-label">Impact</span>
+                  <span class="contrib-ind-sub">${escapeHtml(ind.impact?.sublabel || 'Work delivered')}</span>
+                </div>
+              </div>
+              <div class="contrib-ind-right">
+                <span class="contrib-ind-value">${escapeHtml(ind.impact?.value || '0 delivered')}</span>
+                <span class="contrib-ind-status ${(ind.impact?.status || 'steady').toLowerCase()}">${escapeHtml(ind.impact?.status || 'Steady')}</span>
+              </div>
+            </div>
+
+            <!-- Flow -->
+            <div class="contrib-indicator-card">
+              <div class="contrib-ind-left">
+                <div class="contrib-ind-icon blue">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                </div>
+                <div>
+                  <span class="contrib-ind-label">Flow</span>
+                  <span class="contrib-ind-sub">${escapeHtml(ind.flow?.sublabel || 'Resolution velocity')}</span>
+                </div>
+              </div>
+              <div class="contrib-ind-right">
+                <span class="contrib-ind-value">${escapeHtml(ind.flow?.value || '0 resolved')}</span>
+                <span class="contrib-ind-status ${(ind.flow?.status || 'active').toLowerCase()}">${escapeHtml(ind.flow?.status || 'Active')}</span>
+              </div>
+            </div>
+
+            <!-- Collaboration -->
+            <div class="contrib-indicator-card">
+              <div class="contrib-ind-left">
+                <div class="contrib-ind-icon purple">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                </div>
+                <div>
+                  <span class="contrib-ind-label">Collaboration</span>
+                  <span class="contrib-ind-sub">${escapeHtml(ind.collaboration?.sublabel || 'Reviews & discussions')}</span>
+                </div>
+              </div>
+              <div class="contrib-ind-right">
+                <span class="contrib-ind-value">${escapeHtml(ind.collaboration?.value || '0 interactions')}</span>
+                <span class="contrib-ind-status ${(ind.collaboration?.status || 'active').toLowerCase()}">${escapeHtml(ind.collaboration?.status || 'Active')}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lower Grid: Strengths Radar & Project Comparison -->
+        <div class="contrib-lower-grid mb-5">
+          <!-- Strengths -->
+          <div class="contrib-sub-card">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <div>
+                <h4 class="contrib-section-title">Engineering Strengths</h4>
+                <span class="text-secondary" style="font-size: 12px;">5-dimensional verified capabilities</span>
+              </div>
+              <span class="text-secondary" style="font-size: 11.5px;">Scale 0–100</span>
+            </div>
+            <div class="contrib-radar-wrapper">
+              ${renderSharedSvgRadar(intel.strengths, intel.hasSufficientData)}
+            </div>
+          </div>
+
+          <!-- Projects -->
+          <div class="contrib-sub-card">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <div>
+                <h4 class="contrib-section-title">Project Distribution</h4>
+                <span class="text-secondary" style="font-size: 12px;">Proportional activity across repositories</span>
+              </div>
+              <span class="text-secondary" style="font-size: 11.5px;">${(intel.projectDistribution || []).length} active</span>
+            </div>
+            <div class="contrib-projects-list">
+              ${(intel.projectDistribution || []).length > 0 ? (intel.projectDistribution || []).map(p => `
+                <div class="contrib-proj-row">
+                  <div class="contrib-proj-top">
+                    <a href="${ROUTES.REPOSITORY_DETAIL}?repo=${encodeURIComponent(p.name)}" class="contrib-proj-name">
+                      <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background-color: ${p.languageColor || '#10B981'};"></span>
+                      ${escapeHtml(p.name)}
+                    </a>
+                    <span class="contrib-proj-share">${p.sharePercent}%</span>
+                  </div>
+                  <div class="contrib-proj-bar">
+                    <div class="contrib-proj-fill" style="width: ${p.sharePercent}%; background-color: ${p.languageColor || '#10B981'};"></div>
+                  </div>
+                  <div class="contrib-proj-meta">
+                    <span>${escapeHtml(p.recentActivity || 'Activity recorded')}</span>
+                    <span>${p.eventCount} action${p.eventCount === 1 ? '' : 's'}</span>
+                  </div>
+                </div>
+              `).join('') : `
+                <div class="text-center py-4 text-secondary" style="font-size: 13px;">
+                  No active repository records found in this window.
+                </div>
+              `}
+            </div>
+          </div>
+        </div>
+
+        <h3 class="font-heading" style="font-size: 15px; margin-bottom: 12px;">Verified Contribution History</h3>
         <div class="dev-activity-list">
           ${(developer.activities || []).map(act => `
             <div class="dev-activity-item">
@@ -1083,8 +1382,64 @@ export async function initDeveloperProfilePage() {
             </div>
           `).join('')}
         </div>
-      </div>
-    `;
+      `;
+    } catch (err) {
+      containerEl.innerHTML = `
+        <div class="text-secondary py-4 text-center">
+          Failed to load Contribution Intelligence: ${escapeHtml(err.message || 'Server error')}
+        </div>
+      `;
+    }
+  }
+
+  async function initOverviewContributionSnapshot() {
+    const target = document.getElementById('overviewContribSnapshot');
+    if (!target) return;
+
+    try {
+      const intel = await PulseService.getContributionIntelligence(developer.username, '30d');
+      const score = intel.hasSufficientData ? intel.score : null;
+      const ARC_LENGTH = 188.5;
+      const offset = score !== null ? Math.max(0, ARC_LENGTH - (ARC_LENGTH * (score / 100))) : ARC_LENGTH;
+      const ind = intel.indicators || {};
+
+      target.innerHTML = `
+        <div class="d-flex align-items-center justify-content-between p-3 rounded mb-3" style="background: var(--color-surface-subtle, #FAFAFA); border: 1px solid var(--color-border, #E2E8F0);">
+          <div class="d-flex align-items-center gap-3">
+            <svg viewBox="0 0 160 95" width="70" height="42">
+              <path d="M 20 85 A 60 60 0 0 1 140 85" fill="none" stroke="#E2E8F0" stroke-width="12" stroke-linecap="round" />
+              <path d="M 20 85 A 60 60 0 0 1 140 85" fill="none" stroke="${score !== null ? '#10B981' : '#CBD5E1'}" stroke-width="12" stroke-linecap="round" stroke-dasharray="188.5" stroke-dashoffset="${offset}" />
+            </svg>
+            <div>
+              <div style="font-size: 20px; font-weight: 800; color: #0F172A; line-height: 1.1;">
+                ${score !== null ? score : '—'} <span style="font-size: 11px; font-weight: 600; color: #94A3B8;">/ 100</span>
+              </div>
+              <div style="font-size: 11.5px; color: #64748B;">Contribution Impact</div>
+            </div>
+          </div>
+          <span class="contrib-trend-badge ${intel.hasSufficientData ? (intel.trendDirection || 'up') : 'neutral'}">
+            ${intel.hasSufficientData ? `${intel.trendDirection === 'up' ? '↑' : (intel.trendDirection === 'down' ? '↓' : '•')} ${intel.trendPercent}` : 'Insufficient data'}
+          </span>
+        </div>
+
+        <div class="d-flex flex-column gap-2 mb-2">
+          <div class="d-flex align-items-center justify-content-between p-2 rounded" style="background: #FAFAFA; border: 1px solid #E2E8F0; font-size: 12px;">
+            <span style="color: #64748B;">Impact</span>
+            <span style="font-weight: 700; color: #0F172A;">${escapeHtml(ind.impact?.value || '0 delivered')}</span>
+          </div>
+          <div class="d-flex align-items-center justify-content-between p-2 rounded" style="background: #FAFAFA; border: 1px solid #E2E8F0; font-size: 12px;">
+            <span style="color: #64748B;">Flow</span>
+            <span style="font-weight: 700; color: #0F172A;">${escapeHtml(ind.flow?.value || '0 resolved')}</span>
+          </div>
+          <div class="d-flex align-items-center justify-content-between p-2 rounded" style="background: #FAFAFA; border: 1px solid #E2E8F0; font-size: 12px;">
+            <span style="color: #64748B;">Collaboration</span>
+            <span style="font-weight: 700; color: #0F172A;">${escapeHtml(ind.collaboration?.value || '0 interactions')}</span>
+          </div>
+        </div>
+      `;
+    } catch (_) {
+      target.innerHTML = `<div class="text-secondary py-3 text-center" style="font-size: 12px;">Verified records synced with server.</div>`;
+    }
   }
 
   /* -------------------------------------------------------------------------

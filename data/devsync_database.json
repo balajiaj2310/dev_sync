@@ -100,8 +100,7 @@
       ],
       "pinnedProjects": [
         "repo-chaturya",
-        "repo-college",
-        "repo-portfolio"
+        "repo-college"
       ],
       "projects": [
         {
@@ -1867,6 +1866,530 @@
         "pullRequestsCount": 0,
         "issuesCount": 0
       }
+    },
+    "tester_1792427014": {
+      "id": "dev-tester_1792427014",
+      "name": "Test Developer",
+      "username": "tester_1792427014",
+      "email": "tester_1792427014@example.com",
+      "password": "pbkdf2_sha256$1500000$t2cQzYRHcJKEHaA1nChOyD$/yBHCxMK5Q9iFChk+BNSN5Ho9Oab+9MmLlSCJYjz32Y=",
+      "role": "Developer",
+      "isVerified": true,
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+      "headline": "Passionate Developer building meaningful web applications and exploring modern technologies.",
+      "bio": "Hello, I am Test Developer. I enjoy building software, collaborating with fellow engineers, and shipping high-quality code on DevSync.",
+      "location": "Bengaluru, India",
+      "website": "https://tester_1792427014.dev",
+      "social": {
+        "github": "https://github.com/tester_1792427014",
+        "linkedin": "https://linkedin.com/in/tester_1792427014",
+        "instagram": "https://instagram.com/tester_1792427014"
+      },
+      "collaborationStatus": "Available for collaboration",
+      "collaborationStatusType": "available",
+      "openToInvitations": true,
+      "education": {
+        "degree": "BCA Student",
+        "institution": "Bengaluru City University",
+        "location": "Bengaluru, India",
+        "field": "Computer Applications",
+        "timeline": "2022 - 2025"
+      },
+      "experience": [
+        {
+          "role": "Full Stack Contributor",
+          "organization": "DevSync Community",
+          "timeline": "2024 - Present",
+          "description": "Building open source developer collaboration tools and web applications."
+        }
+      ],
+      "skills": [
+        {
+          "name": "Python",
+          "category": "Backend",
+          "color": "blue"
+        },
+        {
+          "name": "Django",
+          "category": "Backend",
+          "color": "mint"
+        },
+        {
+          "name": "JavaScript",
+          "category": "Frontend",
+          "color": "amber"
+        },
+        {
+          "name": "React",
+          "category": "Frontend",
+          "color": "cyan"
+        },
+        {
+          "name": "Git",
+          "category": "Tool",
+          "color": "neutral"
+        },
+        {
+          "name": "GitHub",
+          "category": "Tool",
+          "color": "neutral"
+        }
+      ],
+      "pinnedProjects": [
+        "repo-tester_1792427014-core"
+      ],
+      "projects": [
+        {
+          "id": "repo-tester_1792427014-core",
+          "name": "tester_1792427014-workspace",
+          "description": "Personal developer workspace and project repository on DevSync.",
+          "tags": [
+            {
+              "name": "Python",
+              "color": "blue"
+            },
+            {
+              "name": "JavaScript",
+              "color": "amber"
+            }
+          ],
+          "stars": 12,
+          "forks": 3,
+          "updated": "Updated recently",
+          "visibility": "Public",
+          "iconBg": "#0D9488",
+          "relationship": "Owner"
+        }
+      ],
+      "achievements": [
+        {
+          "id": "ach-1-tester_1792427014",
+          "title": "First Project",
+          "description": "Created first public project",
+          "color": "green",
+          "date": "2024"
+        },
+        {
+          "id": "ach-2-tester_1792427014",
+          "title": "Collaborator",
+          "description": "Worked with 5+ developers",
+          "color": "blue",
+          "date": "2024"
+        }
+      ],
+      "activities": [
+        {
+          "id": "act-1-tester_1792427014",
+          "title": "Joined DevSync",
+          "description": "Created account and public profile on DevSync.",
+          "time": "Recently"
+        }
+      ],
+      "teams": [],
+      "collaborators": [],
+      "stats": {
+        "followers": 0,
+        "following": 0,
+        "projects": 1,
+        "teams": 0,
+        "repositoriesCount": 1,
+        "contributionsCount": 0,
+        "pullRequestsCount": 0,
+        "issuesCount": 0
+      }
+    },
+    "tester_1792513777": {
+      "id": "dev-tester_1792513777",
+      "name": "Test Developer",
+      "username": "tester_1792513777",
+      "email": "tester_1792513777@example.com",
+      "password": "pbkdf2_sha256$1500000$zHBNXLfTxduJgkUBAmJhAd$3C6Z0+zMgVb82YXPT6AmKOFUOXiBHqEzyMFQLRmTSWo=",
+      "role": "Developer",
+      "isVerified": true,
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+      "headline": "Passionate Developer building meaningful web applications and exploring modern technologies.",
+      "bio": "Hello, I am Test Developer. I enjoy building software, collaborating with fellow engineers, and shipping high-quality code on DevSync.",
+      "location": "Bengaluru, India",
+      "website": "https://tester_1792513777.dev",
+      "social": {
+        "github": "https://github.com/tester_1792513777",
+        "linkedin": "https://linkedin.com/in/tester_1792513777",
+        "instagram": "https://instagram.com/tester_1792513777"
+      },
+      "collaborationStatus": "Available for collaboration",
+      "collaborationStatusType": "available",
+      "openToInvitations": true,
+      "education": {
+        "degree": "BCA Student",
+        "institution": "Bengaluru City University",
+        "location": "Bengaluru, India",
+        "field": "Computer Applications",
+        "timeline": "2022 - 2025"
+      },
+      "experience": [
+        {
+          "role": "Full Stack Contributor",
+          "organization": "DevSync Community",
+          "timeline": "2024 - Present",
+          "description": "Building open source developer collaboration tools and web applications."
+        }
+      ],
+      "skills": [
+        {
+          "name": "Python",
+          "category": "Backend",
+          "color": "blue"
+        },
+        {
+          "name": "Django",
+          "category": "Backend",
+          "color": "mint"
+        },
+        {
+          "name": "JavaScript",
+          "category": "Frontend",
+          "color": "amber"
+        },
+        {
+          "name": "React",
+          "category": "Frontend",
+          "color": "cyan"
+        },
+        {
+          "name": "Git",
+          "category": "Tool",
+          "color": "neutral"
+        },
+        {
+          "name": "GitHub",
+          "category": "Tool",
+          "color": "neutral"
+        }
+      ],
+      "pinnedProjects": [
+        "repo-tester_1792513777-core"
+      ],
+      "projects": [
+        {
+          "id": "repo-tester_1792513777-core",
+          "name": "tester_1792513777-workspace",
+          "description": "Personal developer workspace and project repository on DevSync.",
+          "tags": [
+            {
+              "name": "Python",
+              "color": "blue"
+            },
+            {
+              "name": "JavaScript",
+              "color": "amber"
+            }
+          ],
+          "stars": 12,
+          "forks": 3,
+          "updated": "Updated recently",
+          "visibility": "Public",
+          "iconBg": "#0D9488",
+          "relationship": "Owner"
+        }
+      ],
+      "achievements": [
+        {
+          "id": "ach-1-tester_1792513777",
+          "title": "First Project",
+          "description": "Created first public project",
+          "color": "green",
+          "date": "2024"
+        },
+        {
+          "id": "ach-2-tester_1792513777",
+          "title": "Collaborator",
+          "description": "Worked with 5+ developers",
+          "color": "blue",
+          "date": "2024"
+        }
+      ],
+      "activities": [
+        {
+          "id": "act-1-tester_1792513777",
+          "title": "Joined DevSync",
+          "description": "Created account and public profile on DevSync.",
+          "time": "Recently"
+        }
+      ],
+      "teams": [],
+      "collaborators": [],
+      "stats": {
+        "followers": 0,
+        "following": 0,
+        "projects": 1,
+        "teams": 0,
+        "repositoriesCount": 1,
+        "contributionsCount": 0,
+        "pullRequestsCount": 0,
+        "issuesCount": 0
+      }
+    },
+    "tester_1792516170": {
+      "id": "dev-tester_1792516170",
+      "name": "Test Developer",
+      "username": "tester_1792516170",
+      "email": "tester_1792516170@example.com",
+      "password": "pbkdf2_sha256$1500000$lZxdN49RfBByYQw5EAqQfT$f7CddZVlQ+1/XOJ0HLSIgIktQuoEBrbP/kgiRub/T/g=",
+      "role": "Developer",
+      "isVerified": true,
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+      "headline": "Passionate Developer building meaningful web applications and exploring modern technologies.",
+      "bio": "Hello, I am Test Developer. I enjoy building software, collaborating with fellow engineers, and shipping high-quality code on DevSync.",
+      "location": "Bengaluru, India",
+      "website": "https://tester_1792516170.dev",
+      "social": {
+        "github": "https://github.com/tester_1792516170",
+        "linkedin": "https://linkedin.com/in/tester_1792516170",
+        "instagram": "https://instagram.com/tester_1792516170"
+      },
+      "collaborationStatus": "Available for collaboration",
+      "collaborationStatusType": "available",
+      "openToInvitations": true,
+      "education": {
+        "degree": "BCA Student",
+        "institution": "Bengaluru City University",
+        "location": "Bengaluru, India",
+        "field": "Computer Applications",
+        "timeline": "2022 - 2025"
+      },
+      "experience": [
+        {
+          "role": "Full Stack Contributor",
+          "organization": "DevSync Community",
+          "timeline": "2024 - Present",
+          "description": "Building open source developer collaboration tools and web applications."
+        }
+      ],
+      "skills": [
+        {
+          "name": "Python",
+          "category": "Backend",
+          "color": "blue"
+        },
+        {
+          "name": "Django",
+          "category": "Backend",
+          "color": "mint"
+        },
+        {
+          "name": "JavaScript",
+          "category": "Frontend",
+          "color": "amber"
+        },
+        {
+          "name": "React",
+          "category": "Frontend",
+          "color": "cyan"
+        },
+        {
+          "name": "Git",
+          "category": "Tool",
+          "color": "neutral"
+        },
+        {
+          "name": "GitHub",
+          "category": "Tool",
+          "color": "neutral"
+        }
+      ],
+      "pinnedProjects": [
+        "repo-tester_1792516170-core"
+      ],
+      "projects": [
+        {
+          "id": "repo-tester_1792516170-core",
+          "name": "tester_1792516170-workspace",
+          "description": "Personal developer workspace and project repository on DevSync.",
+          "tags": [
+            {
+              "name": "Python",
+              "color": "blue"
+            },
+            {
+              "name": "JavaScript",
+              "color": "amber"
+            }
+          ],
+          "stars": 12,
+          "forks": 3,
+          "updated": "Updated recently",
+          "visibility": "Public",
+          "iconBg": "#0D9488",
+          "relationship": "Owner"
+        }
+      ],
+      "achievements": [
+        {
+          "id": "ach-1-tester_1792516170",
+          "title": "First Project",
+          "description": "Created first public project",
+          "color": "green",
+          "date": "2024"
+        },
+        {
+          "id": "ach-2-tester_1792516170",
+          "title": "Collaborator",
+          "description": "Worked with 5+ developers",
+          "color": "blue",
+          "date": "2024"
+        }
+      ],
+      "activities": [
+        {
+          "id": "act-1-tester_1792516170",
+          "title": "Joined DevSync",
+          "description": "Created account and public profile on DevSync.",
+          "time": "Recently"
+        }
+      ],
+      "teams": [],
+      "collaborators": [],
+      "stats": {
+        "followers": 0,
+        "following": 0,
+        "projects": 1,
+        "teams": 0,
+        "repositoriesCount": 1,
+        "contributionsCount": 0,
+        "pullRequestsCount": 0,
+        "issuesCount": 0
+      }
+    },
+    "tester_1792516228": {
+      "id": "dev-tester_1792516228",
+      "name": "Test Developer",
+      "username": "tester_1792516228",
+      "email": "tester_1792516228@example.com",
+      "password": "pbkdf2_sha256$1500000$IOpXObiGuvXClf4Kgpmu8f$KahSZ5bWFDzx2KQuhz7bgFWnmh8A2meSYk9nL1zmQ3o=",
+      "role": "Developer",
+      "isVerified": true,
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+      "headline": "Passionate Developer building meaningful web applications and exploring modern technologies.",
+      "bio": "Hello, I am Test Developer. I enjoy building software, collaborating with fellow engineers, and shipping high-quality code on DevSync.",
+      "location": "Bengaluru, India",
+      "website": "https://tester_1792516228.dev",
+      "social": {
+        "github": "https://github.com/tester_1792516228",
+        "linkedin": "https://linkedin.com/in/tester_1792516228",
+        "instagram": "https://instagram.com/tester_1792516228"
+      },
+      "collaborationStatus": "Available for collaboration",
+      "collaborationStatusType": "available",
+      "openToInvitations": true,
+      "education": {
+        "degree": "BCA Student",
+        "institution": "Bengaluru City University",
+        "location": "Bengaluru, India",
+        "field": "Computer Applications",
+        "timeline": "2022 - 2025"
+      },
+      "experience": [
+        {
+          "role": "Full Stack Contributor",
+          "organization": "DevSync Community",
+          "timeline": "2024 - Present",
+          "description": "Building open source developer collaboration tools and web applications."
+        }
+      ],
+      "skills": [
+        {
+          "name": "Python",
+          "category": "Backend",
+          "color": "blue"
+        },
+        {
+          "name": "Django",
+          "category": "Backend",
+          "color": "mint"
+        },
+        {
+          "name": "JavaScript",
+          "category": "Frontend",
+          "color": "amber"
+        },
+        {
+          "name": "React",
+          "category": "Frontend",
+          "color": "cyan"
+        },
+        {
+          "name": "Git",
+          "category": "Tool",
+          "color": "neutral"
+        },
+        {
+          "name": "GitHub",
+          "category": "Tool",
+          "color": "neutral"
+        }
+      ],
+      "pinnedProjects": [
+        "repo-tester_1792516228-core"
+      ],
+      "projects": [
+        {
+          "id": "repo-tester_1792516228-core",
+          "name": "tester_1792516228-workspace",
+          "description": "Personal developer workspace and project repository on DevSync.",
+          "tags": [
+            {
+              "name": "Python",
+              "color": "blue"
+            },
+            {
+              "name": "JavaScript",
+              "color": "amber"
+            }
+          ],
+          "stars": 12,
+          "forks": 3,
+          "updated": "Updated recently",
+          "visibility": "Public",
+          "iconBg": "#0D9488",
+          "relationship": "Owner"
+        }
+      ],
+      "achievements": [
+        {
+          "id": "ach-1-tester_1792516228",
+          "title": "First Project",
+          "description": "Created first public project",
+          "color": "green",
+          "date": "2024"
+        },
+        {
+          "id": "ach-2-tester_1792516228",
+          "title": "Collaborator",
+          "description": "Worked with 5+ developers",
+          "color": "blue",
+          "date": "2024"
+        }
+      ],
+      "activities": [
+        {
+          "id": "act-1-tester_1792516228",
+          "title": "Joined DevSync",
+          "description": "Created account and public profile on DevSync.",
+          "time": "Recently"
+        }
+      ],
+      "teams": [],
+      "collaborators": [],
+      "stats": {
+        "followers": 0,
+        "following": 0,
+        "projects": 1,
+        "teams": 0,
+        "repositoriesCount": 1,
+        "contributionsCount": 0,
+        "pullRequestsCount": 0,
+        "issuesCount": 0
+      }
     }
   },
   "repositories": {
@@ -1880,14 +2403,15 @@
       "visibility": "Private",
       "defaultBranch": "main",
       "created_at": 1789829765.893267,
-      "updated_at": 1792426723.7985103,
+      "updated_at": 1792516160.2373953,
       "stars": 28,
       "forks": 5,
       "branches": [
         "main",
         "develop",
         "feature/authentication",
-        "hotfix/session-expiry"
+        "hotfix/session-expiry",
+        "feat/automated-test"
       ],
       "members": [
         {
@@ -2059,11 +2583,87 @@
             "path": "README.md",
             "name": "README.md",
             "type": "file",
-            "size": 1450,
-            "updated_at": 1792414565.893267,
-            "last_commit": "Update architectural overview and branch workflows",
+            "size": 1520,
+            "updated_at": 1792512438.4515972,
+            "last_commit": "Merge PR #43: Test PR",
             "last_actor": "balajikumar",
-            "content": "# DevSync Core Services\nHigh performance developer collaboration backend written in Python 3.12, utilizing Django REST Framework, PostgreSQL, and Redis caching.\n\n## Architecture Highlights\n- Branch-aware repository file tree management\n- Real-time DevSync Project Pulse activity timeline\n- Strict role-based permissions matrix (Owner, Maintainer, Collaborator, Viewer)\n"
+            "content": "# DevSync Core (Develop Branch)\nContains bleeding-edge features for testing and validation.\n"
+          },
+          {
+            "path": "apps/pulse/engine.py",
+            "name": "engine.py",
+            "type": "file",
+            "size": 2840,
+            "updated_at": 1792512438.4515831,
+            "last_commit": "Merge PR #43: Test PR",
+            "last_actor": "balajikumar",
+            "content": "# DevSync Pulse Engine - Real-time activity timeline calculation\n"
+          },
+          {
+            "path": "services/auth_provider.py",
+            "name": "auth_provider.py",
+            "type": "file",
+            "size": 36,
+            "updated_at": 1792512438.451606,
+            "last_commit": "Merge PR #43: Test PR",
+            "last_actor": "balajikumar",
+            "sha256": "891db46eb3458220b0b14e13475275304f8091d580143003f669440b4c0102aa",
+            "content": "def authenticate():\n    return True\n"
+          },
+          {
+            "path": "services/auth_provider_1792422001.py",
+            "name": "auth_provider_1792422001.py",
+            "type": "file",
+            "size": 32,
+            "updated_at": 1792512438.4516132,
+            "last_commit": "Merge PR #43: Test PR",
+            "last_actor": "balajikumar",
+            "sha256": "554ef4ff0ced9f04543c8cc11359b316e7629036515fb7181c9c0f4bf56db71c",
+            "content": "modified code with authorization"
+          },
+          {
+            "path": "services/auth_provider_1792422971.py",
+            "name": "auth_provider_1792422971.py",
+            "type": "file",
+            "size": 32,
+            "updated_at": 1792512438.4516196,
+            "last_commit": "Merge PR #43: Test PR",
+            "last_actor": "balajikumar",
+            "sha256": "554ef4ff0ced9f04543c8cc11359b316e7629036515fb7181c9c0f4bf56db71c",
+            "content": "modified code with authorization"
+          },
+          {
+            "path": "services/auth_provider_1792423836.py",
+            "name": "auth_provider_1792423836.py",
+            "type": "file",
+            "size": 32,
+            "updated_at": 1792512438.4516263,
+            "last_commit": "Merge PR #43: Test PR",
+            "last_actor": "balajikumar",
+            "sha256": "554ef4ff0ced9f04543c8cc11359b316e7629036515fb7181c9c0f4bf56db71c",
+            "content": "modified code with authorization"
+          },
+          {
+            "path": "services/auth_provider_1792426723.py",
+            "name": "auth_provider_1792426723.py",
+            "type": "file",
+            "size": 32,
+            "updated_at": 1792512438.4516327,
+            "last_commit": "Merge PR #43: Test PR",
+            "last_actor": "balajikumar",
+            "sha256": "554ef4ff0ced9f04543c8cc11359b316e7629036515fb7181c9c0f4bf56db71c",
+            "content": "modified code with authorization"
+          },
+          {
+            "path": "services/auth_provider_1792426993.py",
+            "name": "auth_provider_1792426993.py",
+            "type": "file",
+            "size": 32,
+            "updated_at": 1792512438.4516397,
+            "last_commit": "Merge PR #43: Test PR",
+            "last_actor": "balajikumar",
+            "sha256": "554ef4ff0ced9f04543c8cc11359b316e7629036515fb7181c9c0f4bf56db71c",
+            "content": "modified code with authorization"
           }
         ],
         "develop": [
@@ -2141,6 +2741,39 @@
             "last_actor": "naveen3438",
             "sha256": "554ef4ff0ced9f04543c8cc11359b316e7629036515fb7181c9c0f4bf56db71c",
             "content": "modified code with authorization"
+          },
+          {
+            "path": "services/auth_provider_1792426993.py",
+            "name": "auth_provider_1792426993.py",
+            "type": "file",
+            "size": 32,
+            "updated_at": 1792426993.84644,
+            "last_commit": "Update auth_provider logic with authorization",
+            "last_actor": "naveen3438",
+            "sha256": "554ef4ff0ced9f04543c8cc11359b316e7629036515fb7181c9c0f4bf56db71c",
+            "content": "modified code with authorization"
+          },
+          {
+            "path": "services/auth_provider_1792513766.py",
+            "name": "auth_provider_1792513766.py",
+            "type": "file",
+            "size": 32,
+            "updated_at": 1792513766.435422,
+            "last_commit": "Update auth_provider logic with authorization",
+            "last_actor": "naveen3438",
+            "sha256": "554ef4ff0ced9f04543c8cc11359b316e7629036515fb7181c9c0f4bf56db71c",
+            "content": "modified code with authorization"
+          },
+          {
+            "path": "services/auth_provider_1792516160.py",
+            "name": "auth_provider_1792516160.py",
+            "type": "file",
+            "size": 32,
+            "updated_at": 1792516160.183964,
+            "last_commit": "Update auth_provider logic with authorization",
+            "last_actor": "naveen3438",
+            "sha256": "554ef4ff0ced9f04543c8cc11359b316e7629036515fb7181c9c0f4bf56db71c",
+            "content": "modified code with authorization"
           }
         ],
         "feature/authentication": [
@@ -2157,6 +2790,33 @@
         ]
       },
       "attachments": [
+        {
+          "id": "att_1df8a532a7a1",
+          "name": "API_Swagger_Specification.json",
+          "size": 20,
+          "uploaded_by": "naveen3438",
+          "uploaded_at": 1792516160.2373953,
+          "file_type": "application/json",
+          "description": "OpenAPI contract specification"
+        },
+        {
+          "id": "att_26d98e73f67f",
+          "name": "API_Swagger_Specification.json",
+          "size": 20,
+          "uploaded_by": "naveen3438",
+          "uploaded_at": 1792513766.480337,
+          "file_type": "application/json",
+          "description": "OpenAPI contract specification"
+        },
+        {
+          "id": "att_b24fda104ee9",
+          "name": "API_Swagger_Specification.json",
+          "size": 20,
+          "uploaded_by": "naveen3438",
+          "uploaded_at": 1792426993.8782802,
+          "file_type": "application/json",
+          "description": "OpenAPI contract specification"
+        },
         {
           "id": "att_6d88d38404f7",
           "name": "API_Swagger_Specification.json",
@@ -2213,6 +2873,72 @@
         }
       ],
       "audit_log": [
+        {
+          "id": "aud_b9ee1c220e8c",
+          "action": "file_overwrite",
+          "branch": "develop",
+          "file_path": "services/auth_provider_1792516160.py",
+          "actor": "naveen3438",
+          "timestamp": 1792516160.183964,
+          "summary": "Update auth_provider logic with authorization",
+          "sha256": "554ef4ff0ced9f04543c8cc11359b316e7629036515fb7181c9c0f4bf56db71c",
+          "size": 32
+        },
+        {
+          "id": "aud_2741efd2e747",
+          "action": "file_upload",
+          "branch": "develop",
+          "file_path": "services/auth_provider_1792516160.py",
+          "actor": "naveen3438",
+          "timestamp": 1792516160.1257806,
+          "summary": "Add authentication service provider module",
+          "sha256": "891db46eb3458220b0b14e13475275304f8091d580143003f669440b4c0102aa",
+          "size": 36
+        },
+        {
+          "id": "aud_bbfbcc3ab472",
+          "action": "file_overwrite",
+          "branch": "develop",
+          "file_path": "services/auth_provider_1792513766.py",
+          "actor": "naveen3438",
+          "timestamp": 1792513766.435422,
+          "summary": "Update auth_provider logic with authorization",
+          "sha256": "554ef4ff0ced9f04543c8cc11359b316e7629036515fb7181c9c0f4bf56db71c",
+          "size": 32
+        },
+        {
+          "id": "aud_fced5039e7df",
+          "action": "file_upload",
+          "branch": "develop",
+          "file_path": "services/auth_provider_1792513766.py",
+          "actor": "naveen3438",
+          "timestamp": 1792513766.3796043,
+          "summary": "Add authentication service provider module",
+          "sha256": "891db46eb3458220b0b14e13475275304f8091d580143003f669440b4c0102aa",
+          "size": 36
+        },
+        {
+          "id": "aud_a6c2c3cfcd4e",
+          "action": "file_overwrite",
+          "branch": "develop",
+          "file_path": "services/auth_provider_1792426993.py",
+          "actor": "naveen3438",
+          "timestamp": 1792426993.84644,
+          "summary": "Update auth_provider logic with authorization",
+          "sha256": "554ef4ff0ced9f04543c8cc11359b316e7629036515fb7181c9c0f4bf56db71c",
+          "size": 32
+        },
+        {
+          "id": "aud_abcebc8b53ad",
+          "action": "file_upload",
+          "branch": "develop",
+          "file_path": "services/auth_provider_1792426993.py",
+          "actor": "naveen3438",
+          "timestamp": 1792426993.8184712,
+          "summary": "Add authentication service provider module",
+          "sha256": "891db46eb3458220b0b14e13475275304f8091d580143003f669440b4c0102aa",
+          "size": 36
+        },
         {
           "id": "aud_33432006613b",
           "action": "file_overwrite",
@@ -2321,6 +3047,51 @@
           "timestamp": 1792420865.893267,
           "summary": "Add time-series aggregation buckets for Project Pulse",
           "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "id": "aud_merge_69ecd9a8",
+          "action": "merge_pull_request",
+          "branch": "main",
+          "actor": "balajikumar",
+          "timestamp": 1792512438.451654,
+          "summary": "Merged PR #43: Test PR from develop into main",
+          "sha256": "bf3183b7d7da6951dedafaeebe472d75eaab5b239d4623e2286f7d4c3f5aa5f0"
+        },
+        {
+          "id": "aud_merge_f1c93b9b",
+          "action": "merge_pull_request",
+          "branch": "main",
+          "actor": "balajikumar",
+          "timestamp": 1792513709.3615015,
+          "summary": "Merged PR #44: Automated Test Feature Branch from feat/automated-test into main",
+          "sha256": "03edd9c5144bb7a0acee63f33c4e674ca077fbea4e64ca0b2b9e9c25edd6e395"
+        },
+        {
+          "id": "aud_merge_c04631d0",
+          "action": "merge_pull_request",
+          "branch": "main",
+          "actor": "balajikumar",
+          "timestamp": 1792516116.3930418,
+          "summary": "Merged PR #45: Automated Test Feature Branch from feat/automated-test into main",
+          "sha256": "6921a014f2a8e5f46b456d29d64ec1a94e2900ef81b236e4b2b3df061a704729"
+        },
+        {
+          "id": "aud_merge_544f7cbd",
+          "action": "merge_pull_request",
+          "branch": "main",
+          "actor": "balajikumar",
+          "timestamp": 1792519888.1349874,
+          "summary": "Merged PR #46: Automated Test Feature Branch from feat/automated-test into main",
+          "sha256": "a8c35665ce48ff5193578303c815fa78012770bed1c78f512049fd2030594547"
+        },
+        {
+          "id": "aud_merge_6955ecc0",
+          "action": "merge_pull_request",
+          "branch": "main",
+          "actor": "balajikumar",
+          "timestamp": 1792520593.1861825,
+          "summary": "Merged PR #47: Automated Test Feature Branch from feat/automated-test into main",
+          "sha256": "3dd52d174b307e339d54d4d03f7362256c83b8bc947df51874e3665824bce75e"
         }
       ]
     },
@@ -2542,6 +3313,255 @@
     }
   },
   "activity_events": [
+    {
+      "id": "evt_9b803603b847",
+      "type": "attachment_uploaded",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": null,
+      "title": "Uploaded project attachment: API_Swagger_Specification.json",
+      "description": "OpenAPI contract specification",
+      "timestamp": 1792516160.2374198,
+      "visibility": "Private",
+      "metadata": {
+        "attachment_id": "att_1df8a532a7a1",
+        "file_name": "API_Swagger_Specification.json",
+        "size": 20
+      },
+      "dedup_hash": "27e8d18b346d7ee33da45a5e57a820841b7ee8e5c2d50137d61ac2c0dfc19eeb"
+    },
+    {
+      "id": "evt_77d34d4c6c9f",
+      "type": "file_uploaded",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": "develop",
+      "title": "Uploaded services/auth_provider_1792516160.py to develop",
+      "description": "Add authentication service provider module",
+      "timestamp": 1792516160.1258516,
+      "visibility": "Private",
+      "metadata": {
+        "file_path": "services/auth_provider_1792516160.py",
+        "sha256": "891db46eb3458220b0b14e13475275304f8091d580143003f669440b4c0102aa",
+        "size": 36
+      },
+      "dedup_hash": "a27e8f59b10f9332195f7b21a97b46b4542a032b16ca4d457a1bf9016f057184"
+    },
+    {
+      "id": "evt_64ba265927e5",
+      "type": "collaborator_removed",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": null,
+      "title": "Removed collaborator @tarapatel",
+      "description": "Collaborator @tarapatel was removed from devsync-core.",
+      "timestamp": 1792516160.0663598,
+      "visibility": "Private",
+      "metadata": {},
+      "dedup_hash": "bd3e6fa8dd7bf6b1ccb03fe7c5804abf23ed1a5be732ad5151cacfa30c32a4f4"
+    },
+    {
+      "id": "evt_75b52580adb8",
+      "type": "collaborator_updated",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": null,
+      "title": "Updated role/responsibility for @tarapatel",
+      "description": "Role: Collaborator | Responsibility: Lead SRE & Security",
+      "timestamp": 1792516160.020888,
+      "visibility": "Private",
+      "metadata": {},
+      "dedup_hash": "bc3264f2a37f1a588a0d3713370129171cd714fa1e6e9ef8852794022b57d6e0"
+    },
+    {
+      "id": "evt_c487dfc09db1",
+      "type": "collaborator_added",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": null,
+      "title": "Added collaborator @tarapatel as Collaborator",
+      "description": "Assigned responsibility: DevOps & SRE",
+      "timestamp": 1792516159.9749935,
+      "visibility": "Private",
+      "metadata": {},
+      "dedup_hash": "3afd1ca428ec9c966f5574272845850c1e010d55c4b97b16b854d31c3c7cf758"
+    },
+    {
+      "id": "evt_a03875e7f43e",
+      "type": "attachment_uploaded",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": null,
+      "title": "Uploaded project attachment: API_Swagger_Specification.json",
+      "description": "OpenAPI contract specification",
+      "timestamp": 1792513766.480358,
+      "visibility": "Private",
+      "metadata": {
+        "attachment_id": "att_26d98e73f67f",
+        "file_name": "API_Swagger_Specification.json",
+        "size": 20
+      },
+      "dedup_hash": "731965528342788e208e612170eac9238b498b362a2916857c035833eb70026b"
+    },
+    {
+      "id": "evt_0d568b52889d",
+      "type": "file_uploaded",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": "develop",
+      "title": "Uploaded services/auth_provider_1792513766.py to develop",
+      "description": "Add authentication service provider module",
+      "timestamp": 1792513766.379674,
+      "visibility": "Private",
+      "metadata": {
+        "file_path": "services/auth_provider_1792513766.py",
+        "sha256": "891db46eb3458220b0b14e13475275304f8091d580143003f669440b4c0102aa",
+        "size": 36
+      },
+      "dedup_hash": "3502b234f029eed9d1284b94843de48b393dd253efffde7d41a4951a99e9d5be"
+    },
+    {
+      "id": "evt_67828b6019da",
+      "type": "collaborator_removed",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": null,
+      "title": "Removed collaborator @tarapatel",
+      "description": "Collaborator @tarapatel was removed from devsync-core.",
+      "timestamp": 1792513766.3258362,
+      "visibility": "Private",
+      "metadata": {},
+      "dedup_hash": "dc27a41b5bf9574006cae1fc6abbbadf269acfe9ad47d156ed129b1532f19cbe"
+    },
+    {
+      "id": "evt_d6f8f215e98c",
+      "type": "collaborator_updated",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": null,
+      "title": "Updated role/responsibility for @tarapatel",
+      "description": "Role: Collaborator | Responsibility: Lead SRE & Security",
+      "timestamp": 1792513766.2899609,
+      "visibility": "Private",
+      "metadata": {},
+      "dedup_hash": "f15712f7201b95c7bcfe196b3d271b01c80fc9b6020d78892091041a5cacafee"
+    },
+    {
+      "id": "evt_1d360864ef10",
+      "type": "collaborator_added",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": null,
+      "title": "Added collaborator @tarapatel as Collaborator",
+      "description": "Assigned responsibility: DevOps & SRE",
+      "timestamp": 1792513766.2621126,
+      "visibility": "Private",
+      "metadata": {},
+      "dedup_hash": "a943c3e36c2ff980bf4f7dbcb3c916ba1d3b4e56b407599fa420e618b000dee6"
+    },
+    {
+      "id": "evt_2ae26e09cc0a",
+      "type": "attachment_uploaded",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": null,
+      "title": "Uploaded project attachment: API_Swagger_Specification.json",
+      "description": "OpenAPI contract specification",
+      "timestamp": 1792426993.8783035,
+      "visibility": "Private",
+      "metadata": {
+        "attachment_id": "att_b24fda104ee9",
+        "file_name": "API_Swagger_Specification.json",
+        "size": 20
+      },
+      "dedup_hash": "3e694fbbb5963b0d3a8b8a2b2b55e5b487fa9638bb8b793bdc39de2d10f82b80"
+    },
+    {
+      "id": "evt_a9e6adecc7f3",
+      "type": "file_uploaded",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": "develop",
+      "title": "Uploaded services/auth_provider_1792426993.py to develop",
+      "description": "Add authentication service provider module",
+      "timestamp": 1792426993.8185332,
+      "visibility": "Private",
+      "metadata": {
+        "file_path": "services/auth_provider_1792426993.py",
+        "sha256": "891db46eb3458220b0b14e13475275304f8091d580143003f669440b4c0102aa",
+        "size": 36
+      },
+      "dedup_hash": "9ce968c1ddbb8943ef12c908506fcf40f8455302a9106c79e1a8fba509b2aa3a"
+    },
+    {
+      "id": "evt_9799dc0a5629",
+      "type": "collaborator_removed",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": null,
+      "title": "Removed collaborator @tarapatel",
+      "description": "Collaborator @tarapatel was removed from devsync-core.",
+      "timestamp": 1792426993.7947822,
+      "visibility": "Private",
+      "metadata": {},
+      "dedup_hash": "89f374c23c34973de643d82705f998d0339a1268cf29d6d47b7bee51da0e5fd7"
+    },
+    {
+      "id": "evt_e7235d068acc",
+      "type": "collaborator_updated",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": null,
+      "title": "Updated role/responsibility for @tarapatel",
+      "description": "Role: Collaborator | Responsibility: Lead SRE & Security",
+      "timestamp": 1792426993.7760174,
+      "visibility": "Private",
+      "metadata": {},
+      "dedup_hash": "f39cb6dd2c6f48816081ac5d31c4807f3807a85ed6de05b2bcf1add63bfe2c14"
+    },
+    {
+      "id": "evt_1bcec3ef41c8",
+      "type": "collaborator_added",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": null,
+      "title": "Added collaborator @tarapatel as Collaborator",
+      "description": "Assigned responsibility: DevOps & SRE",
+      "timestamp": 1792426993.7612607,
+      "visibility": "Private",
+      "metadata": {},
+      "dedup_hash": "78f639d18ed20c886b17a5c13681cfa1a2b1bd167b91f608f484ae82c0d2ad11"
+    },
     {
       "id": "evt_525889ea3520",
       "type": "attachment_uploaded",
@@ -3178,5 +4198,1699 @@
       }
     }
   ],
-  "version": "1.1.0"
+  "version": "1.2.0",
+  "issues": {
+    "issue-104": {
+      "id": "issue-104",
+      "number": 104,
+      "title": "Add dark mode support",
+      "repository": "portfolio-site",
+      "labels": [
+        "enhancement",
+        "UI"
+      ],
+      "author": "priyas",
+      "authorName": "Priya S",
+      "authorAvatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=64&q=80",
+      "commentsCount": 8,
+      "status": "Open",
+      "created_at": 1792505178.9651656,
+      "updated_at": 1792520582.4500122,
+      "updated": "Just now",
+      "description": "The user settings need an explicit theme selector (Light / Dark / System default) with custom CSS property overrides.",
+      "comments": [
+        {
+          "id": "comm-104-1",
+          "author": "arjun",
+          "authorName": "Arjun",
+          "authorAvatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=64&q=80",
+          "text": "I have drafted the CSS variables in tokens.css. Ready to test when we wire up the preferences toggle.",
+          "created_at": 1792508778.9651656,
+          "time": "1 hour ago"
+        },
+        {
+          "id": "comm-104-2",
+          "author": "priyas",
+          "authorName": "Priya S",
+          "authorAvatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=64&q=80",
+          "text": "Great! Let us ensure high contrast ratios for accessibility compliance.",
+          "created_at": 1792510578.9651656,
+          "time": "30 minutes ago"
+        },
+        {
+          "id": "comm-104-3",
+          "author": "naveen3438",
+          "authorName": "Naveen Kumar D",
+          "authorAvatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+          "text": "Verified database indices locally.",
+          "created_at": 1792513302.8159988,
+          "time": "Just now"
+        },
+        {
+          "id": "comm-104-4",
+          "author": "naveen3438",
+          "authorName": "Naveen Kumar D",
+          "authorAvatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+          "text": "Verified database indices locally.",
+          "created_at": 1792513613.3299625,
+          "time": "Just now"
+        },
+        {
+          "id": "comm-104-5",
+          "author": "naveen3438",
+          "authorName": "Naveen Kumar D",
+          "authorAvatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+          "text": "Verified database indices locally.",
+          "created_at": 1792513694.888754,
+          "time": "Just now"
+        },
+        {
+          "id": "comm-104-6",
+          "author": "naveen3438",
+          "authorName": "Naveen Kumar D",
+          "authorAvatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+          "text": "Verified database indices locally.",
+          "created_at": 1792516101.943385,
+          "time": "Just now"
+        },
+        {
+          "id": "comm-104-7",
+          "author": "naveen3438",
+          "authorName": "Naveen Kumar D",
+          "authorAvatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+          "text": "Verified database indices locally.",
+          "created_at": 1792519872.575674,
+          "time": "Just now"
+        },
+        {
+          "id": "comm-104-8",
+          "author": "naveen3438",
+          "authorName": "Naveen Kumar D",
+          "authorAvatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+          "text": "Verified database indices locally.",
+          "created_at": 1792520578.0852516,
+          "time": "Just now"
+        }
+      ]
+    },
+    "issue-102": {
+      "id": "issue-102",
+      "number": 102,
+      "title": "Fix file upload size limit",
+      "repository": "campus-connect",
+      "labels": [
+        "bug",
+        "backend"
+      ],
+      "author": "arjun",
+      "authorName": "Arjun",
+      "authorAvatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=64&q=80",
+      "commentsCount": 1,
+      "status": "Open",
+      "created_at": 1792494378.9651656,
+      "updated_at": 1792494378.9651656,
+      "updated": "5 hours ago",
+      "description": "Files larger than 10MB trigger an unhandled 413 error in upload endpoint. We should increase max body size.",
+      "comments": [
+        {
+          "id": "comm-102-1",
+          "author": "naveen3438",
+          "authorName": "Naveen Kumar D",
+          "authorAvatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=64&q=80",
+          "text": "Will increase Nginx and Django client max body limits to 50MB and add streaming chunks.",
+          "created_at": 1792505178.9651656,
+          "time": "2 hours ago"
+        }
+      ]
+    },
+    "issue-99": {
+      "id": "issue-99",
+      "number": 99,
+      "title": "Add analytics dashboard",
+      "repository": "devsync-core",
+      "labels": [
+        "feature",
+        "analytics"
+      ],
+      "author": "sneha",
+      "authorName": "Sneha",
+      "authorAvatar": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=64&q=80",
+      "commentsCount": 1,
+      "status": "Open",
+      "created_at": 1792425978.9651656,
+      "updated_at": 1792425978.9651656,
+      "updated": "1 day ago",
+      "description": "Provide commit volume trends, repository health metrics, and team velocity heatmaps.",
+      "comments": [
+        {
+          "id": "comm-99-1",
+          "author": "balajikumar",
+          "authorName": "Balaji",
+          "authorAvatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=64&q=80",
+          "text": "Pulse aggregation engine endpoints are ready for integration.",
+          "created_at": 1792472378.9651656,
+          "time": "11 hours ago"
+        }
+      ]
+    },
+    "issue-94": {
+      "id": "issue-94",
+      "number": 94,
+      "title": "Improve mobile layout",
+      "repository": "chaturya-club",
+      "labels": [
+        "UI",
+        "responsive"
+      ],
+      "author": "balajikumar",
+      "authorName": "Balaji",
+      "authorAvatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=64&q=80",
+      "commentsCount": 0,
+      "status": "Open",
+      "created_at": 1792339578.9651656,
+      "updated_at": 1792339578.9651656,
+      "updated": "2 days ago",
+      "description": "Ensure cards, tables, and buttons scale gracefully on small mobile screens without horizontal scroll.",
+      "comments": []
+    },
+    "issue-88": {
+      "id": "issue-88",
+      "number": 88,
+      "title": "Database backup script",
+      "repository": "heavy-machinery",
+      "labels": [
+        "infrastructure",
+        "database"
+      ],
+      "author": "karthik",
+      "authorName": "Karthik",
+      "authorAvatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=64&q=80",
+      "commentsCount": 1,
+      "status": "Open",
+      "created_at": 1792253178.9651656,
+      "updated_at": 1792253178.9651656,
+      "updated": "3 days ago",
+      "description": "Automate daily pg_dump backups to S3-compatible cold storage bucket with encryption.",
+      "comments": [
+        {
+          "id": "comm-88-1",
+          "author": "tarapatel",
+          "authorName": "Tara Patel",
+          "authorAvatar": "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=64&q=80",
+          "text": "Cron automation script tested on staging. Retains 14 daily snapshots.",
+          "created_at": 1792339578.9651656,
+          "time": "2 days ago"
+        }
+      ]
+    },
+    "issue-82": {
+      "id": "issue-82",
+      "number": 82,
+      "title": "Implement PBKDF2 password hashing",
+      "repository": "devsync-core",
+      "labels": [
+        "security",
+        "backend"
+      ],
+      "author": "balajikumar",
+      "authorName": "Balaji",
+      "authorAvatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=64&q=80",
+      "commentsCount": 2,
+      "status": "Closed",
+      "created_at": 1791907578.9651656,
+      "updated_at": 1792166778.9651656,
+      "updated": "4 days ago",
+      "closed_at": 1792166778.9651656,
+      "closed_by": "balajikumar",
+      "description": "Upgrade user credentials storage from legacy formats to Django PBKDF2 SHA-256 with 1,500,000 iterations.",
+      "comments": [
+        {
+          "id": "comm-82-1",
+          "author": "naveen3438",
+          "authorName": "Naveen Kumar D",
+          "authorAvatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=64&q=80",
+          "text": "Hasher configured and tested. Passwords automatically upgrade upon successful login.",
+          "created_at": 1792166778.9651656,
+          "time": "4 days ago"
+        }
+      ]
+    },
+    "issue-76": {
+      "id": "issue-76",
+      "number": 76,
+      "title": "Refactor top navigation search bar",
+      "repository": "devsync-core",
+      "labels": [
+        "UI",
+        "enhancement"
+      ],
+      "author": "priyas",
+      "authorName": "Priya S",
+      "authorAvatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=64&q=80",
+      "commentsCount": 1,
+      "status": "Closed",
+      "created_at": 1791734778.9651656,
+      "updated_at": 1791993978.9651656,
+      "updated": "6 days ago",
+      "closed_at": 1791993978.9651656,
+      "closed_by": "priyas",
+      "description": "Standardize search bar styles and keyboard shortcuts (Cmd/Ctrl + K) across all workspace layouts.",
+      "comments": []
+    },
+    "issue-105": {
+      "id": "issue-105",
+      "number": 105,
+      "title": "Test Issue",
+      "repository": "devsync-core",
+      "labels": [
+        "enhancement"
+      ],
+      "author": "balajikumar",
+      "authorName": "Balaji",
+      "authorAvatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80",
+      "commentsCount": 0,
+      "status": "Open",
+      "created_at": 1792512434.3223627,
+      "updated_at": 1792512434.3223634,
+      "updated": "Just now",
+      "description": "Testing",
+      "comments": []
+    }
+  },
+  "pull_requests": {
+    "pr-42": {
+      "id": "pr-42",
+      "number": 42,
+      "title": "Add user authentication with Google OAuth",
+      "author": "priyas",
+      "authorName": "Priya S",
+      "authorAvatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=64&q=80",
+      "repository": "campus-connect",
+      "labels": [
+        "enhancement",
+        "auth"
+      ],
+      "reviewers": [
+        "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=64&q=80",
+        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=64&q=80"
+      ],
+      "commentsCount": 3,
+      "status": "Open",
+      "statusClass": "badge-status-open",
+      "created_at": 1792505178.9651656,
+      "updated_at": 1792513623.675307,
+      "updated": "Just now",
+      "sourceBranch": "feat/google-oauth",
+      "targetBranch": "main",
+      "description": "Implements Google OAuth 2.0 social login, token verification, and session setup.",
+      "commitsCount": 3,
+      "changedFilesCount": 1,
+      "commits": [
+        {
+          "hash": "e8a4bc1",
+          "message": "Add Google OAuth token exchange handler",
+          "author": "Priya S",
+          "time": "2 hours ago"
+        },
+        {
+          "hash": "7c2f9d0",
+          "message": "Handle CSRF exemptions for OAuth callback",
+          "author": "Priya S",
+          "time": "2 hours ago"
+        },
+        {
+          "hash": "3b1a8f4",
+          "message": "Store verified Google profile picture in session",
+          "author": "Priya S",
+          "time": "1 hour ago"
+        }
+      ],
+      "changedFiles": [
+        {
+          "path": "apps/auth/views.py",
+          "additions": 18,
+          "deletions": 2,
+          "diff": "+ def authenticate_user(request, provider=\"google\"):\n+     token = request.data.get(\"id_token\")\n+     verified_payload = verify_google_oauth_token(token)\n+     user, created = User.objects.get_or_create(email=verified_payload[\"email\"])\n       return Response({\"status\": \"authenticated\", \"user_id\": user.id})"
+        }
+      ],
+      "reviews": [
+        {
+          "author": "naveen3438",
+          "action": "approve",
+          "comment": "Looks solid! Verified audience token matching.",
+          "created_at": 1792508778.9651656
+        },
+        {
+          "id": "rev-3ef1d11c",
+          "author": "naveen3438",
+          "action": "approve",
+          "comment": "Architecture verified.",
+          "created_at": 1792513313.0931418
+        },
+        {
+          "id": "rev-2848d636",
+          "author": "naveen3438",
+          "action": "approve",
+          "comment": "Architecture verified.",
+          "created_at": 1792513623.6753018
+        }
+      ]
+    },
+    "pr-41": {
+      "id": "pr-41",
+      "number": 41,
+      "title": "Fix navbar responsive issue on mobile",
+      "author": "arjun",
+      "authorName": "Arjun",
+      "authorAvatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=64&q=80",
+      "repository": "portfolio-site",
+      "labels": [
+        "bug",
+        "frontend"
+      ],
+      "reviewers": [
+        "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=64&q=80"
+      ],
+      "commentsCount": 2,
+      "status": "Open",
+      "statusClass": "badge-status-open",
+      "created_at": 1792494378.9651656,
+      "updated_at": 1792494378.9651656,
+      "updated": "5 hours ago",
+      "sourceBranch": "fix/mobile-navbar",
+      "targetBranch": "main",
+      "description": "Ensures menu links collapse into the drawer on mobile viewport sizes.",
+      "commitsCount": 1,
+      "changedFilesCount": 1,
+      "commits": [
+        {
+          "hash": "4d1f2e9",
+          "message": "Fix mobile navigation drawer toggle",
+          "author": "Arjun",
+          "time": "5 hours ago"
+        }
+      ],
+      "changedFiles": [
+        {
+          "path": "src/css/navbar.css",
+          "additions": 8,
+          "deletions": 4,
+          "diff": "+ @media (max-width: 768px) { .nav-menu { display: none; } }"
+        }
+      ],
+      "reviews": []
+    },
+    "pr-39": {
+      "id": "pr-39",
+      "number": 39,
+      "title": "Improve database schema and add indexes",
+      "author": "karthik",
+      "authorName": "Karthik",
+      "authorAvatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=64&q=80",
+      "repository": "devsync-core",
+      "labels": [
+        "database",
+        "performance"
+      ],
+      "reviewers": [
+        "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=64&q=80",
+        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=64&q=80"
+      ],
+      "commentsCount": 6,
+      "status": "Open",
+      "statusClass": "badge-status-open",
+      "created_at": 1792425978.9651656,
+      "updated_at": 1792425978.9651656,
+      "updated": "1 day ago",
+      "sourceBranch": "develop",
+      "targetBranch": "main",
+      "description": "Adds composite indexes on foreign keys to optimize query execution down from 240ms to 18ms.",
+      "commitsCount": 2,
+      "changedFilesCount": 2,
+      "commits": [
+        {
+          "hash": "9f8e7d6",
+          "message": "Add composite btree index on repo_id and created_at",
+          "author": "Karthik",
+          "time": "1 day ago"
+        },
+        {
+          "hash": "1a2b3c4",
+          "message": "Benchmark query plans with EXPLAIN ANALYZE",
+          "author": "Karthik",
+          "time": "1 day ago"
+        }
+      ],
+      "changedFiles": [
+        {
+          "path": "apps/core/models.py",
+          "additions": 14,
+          "deletions": 1,
+          "diff": "+ class Meta:\n+     indexes = [models.Index(fields=[\"repository\", \"created_at\"])]"
+        }
+      ],
+      "reviews": [
+        {
+          "author": "balajikumar",
+          "action": "approve",
+          "comment": "Performance improvement verified on staging.",
+          "created_at": 1792482378.9651656
+        }
+      ]
+    },
+    "pr-38": {
+      "id": "pr-38",
+      "number": 38,
+      "title": "Add image upload for gallery",
+      "author": "sneha",
+      "authorName": "Sneha",
+      "authorAvatar": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=64&q=80",
+      "repository": "chaturya-club",
+      "labels": [
+        "feature",
+        "media"
+      ],
+      "reviewers": [
+        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=64&q=80"
+      ],
+      "commentsCount": 3,
+      "status": "Open",
+      "statusClass": "badge-status-open",
+      "created_at": 1792339578.9651656,
+      "updated_at": 1792339578.9651656,
+      "updated": "2 days ago",
+      "sourceBranch": "feat/gallery-upload",
+      "targetBranch": "main",
+      "description": "Enables multipart image uploads with automatic thumbnail generation.",
+      "commitsCount": 1,
+      "changedFilesCount": 1,
+      "commits": [
+        {
+          "hash": "3c2b1a0",
+          "message": "Add Pillow thumbnail resizer pipeline",
+          "author": "Sneha",
+          "time": "2 days ago"
+        }
+      ],
+      "changedFiles": [
+        {
+          "path": "apps/gallery/views.py",
+          "additions": 25,
+          "deletions": 3,
+          "diff": "+ def upload_thumbnail(image):\n+     im = Image.open(image)\n+     im.thumbnail((300, 300))"
+        }
+      ],
+      "reviews": []
+    },
+    "pr-37": {
+      "id": "pr-37",
+      "number": 37,
+      "title": "Update documentation for local deployment",
+      "author": "ananyaroy",
+      "authorName": "Ananya Roy",
+      "authorAvatar": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=64&q=80",
+      "repository": "devsync-core",
+      "labels": [
+        "docs"
+      ],
+      "reviewers": [
+        "balajikumar"
+      ],
+      "commentsCount": 1,
+      "status": "Closed",
+      "statusClass": "badge-status-closed",
+      "created_at": 1792166778.9651656,
+      "updated_at": 1792253178.9651656,
+      "updated": "3 days ago",
+      "closed_at": 1792253178.9651656,
+      "closed_by": "balajikumar",
+      "sourceBranch": "develop",
+      "targetBranch": "main",
+      "description": "Added README deployment steps for Ubuntu 24.04 and Docker Compose.",
+      "commitsCount": 1,
+      "changedFilesCount": 1,
+      "commits": [],
+      "changedFiles": [],
+      "reviews": []
+    },
+    "pr-36": {
+      "id": "pr-36",
+      "number": 36,
+      "title": "Refactor API endpoints and serializers",
+      "author": "balajikumar",
+      "authorName": "Balaji",
+      "authorAvatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=64&q=80",
+      "repository": "devsync-core",
+      "labels": [
+        "refactor",
+        "backend"
+      ],
+      "reviewers": [
+        "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=64&q=80"
+      ],
+      "commentsCount": 5,
+      "status": "Merged",
+      "statusClass": "badge-status-merged",
+      "created_at": 1792080378.9651656,
+      "updated_at": 1792253178.9651656,
+      "updated": "3 days ago",
+      "merged_at": 1792253178.9651656,
+      "merged_by": "balajikumar",
+      "sourceBranch": "develop",
+      "targetBranch": "main",
+      "description": "Standardized response serializations and paginator interfaces across API controllers.",
+      "commitsCount": 2,
+      "changedFilesCount": 1,
+      "commits": [
+        {
+          "hash": "62bb4ac",
+          "message": "Add standardized pagination envelope",
+          "author": "Balaji",
+          "time": "3 days ago"
+        }
+      ],
+      "changedFiles": [
+        {
+          "path": "apps/api/views.py",
+          "additions": 32,
+          "deletions": 10,
+          "diff": "+ class StandardPagination(PageNumberPagination):\n+     page_size = 10"
+        }
+      ],
+      "reviews": [
+        {
+          "author": "karthik",
+          "action": "approve",
+          "comment": "Clean refactoring.",
+          "created_at": 1792253178.9651656
+        }
+      ]
+    },
+    "pr-43": {
+      "id": "pr-43",
+      "number": 43,
+      "title": "Test PR",
+      "repository": "devsync-core",
+      "labels": [
+        "enhancement"
+      ],
+      "author": "balajikumar",
+      "authorName": "Balaji",
+      "authorAvatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80",
+      "reviewers": [],
+      "commentsCount": 0,
+      "status": "Merged",
+      "statusClass": "badge-status-merged",
+      "created_at": 1792512436.3830872,
+      "updated_at": 1792512438.4517467,
+      "updated": "Just now",
+      "sourceBranch": "develop",
+      "targetBranch": "main",
+      "description": "",
+      "commitsCount": 1,
+      "changedFilesCount": 8,
+      "commits": [
+        {
+          "hash": "0720998f",
+          "message": "Test PR",
+          "author": "Balaji",
+          "time": "Just now"
+        }
+      ],
+      "changedFiles": [
+        {
+          "path": "apps/pulse/engine.py",
+          "additions": 12,
+          "deletions": 2,
+          "diff": "+ // Code additions for branch develop\n+ # DevSync Pulse Engine - Real-time activity timeline calculation\n"
+        },
+        {
+          "path": "README.md",
+          "additions": 12,
+          "deletions": 2,
+          "diff": "+ // Code additions for branch develop\n+ # DevSync Core (Develop Branch)\nContains bleeding-edge features for testing and validation.\n"
+        },
+        {
+          "path": "services/auth_provider.py",
+          "additions": 12,
+          "deletions": 2,
+          "diff": "+ // Code additions for branch develop\n+ def authenticate():\n    return True\n"
+        },
+        {
+          "path": "services/auth_provider_1792422001.py",
+          "additions": 12,
+          "deletions": 2,
+          "diff": "+ // Code additions for branch develop\n+ modified code with authorization"
+        },
+        {
+          "path": "services/auth_provider_1792422971.py",
+          "additions": 12,
+          "deletions": 2,
+          "diff": "+ // Code additions for branch develop\n+ modified code with authorization"
+        },
+        {
+          "path": "services/auth_provider_1792423836.py",
+          "additions": 12,
+          "deletions": 2,
+          "diff": "+ // Code additions for branch develop\n+ modified code with authorization"
+        },
+        {
+          "path": "services/auth_provider_1792426723.py",
+          "additions": 12,
+          "deletions": 2,
+          "diff": "+ // Code additions for branch develop\n+ modified code with authorization"
+        },
+        {
+          "path": "services/auth_provider_1792426993.py",
+          "additions": 12,
+          "deletions": 2,
+          "diff": "+ // Code additions for branch develop\n+ modified code with authorization"
+        }
+      ],
+      "reviews": [],
+      "merged_at": 1792512438.4517457,
+      "merged_by": "balajikumar"
+    },
+    "pr-44": {
+      "id": "pr-44",
+      "number": 44,
+      "title": "Automated Test Feature Branch",
+      "repository": "devsync-core",
+      "labels": [
+        "enhancement"
+      ],
+      "author": "balajikumar",
+      "authorName": "Balaji",
+      "authorAvatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80",
+      "reviewers": [],
+      "commentsCount": 1,
+      "status": "Merged",
+      "statusClass": "badge-status-merged",
+      "created_at": 1792513703.2250876,
+      "updated_at": 1792513709.3615818,
+      "updated": "Just now",
+      "sourceBranch": "feat/automated-test",
+      "targetBranch": "main",
+      "description": "Integration testing PR merge",
+      "commitsCount": 1,
+      "changedFilesCount": 1,
+      "commits": [
+        {
+          "hash": "b1834f12",
+          "message": "Automated Test Feature Branch",
+          "author": "Balaji",
+          "time": "Just now"
+        }
+      ],
+      "changedFiles": [
+        {
+          "path": "README.md",
+          "additions": 5,
+          "deletions": 0,
+          "diff": "+ Proposed changes for Automated Test Feature Branch"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "rev-a2bec592",
+          "author": "naveen3438",
+          "action": "approve",
+          "comment": "Architecture verified.",
+          "created_at": 1792513707.3185344
+        }
+      ],
+      "merged_at": 1792513709.3615813,
+      "merged_by": "balajikumar"
+    },
+    "pr-45": {
+      "id": "pr-45",
+      "number": 45,
+      "title": "Automated Test Feature Branch",
+      "repository": "devsync-core",
+      "labels": [
+        "enhancement"
+      ],
+      "author": "balajikumar",
+      "authorName": "Balaji",
+      "authorAvatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80",
+      "reviewers": [],
+      "commentsCount": 1,
+      "status": "Merged",
+      "statusClass": "badge-status-merged",
+      "created_at": 1792516110.1860528,
+      "updated_at": 1792516116.39315,
+      "updated": "Just now",
+      "sourceBranch": "feat/automated-test",
+      "targetBranch": "main",
+      "description": "Integration testing PR merge",
+      "commitsCount": 1,
+      "changedFilesCount": 1,
+      "commits": [
+        {
+          "hash": "19ff59af",
+          "message": "Automated Test Feature Branch",
+          "author": "Balaji",
+          "time": "Just now"
+        }
+      ],
+      "changedFiles": [
+        {
+          "path": "README.md",
+          "additions": 5,
+          "deletions": 0,
+          "diff": "+ Proposed changes for Automated Test Feature Branch"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "rev-a2b3da00",
+          "author": "naveen3438",
+          "action": "approve",
+          "comment": "Architecture verified.",
+          "created_at": 1792516114.286162
+        }
+      ],
+      "merged_at": 1792516116.3931487,
+      "merged_by": "balajikumar"
+    },
+    "pr-46": {
+      "id": "pr-46",
+      "number": 46,
+      "title": "Automated Test Feature Branch",
+      "repository": "devsync-core",
+      "labels": [
+        "enhancement"
+      ],
+      "author": "balajikumar",
+      "authorName": "Balaji",
+      "authorAvatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80",
+      "reviewers": [],
+      "commentsCount": 1,
+      "status": "Merged",
+      "statusClass": "badge-status-merged",
+      "created_at": 1792519881.179884,
+      "updated_at": 1792519888.1350586,
+      "updated": "Just now",
+      "sourceBranch": "feat/automated-test",
+      "targetBranch": "main",
+      "description": "Integration testing PR merge",
+      "commitsCount": 1,
+      "changedFilesCount": 1,
+      "commits": [
+        {
+          "hash": "4121ea79",
+          "message": "Automated Test Feature Branch",
+          "author": "Balaji",
+          "time": "Just now"
+        }
+      ],
+      "changedFiles": [
+        {
+          "path": "README.md",
+          "additions": 5,
+          "deletions": 0,
+          "diff": "+ Proposed changes for Automated Test Feature Branch"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "rev-7b432d68",
+          "author": "naveen3438",
+          "action": "approve",
+          "comment": "Architecture verified.",
+          "created_at": 1792519886.046403
+        }
+      ],
+      "merged_at": 1792519888.135057,
+      "merged_by": "balajikumar"
+    },
+    "pr-47": {
+      "id": "pr-47",
+      "number": 47,
+      "title": "Automated Test Feature Branch",
+      "repository": "devsync-core",
+      "labels": [
+        "enhancement"
+      ],
+      "author": "balajikumar",
+      "authorName": "Balaji",
+      "authorAvatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80",
+      "reviewers": [],
+      "commentsCount": 1,
+      "status": "Merged",
+      "statusClass": "badge-status-merged",
+      "created_at": 1792520586.5725203,
+      "updated_at": 1792520593.1862192,
+      "updated": "Just now",
+      "sourceBranch": "feat/automated-test",
+      "targetBranch": "main",
+      "description": "Integration testing PR merge",
+      "commitsCount": 1,
+      "changedFilesCount": 1,
+      "commits": [
+        {
+          "hash": "ae414b2c",
+          "message": "Automated Test Feature Branch",
+          "author": "Balaji",
+          "time": "Just now"
+        }
+      ],
+      "changedFiles": [
+        {
+          "path": "README.md",
+          "additions": 5,
+          "deletions": 0,
+          "diff": "+ Proposed changes for Automated Test Feature Branch"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "rev-1f198624",
+          "author": "naveen3438",
+          "action": "approve",
+          "comment": "Architecture verified.",
+          "created_at": 1792520591.1096709
+        }
+      ],
+      "merged_at": 1792520593.1862185,
+      "merged_by": "balajikumar"
+    }
+  },
+  "teams": {
+    "devsync-core": {
+      "id": "team-devsync",
+      "name": "devsync-core",
+      "title": "DevSync Core Platform",
+      "description": "Core backend microservices, async worker pipelines, and developer collaboration services.",
+      "ownerUsername": "balajikumar",
+      "ownerName": "Balaji",
+      "language": "Python",
+      "visibility": "Private",
+      "memberUsernames": [
+        "balajikumar",
+        "naveen3438",
+        "priyas",
+        "ananyaroy",
+        "vikramrao",
+        "testdev",
+        "test-engineer"
+      ]
+    },
+    "campus-connect": {
+      "id": "team-campus",
+      "name": "campus-connect",
+      "title": "Campus Connect",
+      "description": "Student community engagement portal and academic collaboration suite.",
+      "ownerUsername": "naveen3438",
+      "ownerName": "Naveen Kumar D",
+      "language": "Django",
+      "visibility": "Public",
+      "memberUsernames": [
+        "naveen3438",
+        "priyas",
+        "arjun",
+        "sneha"
+      ]
+    },
+    "ai-tools": {
+      "id": "team-ai",
+      "name": "ai-tools",
+      "title": "AI Coding Assistant",
+      "description": "Autonomous multi-file refactoring, diff generation, and agentic workflows.",
+      "ownerUsername": "balajikumar",
+      "ownerName": "Balaji",
+      "language": "TypeScript",
+      "visibility": "Private",
+      "memberUsernames": [
+        "balajikumar",
+        "naveen3438",
+        "vikramrao"
+      ]
+    },
+    "chaturya-club": {
+      "id": "team-chaturya",
+      "name": "chaturya-club",
+      "title": "Chaturya Tech Club",
+      "description": "Event registration portals, club activities, and student project showcases.",
+      "ownerUsername": "naveen3438",
+      "ownerName": "Naveen Kumar D",
+      "language": "Flask",
+      "visibility": "Public",
+      "memberUsernames": [
+        "naveen3438",
+        "arjun",
+        "sneha"
+      ]
+    },
+    "heavy-machinery": {
+      "id": "team-heavy",
+      "name": "heavy-machinery",
+      "title": "Heavy Machinery DevOps",
+      "description": "Automated deployment pipelines, telemetry monitors, and cloud infrastructure.",
+      "ownerUsername": "balajikumar",
+      "ownerName": "Balaji",
+      "language": "Python",
+      "visibility": "Private",
+      "memberUsernames": [
+        "balajikumar",
+        "karthik",
+        "tarapatel"
+      ]
+    }
+  },
+  "team_members": [
+    {
+      "id": "member-balaji",
+      "name": "Balaji",
+      "username": "balajikumar",
+      "email": "balaji@devsync.dev",
+      "avatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=80&q=80",
+      "globalRole": "Owner",
+      "contributionsCount": 245,
+      "isOnline": true,
+      "availability": "Available",
+      "joined": "Jan 2024",
+      "assignedProjects": [
+        "DevSync Core Platform",
+        "AI Coding Assistant",
+        "Heavy Machinery DevOps"
+      ],
+      "projectRoles": {
+        "devsync-core": "Owner",
+        "ai-tools": "Owner",
+        "heavy-machinery": "Owner"
+      }
+    },
+    {
+      "id": "member-naveen",
+      "name": "Naveen Kumar D",
+      "username": "naveen3438",
+      "email": "naveen@devsync.dev",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&q=80",
+      "globalRole": "Lead Maintainer",
+      "contributionsCount": 248,
+      "isOnline": true,
+      "availability": "Available",
+      "joined": "Jan 2024",
+      "assignedProjects": [
+        "DevSync Core Platform",
+        "Campus Connect",
+        "AI Coding Assistant",
+        "Chaturya Tech Club"
+      ],
+      "projectRoles": {
+        "devsync-core": "Lead Maintainer",
+        "campus-connect": "Owner",
+        "ai-tools": "Maintainer",
+        "chaturya-club": "Owner"
+      }
+    },
+    {
+      "id": "member-priya",
+      "name": "Priya S",
+      "username": "priyas",
+      "email": "priya@devsync.dev",
+      "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=80&q=80",
+      "globalRole": "Collaborator",
+      "contributionsCount": 132,
+      "isOnline": true,
+      "availability": "Busy",
+      "joined": "Feb 2024",
+      "assignedProjects": [
+        "DevSync Core Platform",
+        "Campus Connect"
+      ],
+      "projectRoles": {
+        "devsync-core": "Collaborator",
+        "campus-connect": "Collaborator"
+      }
+    },
+    {
+      "id": "member-arjun",
+      "name": "Arjun",
+      "username": "arjun",
+      "email": "arjun@devsync.dev",
+      "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=80&q=80",
+      "globalRole": "Collaborator",
+      "contributionsCount": 98,
+      "isOnline": false,
+      "availability": "In Review",
+      "joined": "Mar 2024",
+      "assignedProjects": [
+        "Campus Connect",
+        "Chaturya Tech Club"
+      ],
+      "projectRoles": {
+        "campus-connect": "Collaborator",
+        "chaturya-club": "Collaborator"
+      }
+    },
+    {
+      "id": "member-sneha",
+      "name": "Sneha",
+      "username": "sneha",
+      "email": "sneha@devsync.dev",
+      "avatar": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=80&q=80",
+      "globalRole": "Collaborator",
+      "contributionsCount": 76,
+      "isOnline": true,
+      "availability": "Available",
+      "joined": "Mar 2024",
+      "assignedProjects": [
+        "Campus Connect",
+        "Chaturya Tech Club"
+      ],
+      "projectRoles": {
+        "campus-connect": "Collaborator",
+        "chaturya-club": "Collaborator"
+      }
+    },
+    {
+      "id": "member-karthik",
+      "name": "Karthik",
+      "username": "karthik",
+      "email": "karthik@devsync.dev",
+      "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=80&q=80",
+      "globalRole": "Collaborator",
+      "contributionsCount": 114,
+      "isOnline": true,
+      "availability": "Available",
+      "joined": "Apr 2024",
+      "assignedProjects": [
+        "Heavy Machinery DevOps"
+      ],
+      "projectRoles": {
+        "heavy-machinery": "Collaborator"
+      }
+    },
+    {
+      "id": "member-tarapatel",
+      "name": "Tara Patel",
+      "username": "tarapatel",
+      "email": "tara@devsync.dev",
+      "avatar": "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=80&q=80",
+      "globalRole": "Collaborator",
+      "contributionsCount": 89,
+      "isOnline": false,
+      "availability": "Available",
+      "joined": "May 2024",
+      "assignedProjects": [
+        "Heavy Machinery DevOps"
+      ],
+      "projectRoles": {
+        "heavy-machinery": "Collaborator"
+      }
+    },
+    {
+      "id": "member-testdev",
+      "name": "testdev",
+      "username": "testdev",
+      "email": "testdev@devsync.dev",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&q=80",
+      "globalRole": "Collaborator",
+      "contributionsCount": 0,
+      "isOnline": true,
+      "availability": "Available",
+      "joined": "Oct 2026",
+      "assignedProjects": [
+        "DevSync Core Platform"
+      ],
+      "projectRoles": {
+        "devsync-core": "Collaborator"
+      }
+    },
+    {
+      "id": "member-test-engineer",
+      "name": "test-engineer",
+      "username": "test-engineer",
+      "email": "test-engineer@devsync.dev",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&q=80",
+      "globalRole": "Fullstack Developer",
+      "contributionsCount": 0,
+      "isOnline": true,
+      "availability": "Available",
+      "joined": "Oct 2026",
+      "assignedProjects": [
+        "DevSync Core Platform"
+      ],
+      "projectRoles": {
+        "devsync-core": "Fullstack Developer"
+      }
+    }
+  ],
+  "conversations": {
+    "conv-direct-balaji": {
+      "id": "conv-direct-balaji",
+      "type": "direct",
+      "title": "Balaji",
+      "avatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80",
+      "members": [
+        "naveen3438",
+        "balajikumar"
+      ],
+      "admins": [
+        "balajikumar"
+      ],
+      "isOnline": true,
+      "unreadCount": 0,
+      "updated_at": 1792520608.6020691,
+      "lastMessage": "Hey Priya, verified the Google OAuth token validation logic!",
+      "lastMessageTime": "11:53 PM"
+    },
+    "conv-direct-priya": {
+      "id": "conv-direct-priya",
+      "type": "direct",
+      "title": "Priya S",
+      "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=120&q=80",
+      "members": [
+        "naveen3438",
+        "priyas"
+      ],
+      "admins": [
+        "priyas"
+      ],
+      "isOnline": true,
+      "unreadCount": 1,
+      "updated_at": 1792509978.9651656,
+      "lastMessage": "Good morning everyone! Just pushed the initial commit for OAuth integration.",
+      "lastMessageTime": "10:24 AM"
+    },
+    "conv-direct-karthik": {
+      "id": "conv-direct-karthik",
+      "type": "direct",
+      "title": "Karthik",
+      "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=120&q=80",
+      "members": [
+        "naveen3438",
+        "karthik"
+      ],
+      "admins": [
+        "karthik"
+      ],
+      "isOnline": true,
+      "unreadCount": 0,
+      "updated_at": 1792505178.9651656,
+      "lastMessage": "Database indexes are staged in #39. Query times dropped from 240ms to 18ms.",
+      "lastMessageTime": "11:15 AM"
+    },
+    "conv-group-core": {
+      "id": "conv-group-core",
+      "type": "group",
+      "title": "DevSync Core Squad",
+      "avatar": "",
+      "members": [
+        "naveen3438",
+        "balajikumar",
+        "priyas",
+        "karthik",
+        "ananyaroy"
+      ],
+      "admins": [
+        "balajikumar",
+        "naveen3438"
+      ],
+      "isOnline": false,
+      "unreadCount": 0,
+      "updated_at": 1792510578.9651656,
+      "description": "Official backend microservices and core platform engineering squad.",
+      "lastMessage": "Sprint planning scheduled for tomorrow at 10 AM IST.",
+      "lastMessageTime": "12:05 PM"
+    }
+  },
+  "messages": {
+    "conv-direct-balaji": [
+      {
+        "id": "msg-b1",
+        "conversation_id": "conv-direct-balaji",
+        "sender": "balajikumar",
+        "senderName": "Balaji",
+        "senderAvatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=64&q=80",
+        "text": "Hey Naveen! Have you checked the latest Project Pulse aggregation commits?",
+        "timestamp": 1792508778.9651656,
+        "time": "10:15 AM",
+        "status": "read",
+        "reply_to": null,
+        "reactions": {
+          "\ud83d\udc4d": [
+            "naveen3438"
+          ]
+        }
+      },
+      {
+        "id": "msg-b2",
+        "conversation_id": "conv-direct-balaji",
+        "sender": "naveen3438",
+        "senderName": "Naveen Kumar D",
+        "senderAvatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=64&q=80",
+        "text": "Yes, verified them. The 24h and 7d bucketing looks spotless. Moving to the PR review engine next.",
+        "timestamp": 1792509978.9651656,
+        "time": "10:20 AM",
+        "status": "read",
+        "reply_to": "msg-b1",
+        "reactions": {
+          "\ud83d\udd25": [
+            "balajikumar"
+          ]
+        }
+      },
+      {
+        "id": "msg-b3",
+        "conversation_id": "conv-direct-balaji",
+        "sender": "balajikumar",
+        "senderName": "Balaji",
+        "senderAvatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=64&q=80",
+        "text": "Awesome work Priya! I will review PR #42 shortly. The architecture looks clean.",
+        "timestamp": 1792511178.9651656,
+        "time": "10:28 AM",
+        "status": "read",
+        "reply_to": null,
+        "reactions": {}
+      },
+      {
+        "id": "msg_6766272ae67d",
+        "conversation_id": "conv-direct-balaji",
+        "sender": "balajikumar",
+        "senderName": "Balaji",
+        "senderAvatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80",
+        "text": "Hello world",
+        "timestamp": 1792512442.5583344,
+        "time": "9:37 PM",
+        "status": "read",
+        "reply_to": null,
+        "attachment": null,
+        "reactions": {}
+      },
+      {
+        "id": "msg_f38131a4f9de",
+        "conversation_id": "conv-direct-balaji",
+        "sender": "naveen3438",
+        "senderName": "Naveen Kumar D",
+        "senderAvatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+        "text": "Hey Priya, verified the Google OAuth token validation logic!",
+        "timestamp": 1792513640.1123574,
+        "time": "9:57 PM",
+        "status": "sent",
+        "reply_to": null,
+        "attachment": null,
+        "reactions": {
+          "\ud83d\ude80": [
+            "naveen3438"
+          ]
+        }
+      },
+      {
+        "id": "msg_d1e75a2ccc44",
+        "conversation_id": "conv-direct-balaji",
+        "sender": "naveen3438",
+        "senderName": "Naveen Kumar D",
+        "senderAvatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+        "text": "Hey Priya, verified the Google OAuth token validation logic!",
+        "timestamp": 1792513723.730325,
+        "time": "9:58 PM",
+        "status": "sent",
+        "reply_to": null,
+        "attachment": null,
+        "reactions": {
+          "\ud83d\ude80": [
+            "naveen3438"
+          ]
+        }
+      },
+      {
+        "id": "msg_b25625da6757",
+        "conversation_id": "conv-direct-balaji",
+        "sender": "naveen3438",
+        "senderName": "Naveen Kumar D",
+        "senderAvatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+        "text": "Hey Priya, verified the Google OAuth token validation logic!",
+        "timestamp": 1792516130.747134,
+        "time": "10:38 PM",
+        "status": "sent",
+        "reply_to": null,
+        "attachment": null,
+        "reactions": {
+          "\ud83d\ude80": [
+            "naveen3438"
+          ]
+        }
+      },
+      {
+        "id": "msg_5da6b3f9700e",
+        "conversation_id": "conv-direct-balaji",
+        "sender": "naveen3438",
+        "senderName": "Naveen Kumar D",
+        "senderAvatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+        "text": "Hey Priya, verified the Google OAuth token validation logic!",
+        "timestamp": 1792519903.9555368,
+        "time": "11:41 PM",
+        "status": "sent",
+        "reply_to": null,
+        "attachment": null,
+        "reactions": {
+          "\ud83d\ude80": [
+            "naveen3438"
+          ]
+        }
+      },
+      {
+        "id": "msg_193a1aba8c51",
+        "conversation_id": "conv-direct-balaji",
+        "sender": "naveen3438",
+        "senderName": "Naveen Kumar D",
+        "senderAvatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+        "text": "Hey Priya, verified the Google OAuth token validation logic!",
+        "timestamp": 1792520608.6020195,
+        "time": "11:53 PM",
+        "status": "sent",
+        "reply_to": null,
+        "attachment": null,
+        "reactions": {
+          "\ud83d\ude80": [
+            "naveen3438"
+          ]
+        }
+      }
+    ],
+    "conv-direct-priya": [
+      {
+        "id": "msg-p1",
+        "conversation_id": "conv-direct-priya",
+        "sender": "priyas",
+        "senderName": "Priya S",
+        "senderAvatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=64&q=80",
+        "text": "Good morning everyone! Just pushed the initial commit for OAuth integration.",
+        "timestamp": 1792509978.9651656,
+        "time": "10:24 AM",
+        "status": "delivered",
+        "reply_to": null,
+        "reactions": {
+          "\ud83d\ude80": [
+            "naveen3438"
+          ]
+        }
+      }
+    ],
+    "conv-direct-karthik": [
+      {
+        "id": "msg-k1",
+        "conversation_id": "conv-direct-karthik",
+        "sender": "karthik",
+        "senderName": "Karthik",
+        "senderAvatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=64&q=80",
+        "text": "Database indexes are staged in #39. Query times dropped from 240ms to 18ms.",
+        "timestamp": 1792505178.9651656,
+        "time": "11:15 AM",
+        "status": "read",
+        "reply_to": null,
+        "reactions": {
+          "\u26a1": [
+            "naveen3438",
+            "balajikumar"
+          ]
+        }
+      }
+    ],
+    "conv-group-core": [
+      {
+        "id": "msg-g1",
+        "conversation_id": "conv-group-core",
+        "sender": "balajikumar",
+        "senderName": "Balaji",
+        "senderAvatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=64&q=80",
+        "text": "Team, please review open PRs #42 and #39 before the staging merge freeze today.",
+        "timestamp": 1792508778.9651656,
+        "time": "11:45 AM",
+        "status": "read",
+        "reply_to": null,
+        "reactions": {
+          "\ud83d\udc4d": [
+            "priyas",
+            "naveen3438"
+          ]
+        }
+      },
+      {
+        "id": "msg-g2",
+        "conversation_id": "conv-group-core",
+        "sender": "naveen3438",
+        "senderName": "Naveen Kumar D",
+        "senderAvatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=64&q=80",
+        "text": "Sprint planning scheduled for tomorrow at 10 AM IST.",
+        "timestamp": 1792510578.9651656,
+        "time": "12:05 PM",
+        "status": "read",
+        "reply_to": null,
+        "reactions": {}
+      }
+    ]
+  },
+  "communities": {
+    "comm-devsync": {
+      "id": "comm-devsync",
+      "name": "DevSync Core",
+      "description": "Engineering community for DevSync open source platform and microservices.",
+      "project": "devsync-core",
+      "channels": [
+        {
+          "id": "ch-general",
+          "name": "general",
+          "desc": "General developer discussions and team chat",
+          "unread": false,
+          "pinnedAnnouncement": "DevSync 2.0 release candidate is in staging! Test the new Issues, PRs and Chat features."
+        },
+        {
+          "id": "ch-frontend",
+          "name": "frontend",
+          "desc": "UI architecture, HTML5, Tailwind CSS tokens, and JavaScript modules",
+          "unread": true,
+          "pinnedAnnouncement": null
+        },
+        {
+          "id": "ch-django-backend",
+          "name": "django-backend",
+          "desc": "Django APIs, PostgreSQL modeling, async worker tasks, and caching",
+          "unread": false,
+          "pinnedAnnouncement": null
+        },
+        {
+          "id": "ch-showcase",
+          "name": "showcase",
+          "desc": "Show off your completed repositories, demo branches, and pull requests",
+          "unread": false,
+          "pinnedAnnouncement": null
+        },
+        {
+          "id": "ch-announcements",
+          "name": "announcements",
+          "desc": "Platform announcements, release notes, and community updates",
+          "unread": false,
+          "pinnedAnnouncement": "Community notice: Please remember to keep code discussions friendly and verify branch targets."
+        }
+      ]
+    },
+    "comm-campus": {
+      "id": "comm-campus",
+      "name": "Campus Connect",
+      "description": "Student developers community and academic project collaboration.",
+      "project": "campus-connect",
+      "channels": [
+        {
+          "id": "ch-campus-gen",
+          "name": "general",
+          "desc": "Campus community discussions and project ideas",
+          "unread": false,
+          "pinnedAnnouncement": null
+        },
+        {
+          "id": "ch-campus-events",
+          "name": "events",
+          "desc": "Hackathons, workshops, and student project demos",
+          "unread": false,
+          "pinnedAnnouncement": null
+        }
+      ]
+    }
+  },
+  "channel_messages": {
+    "ch-general": [
+      {
+        "id": "cmsg-1",
+        "channelId": "ch-general",
+        "author": "Priya S",
+        "authorAvatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=64&q=80",
+        "time": "10:24 AM",
+        "text": "Good morning everyone! Just pushed the initial commit for OAuth integration.",
+        "reactions": {
+          "\ud83d\udc4b": [
+            "balajikumar",
+            "naveen3438"
+          ]
+        }
+      },
+      {
+        "id": "cmsg-2",
+        "channelId": "ch-general",
+        "author": "Balaji",
+        "authorAvatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=64&q=80",
+        "time": "10:28 AM",
+        "text": "Awesome work Priya! I will review PR #42 shortly. The architecture looks clean.",
+        "reactions": {
+          "\ud83d\ude80": [
+            "priyas"
+          ]
+        }
+      },
+      {
+        "id": "cmsg-3",
+        "channelId": "ch-general",
+        "author": "Karthik",
+        "authorAvatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=64&q=80",
+        "time": "11:15 AM",
+        "text": "Database indexes are staged in #39. Query times dropped from 240ms to 18ms.",
+        "reactions": {
+          "\ud83d\udd25": [
+            "balajikumar"
+          ]
+        }
+      }
+    ],
+    "ch-frontend": [
+      {
+        "id": "cmsg-f1",
+        "channelId": "ch-frontend",
+        "author": "Priya S",
+        "authorAvatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=64&q=80",
+        "time": "Yesterday",
+        "text": "New tokens for mint accents and neutral surfaces have landed in tokens.css.",
+        "reactions": {}
+      }
+    ],
+    "ch-django-backend": [
+      {
+        "id": "cmsg-d1",
+        "channelId": "ch-django-backend",
+        "author": "Naveen Kumar D",
+        "authorAvatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=64&q=80",
+        "time": "2 days ago",
+        "text": "All API serializers now inherit from a standardized pagination response wrapper.",
+        "reactions": {
+          "\ud83d\udc4d": [
+            "balajikumar"
+          ]
+        }
+      }
+    ]
+  },
+  "status_updates": [
+    {
+      "id": "stat_ddee4eb17e14",
+      "author": "naveen3438",
+      "authorName": "Naveen Kumar D",
+      "authorAvatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+      "text": "\ud83d\ude80 DevSync Master Upgrade fully operational across frontend and backend!",
+      "media": null,
+      "audience": "everyone",
+      "created_at": 1792520615.3570595,
+      "expires_at": 1792607015.3570604
+    },
+    {
+      "id": "stat_66b22e08ae3d",
+      "author": "naveen3438",
+      "authorName": "Naveen Kumar D",
+      "authorAvatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+      "text": "\ud83d\ude80 DevSync Master Upgrade fully operational across frontend and backend!",
+      "media": null,
+      "audience": "everyone",
+      "created_at": 1792519910.7670105,
+      "expires_at": 1792606310.7670114
+    },
+    {
+      "id": "stat_e97f29ebb2e7",
+      "author": "naveen3438",
+      "authorName": "Naveen Kumar D",
+      "authorAvatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+      "text": "\ud83d\ude80 DevSync Master Upgrade fully operational across frontend and backend!",
+      "media": null,
+      "audience": "everyone",
+      "created_at": 1792516137.7312407,
+      "expires_at": 1792602537.7312417
+    },
+    {
+      "id": "stat_cb278e34a62a",
+      "author": "naveen3438",
+      "authorName": "Naveen Kumar D",
+      "authorAvatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+      "text": "\ud83d\ude80 DevSync Master Upgrade fully operational across frontend and backend!",
+      "media": null,
+      "audience": "everyone",
+      "created_at": 1792513729.884721,
+      "expires_at": 1792600129.884722
+    },
+    {
+      "id": "stat_04868db6e39a",
+      "author": "naveen3438",
+      "authorName": "Naveen Kumar D",
+      "authorAvatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+      "text": "\ud83d\ude80 DevSync Master Upgrade fully operational across frontend and backend!",
+      "media": null,
+      "audience": "everyone",
+      "created_at": 1792513646.311435,
+      "expires_at": 1792600046.311436
+    },
+    {
+      "id": "stat_473ba66100b6",
+      "author": "naveen3438",
+      "authorName": "Naveen Kumar D",
+      "authorAvatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+      "text": "\ud83d\ude80 DevSync Master Upgrade fully operational across frontend and backend!",
+      "media": null,
+      "audience": "everyone",
+      "created_at": 1792513335.5828028,
+      "expires_at": 1792599735.582803
+    },
+    {
+      "id": "stat_d7bf5c7bdef9",
+      "author": "balajikumar",
+      "authorName": "Balaji",
+      "authorAvatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80",
+      "text": "Coding on DevSync",
+      "media": null,
+      "audience": "everyone",
+      "created_at": 1792512444.606237,
+      "expires_at": 1792598844.6062374
+    },
+    {
+      "id": "stat-naveen",
+      "author": "naveen3438",
+      "authorName": "Naveen Kumar D",
+      "authorAvatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=64&q=80",
+      "text": "Refactoring PR review engine & WhatsApp-style discussions",
+      "media": null,
+      "audience": "everyone",
+      "created_at": 1792508778.9651656,
+      "expires_at": 1792595178.9651656
+    },
+    {
+      "id": "stat-priya",
+      "author": "priyas",
+      "authorName": "Priya S",
+      "authorAvatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=64&q=80",
+      "text": "Polishing DevSync mint design tokens and typography",
+      "media": null,
+      "audience": "everyone",
+      "created_at": 1792505178.9651656,
+      "expires_at": 1792591578.9651656
+    },
+    {
+      "id": "stat-balaji",
+      "author": "balajikumar",
+      "authorName": "Balaji",
+      "authorAvatar": "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=64&q=80",
+      "text": "PostgreSQL connection pooling benchmarks look amazing",
+      "media": null,
+      "audience": "everyone",
+      "created_at": 1792501578.9651656,
+      "expires_at": 1792587978.9651656
+    }
+  ]
 }

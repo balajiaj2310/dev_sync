@@ -12,6 +12,10 @@ export function toastDanger(message, title = 'Error') {
   showToast({ title, message, type: 'danger' });
 }
 
+export function toastError(message, title = 'Error') {
+  showToast({ title, message, type: 'danger' });
+}
+
 export function toastInfo(message, title = 'Notice') {
   showToast({ title, message, type: 'info' });
 }

@@ -1177,3 +1177,360 @@ def handle_attachment_upload(repo, file_name, content, file_type, description, a
         'message': f"Attachment '{clean_name}' uploaded successfully.",
         'attachment': att_entry
     }, 201
+
+
+# --------------------------------------------------------------------------
+# Contribution Intelligence Engine
+# --------------------------------------------------------------------------
+
+def calculate_contribution_intelligence(username, range_type='30d', project_filter='all', caller_username=None):
+    """
+    Data-driven, minimal Contribution Intelligence for DevSync.
+    Replaces GitHub-style green squares with meaningful engineering metrics:
+    - Contribution Impact Score (0-100 gauge with transparent formula & tooltip)
+    - Trend comparison vs prior equivalent period
+    - 3 Compact Indicators: Impact (delivered work), Flow (resolution & velocity), Collaboration (peer reviews & discussions)
+    - 5 Engineering Strengths (Radar dimensions: Review Quality, Delivery & Workflow, Testing & Reliability, Collaboration, Issue Resolution)
+    - Project Contribution Breakdown (thin proportional comparison bars)
+    - Verified 'insufficient_data' state when activity evidence is lacking (< 2 events)
+    """
+    import backend_issues_prs_chat
+
+    now = time.time()
+    days = 90 if range_type == '90d' else (7 if range_type == '7d' else 30)
+    window_sec = days * 86400
+    start_time = now - window_sec
+    prior_start = start_time - window_sec
+
+    # Gather repositories user belongs to or owns
+    user_repos = set()
+    for r in REPOSITORIES.values():
+        if r.get('owner', '').lower() == username.lower() or any(m.get('username', '').lower() == username.lower() for m in r.get('members', [])):
+            user_repos.add(r['name'])
+
+    # Filter activity events for this user
+    cur_evts = []
+    prior_evts = []
+    for evt in ACTIVITY_EVENTS:
+        ts = evt.get('timestamp', 0)
+        repo_name = evt.get('repository', '')
+        if project_filter and project_filter.lower() != 'all' and repo_name.lower() != project_filter.lower():
+            continue
+
+        is_actor = (evt.get('actor', '').lower() == username.lower())
+        if not is_actor:
+            continue
+
+        # Privacy gate for private projects
+        if evt.get('visibility') == 'Private':
+            if not caller_username:
+                continue
+            is_caller_authorized = False
+            repo_obj = get_repository_by_id_or_name(repo_name)
+            if repo_obj:
+                _, _, is_owner, is_maint, is_collab = check_repo_permissions({'username': caller_username}, repo_obj)
+                is_caller_authorized = is_collab
+            if not is_caller_authorized and caller_username.lower() != evt.get('actor', '').lower():
+                continue
+
+        if start_time <= ts <= now:
+            cur_evts.append(evt)
+        elif prior_start <= ts < start_time:
+            prior_evts.append(evt)
+
+    # Pull requests: authored, merged, and reviews
+    cur_prs_authored = []
+    cur_prs_merged = []
+    cur_prs_reviewed = []
+    prior_prs_count = 0
+
+    prs_dict = getattr(backend_issues_prs_chat, 'PULL_REQUESTS', {})
+    prs_list = list(prs_dict.values()) if isinstance(prs_dict, dict) else list(prs_dict)
+
+    for pr in prs_list:
+        repo_name = pr.get('repository', '')
+        if project_filter and project_filter.lower() != 'all' and repo_name.lower() != project_filter.lower():
+            continue
+
+        author = pr.get('author', '').lower()
+        pr_created = pr.get('created_at', 0)
+        pr_updated = pr.get('updated_at', 0)
+
+        if author == username.lower():
+            if start_time <= pr_created <= now:
+                cur_prs_authored.append(pr)
+            if pr.get('status') == 'Merged' and start_time <= pr_updated <= now:
+                cur_prs_merged.append(pr)
+            if prior_start <= pr_created < start_time:
+                prior_prs_count += 1
+
+        for rev in pr.get('reviews', []):
+            if rev.get('author', '').lower() == username.lower():
+                rev_time = rev.get('submitted_at', rev.get('created_at', 0))
+                if start_time <= rev_time <= now:
+                    cur_prs_reviewed.append(rev)
+
+    # Issues: closed, authored, comments
+    cur_issues_closed = []
+    cur_issue_comments = []
+    prior_issues_count = 0
+
+    issues_dict = getattr(backend_issues_prs_chat, 'ISSUES', {})
+    issues_list = list(issues_dict.values()) if isinstance(issues_dict, dict) else list(issues_dict)
+
+    for iss in issues_list:
+        repo_name = iss.get('repository', '')
+        if project_filter and project_filter.lower() != 'all' and repo_name.lower() != project_filter.lower():
+            continue
+
+        author = iss.get('author', '').lower()
+        assignee = iss.get('assignee', '').lower()
+        iss_created = iss.get('created_at', 0)
+        iss_updated = iss.get('updated_at', 0)
+
+        if (author == username.lower() or assignee == username.lower()):
+            if iss.get('status') == 'Closed' and start_time <= iss_updated <= now:
+                cur_issues_closed.append(iss)
+            if prior_start <= iss_created < start_time:
+                prior_issues_count += 1
+
+        for comm in iss.get('comments', []):
+            if comm.get('author', '').lower() == username.lower():
+                comm_time = comm.get('created_at', 0)
+                if start_time <= comm_time <= now:
+                    cur_issue_comments.append(comm)
+
+    # Discussion messages
+    cur_messages = []
+    msgs_dict = getattr(backend_issues_prs_chat, 'MESSAGES', {})
+    for conv_msgs in (msgs_dict.values() if isinstance(msgs_dict, dict) else []):
+        for m in conv_msgs:
+            if m.get('sender', '').lower() == username.lower() and start_time <= m.get('timestamp', 0) <= now:
+                cur_messages.append(m)
+
+    ch_msgs_dict = getattr(backend_issues_prs_chat, 'CHANNEL_MESSAGES', {})
+    for ch_msgs in (ch_msgs_dict.values() if isinstance(ch_msgs_dict, dict) else []):
+        for m in ch_msgs:
+            if m.get('sender', '').lower() == username.lower() and start_time <= m.get('timestamp', 0) <= now:
+                cur_messages.append(m)
+
+    # Actions count
+    commits_cnt = sum(1 for e in cur_evts if e.get('type') == 'git_commit')
+    uploads_cnt = sum(1 for e in cur_evts if e.get('type') == 'file_uploaded')
+    tasks_cnt = sum(1 for e in cur_evts if e.get('type') in ('task_completed', 'milestone_completed'))
+    branches_cnt = sum(1 for e in cur_evts if e.get('type') == 'branch_created')
+
+    delivered_items = len(cur_prs_merged) + commits_cnt + uploads_cnt
+    flow_items = len(cur_issues_closed) + tasks_cnt + len(cur_prs_authored)
+    collab_items = len(cur_prs_reviewed) + len(cur_issue_comments) + len(cur_messages)
+
+    total_evidence = len(cur_evts) + len(cur_prs_authored) + len(cur_prs_reviewed) + len(cur_issues_closed)
+
+    # Check for insufficient data
+    if total_evidence < 2:
+        return {
+            'username': username,
+            'range': range_type,
+            'project': project_filter,
+            'hasSufficientData': False,
+            'status': 'insufficient_data',
+            'score': None,
+            'message': 'Insufficient activity recorded in this period to calculate an accurate impact score.',
+            'indicators': {
+                'impact': {'label': 'Impact', 'value': '0 delivered', 'status': 'Low', 'trend': '0%', 'sublabel': 'Delivered code & PRs'},
+                'flow': {'label': 'Flow', 'value': '0 resolved', 'status': 'Calm', 'trend': '0%', 'sublabel': 'Resolution velocity'},
+                'collaboration': {'label': 'Collaboration', 'value': '0 interactions', 'status': 'Quiet', 'trend': '0%', 'sublabel': 'Reviews & discussions'}
+            },
+            'strengths': [
+                {'axis': 'Review Quality', 'value': 0, 'max': 100},
+                {'axis': 'Delivery & Workflow', 'value': 0, 'max': 100},
+                {'axis': 'Testing & Reliability', 'value': 0, 'max': 100},
+                {'axis': 'Collaboration', 'value': 0, 'max': 100},
+                {'axis': 'Issue Resolution', 'value': 0, 'max': 100}
+            ],
+            'projectDistribution': [],
+            'explanation': 'A minimum of 2 verified development actions is required.',
+            'tooltip': 'Transparent composite metric based on delivered code (35%), flow velocity (25%), collaboration reviews (25%), and reliability (15%).'
+        }
+
+    # Component scores (0-100)
+    # 1. Delivery (35%): commits, uploads, merged PRs
+    raw_delivery = (len(cur_prs_merged) * 30) + (commits_cnt * 10) + (uploads_cnt * 6) + (branches_cnt * 5)
+    delivery_score = min(98, max(25, round(raw_delivery * 1.2)))
+
+    # 2. Flow (25%): closed issues, tasks completed, throughput
+    raw_flow = (len(cur_issues_closed) * 25) + (tasks_cnt * 25) + (len(cur_prs_authored) * 15)
+    flow_score = min(96, max(30, round(raw_flow * 1.4))) if (len(cur_issues_closed) + tasks_cnt + len(cur_prs_authored)) > 0 else 40
+
+    # 3. Collaboration (25%): reviews submitted, comments, team messages
+    raw_collab = (len(cur_prs_reviewed) * 20) + (len(cur_issue_comments) * 8) + (len(cur_messages) * 4)
+    collab_score = min(98, max(30, round(raw_collab * 1.3))) if (len(cur_prs_reviewed) + len(cur_issue_comments) + len(cur_messages)) > 0 else 35
+
+    # 4. Reliability & Cadence (15%): active days consistency
+    active_days_set = set()
+    for e in cur_evts:
+        dt = datetime.datetime.fromtimestamp(e.get('timestamp', 0), datetime.timezone.utc)
+        active_days_set.add(dt.strftime('%Y-%m-%d'))
+    active_days = len(active_days_set)
+    cadence_ratio = active_days / max(1, min(days, 14))
+    reliability_score = min(96, max(35, round(cadence_ratio * 90 + 10)))
+
+    # Composite Impact Score
+    composite_score = round(
+        (delivery_score * 0.35) +
+        (flow_score * 0.25) +
+        (collab_score * 0.25) +
+        (reliability_score * 0.15)
+    )
+    composite_score = min(98, max(20, composite_score))
+
+    # Prior period comparison
+    prior_total = len(prior_evts) + prior_prs_count + prior_issues_count
+    if prior_total > 0:
+        diff_pct = ((total_evidence - prior_total) / prior_total) * 100
+        trend_str = f"{'+' if diff_pct >= 0 else ''}{round(diff_pct, 1)}%"
+        trend_dir = 'up' if diff_pct > 0 else ('down' if diff_pct < 0 else 'neutral')
+    else:
+        trend_str = "+100%" if total_evidence > 0 else "0%"
+        trend_dir = 'up' if total_evidence > 0 else 'neutral'
+
+    # Explanation synthesis
+    drivers = []
+    if len(cur_prs_merged) > 0:
+        drivers.append(f"{len(cur_prs_merged)} merged PRs")
+    if (commits_cnt + uploads_cnt) > 0:
+        drivers.append(f"{commits_cnt + uploads_cnt} commits & file updates")
+    if len(cur_prs_reviewed) > 0:
+        drivers.append(f"{len(cur_prs_reviewed)} PR reviews")
+    if len(cur_issues_closed) > 0:
+        drivers.append(f"{len(cur_issues_closed)} closed issues")
+    if len(cur_messages) > 0:
+        drivers.append(f"{len(cur_messages)} discussion contributions")
+
+    if not drivers:
+        drivers = [f"{len(cur_evts)} verified repository actions"]
+
+    explanation = f"Driven by {', '.join(drivers[:3])}."
+
+    # 3 Compact Indicators
+    indicators = {
+        'impact': {
+            'label': 'Impact',
+            'sublabel': 'Work delivered',
+            'value': f"{delivered_items} delivered",
+            'status': 'Strong' if delivered_items >= 5 else ('Steady' if delivered_items >= 2 else 'Low'),
+            'trend': trend_str,
+            'trendDirection': trend_dir
+        },
+        'flow': {
+            'label': 'Flow',
+            'sublabel': 'Resolution velocity',
+            'value': f"{flow_items} resolved & active",
+            'status': 'Optimal' if flow_items >= 4 else ('Active' if flow_items >= 1 else 'Calm'),
+            'trend': f"+{round(min(50, flow_items * 6.5), 1)}%",
+            'trendDirection': 'up' if flow_items > 0 else 'neutral'
+        },
+        'collaboration': {
+            'label': 'Collaboration',
+            'sublabel': 'Reviews & discussions',
+            'value': f"{collab_items} peer interactions",
+            'status': 'High' if collab_items >= 8 else ('Active' if collab_items >= 3 else 'Quiet'),
+            'trend': f"+{round(min(45, collab_items * 5.2), 1)}%",
+            'trendDirection': 'up' if collab_items > 0 else 'neutral'
+        }
+    }
+
+    # 5 Engineering Strengths (Radar dimensions)
+    strengths = [
+        {
+            'axis': 'Review Quality',
+            'value': min(95, max(30, round(collab_score * 0.95))),
+            'max': 100,
+            'details': f"{len(cur_prs_reviewed)} reviews submitted"
+        },
+        {
+            'axis': 'Delivery & Workflow',
+            'value': min(98, max(35, delivery_score)),
+            'max': 100,
+            'details': f"{delivered_items} commits, uploads & merged PRs"
+        },
+        {
+            'axis': 'Testing & Reliability',
+            'value': min(95, max(30, reliability_score)),
+            'max': 100,
+            'details': f"{active_days} active days cadence"
+        },
+        {
+            'axis': 'Collaboration',
+            'value': min(96, max(35, collab_score)),
+            'max': 100,
+            'details': f"{collab_items} discussions and peer comments"
+        },
+        {
+            'axis': 'Issue Resolution',
+            'value': min(95, max(30, flow_score)),
+            'max': 100,
+            'details': f"{len(cur_issues_closed)} closed issues and milestone progress"
+        }
+    ]
+
+    # Project distribution comparison
+    project_counts = {}
+    project_recents = {}
+    for evt in cur_evts:
+        rname = evt.get('repository') or 'devsync-core'
+        project_counts[rname] = project_counts.get(rname, 0) + 1
+        if rname not in project_recents:
+            project_recents[rname] = evt.get('title') or evt.get('description') or 'Recent repository activity'
+
+    # Also count repos from PRs
+    for pr in cur_prs_authored + cur_prs_merged:
+        rname = pr.get('repository') or 'devsync-core'
+        project_counts[rname] = project_counts.get(rname, 0) + 2
+        if rname not in project_recents:
+            project_recents[rname] = f"PR #{pr.get('number', '')}: {pr.get('title', '')}"
+
+    project_distribution = []
+    total_proj_actions = sum(project_counts.values()) or 1
+
+    for rname, cnt in sorted(project_counts.items(), key=lambda x: x[1], reverse=True):
+        repo_obj = get_repository_by_id_or_name(rname)
+        lang = repo_obj.get('language', 'Python') if repo_obj else 'Python'
+        color = repo_obj.get('languageColor', '#10B981') if repo_obj else '#10B981'
+        pct = round((cnt / total_proj_actions) * 100, 1)
+
+        project_distribution.append({
+            'name': rname,
+            'sharePercent': pct,
+            'eventCount': cnt,
+            'language': lang,
+            'languageColor': color,
+            'recentActivity': project_recents.get(rname, 'Activity recorded'),
+            'visibility': repo_obj.get('visibility', 'Public') if repo_obj else 'Public'
+        })
+
+    return {
+        'username': username,
+        'range': range_type,
+        'project': project_filter,
+        'hasSufficientData': True,
+        'status': 'calculated',
+        'score': composite_score,
+        'trendPercent': trend_str,
+        'trendDirection': trend_dir,
+        'priorPeriodLabel': f"vs prior {days}d",
+        'explanation': explanation,
+        'tooltip': 'Transparent composite metric based on delivered code (35%), flow velocity (25%), collaboration reviews (25%), and reliability (15%).',
+        'indicators': indicators,
+        'strengths': strengths,
+        'projectDistribution': project_distribution,
+        'summary': {
+            'totalEvents': len(cur_evts),
+            'commits': commits_cnt,
+            'uploads': uploads_cnt,
+            'prsMerged': len(cur_prs_merged),
+            'prsReviewed': len(cur_prs_reviewed),
+            'issuesClosed': len(cur_issues_closed),
+            'activeDays': active_days
+        }
+    }

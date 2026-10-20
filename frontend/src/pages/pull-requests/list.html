@@ -42,12 +42,12 @@
         <a href="list.html" class="sidebar-link active">
           <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 0 1 2 2v7"/><line x1="6" y1="9" x2="6" y2="21"/></svg>
           <span class="sidebar-text">Pull Requests</span>
-          <span class="sidebar-badge">3</span>
+          <span class="sidebar-badge" id="sidebarPrBadge">3</span>
         </a>
         <a href="../issues/list.html" class="sidebar-link">
           <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
           <span class="sidebar-text">Issues</span>
-          <span class="sidebar-badge">12</span>
+          <span class="sidebar-badge">7</span>
         </a>
         <a href="../teams/members.html" class="sidebar-link"><svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><span class="sidebar-text">Teams</span></a>
         <a href="../developers/discover.html" class="sidebar-link"><svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/></svg><span class="sidebar-text">Developers</span></a>
@@ -102,9 +102,9 @@
         <!-- Filter Controls (Image 1) -->
         <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
           <div class="pr-filter-tabs m-0">
-            <button class="pr-tab-btn active" data-status="Open">Open <span>3</span></button>
-            <button class="pr-tab-btn" data-status="Closed">Closed</button>
-            <button class="pr-tab-btn" data-status="Merged">Merged</button>
+            <button class="pr-tab-btn active" data-status="Open">Open <span id="prOpenCount">3</span></button>
+            <button class="pr-tab-btn" data-status="Closed">Closed <span id="prClosedCount">1</span></button>
+            <button class="pr-tab-btn" data-status="Merged">Merged <span id="prMergedCount">2</span></button>
           </div>
 
           <div class="d-flex align-items-center gap-3 flex-wrap">
@@ -115,14 +115,14 @@
               <option value="devsync-core">devsync-core</option>
               <option value="chaturya-club">chaturya-club</option>
             </select>
-            <select class="form-select" style="width: 140px;">
+            <select id="prAuthorFilter" class="form-select" style="width: 140px;">
               <option value="All Authors">All Authors</option>
               <option value="Priya">Priya</option>
               <option value="Arjun">Arjun</option>
               <option value="Karthik">Karthik</option>
               <option value="Sneha">Sneha</option>
             </select>
-            <select class="form-select" style="width: 150px;">
+            <select id="prSortSelect" class="form-select" style="width: 150px;">
               <option value="newest">Sort: Newest</option>
               <option value="recently-updated">Sort: Recently Updated</option>
             </select>

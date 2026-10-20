@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>#42 Add user authentication with Google OAuth — DevSync</title>
+  <title>Pull Request Detail — DevSync</title>
   <link rel="icon" type="image/svg+xml" href="../../../public/favicon.svg">
   <link rel="stylesheet" href="../../assets/css/tokens.css">
   <link rel="stylesheet" href="../../assets/css/reset.css">
@@ -59,73 +59,66 @@
         </div>
       </header>
 
-      <main class="app-content">
-        <!-- PR Header Title & Status -->
+      <main class="app-content" id="prDetailRoot">
         <div class="mb-4">
-          <div class="d-flex align-items-center gap-3 mb-2 flex-wrap">
-            <h1 class="text-page-title m-0">Add user authentication with Google OAuth <span class="text-secondary" style="font-weight: 400;">#42</span></h1>
-            <span class="badge badge-status-open">Open</span>
-          </div>
-          <div class="d-flex align-items-center gap-2 text-secondary" style="font-size: 13.5px;">
-            <strong>Priya S</strong> wants to merge 3 commits into <code>main</code> from <code>feat/google-oauth</code> &bull; opened 2 hours ago
-          </div>
+          <a href="list.html" class="btn btn-outline btn-sm btn-pill mb-3" style="display: inline-flex; align-items: center; gap: 6px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            Back to Pull Requests
+          </a>
         </div>
 
-        <!-- PR Description Card -->
-        <div class="card mb-6">
-          <h3 class="font-heading" style="font-size: 15px; margin-bottom: 8px;">Description</h3>
-          <p style="font-size: 14px; line-height: 1.5; margin-bottom: 12px;">This pull request introduces seamless Google OAuth 2.0 social login, including backend token validation, CSRF verification handling, and user session establishment.</p>
-          <div class="d-flex align-items-center gap-2">
-            <span class="tag-label tag-enhancement">enhancement</span>
-            <span class="tag-label tag-feature">auth</span>
-          </div>
-        </div>
-
-        <!-- Code Diff Presentation -->
-        <div class="mb-6">
-          <div class="d-flex align-items-center justify-content-between mb-3">
-            <h3 class="font-heading" style="font-size: 16px; margin: 0;">Files changed: <code>apps/auth/views.py</code> (+18, -2)</h3>
-          </div>
-
-          <div class="code-diff-container">
-            <div class="diff-line diff-remove">
-              <span class="diff-line-number">42</span>
-              <span>- def authenticate_user(request):</span>
+        <div id="prDetailContainer">
+          <!-- PR Header Title & Status -->
+          <div class="mb-4" id="prDetailHeader">
+            <div class="d-flex align-items-center gap-3 mb-2 flex-wrap">
+              <h1 class="text-page-title m-0" id="prTitleHeading">Loading pull request...</h1>
+              <span class="badge badge-status-open" id="prStatusBadge">Open</span>
             </div>
-            <div class="diff-line diff-add">
-              <span class="diff-line-number">42</span>
-              <span>+ def authenticate_user(request, provider='google'):</span>
-            </div>
-            <div class="diff-line diff-add">
-              <span class="diff-line-number">43</span>
-              <span>+     token = request.data.get('id_token')</span>
-            </div>
-            <div class="diff-line diff-add">
-              <span class="diff-line-number">44</span>
-              <span>+     verified_payload = verify_google_oauth_token(token)</span>
-            </div>
-            <div class="diff-line diff-add">
-              <span class="diff-line-number">45</span>
-              <span>+     user, created = User.objects.get_or_create(email=verified_payload['email'])</span>
-            </div>
-            <div class="diff-line">
-              <span class="diff-line-number">46</span>
-              <span>      return Response({'status': 'authenticated', 'user_id': user.id})</span>
+            <div class="d-flex align-items-center gap-2 text-secondary" id="prMetaRow" style="font-size: 13.5px;">
+              <span>Fetching PR branch details...</span>
             </div>
           </div>
-        </div>
 
-        <!-- Review Controls & Merge Banner -->
-        <div class="card" style="background-color: var(--color-surface-subtle);">
-          <div class="d-flex align-items-center justify-content-between flex-wrap gap-4">
-            <div>
-              <div style="font-weight: 700; font-size: 15px; margin-bottom: 2px;">This branch has no conflicts with base branch</div>
-              <div class="text-secondary" style="font-size: 13px;">Merging can be performed automatically. All continuous integration checks have passed.</div>
+          <!-- PR Description Card -->
+          <div class="card mb-6" id="prDescCard">
+            <h3 class="font-heading" style="font-size: 15px; margin-bottom: 8px;">Description</h3>
+            <p id="prDescriptionText" style="font-size: 14px; line-height: 1.5; margin-bottom: 12px;">Loading description...</p>
+            <div class="d-flex align-items-center gap-2" id="prLabelsContainer"></div>
+          </div>
+
+          <!-- Commits List Card -->
+          <div class="card mb-6" id="prCommitsCard">
+            <h3 class="font-heading" style="font-size: 15px; margin-bottom: 12px;">Commits (<span id="prCommitsCount">0</span>)</h3>
+            <div id="prCommitsList" class="d-flex flex-column gap-2"></div>
+          </div>
+
+          <!-- Code Diff Presentation -->
+          <div class="mb-6" id="prDiffRoot">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <h3 class="font-heading" style="font-size: 16px; margin: 0;" id="prFilesChangedHeading">Files changed</h3>
             </div>
-            <div class="d-flex align-items-center gap-2">
-              <button class="btn btn-outline btn-pill btn-sm">Request Changes</button>
-              <button class="btn btn-mint btn-pill btn-sm">Approve</button>
-              <button class="btn btn-primary btn-pill">Merge Pull Request &rarr;</button>
+            <div id="prDiffContainer" class="code-diff-container"></div>
+          </div>
+
+          <!-- Review Stream Card -->
+          <div class="card mb-6" id="prReviewsCard">
+            <h3 class="font-heading" style="font-size: 15px; margin-bottom: 12px;">Reviews & Audit Log</h3>
+            <div id="prReviewsList" class="d-flex flex-column gap-3"></div>
+          </div>
+
+          <!-- Review Controls & Merge Banner -->
+          <div class="card" id="prMergeCard" style="background-color: var(--color-surface-subtle);">
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-4">
+              <div id="prMergeNotice">
+                <div style="font-weight: 700; font-size: 15px; margin-bottom: 2px;" id="prMergeStatusText">This branch has no conflicts with base branch</div>
+                <div class="text-secondary" style="font-size: 13px;" id="prMergeSubtext">Merging can be performed automatically. All continuous integration checks have passed.</div>
+              </div>
+              <div class="d-flex align-items-center gap-2 flex-wrap" id="prActionButtons">
+                <button class="btn btn-outline btn-pill btn-sm" id="btnClosePR">Close PR</button>
+                <button class="btn btn-outline btn-pill btn-sm" id="btnRequestChanges">Request Changes</button>
+                <button class="btn btn-mint btn-pill btn-sm" id="btnApprovePR">Approve</button>
+                <button class="btn btn-primary btn-pill" id="btnMergePR">Merge Pull Request &rarr;</button>
+              </div>
             </div>
           </div>
         </div>

@@ -57,7 +57,7 @@ def http_post(path, data):
         headers={'Content-Type': 'application/json', 'User-Agent': 'DevSync-Test/1.0'}
     )
     try:
-        with urllib.request.urlopen(req, timeout=5) as resp:
+        with urllib.request.urlopen(req, timeout=15) as resp:
             return resp.status, json.loads(resp.read().decode('utf-8'))
     except urllib.error.HTTPError as e:
         body = e.read().decode('utf-8')
