@@ -92,7 +92,7 @@ class OTPChallenge(TimeStampedUUIDModel):
     code_hash = models.CharField(max_length=64)
     salt = models.CharField(max_length=32)
     purpose = models.CharField(max_length=30, choices=PURPOSE_CHOICES, db_index=True)
-    attempts_remaining = models.PositiveSmallIntegerField(default=3)
+    attempts_remaining = models.PositiveSmallIntegerField(default=5)
     expires_at = models.DateTimeField(db_index=True)
     consumed_at = models.DateTimeField(null=True, blank=True, db_index=True)
 
