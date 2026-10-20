@@ -5,7 +5,7 @@
       "name": "Naveen Kumar D",
       "username": "naveen3438",
       "email": "naveen@devsync.dev",
-      "password": "pbkdf2_sha256$1500000$ju0OmpHan2LdBcVbR6gc9L$zQx4cXnkTD3ABHGANNdXXhhEWBap5pxbK10Qme64FmQ=",
+      "password": "pbkdf2_sha256$1500000$L2VKB440wBNmyPj4Fc86d6$hz1O2EpHvjvW83Wvj5aeHulofdR574WEO4djRmQS8HA=",
       "role": "Developer",
       "isVerified": true,
       "avatar": "/public/images/avatars/avatar_naveen3438_0d35f5e5f5d0.png",
@@ -288,8 +288,108 @@
       "mobile": "",
       "mobileVerified": false,
       "emailVerified": true,
-      "passwordLastChanged": 1792522373.9204476,
+      "passwordLastChanged": 1792522713.5991619,
       "security_audit_log": [
+        {
+          "id": "sec-041b455ff51e",
+          "action": "session_revocation",
+          "description": "Revoked 0 active session(s) across other devices.",
+          "ip": "127.0.0.1",
+          "device": "API Client / Unknown OS",
+          "timestamp": "2026-10-20 18:58:37 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-ab0365337ebf",
+          "action": "Two-Factor Authentication Disabled",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "warning",
+          "timestamp": "2026-10-20 18:58:37 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-cb6f35527176",
+          "action": "Two-Factor Authentication Enabled",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "success",
+          "timestamp": "2026-10-20 18:58:35 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-9a2e8d23da64",
+          "action": "Password Changed (Protected Workflow)",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "success",
+          "timestamp": "2026-10-20 18:58:33 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-62a9ed7f5c57",
+          "action": "Re-authentication Successful",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "success",
+          "timestamp": "2026-10-20 18:58:31 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-1e8e757a92a9",
+          "action": "Password Changed (Protected Workflow)",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "success",
+          "timestamp": "2026-10-20 18:58:30 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-eab7381672d2",
+          "action": "Re-authentication Successful",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "success",
+          "timestamp": "2026-10-20 18:58:26 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-6b09af771f4b",
+          "action": "Re-authentication Successful",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "success",
+          "timestamp": "2026-10-20 18:58:25 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-07e5105abcdc",
+          "action": "Re-authentication Failed",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "failed",
+          "timestamp": "2026-10-20 18:58:24 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-3eac60905b7a",
+          "action": "login",
+          "description": "Signed in successfully via API Client / Unknown OS",
+          "ip": "127.0.0.1",
+          "device": "API Client / Unknown OS",
+          "timestamp": "2026-10-20 18:58:22 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
         {
           "id": "sec-dad7b38a6319",
           "action": "session_revocation",
@@ -616,9 +716,7 @@
         "contributionsCount": 48,
         "pullRequestsCount": 8,
         "issuesCount": 24
-      },
-      "two_factor_enabled": false,
-      "two_factor_type": "Not Enabled"
+      }
     },
     "balajikumar": {
       "id": "dev-balaji",
@@ -740,6 +838,26 @@
       "emailVerified": true,
       "passwordLastChanged": "Recently",
       "security_audit_log": [
+        {
+          "id": "sec-cfedb5f0397f",
+          "action": "login",
+          "description": "Signed in successfully via Microsoft Edge / Windows",
+          "ip": "127.0.0.1",
+          "device": "Microsoft Edge / Windows",
+          "timestamp": "2026-10-20 19:04:09 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-2a1c1a6c6aed",
+          "action": "login",
+          "description": "Signed in successfully via API Client / Unknown OS",
+          "ip": "127.0.0.1",
+          "device": "API Client / Unknown OS",
+          "timestamp": "2026-10-20 18:58:08 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
         {
           "id": "sec-062f064b0b5e",
           "action": "login",
@@ -4389,6 +4507,15 @@
           "timestamp": 1792521305.212082,
           "summary": "Merged PR #48: Automated Test Feature Branch from feat/automated-test into main",
           "sha256": "e631597e45713d0b58d11ad9dd43fa5d3fc8aeaba1d6ea400cfbbd52465ebdd5"
+        },
+        {
+          "id": "aud_merge_412b4436",
+          "action": "merge_pull_request",
+          "branch": "main",
+          "actor": "balajikumar",
+          "timestamp": 1792522893.5707397,
+          "summary": "Merged PR #49: Automated Test Feature Branch from feat/automated-test into main",
+          "sha256": "be05c74a8d1fdb967412f3678acb903ce95ade75bb0c45f5cf10a5140a3adc6c"
         }
       ]
     },
@@ -5637,10 +5764,10 @@
       "author": "priyas",
       "authorName": "Priya S",
       "authorAvatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=64&q=80",
-      "commentsCount": 9,
+      "commentsCount": 10,
       "status": "Open",
       "created_at": 1792505178.9651656,
-      "updated_at": 1792521294.199554,
+      "updated_at": 1792522883.212674,
       "updated": "Just now",
       "description": "The user settings need an explicit theme selector (Light / Dark / System default) with custom CSS property overrides.",
       "comments": [
@@ -5723,6 +5850,15 @@
           "authorAvatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
           "text": "Verified database indices locally.",
           "created_at": 1792521289.530748,
+          "time": "Just now"
+        },
+        {
+          "id": "comm-104-10",
+          "author": "naveen3438",
+          "authorName": "Naveen Kumar D",
+          "authorAvatar": "/public/images/avatars/avatar_naveen3438_0d35f5e5f5d0.png",
+          "text": "Verified database indices locally.",
+          "created_at": 1792522879.0804412,
           "time": "Just now"
         }
       ]
@@ -6559,6 +6695,57 @@
       ],
       "merged_at": 1792521305.2121177,
       "merged_by": "balajikumar"
+    },
+    "pr-49": {
+      "id": "pr-49",
+      "number": 49,
+      "title": "Automated Test Feature Branch",
+      "repository": "devsync-core",
+      "labels": [
+        "enhancement"
+      ],
+      "author": "balajikumar",
+      "authorName": "Balaji",
+      "authorAvatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80",
+      "reviewers": [],
+      "commentsCount": 1,
+      "status": "Merged",
+      "statusClass": "badge-status-merged",
+      "created_at": 1792522887.3380177,
+      "updated_at": 1792522893.5707397,
+      "updated": "Just now",
+      "sourceBranch": "feat/automated-test",
+      "targetBranch": "main",
+      "description": "Integration testing PR merge",
+      "commitsCount": 1,
+      "changedFilesCount": 1,
+      "commits": [
+        {
+          "hash": "dbe90eb4",
+          "message": "Automated Test Feature Branch",
+          "author": "Balaji",
+          "time": "Just now"
+        }
+      ],
+      "changedFiles": [
+        {
+          "path": "README.md",
+          "additions": 5,
+          "deletions": 0,
+          "diff": "+ Proposed changes for Automated Test Feature Branch"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "rev-864f8cef",
+          "author": "naveen3438",
+          "action": "approve",
+          "comment": "Architecture verified.",
+          "created_at": 1792522891.4712517
+        }
+      ],
+      "merged_at": 1792522893.5707397,
+      "merged_by": "balajikumar"
     }
   },
   "teams": {
@@ -6838,9 +7025,9 @@
       ],
       "isOnline": true,
       "unreadCount": 0,
-      "updated_at": 1792521319.5184767,
+      "updated_at": 1792522907.9414916,
       "lastMessage": "Hey Priya, verified the Google OAuth token validation logic!",
-      "lastMessageTime": "12:05 AM"
+      "lastMessageTime": "12:31 AM"
     },
     "conv-direct-priya": {
       "id": "conv-direct-priya",
@@ -7072,6 +7259,24 @@
             "naveen3438"
           ]
         }
+      },
+      {
+        "id": "msg_d19958137f9d",
+        "conversation_id": "conv-direct-balaji",
+        "sender": "naveen3438",
+        "senderName": "Naveen Kumar D",
+        "senderAvatar": "/public/images/avatars/avatar_naveen3438_0d35f5e5f5d0.png",
+        "text": "Hey Priya, verified the Google OAuth token validation logic!",
+        "timestamp": 1792522907.9414916,
+        "time": "12:31 AM",
+        "status": "sent",
+        "reply_to": null,
+        "attachment": null,
+        "reactions": {
+          "\ud83d\ude80": [
+            "naveen3438"
+          ]
+        }
       }
     ],
     "conv-direct-priya": [
@@ -7285,6 +7490,17 @@
     ]
   },
   "status_updates": [
+    {
+      "id": "stat_af8a63be3e14",
+      "author": "naveen3438",
+      "authorName": "Naveen Kumar D",
+      "authorAvatar": "/public/images/avatars/avatar_naveen3438_0d35f5e5f5d0.png",
+      "text": "\ud83d\ude80 DevSync Master Upgrade fully operational across frontend and backend!",
+      "media": null,
+      "audience": "everyone",
+      "created_at": 1792522914.0950596,
+      "expires_at": 1792609314.0950596
+    },
     {
       "id": "stat_6376d4906eee",
       "author": "naveen3438",

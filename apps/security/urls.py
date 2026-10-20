@@ -1,0 +1,36 @@
+from django.urls import path
+from .views import (
+    LoginView, AuthMeView, SessionsListView, RevokeOtherSessionsView,
+    SecurityOverviewView, ReauthenticateView, ChangePasswordProtectedView,
+    ForgotPasswordView, VerifyRecoveryOtpView, ResetPasswordView,
+    TwoFactorSetupView, TwoFactorEnableView, TwoFactorDisableView
+)
+
+urlpatterns = [
+    path('auth/login', LoginView.as_view(), name='auth-login'),
+    path('auth/login/', LoginView.as_view(), name='auth-login-slash'),
+    path('auth/me', AuthMeView.as_view(), name='auth-me'),
+    path('auth/me/', AuthMeView.as_view(), name='auth-me-slash'),
+    path('auth/sessions', SessionsListView.as_view(), name='auth-sessions'),
+    path('auth/sessions/', SessionsListView.as_view(), name='auth-sessions-slash'),
+    path('auth/sessions/revoke-others', RevokeOtherSessionsView.as_view(), name='auth-sessions-revoke-others'),
+    path('auth/sessions/revoke-others/', RevokeOtherSessionsView.as_view(), name='auth-sessions-revoke-others-slash'),
+    path('auth/security/overview', SecurityOverviewView.as_view(), name='auth-security-overview'),
+    path('auth/security/overview/', SecurityOverviewView.as_view(), name='auth-security-overview-slash'),
+    path('auth/security/reauthenticate', ReauthenticateView.as_view(), name='auth-security-reauthenticate'),
+    path('auth/security/reauthenticate/', ReauthenticateView.as_view(), name='auth-security-reauthenticate-slash'),
+    path('auth/password/change-protected', ChangePasswordProtectedView.as_view(), name='auth-password-change-protected'),
+    path('auth/password/change-protected/', ChangePasswordProtectedView.as_view(), name='auth-password-change-protected-slash'),
+    path('auth/password/forgot', ForgotPasswordView.as_view(), name='auth-password-forgot'),
+    path('auth/password/forgot/', ForgotPasswordView.as_view(), name='auth-password-forgot-slash'),
+    path('auth/password/verify-recovery-otp', VerifyRecoveryOtpView.as_view(), name='auth-password-verify-recovery-otp'),
+    path('auth/password/verify-recovery-otp/', VerifyRecoveryOtpView.as_view(), name='auth-password-verify-recovery-otp-slash'),
+    path('auth/password/reset', ResetPasswordView.as_view(), name='auth-password-reset'),
+    path('auth/password/reset/', ResetPasswordView.as_view(), name='auth-password-reset-slash'),
+    path('auth/2fa/setup', TwoFactorSetupView.as_view(), name='auth-2fa-setup'),
+    path('auth/2fa/setup/', TwoFactorSetupView.as_view(), name='auth-2fa-setup-slash'),
+    path('auth/2fa/enable', TwoFactorEnableView.as_view(), name='auth-2fa-enable'),
+    path('auth/2fa/enable/', TwoFactorEnableView.as_view(), name='auth-2fa-enable-slash'),
+    path('auth/2fa/disable', TwoFactorDisableView.as_view(), name='auth-2fa-disable'),
+    path('auth/2fa/disable/', TwoFactorDisableView.as_view(), name='auth-2fa-disable-slash'),
+]
