@@ -141,6 +141,9 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 if os.path.exists(os.path.join(BASE_DIR, 'frontend')):
     FRONTEND_DIR = os.path.join(BASE_DIR, 'frontend')
     PROJECT_ROOT = BASE_DIR
+elif os.path.exists(os.path.join(os.path.dirname(BASE_DIR), 'frontend')):
+    FRONTEND_DIR = os.path.join(os.path.dirname(BASE_DIR), 'frontend')
+    PROJECT_ROOT = os.path.dirname(BASE_DIR)
 else:
     FRONTEND_DIR = BASE_DIR
     PROJECT_ROOT = os.path.dirname(BASE_DIR)

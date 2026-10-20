@@ -151,7 +151,8 @@ class TestPasswordRecoverySuite(unittest.TestCase):
 
     def test_04_css_card_sizing_and_no_full_width_stretch(self):
         """CSS check: .recovery-card and .auth-card must have strict max-width of 440-480px."""
-        css_path = os.path.join(os.path.dirname(__file__), "frontend", "src", "assets", "css", "pages", "auth.css")
+        repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+        css_path = os.path.join(repo_root, "frontend", "src", "assets", "css", "pages", "auth.css")
         with open(css_path, "r", encoding="utf-8") as f:
             css = f.read()
 
