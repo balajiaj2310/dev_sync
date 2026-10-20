@@ -5,7 +5,7 @@
       "name": "Naveen Kumar D",
       "username": "naveen3438",
       "email": "naveen@devsync.dev",
-      "password": "pbkdf2_sha256$1500000$L2VKB440wBNmyPj4Fc86d6$hz1O2EpHvjvW83Wvj5aeHulofdR574WEO4djRmQS8HA=",
+      "password": "pbkdf2_sha256$1500000$SVDutOw02F6lsIpMlsgw0B$FYEe6ExYV897zxIXNi6drIEbpcHN+/0S7gRzo4E8gLs=",
       "role": "Developer",
       "isVerified": true,
       "avatar": "/public/images/avatars/avatar_naveen3438_0d35f5e5f5d0.png",
@@ -288,8 +288,208 @@
       "mobile": "",
       "mobileVerified": false,
       "emailVerified": true,
-      "passwordLastChanged": 1792522713.5991619,
+      "passwordLastChanged": 1792527879.35935,
       "security_audit_log": [
+        {
+          "id": "sec-da8ca39a233b",
+          "action": "session_revocation",
+          "description": "Revoked 0 active session(s) across other devices.",
+          "ip": "127.0.0.1",
+          "device": "API Client / Unknown OS",
+          "timestamp": "2026-10-20 20:24:43 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-97268e7944de",
+          "action": "Two-Factor Authentication Disabled",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "warning",
+          "timestamp": "2026-10-20 20:24:43 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-388ba60dd24b",
+          "action": "Two-Factor Authentication Enabled",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "success",
+          "timestamp": "2026-10-20 20:24:40 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-ecc790e4ab25",
+          "action": "Password Changed (Protected Workflow)",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "success",
+          "timestamp": "2026-10-20 20:24:39 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-5fa018abec13",
+          "action": "Re-authentication Successful",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "success",
+          "timestamp": "2026-10-20 20:24:37 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-4d76999d8893",
+          "action": "Password Changed (Protected Workflow)",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "success",
+          "timestamp": "2026-10-20 20:24:35 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-5f456777dc91",
+          "action": "Re-authentication Successful",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "success",
+          "timestamp": "2026-10-20 20:24:30 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-5d46dc525112",
+          "action": "Re-authentication Successful",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "success",
+          "timestamp": "2026-10-20 20:24:28 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-9b9671ee257b",
+          "action": "Re-authentication Failed",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "failed",
+          "timestamp": "2026-10-20 20:24:26 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-8463ec923594",
+          "action": "login",
+          "description": "Signed in successfully via API Client / Unknown OS",
+          "ip": "127.0.0.1",
+          "device": "API Client / Unknown OS",
+          "timestamp": "2026-10-20 20:24:24 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-89cf284b8a2a",
+          "action": "session_revocation",
+          "description": "Revoked 0 active session(s) across other devices.",
+          "ip": "127.0.0.1",
+          "device": "API Client / Unknown OS",
+          "timestamp": "2026-10-20 20:22:22 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-d0e191e8cc9d",
+          "action": "Two-Factor Authentication Disabled",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "warning",
+          "timestamp": "2026-10-20 20:22:22 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-afbd2db02ec1",
+          "action": "Two-Factor Authentication Enabled",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "success",
+          "timestamp": "2026-10-20 20:22:20 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-134f8885bf80",
+          "action": "Password Changed (Protected Workflow)",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "success",
+          "timestamp": "2026-10-20 20:22:19 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-f0855dfb0116",
+          "action": "Re-authentication Successful",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "success",
+          "timestamp": "2026-10-20 20:22:16 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-57744a1f3188",
+          "action": "Password Changed (Protected Workflow)",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "success",
+          "timestamp": "2026-10-20 20:22:15 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-d70c460530f1",
+          "action": "Re-authentication Successful",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "success",
+          "timestamp": "2026-10-20 20:22:11 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-b5bb4369f687",
+          "action": "Re-authentication Successful",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "success",
+          "timestamp": "2026-10-20 20:22:09 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-452c477e246f",
+          "action": "Re-authentication Failed",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "failed",
+          "timestamp": "2026-10-20 20:22:07 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-67c18c9b0d0b",
+          "action": "login",
+          "description": "Signed in successfully via API Client / Unknown OS",
+          "ip": "127.0.0.1",
+          "device": "API Client / Unknown OS",
+          "timestamp": "2026-10-20 20:22:06 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
         {
           "id": "sec-041b455ff51e",
           "action": "session_revocation",
@@ -589,76 +789,6 @@
           "timestamp": "2026-10-20 18:37:16 UTC",
           "time_ago": "Just now",
           "status": "success"
-        },
-        {
-          "id": "sec-54c82368d543",
-          "action": "Re-authentication Successful",
-          "description": "127.0.0.1",
-          "ip": "API Client / Unknown OS",
-          "device": "success",
-          "timestamp": "2026-10-20 18:37:08 UTC",
-          "time_ago": "Just now",
-          "status": "success"
-        },
-        {
-          "id": "sec-30ae303902d9",
-          "action": "Password Changed (Protected Workflow)",
-          "description": "127.0.0.1",
-          "ip": "API Client / Unknown OS",
-          "device": "success",
-          "timestamp": "2026-10-20 18:37:04 UTC",
-          "time_ago": "Just now",
-          "status": "success"
-        },
-        {
-          "id": "sec-e08cf4a65db2",
-          "action": "Re-authentication Successful",
-          "description": "127.0.0.1",
-          "ip": "API Client / Unknown OS",
-          "device": "success",
-          "timestamp": "2026-10-20 18:36:52 UTC",
-          "time_ago": "Just now",
-          "status": "success"
-        },
-        {
-          "id": "sec-c33dc80d6b60",
-          "action": "Re-authentication Successful",
-          "description": "127.0.0.1",
-          "ip": "API Client / Unknown OS",
-          "device": "success",
-          "timestamp": "2026-10-20 18:36:48 UTC",
-          "time_ago": "Just now",
-          "status": "success"
-        },
-        {
-          "id": "sec-cc923ac85074",
-          "action": "Re-authentication Failed",
-          "description": "127.0.0.1",
-          "ip": "API Client / Unknown OS",
-          "device": "failed",
-          "timestamp": "2026-10-20 18:36:44 UTC",
-          "time_ago": "Just now",
-          "status": "success"
-        },
-        {
-          "id": "sec-83375e9bc2b3",
-          "action": "login",
-          "description": "Signed in successfully via API Client / Unknown OS",
-          "ip": "127.0.0.1",
-          "device": "API Client / Unknown OS",
-          "timestamp": "2026-10-20 18:36:40 UTC",
-          "time_ago": "Just now",
-          "status": "success"
-        },
-        {
-          "id": "sec-70fc5a23",
-          "action": "account_setup",
-          "description": "DevSync developer account initialized.",
-          "ip": "127.0.0.1",
-          "device": "Web Browser",
-          "timestamp": "2026-10-20 18:36:25 UTC",
-          "time_ago": "Account setup",
-          "status": "success"
         }
       ],
       "notification_preferences": {
@@ -716,7 +846,9 @@
         "contributionsCount": 48,
         "pullRequestsCount": 8,
         "issuesCount": 24
-      }
+      },
+      "two_factor_enabled": false,
+      "two_factor_type": "Not Enabled"
     },
     "balajikumar": {
       "id": "dev-balaji",
@@ -838,6 +970,36 @@
       "emailVerified": true,
       "passwordLastChanged": "Recently",
       "security_audit_log": [
+        {
+          "id": "sec-6f6bc6ab634e",
+          "action": "login",
+          "description": "Signed in successfully via Microsoft Edge / Windows",
+          "ip": "127.0.0.1",
+          "device": "Microsoft Edge / Windows",
+          "timestamp": "2026-10-20 20:27:20 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-cb2c62cd76b8",
+          "action": "login",
+          "description": "Signed in successfully via API Client / Unknown OS",
+          "ip": "127.0.0.1",
+          "device": "API Client / Unknown OS",
+          "timestamp": "2026-10-20 20:24:19 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-55ff35f5759d",
+          "action": "login",
+          "description": "Signed in successfully via API Client / Unknown OS",
+          "ip": "127.0.0.1",
+          "device": "API Client / Unknown OS",
+          "timestamp": "2026-10-20 20:22:02 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
         {
           "id": "sec-cfedb5f0397f",
           "action": "login",
@@ -7161,7 +7323,7 @@
         "text": "Hey Priya, verified the Google OAuth token validation logic!",
         "timestamp": 1792513640.1123574,
         "time": "9:57 PM",
-        "status": "sent",
+        "status": "read",
         "reply_to": null,
         "attachment": null,
         "reactions": {
@@ -7179,7 +7341,7 @@
         "text": "Hey Priya, verified the Google OAuth token validation logic!",
         "timestamp": 1792513723.730325,
         "time": "9:58 PM",
-        "status": "sent",
+        "status": "read",
         "reply_to": null,
         "attachment": null,
         "reactions": {
@@ -7197,7 +7359,7 @@
         "text": "Hey Priya, verified the Google OAuth token validation logic!",
         "timestamp": 1792516130.747134,
         "time": "10:38 PM",
-        "status": "sent",
+        "status": "read",
         "reply_to": null,
         "attachment": null,
         "reactions": {
@@ -7215,7 +7377,7 @@
         "text": "Hey Priya, verified the Google OAuth token validation logic!",
         "timestamp": 1792519903.9555368,
         "time": "11:41 PM",
-        "status": "sent",
+        "status": "read",
         "reply_to": null,
         "attachment": null,
         "reactions": {
@@ -7233,7 +7395,7 @@
         "text": "Hey Priya, verified the Google OAuth token validation logic!",
         "timestamp": 1792520608.6020195,
         "time": "11:53 PM",
-        "status": "sent",
+        "status": "read",
         "reply_to": null,
         "attachment": null,
         "reactions": {
@@ -7251,7 +7413,7 @@
         "text": "Hey Priya, verified the Google OAuth token validation logic!",
         "timestamp": 1792521319.5184467,
         "time": "12:05 AM",
-        "status": "sent",
+        "status": "read",
         "reply_to": null,
         "attachment": null,
         "reactions": {
@@ -7269,7 +7431,7 @@
         "text": "Hey Priya, verified the Google OAuth token validation logic!",
         "timestamp": 1792522907.9414916,
         "time": "12:31 AM",
-        "status": "sent",
+        "status": "read",
         "reply_to": null,
         "attachment": null,
         "reactions": {
