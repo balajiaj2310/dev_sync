@@ -690,3 +690,192 @@ def sanitize_public_profile(dev, caller_username=None, repositories=None, activi
     }
 
     return profile
+
+
+# ==============================================================================
+# 7. Notifications Center System & Persistence
+# ==============================================================================
+
+def get_default_notifications():
+    """Generates standard factual seed notifications spanning all categories and date ranges."""
+    now = time.time()
+    return [
+        {
+            'id': 'notif_pr_1',
+            'category': 'pull_request',
+            'type': 'pr_review_requested',
+            'title': 'Review requested on PR #42',
+            'message': 'Priya Sharma requested your review on "Add OAuth2 authentication provider".',
+            'actor': {
+                'username': 'priyasharma',
+                'name': 'Priya Sharma',
+                'avatar': 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=120&q=80'
+            },
+            'target': 'devsync-core',
+            'link': '/src/pages/pull-requests/detail.html?id=pr-42',
+            'unread': True,
+            'timestamp': now - 900,
+            'connection_status': None,
+            'connection_developer_id': None
+        },
+        {
+            'id': 'notif_repo_1',
+            'category': 'repository',
+            'type': 'commit_push',
+            'title': 'New commits pushed to devsync-core',
+            'message': 'Priya Sharma pushed 3 commits to branch "develop".',
+            'actor': {
+                'username': 'priyasharma',
+                'name': 'Priya Sharma',
+                'avatar': 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=120&q=80'
+            },
+            'target': 'devsync-core',
+            'link': '/src/pages/repositories/commits.html?repo=devsync-core',
+            'unread': True,
+            'timestamp': now - 7200,
+            'connection_status': None,
+            'connection_developer_id': None
+        },
+        {
+            'id': 'notif_conn_1',
+            'category': 'connection',
+            'type': 'connection_request',
+            'title': 'Connection request from Tara Patel',
+            'message': 'Tara Patel (Senior Backend Engineer) wants to connect with you.',
+            'actor': {
+                'username': 'tarapatel',
+                'name': 'Tara Patel',
+                'avatar': 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80'
+            },
+            'target': 'Developer Network',
+            'link': '/src/pages/developers/connections.html',
+            'unread': True,
+            'timestamp': now - 14400,
+            'connection_status': 'pending',
+            'connection_developer_id': 'tarapatel'
+        },
+        {
+            'id': 'notif_issue_1',
+            'category': 'issue',
+            'type': 'issue_assigned',
+            'title': 'Assigned to Issue #94',
+            'message': 'Arjun Mehta assigned you to "Improve mobile layout responsiveness across dashboards".',
+            'actor': {
+                'username': 'arjunmehta',
+                'name': 'Arjun Mehta',
+                'avatar': 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80'
+            },
+            'target': 'devsync-core',
+            'link': '/src/pages/issues/detail.html?id=issue-94',
+            'unread': True,
+            'timestamp': now - 93600,
+            'connection_status': None,
+            'connection_developer_id': None
+        },
+        {
+            'id': 'notif_mention_1',
+            'category': 'mention',
+            'type': 'mention',
+            'title': 'Mentioned in Team Discussion',
+            'message': 'Naveen Kumar D mentioned you: "@balajikumar please verify the latest schema migration before deploy."',
+            'actor': {
+                'username': 'naveen3438',
+                'name': 'Naveen Kumar D',
+                'avatar': 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=120&q=80'
+            },
+            'target': 'DevSync Core Discussions',
+            'link': '/src/pages/community/index.html',
+            'unread': False,
+            'timestamp': now - 115200,
+            'connection_status': None,
+            'connection_developer_id': None
+        },
+        {
+            'id': 'notif_pr_2',
+            'category': 'pull_request',
+            'type': 'pr_merged',
+            'title': 'Pull Request #38 Merged',
+            'message': 'Your pull request "feat: add branch upload overwrite protection" was merged into main.',
+            'actor': {
+                'username': 'naveen3438',
+                'name': 'Naveen Kumar D',
+                'avatar': 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=120&q=80'
+            },
+            'target': 'devsync-core',
+            'link': '/src/pages/pull-requests/detail.html?id=pr-38',
+            'unread': False,
+            'timestamp': now - 259200,
+            'connection_status': None,
+            'connection_developer_id': None
+        },
+        {
+            'id': 'notif_team_1',
+            'category': 'team',
+            'type': 'team_invite',
+            'title': 'Added to DevSync Core Team',
+            'message': 'You were added to the DevSync Core engineering team as Maintainer.',
+            'actor': {
+                'username': 'naveen3438',
+                'name': 'Naveen Kumar D',
+                'avatar': 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=120&q=80'
+            },
+            'target': 'DevSync Core Team',
+            'link': '/src/pages/teams/members.html',
+            'unread': False,
+            'timestamp': now - 345600,
+            'connection_status': None,
+            'connection_developer_id': None
+        },
+        {
+            'id': 'notif_conn_2',
+            'category': 'connection',
+            'type': 'connection_request',
+            'title': 'Connection request from Ananya Roy',
+            'message': 'Ananya Roy (UI/UX Designer & Frontend Dev) wants to connect with you.',
+            'actor': {
+                'username': 'ananyaroy',
+                'name': 'Ananya Roy',
+                'avatar': 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=120&q=80'
+            },
+            'target': 'Developer Network',
+            'link': '/src/pages/developers/connections.html',
+            'unread': False,
+            'timestamp': now - 518400,
+            'connection_status': 'accepted',
+            'connection_developer_id': 'ananyaroy'
+        },
+        {
+            'id': 'notif_repo_2',
+            'category': 'repository',
+            'type': 'repository_created',
+            'title': 'Arjun Mehta created repository: portfolio-site',
+            'message': 'A new public repository "portfolio-site" was created in the organization.',
+            'actor': {
+                'username': 'arjunmehta',
+                'name': 'Arjun Mehta',
+                'avatar': 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80'
+            },
+            'target': 'portfolio-site',
+            'link': '/src/pages/repositories/detail.html?repo=portfolio-site',
+            'unread': False,
+            'timestamp': now - 864000,
+            'connection_status': None,
+            'connection_developer_id': None
+        }
+    ]
+
+def calculate_notifications_summary(notifications):
+    """Calculates factual summary counts for badges and header cards."""
+    total = len(notifications)
+    unread = sum(1 for n in notifications if n.get('unread'))
+    pending_conns = sum(1 for n in notifications if n.get('category') == 'connection' and n.get('connection_status') == 'pending')
+    
+    return {
+        'total': total,
+        'unread': unread,
+        'connection_requests': pending_conns,
+        'mentions': sum(1 for n in notifications if n.get('category') == 'mention'),
+        'pull_requests': sum(1 for n in notifications if n.get('category') == 'pull_request'),
+        'repository': sum(1 for n in notifications if n.get('category') == 'repository')
+    }
+

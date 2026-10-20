@@ -50,11 +50,13 @@ from backend_settings import (
     parse_device_string, add_audit_log, get_user_active_sessions,
     revoke_single_session, revoke_all_other_sessions,
     validate_username, validate_password_strength,
-    strip_exif_and_sanitize_image, sanitize_public_profile
+    strip_exif_and_sanitize_image, sanitize_public_profile,
+    get_default_notifications, calculate_notifications_summary
 )
 
 otp_manager = OTPManager()
 recovery_manager = PasswordRecoveryManager(otp_manager)
+NOTIFICATIONS = []
 
 from backend_collaboration import (
     REPOSITORIES, ACTIVITY_EVENTS, get_repository_by_id_or_name, check_repo_permissions,
@@ -512,6 +514,7 @@ def save_database():
                 'profiles': DEV_PROFILES,
                 'repositories': REPOSITORIES,
                 'activity_events': ACTIVITY_EVENTS,
+                'notifications': NOTIFICATIONS,
                 'version': '1.1.0'
             }, f, indent=2)
     except Exception as e:
@@ -539,6 +542,16 @@ def load_database():
                     ACTIVITY_EVENTS.clear()
                     ACTIVITY_EVENTS.extend(loaded_events)
                     print(f"[Database] Loaded {len(ACTIVITY_EVENTS)} activity events from disk.")
+                global NOTIFICATIONS
+                loaded_notifs = data.get('notifications', [])
+                if loaded_notifs:
+                    NOTIFICATIONS.clear()
+                    NOTIFICATIONS.extend(loaded_notifs)
+                    print(f"[Database] Loaded {len(NOTIFICATIONS)} notifications from disk.")
+                else:
+                    NOTIFICATIONS.clear()
+                    NOTIFICATIONS.extend(get_default_notifications())
+                    print(f"[Database] Initialized {len(NOTIFICATIONS)} default notifications.")
         except Exception as e:
             print(f"[Database] Warning: Could not read {DB_FILE}: {e}")
 
@@ -1098,12 +1111,23 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
             '/settings/account': 'src/pages/settings/account.html',
             '/settings/privacy': 'src/pages/settings/privacy.html',
             '/settings/preferences': 'src/pages/settings/preferences.html',
+            '/notifications': 'src/pages/notifications/index.html',
+            '/notifications/': 'src/pages/notifications/index.html',
         }
         if path in route_map:
             target = os.path.join(FRONTEND_DIR, route_map[path].replace('/', os.sep))
             if os.path.exists(target):
                 self.serve_html_file(target)
                 return
+
+        # Notifications API Endpoint (GET /api/v1/notifications/ and /api/notifications/)
+        if path in ('/api/v1/notifications', '/api/v1/notifications/', '/api/notifications', '/api/notifications/'):
+            summary = calculate_notifications_summary(NOTIFICATIONS)
+            self.send_json(200, {
+                'notifications': NOTIFICATIONS,
+                'summary': summary
+            })
+            return
 
         # Authenticated Session Status Endpoint (GET /api/v1/auth/me, /api/auth/me, /users/me/, /api/v1/users/me)
         if path in ('/api/v1/auth/me', '/api/auth/me', '/users/me', '/users/me/', '/api/v1/users/me', '/api/v1/user/profile'):
@@ -1589,6 +1613,57 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
     def do_POST(self):
         url_parts = urllib.parse.urlsplit(self.path)
         path = url_parts.path.rstrip('/')
+
+        # ----------------------------------------------------------------------
+        # Notifications System Actions (mark-read, mark-unread, connection-action)
+        # ----------------------------------------------------------------------
+        if path in ('/api/v1/notifications/mark-read', '/api/v1/notifications/mark-read/', '/api/notifications/mark-read', '/api/notifications/mark-read/'):
+            length = int(self.headers.get('Content-Length', 0))
+            body = json.loads(self.rfile.read(length).decode('utf-8')) if length > 0 else {}
+            notif_id = body.get('id')
+            if notif_id:
+                for n in NOTIFICATIONS:
+                    if n.get('id') == notif_id:
+                        n['unread'] = False
+                        break
+            else:
+                for n in NOTIFICATIONS:
+                    n['unread'] = False
+            save_database()
+            summary = calculate_notifications_summary(NOTIFICATIONS)
+            self.send_json(200, {'success': True, 'summary': summary})
+            return
+
+        if path in ('/api/v1/notifications/mark-unread', '/api/v1/notifications/mark-unread/', '/api/notifications/mark-unread', '/api/notifications/mark-unread/'):
+            length = int(self.headers.get('Content-Length', 0))
+            body = json.loads(self.rfile.read(length).decode('utf-8')) if length > 0 else {}
+            notif_id = body.get('id')
+            if notif_id:
+                for n in NOTIFICATIONS:
+                    if n.get('id') == notif_id:
+                        n['unread'] = True
+                        break
+            save_database()
+            summary = calculate_notifications_summary(NOTIFICATIONS)
+            self.send_json(200, {'success': True, 'summary': summary})
+            return
+
+        if path in ('/api/v1/notifications/connection-action', '/api/v1/notifications/connection-action/', '/api/notifications/connection-action', '/api/notifications/connection-action/'):
+            length = int(self.headers.get('Content-Length', 0))
+            body = json.loads(self.rfile.read(length).decode('utf-8')) if length > 0 else {}
+            notif_id = body.get('notification_id')
+            action = body.get('action') # 'accept' or 'decline'
+            target_dev = None
+            for n in NOTIFICATIONS:
+                if n.get('id') == notif_id:
+                    n['connection_status'] = 'accepted' if action == 'accept' else 'declined'
+                    n['unread'] = False
+                    target_dev = n.get('connection_developer_id')
+                    break
+            save_database()
+            summary = calculate_notifications_summary(NOTIFICATIONS)
+            self.send_json(200, {'success': True, 'action': action, 'developer_id': target_dev, 'summary': summary})
+            return
 
         # ======================================================================
         # DevSync Settings System, Security & Password Recovery Handlers
@@ -3111,6 +3186,17 @@ Valid for 10 minutes.
     def do_DELETE(self):
         url_parts = urllib.parse.urlsplit(self.path)
         path = url_parts.path.rstrip('/')
+
+        # Delete notification via DELETE: /api/v1/notifications/<notif_id>
+        m_notif = re.match(r'^/api/(?:v1/)?notifications/([^/]+)/?$', path)
+        if m_notif:
+            notif_id = m_notif.group(1)
+            global NOTIFICATIONS
+            NOTIFICATIONS = [n for n in NOTIFICATIONS if n.get('id') != notif_id]
+            save_database()
+            summary = calculate_notifications_summary(NOTIFICATIONS)
+            self.send_json(200, {'success': True, 'deleted': notif_id, 'summary': summary})
+            return
 
         # Revoke session via DELETE: /api/v1/auth/sessions/<session_id>
         m_sess = re.match(r'^/api/(?:v1/)?auth/sessions/([^/]+)/?$', path)

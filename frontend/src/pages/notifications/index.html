@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Notifications — DevSync</title>
-  <link rel="icon" type="image/svg+xml" href="../../public/favicon.svg">
+  <link rel="icon" type="image/svg+xml" href="../../../public/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
@@ -24,51 +24,197 @@
   <link rel="stylesheet" href="../../assets/css/pages/notifications.css">
   <link rel="stylesheet" href="../../assets/css/layout/responsive.css">
 </head>
-<body data-page="notifications">
+<body data-authenticated="false" data-page="notifications">
   <div class="app-layout">
-    <div id="sidebar-container"></div>
-    <div class="main-content-wrapper">
-      <div id="header-container"></div>
-      
-      <main class="page-body">
-        <div class="page-header d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
-          <div>
-            <h1 class="page-title mb-1">Notifications</h1>
-            <p class="page-subtitle text-muted mb-0">Stay up to date with repository events, pull requests, and friend connections.</p>
-          </div>
-          <div class="d-flex align-items-center gap-2">
-            <button class="btn btn-secondary btn-sm" id="btn-mark-all-read">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1"><polyline points="20 6 9 17 4 12"></polyline></svg>
-              Mark all as read
-            </button>
-            <a href="../settings/preferences.html" class="btn btn-secondary btn-sm">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-              Settings
-            </a>
+    <!-- Authenticated DevSync Sidebar -->
+    <aside class="app-sidebar" aria-label="Main Navigation">
+      <div class="sidebar-header">
+        <a href="../dashboard/overview.html" class="sidebar-logo">
+          <img src="../../../public/images/logo.svg" alt="DevSync" />
+        </a>
+      </div>
+      <nav class="sidebar-nav-container">
+        <a href="../dashboard/overview.html" class="sidebar-link">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          <span class="sidebar-text">Overview</span>
+        </a>
+        <a href="../repositories/list.html" class="sidebar-link">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          <span class="sidebar-text">Repositories</span>
+        </a>
+        <a href="../pull-requests/list.html" class="sidebar-link">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 0 1 2 2v7"/><line x1="6" y1="9" x2="6" y2="21"/></svg>
+          <span class="sidebar-text">Pull Requests</span>
+          <span class="sidebar-badge">3</span>
+        </a>
+        <a href="../issues/list.html" class="sidebar-link">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span class="sidebar-text">Issues</span>
+          <span class="sidebar-badge">12</span>
+        </a>
+        <a href="../teams/members.html" class="sidebar-link">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <span class="sidebar-text">Teams</span>
+        </a>
+        <a href="../developers/discover.html" class="sidebar-link">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m9.17 14.83-4.24 4.24"/></svg>
+          <span class="sidebar-text">Developers</span>
+        </a>
+        <a href="../community/index.html" class="sidebar-link">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <span class="sidebar-text">Discussions</span>
+        </a>
+        <a href="../analytics/index.html" class="sidebar-link">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          <span class="sidebar-text">Analytics</span>
+        </a>
+        <div class="sidebar-divider"></div>
+        <a href="../assistant/index.html" class="sidebar-link">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <span class="sidebar-text">AI Assistant</span>
+        </a>
+        <a href="../settings/account.html" class="sidebar-link">
+          <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <span class="sidebar-text">Settings</span>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="app-main">
+      <!-- Topbar Header -->
+      <header class="app-topbar">
+        <div class="topbar-left">
+          <button class="mobile-menu-toggle" aria-label="Toggle navigation drawer">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
+          <div class="topbar-search-box">
+            <span class="topbar-search-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </span>
+            <input type="text" class="topbar-search-input" placeholder="Search repositories, issues, teams..." />
+            <span class="topbar-shortcut-badge">Ctrl K</span>
           </div>
         </div>
-
-        <div class="card p-0 mb-4">
-          <div class="notifications-tabs-header d-flex border-bottom px-3 pt-2">
-            <button class="nav-tab active" data-filter="all">All <span class="badge badge-mint ms-1" id="badge-all-count">4</span></button>
-            <button class="nav-tab" data-filter="unread">Unread <span class="badge badge-subtle ms-1" id="badge-unread-count">2</span></button>
-            <button class="nav-tab" data-filter="mentions">Mentions</button>
-            <button class="nav-tab" data-filter="requests">Connection Requests</button>
-          </div>
-
-          <div class="notifications-list" id="notifications-container">
-            <!-- Notifications injected dynamically via notifications.js -->
-            <div class="p-4 text-center text-muted">
-              <div class="spinner-border spinner-border-sm me-2" role="status"></div>
-              Loading notifications...
+        <div class="topbar-right">
+          <a href="index.html" class="topbar-icon-btn active" aria-label="Notifications" title="Notifications">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <span class="badge-notification-dot"></span>
+          </a>
+          <div class="dropdown">
+            <button class="user-profile-btn" data-dropdown-toggle aria-label="User Profile Menu">
+              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" alt="User avatar" class="user-avatar" />
+              <div class="user-info">
+                <span class="user-name">Developer</span>
+                <span class="user-role">Member</span>
+              </div>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="dropdown-menu profile-dropdown-menu">
+              <div class="dropdown-header">Signed in as Developer</div>
+              <div class="dropdown-divider"></div>
+              <a href="../settings/account.html" class="dropdown-item">Settings & Profile</a>
+              <a href="../settings/account.html#notifications" class="dropdown-item">Notification Preferences</a>
+              <div class="dropdown-divider"></div>
+              <button class="dropdown-item text-danger" data-action="sign-out">Sign Out</button>
             </div>
           </div>
+        </div>
+      </header>
+
+      <!-- Main Notifications Content -->
+      <main class="page-body">
+        <div class="notifications-page-container">
+          
+          <!-- 1. Header (Section 3) -->
+          <div class="notifications-header">
+            <div class="notifications-header-left">
+              <h1 class="notifications-title">Notifications</h1>
+              <p class="notifications-subtitle">Stay up to date with repository events, pull requests, team activity and connections.</p>
+            </div>
+            <div class="notifications-header-actions">
+              <button class="btn-header-action" id="btn-mark-all-read" title="Mark all notifications as read">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                Mark all as read
+              </button>
+              <a href="../settings/account.html#notifications" class="btn-header-action" title="Open Notification Settings">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                Notification Settings
+              </a>
+            </div>
+          </div>
+
+          <!-- 2. Summary Cards (Section 4) -->
+          <div class="notifications-summary-grid">
+            <div class="summary-card">
+              <div class="summary-icon-box">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              </div>
+              <div class="summary-content">
+                <div class="summary-label">All Notifications</div>
+                <div class="summary-count" id="summary-total-count">--</div>
+              </div>
+            </div>
+
+            <div class="summary-card">
+              <div class="summary-icon-box icon-unread">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              </div>
+              <div class="summary-content">
+                <div class="summary-label">Unread</div>
+                <div class="summary-count highlight-mint" id="summary-unread-count">--</div>
+              </div>
+            </div>
+
+            <div class="summary-card">
+              <div class="summary-icon-box icon-requests">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+              </div>
+              <div class="summary-content">
+                <div class="summary-label">Connection Requests</div>
+                <div class="summary-count" id="summary-requests-count">--</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. Filter Tabs (Section 5) -->
+          <div class="notifications-tabs-wrapper">
+            <div class="notifications-tabs-nav" role="tablist">
+              <button class="filter-tab active" data-filter="all" role="tab" aria-selected="true">
+                All <span class="tab-badge" id="tab-badge-all">0</span>
+              </button>
+              <button class="filter-tab" data-filter="unread" role="tab" aria-selected="false">
+                Unread <span class="tab-badge" id="tab-badge-unread">0</span>
+              </button>
+              <button class="filter-tab" data-filter="mentions" role="tab" aria-selected="false">
+                Mentions
+              </button>
+              <button class="filter-tab" data-filter="pull-requests" role="tab" aria-selected="false">
+                Pull Requests
+              </button>
+              <button class="filter-tab" data-filter="repository" role="tab" aria-selected="false">
+                Repository Activity
+              </button>
+              <button class="filter-tab" data-filter="connections" role="tab" aria-selected="false">
+                Connection Requests <span class="tab-badge" id="tab-badge-connections" style="display: none;">0</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 4. Dynamic Feed Container (Section 6, 7, 8, 9, 10) -->
+          <div id="notifications-feed-root">
+            <div class="notifications-loading-state">
+              <div class="spinner-border spinner-border-sm text-success me-2" role="status"></div>
+              <span>Loading notifications...</span>
+            </div>
+          </div>
+
         </div>
       </main>
     </div>
   </div>
 
   <div id="toast-container" class="toast-container position-fixed bottom-0 end-0 p-3"></div>
-  <script type="module" src="../../src/js/main.js"></script>
+  <script type="module" src="../../js/main.js"></script>
 </body>
 </html>
