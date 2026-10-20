@@ -3,10 +3,15 @@ from .views import (
     LoginView, AuthMeView, SessionsListView, RevokeOtherSessionsView,
     SecurityOverviewView, ReauthenticateView, ChangePasswordProtectedView,
     ForgotPasswordView, VerifyRecoveryOtpView, ResetPasswordView,
-    TwoFactorSetupView, TwoFactorEnableView, TwoFactorDisableView
+    TwoFactorSetupView, TwoFactorEnableView, TwoFactorDisableView,
+    GoogleAuthConfigView, GoogleAuthView
 )
 
 urlpatterns = [
+    path('auth/google/config', GoogleAuthConfigView.as_view(), name='auth-google-config'),
+    path('auth/google/config/', GoogleAuthConfigView.as_view(), name='auth-google-config-slash'),
+    path('auth/google', GoogleAuthView.as_view(), name='auth-google'),
+    path('auth/google/', GoogleAuthView.as_view(), name='auth-google-slash'),
     path('auth/login', LoginView.as_view(), name='auth-login'),
     path('auth/login/', LoginView.as_view(), name='auth-login-slash'),
     path('auth/me', AuthMeView.as_view(), name='auth-me'),

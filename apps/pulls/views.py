@@ -11,17 +11,6 @@ from .models import PullRequest, PRReview, PRComment
 from .serializers import PullRequestSerializer, PRReviewSerializer, PRCommentSerializer
 
 
-def get_actor_user(request):
-    if request.user and request.user.is_authenticated:
-        return request.user
-    dev_header = request.headers.get('X-DevSync-User')
-    if dev_header:
-        user = User.objects.filter(username__iexact=dev_header.strip()).first()
-        if user:
-            return user
-    return User.objects.filter(username='naveen3438').first()
-
-
 class PullRequestsListView(APIView):
     permission_classes = [permissions.AllowAny]
 
@@ -48,9 +37,9 @@ class PullRequestsListView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        user = get_actor_user(request)
-        if not user:
-            return Response({"error": "Authentication required"}, status=status.HTTP_401_UNAUTHORIZED)
+        if not request.user or not request.user.is_authenticated:
+            return Response({"error": "Authentication required", "code": "UNAUTHORIZED"}, status=status.HTTP_401_UNAUTHORIZED)
+        user = request.user
 
         repo_identifier = request.data.get('repository', '').strip()
         repo = Repository.objects.filter(Q(name__iexact=repo_identifier) | Q(slug__iexact=repo_identifier)).first()
@@ -119,6 +108,10 @@ class PullRequestReviewView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request, pr_id):
+        if not request.user or not request.user.is_authenticated:
+            return Response({"error": "Authentication required", "code": "UNAUTHORIZED"}, status=status.HTTP_401_UNAUTHORIZED)
+        reviewer = request.user
+
         pr = None
         if pr_id.isdigit():
             pr = PullRequest.objects.filter(number=int(pr_id)).first()
@@ -128,7 +121,6 @@ class PullRequestReviewView(APIView):
         if not pr:
             return Response({"error": f"Pull request {pr_id} not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        reviewer = get_actor_user(request)
         action = request.data.get('action', 'approve').lower()
         comment = request.data.get('comment', '')
 
@@ -154,6 +146,10 @@ class PullRequestMergeView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request, pr_id):
+        if not request.user or not request.user.is_authenticated:
+            return Response({"error": "Authentication required", "code": "UNAUTHORIZED"}, status=status.HTTP_401_UNAUTHORIZED)
+        actor = request.user
+
         pr = None
         if pr_id.isdigit():
             pr = PullRequest.objects.filter(number=int(pr_id)).first()
@@ -163,7 +159,6 @@ class PullRequestMergeView(APIView):
         if not pr:
             return Response({"error": f"Pull request {pr_id} not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        actor = get_actor_user(request)
         can_merge, msg = pr.can_merge(actor)
         if not can_merge:
             return Response({"error": msg}, status=status.HTTP_400_BAD_REQUEST)
@@ -198,6 +193,10 @@ class PullRequestCommentsView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request, pr_id):
+        if not request.user or not request.user.is_authenticated:
+            return Response({"error": "Authentication required", "code": "UNAUTHORIZED"}, status=status.HTTP_401_UNAUTHORIZED)
+        author = request.user
+
         pr = None
         if pr_id.isdigit():
             pr = PullRequest.objects.filter(number=int(pr_id)).first()
@@ -207,7 +206,6 @@ class PullRequestCommentsView(APIView):
         if not pr:
             return Response({"error": f"Pull request {pr_id} not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        author = get_actor_user(request)
         text = request.data.get('text', '').strip()
         if not text:
             return Response({"error": "Comment text is required"}, status=status.HTTP_400_BAD_REQUEST)

@@ -11,17 +11,6 @@ from .models import Issue, IssueComment, Label, Milestone
 from .serializers import IssueSerializer, IssueCommentSerializer
 
 
-def get_actor_user(request):
-    if request.user and request.user.is_authenticated:
-        return request.user
-    dev_header = request.headers.get('X-DevSync-User')
-    if dev_header:
-        user = User.objects.filter(username__iexact=dev_header.strip()).first()
-        if user:
-            return user
-    return User.objects.filter(username='naveen3438').first()
-
-
 def find_issue(issue_id):
     if str(issue_id).isdigit():
         issue = Issue.objects.filter(number=int(issue_id)).first()
@@ -63,9 +52,9 @@ class IssuesListView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        user = get_actor_user(request)
-        if not user:
+        if not request.user or not request.user.is_authenticated:
             return Response({"error": "Authentication required"}, status=status.HTTP_401_UNAUTHORIZED)
+        user = request.user
 
         repo_identifier = request.data.get('repository', '').strip()
         repo = Repository.objects.filter(Q(name__iexact=repo_identifier) | Q(slug__iexact=repo_identifier)).first()
@@ -112,14 +101,14 @@ class IssueDetailView(APIView):
 
 
 class IssueCommentsView(APIView):
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, issue_id):
         issue = find_issue(issue_id)
         if not issue:
             return Response({"error": f"Issue {issue_id} not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        user = get_actor_user(request)
+        user = request.user
         text = request.data.get('text', '').strip()
         if not text:
             return Response({"error": "Comment text is required"}, status=status.HTTP_400_BAD_REQUEST)
@@ -137,14 +126,14 @@ class IssueCommentsView(APIView):
 
 
 class IssueCloseView(APIView):
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, issue_id):
         issue = find_issue(issue_id)
         if not issue:
             return Response({"error": f"Issue {issue_id} not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        user = get_actor_user(request)
+        user = request.user
         issue.status = 'Closed'
         issue.closed_at = timezone.now()
         issue.closed_by = user
@@ -158,7 +147,7 @@ class IssueCloseView(APIView):
 
 
 class IssueReopenView(APIView):
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, issue_id):
         issue = find_issue(issue_id)

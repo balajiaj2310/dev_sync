@@ -10,7 +10,7 @@ class DeveloperContributionIntelligenceView(APIView):
     def get(self, request, username):
         range_type = request.query_params.get('range', '30d')
         project = request.query_params.get('project', 'all')
-        caller = request.user.username if request.user and request.user.is_authenticated else request.headers.get('X-DevSync-User')
+        caller = request.user.username if request.user and request.user.is_authenticated else None
         data = calculate_contribution_intelligence(
             username=username,
             range_type=range_type,
@@ -21,12 +21,12 @@ class DeveloperContributionIntelligenceView(APIView):
 
 
 class AnalyticsContributionIntelligenceView(APIView):
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
         range_type = request.query_params.get('range', '30d')
         project = request.query_params.get('project', 'all')
-        caller = request.user.username if request.user and request.user.is_authenticated else request.headers.get('X-DevSync-User', 'naveen3438')
+        caller = request.user.username
         data = calculate_contribution_intelligence(
             username=caller,
             range_type=range_type,

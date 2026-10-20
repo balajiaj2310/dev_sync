@@ -93,12 +93,12 @@ class TestSecurityMechanisms:
     def test_otp_challenge_flow(self, demo_user):
         challenge, raw_code = OTPChallenge.create_challenge(demo_user.email, purpose='recovery')
         assert len(raw_code) == 6
-        assert challenge.attempts_left == 5
+        assert challenge.attempts_left == 3
 
         # Bad verification attempts
         assert challenge.verify("000000") is False
         challenge.refresh_from_db()
-        assert challenge.attempts_left == 4
+        assert challenge.attempts_left == 2
 
         # Correct verification
         assert challenge.verify(raw_code) is True

@@ -10,17 +10,6 @@ from .models import Conversation, Participant, Message, Reaction, StatusUpdate
 from .serializers import ConversationSerializer, MessageSerializer, StatusUpdateSerializer
 
 
-def get_actor_user(request):
-    if request.user and request.user.is_authenticated:
-        return request.user
-    dev_header = request.headers.get('X-DevSync-User')
-    if dev_header:
-        user = User.objects.filter(username__iexact=dev_header.strip()).first()
-        if user:
-            return user
-    return User.objects.filter(username='naveen3438').first()
-
-
 def find_conversation(conv_id):
     qs = Conversation.objects.all()
     conv = qs.filter(custom_id=conv_id).first()
@@ -51,9 +40,8 @@ class ChatConversationsView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def get(self, request):
-        user = get_actor_user(request)
-        if user:
-            convs = Conversation.objects.filter(participants__user=user).distinct()
+        if request.user and request.user.is_authenticated:
+            convs = Conversation.objects.filter(participants__user=request.user).distinct()
             if not convs.exists():
                 convs = Conversation.objects.all()
         else:
@@ -74,6 +62,9 @@ class ConversationMessagesView(APIView):
         return Response(MessageSerializer(msgs, many=True).data)
 
     def post(self, request, conv_id):
+        if not request.user or not request.user.is_authenticated:
+            return Response({"error": "Authentication required"}, status=status.HTTP_401_UNAUTHORIZED)
+
         conv = find_conversation(conv_id)
         if not conv:
             conv = Conversation.objects.create(
@@ -81,7 +72,7 @@ class ConversationMessagesView(APIView):
                 title=f"Chat {conv_id}"
             )
 
-        user = get_actor_user(request)
+        user = request.user
         text = request.data.get('text', '').strip()
         if not text:
             return Response({"error": "Message text is required"}, status=status.HTTP_400_BAD_REQUEST)
@@ -96,19 +87,17 @@ class ConversationMessagesView(APIView):
 
 
 class MessageReactionView(APIView):
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, msg_id):
         msg = find_message(msg_id)
         if not msg:
-            # Create a placeholder message if needed
             conv = Conversation.objects.first()
             if not conv:
                 conv = Conversation.objects.create(title="General")
-            user = get_actor_user(request)
-            msg = Message.objects.create(conversation=conv, sender=user, text="placeholder", custom_id=msg_id)
+            msg = Message.objects.create(conversation=conv, sender=request.user, text="placeholder", custom_id=msg_id)
 
-        user = get_actor_user(request)
+        user = request.user
         emoji = request.data.get('emoji', '🚀')
 
         reaction, _ = Reaction.objects.update_or_create(
@@ -128,7 +117,10 @@ class ChatStatusesView(APIView):
         return Response(StatusUpdateSerializer(statuses, many=True).data)
 
     def post(self, request):
-        user = get_actor_user(request)
+        if not request.user or not request.user.is_authenticated:
+            return Response({"error": "Authentication required"}, status=status.HTTP_401_UNAUTHORIZED)
+
+        user = request.user
         text = request.data.get('text', '').strip()
         if not text:
             return Response({"error": "Status text is required"}, status=status.HTTP_400_BAD_REQUEST)

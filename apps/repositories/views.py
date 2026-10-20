@@ -36,11 +36,6 @@ class RepositoriesListView(APIView):
 
     def get(self, request):
         user = request.user if request.user and request.user.is_authenticated else None
-        
-        # Support X-DevSync-User header for legacy compatibility
-        dev_header = request.headers.get('X-DevSync-User')
-        if not user and dev_header:
-            user = User.objects.filter(username__iexact=dev_header.strip()).first()
 
         if user:
             # Authenticated user sees all public repos + their owned / collaborating repos
@@ -55,16 +50,8 @@ class RepositoriesListView(APIView):
 
     def post(self, request):
         if not request.user or not request.user.is_authenticated:
-            dev_header = request.headers.get('X-DevSync-User')
-            if dev_header:
-                user = User.objects.filter(username__iexact=dev_header.strip()).first()
-            else:
-                user = User.objects.filter(username='naveen3438').first()
-        else:
-            user = request.user
-
-        if not user:
-            return Response({"error": "Authentication required"}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({"error": "Authentication required", "code": "UNAUTHORIZED"}, status=status.HTTP_401_UNAUTHORIZED)
+        user = request.user
 
         name = request.data.get('name', '').strip()
         if not name:

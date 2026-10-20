@@ -3,6 +3,7 @@ Django>=5.1.0
 djangorestframework>=3.15.0
 django-cors-headers>=4.4.0
 drf-spectacular>=0.28.0
+whitenoise>=6.7.0
 
 # Channels & WebSockets
 channels>=4.2.0
@@ -23,3 +24,4 @@ pyyaml>=6.0.2
 # Testing & Quality
 pytest>=8.3.0
 pytest-django>=4.9.0
+factory-boy>=3.3.0

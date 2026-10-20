@@ -97,13 +97,15 @@ class TestChatAPI:
 
 @pytest.mark.django_db
 class TestVoiceAIAPI:
-    def test_voice_token_endpoint(self, api_client):
+    def test_voice_token_endpoint(self, api_client, chat_users, settings):
+        settings.GEMINI_API_KEY = 'test-gemini-key'
+        api_client.force_authenticate(user=chat_users[0])
         # GET token
         res_get = api_client.get('/api/v1/ai/voice/token')
         assert res_get.status_code == 200
         assert res_get.data['ok'] is True
         assert res_get.data['token'].startswith('auth_tokens/')
-        assert res_get.data['model'] == 'gemini-3.8-live'
+        assert res_get.data['model'] == 'gemini-2.0-flash-exp'
         assert 'BidiGenerateContentConstrained' in res_get.data['wsEndpoint']
         assert res_get.data['audioConfig']['inputSampleRate'] == 16000
         assert res_get.data['audioConfig']['outputSampleRate'] == 24000
@@ -114,7 +116,9 @@ class TestVoiceAIAPI:
         assert res_post.status_code == 200
         assert res_post.data['token'].startswith('auth_tokens/')
 
-    def test_voice_context_grounding(self, api_client):
+    def test_voice_context_grounding(self, api_client, chat_users, settings):
+        settings.GEMINI_API_KEY = 'test-gemini-key'
+        api_client.force_authenticate(user=chat_users[0])
         res = api_client.get('/api/v1/ai/voice/context?repo=devsync-core&branch=main')
         assert res.status_code == 200
         assert res.data['ok'] is True
@@ -126,7 +130,9 @@ class TestVoiceAIAPI:
         assert "OPEN PULL REQUESTS" in instruction
         assert "PROJECT PULSE" in instruction
 
-    def test_ai_text_chat(self, api_client):
+    def test_ai_text_chat(self, api_client, chat_users, settings):
+        settings.GEMINI_API_KEY = 'test-gemini-key'
+        api_client.force_authenticate(user=chat_users[0])
         res = api_client.post('/api/ai/chat', {
             'message': 'How do I review a pull request?'
         }, format='json')
@@ -134,7 +140,9 @@ class TestVoiceAIAPI:
         assert 'reply' in res.data
         assert len(res.data['reply']) > 20
 
-    def test_tts_synthesis(self, api_client):
+    def test_tts_synthesis(self, api_client, chat_users, settings):
+        settings.GEMINI_API_KEY = 'test-gemini-key'
+        api_client.force_authenticate(user=chat_users[0])
         res = api_client.post('/api/v1/ai/voice/synthesize', {
             'text': 'DevSync pairing active.',
             'voiceName': 'Puck'

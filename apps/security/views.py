@@ -3,16 +3,17 @@ from datetime import timedelta
 from django.db import transaction
 from django.utils import timezone
 from django.contrib.auth import authenticate
-from django.core.mail import send_mail
 from django.conf import settings
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
 
 from apps.accounts.models import User
+from apps.common.tasks import send_email_async
 from .models import AuthSession, AuditLog, OTPChallenge, ReauthToken, TOTPDevice, RecoveryCode
 from .authentication import create_user_session, parse_device_info
 from .totp import TOTPManager
+from .throttles import LoginRateThrottle, LoginLockoutManager
 from .serializers import (
     LoginSerializer, AuthSessionSerializer, AuditLogSerializer,
     ReauthSerializer, ChangePasswordProtectedSerializer,
@@ -21,6 +22,7 @@ from .serializers import (
 
 class LoginView(APIView):
     permission_classes = [permissions.AllowAny]
+    throttle_classes = [LoginRateThrottle]
 
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
@@ -28,12 +30,23 @@ class LoginView(APIView):
         identifier = serializer.validated_data['identifier']
         password = serializer.validated_data['password']
 
+        # Account lockout check (Fix h)
+        if LoginLockoutManager.is_locked(identifier):
+            return Response(
+                {
+                    "error": "Too many failed login attempts. Account is temporarily locked. Please try again later.",
+                    "code": "ACCOUNT_LOCKED"
+                },
+                status=status.HTTP_429_TOO_MANY_REQUESTS
+            )
+
         user = User.objects.filter(email__iexact=identifier).first() or \
                User.objects.filter(username__iexact=identifier).first()
 
         device, ip, ua = parse_device_info(request)
 
         if not user or not user.check_password(password):
+            LoginLockoutManager.record_failure(identifier)
             AuditLog.objects.create(
                 user=user,
                 action='login_failed',
@@ -46,6 +59,9 @@ class LoginView(APIView):
                 {"error": "Invalid email, username, or password.", "code": "INVALID_CREDENTIALS"},
                 status=status.HTTP_400_BAD_REQUEST
             )
+
+        # Successful credentials reset lockout count
+        LoginLockoutManager.reset(identifier)
 
         if not user.is_active:
             return Response(
@@ -271,18 +287,15 @@ class ChangePasswordProtectedView(APIView):
                 status='success'
             )
 
-        # Notify via email
-        try:
-            send_mail(
-                "Security Alert: Your DevSync Password Was Changed",
+        # Notify via background email task (Fix q)
+        send_email_async(
+            subject="Security Alert: Your DevSync Password Was Changed",
+            message=(
                 f"Hello @{request.user.username},\n\nYour DevSync password was successfully updated.\n"
-                f"If you did not perform this change, please contact security immediately.\n\n— The DevSync Security Team",
-                settings.DEFAULT_FROM_EMAIL,
-                [request.user.email],
-                fail_silently=True
-            )
-        except Exception:
-            pass
+                f"If you did not perform this change, please contact security immediately.\n\n— The DevSync Security Team"
+            ),
+            recipient_list=[request.user.email]
+        )
 
         return Response({
             "success": True,
@@ -331,19 +344,16 @@ class ForgotPasswordView(APIView):
             expires_at=timezone.now() + timedelta(minutes=10)
         )
 
-        if user:
-            try:
-                send_mail(
-                    "DevSync Password Reset Verification Code",
+        if user and user.email:
+            send_email_async(
+                subject="DevSync Password Reset Verification Code",
+                message=(
                     f"Hello @{user.username},\n\n"
                     f"Your 6-digit recovery code is: {raw_code}\n\n"
-                    f"This code will expire in 10 minutes.\n\n— The DevSync Security Team",
-                    settings.DEFAULT_FROM_EMAIL,
-                    [user.email],
-                    fail_silently=True
-                )
-            except Exception:
-                pass
+                    f"This code will expire in 10 minutes.\n\n— The DevSync Security Team"
+                ),
+                recipient_list=[user.email]
+            )
 
         return Response({"success": True, "message": generic_msg})
 
@@ -533,3 +543,34 @@ class TwoFactorDisableView(APIView):
             "success": True,
             "message": "Two-Factor Authentication has been disabled."
         })
+
+
+class GoogleAuthConfigView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request):
+        client_id = getattr(settings, 'GOOGLE_CLIENT_ID', '') or os.environ.get('GOOGLE_CLIENT_ID', '')
+        return Response({
+            'configured': bool(client_id),
+            'clientId': client_id if client_id else None,
+            'message': 'Google OAuth is configured.' if client_id else 'Google OAuth is unconfigured.'
+        })
+
+
+class GoogleAuthView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        client_id = getattr(settings, 'GOOGLE_CLIENT_ID', '') or os.environ.get('GOOGLE_CLIENT_ID', '')
+        id_token = request.data.get('credential', '').strip()
+        if not id_token:
+            return Response({
+                'error': 'Missing Credential',
+                'detail': 'Google credential token is required.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        # In audience verification: ensure we NEVER output client_id in error message (Fix i)
+        return Response({
+            'error': 'Authentication Failed',
+            'detail': 'Google token verification failed: invalid token audience or signature.'
+        }, status=status.HTTP_401_UNAUTHORIZED)

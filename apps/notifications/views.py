@@ -8,17 +8,6 @@ from .models import Notification, NotificationPreference
 from .serializers import NotificationSerializer
 
 
-def get_actor_recipient(request):
-    if request.user and request.user.is_authenticated:
-        return request.user
-    dev_header = request.headers.get('X-DevSync-User')
-    if dev_header:
-        user = User.objects.filter(username__iexact=dev_header.strip()).first()
-        if user:
-            return user
-    return User.objects.filter(username='naveen3438').first()
-
-
 def find_notification(notif_id, recipient=None):
     qs = Notification.objects.all()
     if recipient:
@@ -37,12 +26,17 @@ class NotificationsListView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def get(self, request):
-        user = get_actor_recipient(request)
-        if not user:
-            notifs = Notification.objects.all()
-        else:
-            notifs = Notification.objects.filter(recipient=user)
+        if not request.user or not request.user.is_authenticated:
+            return Response({
+                'notifications': [],
+                'summary': {
+                    'total': 0,
+                    'unread': 0
+                }
+            })
 
+        user = request.user
+        notifs = Notification.objects.filter(recipient=user)
         serializer = NotificationSerializer(notifs, many=True)
         items = serializer.data
         unread_count = sum(1 for n in items if n.get('unread'))
@@ -57,13 +51,13 @@ class NotificationsListView(APIView):
 
 
 class NotificationConnectionActionView(APIView):
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
         notif_id = request.data.get('notification_id')
         action = request.data.get('action', 'accept').lower()
 
-        notif = find_notification(notif_id)
+        notif = find_notification(notif_id, request.user)
         if notif:
             notif.unread = False
             notif.save(update_fields=['unread'])
@@ -88,14 +82,14 @@ class NotificationConnectionActionView(APIView):
 
 
 class NotificationMarkReadView(APIView):
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
-        user = get_actor_recipient(request)
+        user = request.user
         mark_all = request.data.get('all', False)
         target_id = request.data.get('id')
 
-        qs = Notification.objects.filter(recipient=user) if user else Notification.objects.all()
+        qs = Notification.objects.filter(recipient=user)
 
         if mark_all:
             qs.update(unread=False)
@@ -118,10 +112,10 @@ class NotificationMarkReadView(APIView):
 
 
 class NotificationMarkUnreadView(APIView):
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
-        user = get_actor_recipient(request)
+        user = request.user
         target_id = request.data.get('id')
 
         if target_id:
@@ -130,7 +124,7 @@ class NotificationMarkUnreadView(APIView):
                 notif.unread = True
                 notif.save(update_fields=['unread'])
 
-        qs = Notification.objects.filter(recipient=user) if user else Notification.objects.all()
+        qs = Notification.objects.filter(recipient=user)
         total = qs.count()
         unread = qs.filter(unread=True).count()
 
@@ -144,10 +138,10 @@ class NotificationMarkUnreadView(APIView):
 
 
 class NotificationDetailView(APIView):
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
 
     def delete(self, request, notif_id):
-        user = get_actor_recipient(request)
+        user = request.user
         notif = find_notification(notif_id, user)
         if notif:
             notif.delete()

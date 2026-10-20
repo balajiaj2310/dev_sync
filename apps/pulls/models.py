@@ -50,6 +50,23 @@ class PullRequest(TimeStampedUUIDModel):
             return False, "Pull request is closed and cannot be merged."
         if self.source_branch == self.target_branch:
             return False, "Source and target branch cannot be identical."
+
+        # Check source and target branches exist
+        if not self.repository.branches.filter(name=self.source_branch).exists():
+            return False, f"Source branch '{self.source_branch}' does not exist in repository."
+        if not self.repository.branches.filter(name=self.target_branch).exists():
+            return False, f"Target branch '{self.target_branch}' does not exist in repository."
+
+        # Check merge permissions (Fix p)
+        if actor_user:
+            is_owner = (self.repository.owner_id == actor_user.id)
+            is_collab = self.repository.collaborators.filter(
+                user=actor_user,
+                role__in=['Admin', 'Lead Maintainer', 'Maintainer', 'Contributor']
+            ).exists()
+            if not is_owner and not is_collab:
+                return False, "You do not have write permission to merge pull requests in this repository."
+
         return True, "Ready to merge."
 
 

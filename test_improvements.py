@@ -255,7 +255,7 @@ def test_live_server():
                 reg_user = u
                 break
         assert reg_user is not None, "FAIL: Created user not found in database file"
-        assert reg_user['password'].startswith('pbkdf2_sha256$'), f"FAIL: Password is not PBKDF2 hashed: {reg_user['password']}"
+        assert reg_user['password'].startswith(('argon2', 'pbkdf2_sha256$')), f"FAIL: Password is not Argon2/PBKDF2 hashed: {reg_user['password']}"
         print(f"PASS: User password securely hashed with Django PBKDF2 hasher: {reg_user['password'][:30]}...")
 
         # 2.11 Login with New User Hashed Password

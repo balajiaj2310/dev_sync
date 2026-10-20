@@ -88,7 +88,7 @@ class OTPChallenge(TimeStampedUUIDModel):
     code_hash = models.CharField(max_length=64)
     salt = models.CharField(max_length=32)
     purpose = models.CharField(max_length=30, choices=PURPOSE_CHOICES, db_index=True)
-    attempts_remaining = models.PositiveSmallIntegerField(default=5)
+    attempts_remaining = models.PositiveSmallIntegerField(default=3)
     expires_at = models.DateTimeField(db_index=True)
     consumed_at = models.DateTimeField(null=True, blank=True, db_index=True)
 
@@ -101,7 +101,7 @@ class OTPChallenge(TimeStampedUUIDModel):
         return hashlib.sha256(f"{salt}:{code}".encode('utf-8')).hexdigest()
 
     @classmethod
-    def create_challenge(cls, identifier: str, purpose: str = 'password_reset', expiry_minutes: int = 10):
+    def create_challenge(cls, identifier: str, purpose: str = 'password_reset', expiry_minutes: int = 5):
         raw_code = f"{secrets.randbelow(900000) + 100000}"
         salt = secrets.token_hex(16)
         code_hash = cls.hash_code(salt, raw_code)
@@ -111,7 +111,7 @@ class OTPChallenge(TimeStampedUUIDModel):
             code_hash=code_hash,
             salt=salt,
             purpose=purpose,
-            attempts_remaining=5,
+            attempts_remaining=3,
             expires_at=expires_at
         )
         return challenge, raw_code
