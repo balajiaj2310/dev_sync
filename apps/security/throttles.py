@@ -1,16 +1,16 @@
-from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 from django.core.cache import cache
 from django.utils import timezone
+from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 
 
 class LoginRateThrottle(AnonRateThrottle):
-    scope = 'auth_attempt'
-    rate = '10/minute'
+    scope = "auth_attempt"
+    rate = "10/minute"
 
 
 class VoiceAIRateThrottle(UserRateThrottle):
-    scope = 'ai_voice'
-    rate = '30/minute'
+    scope = "ai_voice"
+    rate = "30/minute"
 
 
 class LoginLockoutManager:
@@ -18,6 +18,7 @@ class LoginLockoutManager:
     Tracks failed login attempts by normalized identifier.
     Locks out account for 15 minutes upon 5 consecutive failed attempts.
     """
+
     MAX_ATTEMPTS = 5
     LOCKOUT_SECONDS = 900  # 15 minutes
 

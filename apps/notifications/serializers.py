@@ -1,18 +1,27 @@
 from rest_framework import serializers
+
 from .models import Notification, NotificationPreference
 
 
 class NotificationSerializer(serializers.ModelSerializer):
     time = serializers.SerializerMethodField()
     actorName = serializers.SerializerMethodField()
-    actorAvatar = serializers.CharField(source='actor_avatar')
+    actorAvatar = serializers.CharField(source="actor_avatar")
 
     class Meta:
         model = Notification
         fields = [
-            'id', 'category', 'title', 'description', 'unread',
-            'actor_username', 'actorName', 'actorAvatar', 'payload',
-            'time', 'created_at'
+            "id",
+            "category",
+            "title",
+            "description",
+            "unread",
+            "actor_username",
+            "actorName",
+            "actorAvatar",
+            "payload",
+            "time",
+            "created_at",
         ]
 
     def get_time(self, obj):
@@ -26,4 +35,4 @@ class NotificationSerializer(serializers.ModelSerializer):
 class NotificationPreferenceSerializer(serializers.ModelSerializer):
     class Meta:
         model = NotificationPreference
-        fields = ['id', 'channel', 'category', 'enabled']
+        fields = ["id", "channel", "category", "enabled"]

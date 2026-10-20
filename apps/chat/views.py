@@ -1,13 +1,19 @@
 import uuid
+
 from django.db.models import Q
 from django.utils import timezone
-from rest_framework.views import APIView
+from rest_framework import permissions, status
 from rest_framework.response import Response
-from rest_framework import status, permissions
+from rest_framework.views import APIView
 
 from apps.accounts.models import User
-from .models import Conversation, Participant, Message, Reaction, StatusUpdate
-from .serializers import ConversationSerializer, MessageSerializer, StatusUpdateSerializer
+
+from .models import Conversation, Message, Participant, Reaction, StatusUpdate
+from .serializers import (
+    ConversationSerializer,
+    MessageSerializer,
+    StatusUpdateSerializer,
+)
 
 
 def find_conversation(conv_id):
@@ -41,7 +47,9 @@ class ChatConversationsView(APIView):
 
     def get(self, request):
         if request.user and request.user.is_authenticated:
-            convs = Conversation.objects.filter(participants__user=request.user).distinct()
+            convs = Conversation.objects.filter(
+                participants__user=request.user
+            ).distinct()
             if not convs.exists():
                 convs = Conversation.objects.all()
         else:
@@ -63,25 +71,30 @@ class ConversationMessagesView(APIView):
 
     def post(self, request, conv_id):
         if not request.user or not request.user.is_authenticated:
-            return Response({"error": "Authentication required"}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response(
+                {"error": "Authentication required"},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
 
         conv = find_conversation(conv_id)
         if not conv:
             conv = Conversation.objects.create(
-                custom_id=conv_id,
-                title=f"Chat {conv_id}"
+                custom_id=conv_id, title=f"Chat {conv_id}"
             )
 
         user = request.user
-        text = request.data.get('text', '').strip()
+        text = request.data.get("text", "").strip()
         if not text:
-            return Response({"error": "Message text is required"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Message text is required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         msg = Message.objects.create(
             conversation=conv,
             sender=user,
             text=text,
-            custom_id=f"msg-{uuid.uuid4().hex[:8]}"
+            custom_id=f"msg-{uuid.uuid4().hex[:8]}",
         )
         return Response(MessageSerializer(msg).data, status=status.HTTP_201_CREATED)
 
@@ -95,17 +108,23 @@ class MessageReactionView(APIView):
             conv = Conversation.objects.first()
             if not conv:
                 conv = Conversation.objects.create(title="General")
-            msg = Message.objects.create(conversation=conv, sender=request.user, text="placeholder", custom_id=msg_id)
+            msg = Message.objects.create(
+                conversation=conv,
+                sender=request.user,
+                text="placeholder",
+                custom_id=msg_id,
+            )
 
         user = request.user
-        emoji = request.data.get('emoji', '🚀')
+        emoji = request.data.get("emoji", "🚀")
 
         reaction, _ = Reaction.objects.update_or_create(
-            message=msg,
-            user=user,
-            defaults={'emoji': emoji}
+            message=msg, user=user, defaults={"emoji": emoji}
         )
-        return Response({"success": True, "emoji": emoji, "message_id": msg_id}, status=status.HTTP_200_OK)
+        return Response(
+            {"success": True, "emoji": emoji, "message_id": msg_id},
+            status=status.HTTP_200_OK,
+        )
 
 
 class ChatStatusesView(APIView):
@@ -118,13 +137,20 @@ class ChatStatusesView(APIView):
 
     def post(self, request):
         if not request.user or not request.user.is_authenticated:
-            return Response({"error": "Authentication required"}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response(
+                {"error": "Authentication required"},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
 
         user = request.user
-        text = request.data.get('text', '').strip()
+        text = request.data.get("text", "").strip()
         if not text:
-            return Response({"error": "Status text is required"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Status text is required"}, status=status.HTTP_400_BAD_REQUEST
+            )
 
-        audience = request.data.get('audience', 'everyone')
-        st = StatusUpdate.create_status(user=user, text=text, audience=audience, hours=24)
+        audience = request.data.get("audience", "everyone")
+        st = StatusUpdate.create_status(
+            user=user, text=text, audience=audience, hours=24
+        )
         return Response(StatusUpdateSerializer(st).data, status=status.HTTP_201_CREATED)

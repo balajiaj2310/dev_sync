@@ -1,17 +1,23 @@
-import uuid
 import secrets
+import uuid
+
 from django.db import transaction
 from django.db.models import Q
 from django.utils.text import slugify
-from rest_framework.views import APIView
+from rest_framework import permissions, status
 from rest_framework.response import Response
-from rest_framework import status, permissions
+from rest_framework.views import APIView
 
 from apps.accounts.models import User
-from .models import Repository, Branch, Commit, FileBlob, Attachment, Collaborator
+
+from .models import Attachment, Branch, Collaborator, Commit, FileBlob, Repository
 from .serializers import (
-    RepositorySerializer, BranchSerializer, CommitSerializer,
-    FileBlobSerializer, AttachmentSerializer, CollaboratorSerializer
+    AttachmentSerializer,
+    BranchSerializer,
+    CollaboratorSerializer,
+    CommitSerializer,
+    FileBlobSerializer,
+    RepositorySerializer,
 )
 
 
@@ -40,54 +46,60 @@ class RepositoriesListView(APIView):
         if user:
             # Authenticated user sees all public repos + their owned / collaborating repos
             repos = Repository.objects.filter(
-                Q(visibility='public') | Q(owner=user) | Q(collaborators__user=user)
+                Q(visibility="public") | Q(owner=user) | Q(collaborators__user=user)
             ).distinct()
         else:
-            repos = Repository.objects.filter(visibility='public')
+            repos = Repository.objects.filter(visibility="public")
 
-        serializer = RepositorySerializer(repos, many=True, context={'request': request})
+        serializer = RepositorySerializer(
+            repos, many=True, context={"request": request}
+        )
         return Response(serializer.data)
 
     def post(self, request):
         if not request.user or not request.user.is_authenticated:
-            return Response({"error": "Authentication required", "code": "UNAUTHORIZED"}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response(
+                {"error": "Authentication required", "code": "UNAUTHORIZED"},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
         user = request.user
 
-        name = request.data.get('name', '').strip()
+        name = request.data.get("name", "").strip()
         if not name:
-            return Response({"error": "Repository name is required"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Repository name is required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
-        description = request.data.get('description', '').strip()
-        visibility = request.data.get('visibility', 'public').lower()
-        default_branch = request.data.get('default_branch', 'main').strip()
-        icon_bg = request.data.get('iconBg', request.data.get('icon_bg', '#10B981'))
+        description = request.data.get("description", "").strip()
+        visibility = request.data.get("visibility", "public").lower()
+        default_branch = request.data.get("default_branch", "main").strip()
+        icon_bg = request.data.get("iconBg", request.data.get("icon_bg", "#10B981"))
 
         with transaction.atomic():
             repo, created = Repository.objects.get_or_create(
                 owner=user,
                 name=name,
                 defaults={
-                    'slug': slugify(name),
-                    'description': description,
-                    'visibility': visibility,
-                    'default_branch': default_branch,
-                    'icon_bg': icon_bg
-                }
+                    "slug": slugify(name),
+                    "description": description,
+                    "visibility": visibility,
+                    "default_branch": default_branch,
+                    "icon_bg": icon_bg,
+                },
             )
             # Create default branch
             Branch.objects.get_or_create(
                 repository=repo,
                 name=default_branch,
-                defaults={'is_default': True, 'created_by': user}
+                defaults={"is_default": True, "created_by": user},
             )
             # Add owner as admin collaborator
             Collaborator.objects.get_or_create(
-                repository=repo,
-                user=user,
-                defaults={'role': 'Admin'}
+                repository=repo, user=user, defaults={"role": "Admin"}
             )
 
-        serializer = RepositorySerializer(repo, context={'request': request})
+        serializer = RepositorySerializer(repo, context={"request": request})
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
@@ -97,8 +109,10 @@ class RepositoryDetailView(APIView):
     def get(self, request, repo_id):
         repo = get_repository_or_404(repo_id, request.user)
         if not repo:
-            return Response({"error": "Repository not found"}, status=status.HTTP_404_NOT_FOUND)
-        serializer = RepositorySerializer(repo, context={'request': request})
+            return Response(
+                {"error": "Repository not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+        serializer = RepositorySerializer(repo, context={"request": request})
         return Response(serializer.data)
 
 
@@ -108,7 +122,9 @@ class RepositoryBranchesView(APIView):
     def get(self, request, repo_id):
         repo = get_repository_or_404(repo_id, request.user)
         if not repo:
-            return Response({"error": "Repository not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"error": "Repository not found"}, status=status.HTTP_404_NOT_FOUND
+            )
         branches = repo.branches.all()
         serializer = BranchSerializer(branches, many=True)
         return Response(serializer.data)
@@ -116,19 +132,28 @@ class RepositoryBranchesView(APIView):
     def post(self, request, repo_id):
         repo = get_repository_or_404(repo_id, request.user)
         if not repo:
-            return Response({"error": "Repository not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"error": "Repository not found"}, status=status.HTTP_404_NOT_FOUND
+            )
 
-        branch_name = request.data.get('name', '').strip()
+        branch_name = request.data.get("name", "").strip()
         if not branch_name:
-            return Response({"error": "Branch name is required"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Branch name is required"}, status=status.HTTP_400_BAD_REQUEST
+            )
 
         branch, created = Branch.objects.get_or_create(
             repository=repo,
             name=branch_name,
-            defaults={'created_by': request.user if request.user.is_authenticated else None}
+            defaults={
+                "created_by": request.user if request.user.is_authenticated else None
+            },
         )
         serializer = BranchSerializer(branch)
-        return Response(serializer.data, status=status.HTTP_201_CREATED if created else status.HTTP_200_OK)
+        return Response(
+            serializer.data,
+            status=status.HTTP_201_CREATED if created else status.HTTP_200_OK,
+        )
 
 
 class RepositoryFilesView(APIView):
@@ -137,9 +162,11 @@ class RepositoryFilesView(APIView):
     def get(self, request, repo_id):
         repo = get_repository_or_404(repo_id, request.user)
         if not repo:
-            return Response({"error": "Repository not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"error": "Repository not found"}, status=status.HTTP_404_NOT_FOUND
+            )
 
-        branch_name = request.query_params.get('branch', repo.default_branch)
+        branch_name = request.query_params.get("branch", repo.default_branch)
         branch = repo.branches.filter(name=branch_name).first()
         if not branch:
             files = []
@@ -156,19 +183,25 @@ class RepositoryFileContentView(APIView):
     def get(self, request, repo_id):
         repo = get_repository_or_404(repo_id, request.user)
         if not repo:
-            return Response({"error": "Repository not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"error": "Repository not found"}, status=status.HTTP_404_NOT_FOUND
+            )
 
-        raw_path = request.query_params.get('path', '').strip()
+        raw_path = request.query_params.get("path", "").strip()
         clean_path = FileBlob.sanitize_path(raw_path)
-        branch_name = request.query_params.get('branch', repo.default_branch)
+        branch_name = request.query_params.get("branch", repo.default_branch)
 
         branch = repo.branches.filter(name=branch_name).first()
         if not branch:
-            return Response({"error": "Branch not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"error": "Branch not found"}, status=status.HTTP_404_NOT_FOUND
+            )
 
         blob = repo.file_blobs.filter(branch=branch, path=clean_path).first()
         if not blob:
-            return Response({"error": "File not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"error": "File not found"}, status=status.HTTP_404_NOT_FOUND
+            )
 
         serializer = FileBlobSerializer(blob)
         return Response(serializer.data)
@@ -180,15 +213,20 @@ class RepositoryFileUploadView(APIView):
     def post(self, request, repo_id):
         repo = get_repository_or_404(repo_id, request.user)
         if not repo:
-            return Response({"error": "Repository not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"error": "Repository not found"}, status=status.HTTP_404_NOT_FOUND
+            )
 
-        raw_path = request.data.get('path', '').strip()
+        raw_path = request.data.get("path", "").strip()
         clean_path = FileBlob.sanitize_path(raw_path)
         if not clean_path:
-            return Response({"error": "Valid file path is required"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Valid file path is required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
-        content = request.data.get('content', '')
-        branch_name = request.data.get('branch', repo.default_branch)
+        content = request.data.get("content", "")
+        branch_name = request.data.get("branch", repo.default_branch)
         branch, _ = repo.branches.get_or_create(repository=repo, name=branch_name)
 
         blob, created = FileBlob.objects.update_or_create(
@@ -196,10 +234,10 @@ class RepositoryFileUploadView(APIView):
             branch=branch,
             path=clean_path,
             defaults={
-                'content': content,
-                'size': len(content.encode('utf-8')),
-                'mime_type': 'text/plain'
-            }
+                "content": content,
+                "size": len(content.encode("utf-8")),
+                "mime_type": "text/plain",
+            },
         )
 
         # Record commit
@@ -208,12 +246,15 @@ class RepositoryFileUploadView(APIView):
             repository=repo,
             branch=branch,
             sha=secrets.token_hex(20),
-            message=request.data.get('message', f'Update {clean_path}'),
+            message=request.data.get("message", f"Update {clean_path}"),
             author=user,
-            author_name=user.username if user else 'Anonymous'
+            author_name=user.username if user else "Anonymous",
         )
 
-        return Response(FileBlobSerializer(blob).data, status=status.HTTP_201_CREATED if created else status.HTTP_200_OK)
+        return Response(
+            FileBlobSerializer(blob).data,
+            status=status.HTTP_201_CREATED if created else status.HTTP_200_OK,
+        )
 
 
 class RepositoryAttachmentsView(APIView):
@@ -222,18 +263,22 @@ class RepositoryAttachmentsView(APIView):
     def get(self, request, repo_id):
         repo = get_repository_or_404(repo_id, request.user)
         if not repo:
-            return Response({"error": "Repository not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"error": "Repository not found"}, status=status.HTTP_404_NOT_FOUND
+            )
         attachments = repo.attachments.all()
         return Response(AttachmentSerializer(attachments, many=True).data)
 
     def post(self, request, repo_id):
         repo = get_repository_or_404(repo_id, request.user)
         if not repo:
-            return Response({"error": "Repository not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"error": "Repository not found"}, status=status.HTTP_404_NOT_FOUND
+            )
 
-        filename = request.data.get('filename', 'unnamed_file')
-        file_size = request.data.get('size', 0)
-        file_type = request.data.get('type', 'application/octet-stream')
+        filename = request.data.get("filename", "unnamed_file")
+        file_size = request.data.get("size", 0)
+        file_type = request.data.get("type", "application/octet-stream")
 
         user = request.user if request.user.is_authenticated else None
         att = Attachment.objects.create(
@@ -241,7 +286,7 @@ class RepositoryAttachmentsView(APIView):
             uploader=user,
             filename=filename,
             file_size=file_size,
-            file_type=file_type
+            file_type=file_type,
         )
         return Response(AttachmentSerializer(att).data, status=status.HTTP_201_CREATED)
 
@@ -252,27 +297,34 @@ class RepositoryMembersView(APIView):
     def get(self, request, repo_id):
         repo = get_repository_or_404(repo_id, request.user)
         if not repo:
-            return Response({"error": "Repository not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"error": "Repository not found"}, status=status.HTTP_404_NOT_FOUND
+            )
         members = repo.collaborators.all()
         return Response(CollaboratorSerializer(members, many=True).data)
 
     def post(self, request, repo_id):
         repo = get_repository_or_404(repo_id, request.user)
         if not repo:
-            return Response({"error": "Repository not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"error": "Repository not found"}, status=status.HTTP_404_NOT_FOUND
+            )
 
-        username = request.data.get('username', '').strip()
-        role = request.data.get('role', 'Contributor').strip()
+        username = request.data.get("username", "").strip()
+        role = request.data.get("role", "Contributor").strip()
         user = User.objects.filter(username__iexact=username).first()
         if not user:
-            return Response({"error": f"User {username} not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"error": f"User {username} not found"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
 
         collab, created = Collaborator.objects.update_or_create(
-            repository=repo,
-            user=user,
-            defaults={'role': role}
+            repository=repo, user=user, defaults={"role": role}
         )
-        return Response(CollaboratorSerializer(collab).data, status=status.HTTP_201_CREATED)
+        return Response(
+            CollaboratorSerializer(collab).data, status=status.HTTP_201_CREATED
+        )
 
 
 class RepositoryMemberDetailView(APIView):
@@ -281,31 +333,43 @@ class RepositoryMemberDetailView(APIView):
     def patch(self, request, repo_id, username):
         repo = get_repository_or_404(repo_id, request.user)
         if not repo:
-            return Response({"error": "Repository not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"error": "Repository not found"}, status=status.HTTP_404_NOT_FOUND
+            )
 
         user = User.objects.filter(username__iexact=username).first()
         if not user:
-            return Response({"error": f"User {username} not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"error": f"User {username} not found"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
 
         collab = repo.collaborators.filter(user=user).first()
         if not collab:
-            return Response({"error": "Collaborator not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"error": "Collaborator not found"}, status=status.HTTP_404_NOT_FOUND
+            )
 
-        new_role = request.data.get('role')
+        new_role = request.data.get("role")
         if new_role:
             collab.role = new_role
-            collab.save(update_fields=['role'])
+            collab.save(update_fields=["role"])
 
         return Response(CollaboratorSerializer(collab).data)
 
     def delete(self, request, repo_id, username):
         repo = get_repository_or_404(repo_id, request.user)
         if not repo:
-            return Response({"error": "Repository not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"error": "Repository not found"}, status=status.HTTP_404_NOT_FOUND
+            )
 
         user = User.objects.filter(username__iexact=username).first()
         if not user:
-            return Response({"error": f"User {username} not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"error": f"User {username} not found"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
 
         repo.collaborators.filter(user=user).delete()
         return Response({"success": True, "message": f"Member {username} removed"})
@@ -317,7 +381,9 @@ class RepositoryActivityView(APIView):
     def get(self, request, repo_id):
         repo = get_repository_or_404(repo_id, request.user)
         if not repo:
-            return Response({"error": "Repository not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"error": "Repository not found"}, status=status.HTTP_404_NOT_FOUND
+            )
 
         commits = repo.commits.all()[:20]
         return Response(CommitSerializer(commits, many=True).data)

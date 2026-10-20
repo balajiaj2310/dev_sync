@@ -1,6 +1,7 @@
-from rest_framework.views import exception_handler
-from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import exception_handler
+
 
 def custom_exception_handler(exc, context):
     """
@@ -19,12 +20,12 @@ def custom_exception_handler(exc, context):
         error_code = "API_ERROR"
 
         if isinstance(data, dict):
-            if 'detail' in data:
-                error_msg = str(data['detail'])
-                error_code = getattr(exc, 'default_code', 'ERROR').upper()
-            elif 'error' in data:
-                error_msg = str(data['error'])
-                error_code = data.get('code', 'ERROR')
+            if "detail" in data:
+                error_msg = str(data["detail"])
+                error_code = getattr(exc, "default_code", "ERROR").upper()
+            elif "error" in data:
+                error_msg = str(data["error"])
+                error_code = data.get("code", "ERROR")
             else:
                 # First field error
                 first_key = next(iter(data))
@@ -38,10 +39,6 @@ def custom_exception_handler(exc, context):
             error_msg = str(data[0])
             error_code = "VALIDATION_ERROR"
 
-        response.data = {
-            "error": error_msg,
-            "code": error_code,
-            "details": data
-        }
+        response.data = {"error": error_msg, "code": error_code, "details": data}
 
     return response

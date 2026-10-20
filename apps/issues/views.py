@@ -1,14 +1,15 @@
 from django.db import transaction
 from django.db.models import Max, Q
 from django.utils import timezone
-from rest_framework.views import APIView
+from rest_framework import permissions, status
 from rest_framework.response import Response
-from rest_framework import status, permissions
+from rest_framework.views import APIView
 
 from apps.accounts.models import User
 from apps.repositories.models import Repository
+
 from .models import Issue, IssueComment, Label, Milestone
-from .serializers import IssueSerializer, IssueCommentSerializer
+from .serializers import IssueCommentSerializer, IssueSerializer
 
 
 def find_issue(issue_id):
@@ -26,53 +27,75 @@ class IssuesListView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def get(self, request):
-        qs = Issue.objects.all().select_related('repository', 'author', 'milestone').prefetch_related('labels', 'comments')
+        qs = (
+            Issue.objects.all()
+            .select_related("repository", "author", "milestone")
+            .prefetch_related("labels", "comments")
+        )
 
-        repo_query = request.query_params.get('repository')
+        repo_query = request.query_params.get("repository")
         if repo_query:
-            qs = qs.filter(Q(repository__name__iexact=repo_query) | Q(repository__slug__iexact=repo_query))
+            qs = qs.filter(
+                Q(repository__name__iexact=repo_query)
+                | Q(repository__slug__iexact=repo_query)
+            )
 
-        status_query = request.query_params.get('status')
+        status_query = request.query_params.get("status")
         if status_query:
             qs = qs.filter(status__iexact=status_query)
 
-        label_query = request.query_params.get('label')
+        label_query = request.query_params.get("label")
         if label_query:
             qs = qs.filter(labels__name__iexact=label_query)
 
-        author_query = request.query_params.get('author')
+        author_query = request.query_params.get("author")
         if author_query:
             qs = qs.filter(author__username__iexact=author_query)
 
-        search_query = request.query_params.get('search')
+        search_query = request.query_params.get("search")
         if search_query:
-            qs = qs.filter(Q(title__icontains=search_query) | Q(description__icontains=search_query))
+            qs = qs.filter(
+                Q(title__icontains=search_query)
+                | Q(description__icontains=search_query)
+            )
 
         serializer = IssueSerializer(qs, many=True)
         return Response(serializer.data)
 
     def post(self, request):
         if not request.user or not request.user.is_authenticated:
-            return Response({"error": "Authentication required"}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response(
+                {"error": "Authentication required"},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
         user = request.user
 
-        repo_identifier = request.data.get('repository', '').strip()
-        repo = Repository.objects.filter(Q(name__iexact=repo_identifier) | Q(slug__iexact=repo_identifier)).first()
+        repo_identifier = request.data.get("repository", "").strip()
+        repo = Repository.objects.filter(
+            Q(name__iexact=repo_identifier) | Q(slug__iexact=repo_identifier)
+        ).first()
         if not repo:
             repo, _ = Repository.objects.get_or_create(
-                name=repo_identifier or 'devsync-core',
+                name=repo_identifier or "devsync-core",
                 owner=user,
-                defaults={'slug': repo_identifier or 'devsync-core'}
+                defaults={"slug": repo_identifier or "devsync-core"},
             )
 
-        title = request.data.get('title', '').strip()
+        title = request.data.get("title", "").strip()
         if not title:
-            return Response({"error": "Issue title is required"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Issue title is required"}, status=status.HTTP_400_BAD_REQUEST
+            )
 
-        description = request.data.get('description', '')
+        description = request.data.get("description", "")
 
         with transaction.atomic():
-            max_num = Issue.objects.filter(repository=repo).aggregate(Max('number'))['number__max'] or 100
+            max_num = (
+                Issue.objects.filter(repository=repo).aggregate(Max("number"))[
+                    "number__max"
+                ]
+                or 100
+            )
             issue_num = max_num + 1
 
             issue = Issue.objects.create(
@@ -81,7 +104,7 @@ class IssuesListView(APIView):
                 title=title,
                 description=description,
                 author=user,
-                status='Open'
+                status="Open",
             )
 
         serializer = IssueSerializer(issue)
@@ -94,7 +117,10 @@ class IssueDetailView(APIView):
     def get(self, request, issue_id):
         issue = find_issue(issue_id)
         if not issue:
-            return Response({"error": f"Issue {issue_id} not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"error": f"Issue {issue_id} not found"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
 
         serializer = IssueSerializer(issue)
         return Response(serializer.data)
@@ -106,23 +132,28 @@ class IssueCommentsView(APIView):
     def post(self, request, issue_id):
         issue = find_issue(issue_id)
         if not issue:
-            return Response({"error": f"Issue {issue_id} not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"error": f"Issue {issue_id} not found"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
 
         user = request.user
-        text = request.data.get('text', '').strip()
+        text = request.data.get("text", "").strip()
         if not text:
-            return Response({"error": "Comment text is required"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Comment text is required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
-        comment = IssueComment.objects.create(
-            issue=issue,
-            author=user,
-            text=text
+        comment = IssueComment.objects.create(issue=issue, author=user, text=text)
+        return Response(
+            {
+                "success": True,
+                "id": str(comment.id),
+                "comment": IssueCommentSerializer(comment).data,
+            },
+            status=status.HTTP_201_CREATED,
         )
-        return Response({
-            "success": True,
-            "id": str(comment.id),
-            "comment": IssueCommentSerializer(comment).data
-        }, status=status.HTTP_201_CREATED)
 
 
 class IssueCloseView(APIView):
@@ -131,19 +162,25 @@ class IssueCloseView(APIView):
     def post(self, request, issue_id):
         issue = find_issue(issue_id)
         if not issue:
-            return Response({"error": f"Issue {issue_id} not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"error": f"Issue {issue_id} not found"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
 
         user = request.user
-        issue.status = 'Closed'
+        issue.status = "Closed"
         issue.closed_at = timezone.now()
         issue.closed_by = user
-        issue.save(update_fields=['status', 'closed_at', 'closed_by'])
+        issue.save(update_fields=["status", "closed_at", "closed_by"])
 
-        return Response({
-            "success": True,
-            "status": "Closed",
-            "message": f"Issue #{issue.number} closed."
-        }, status=status.HTTP_200_OK)
+        return Response(
+            {
+                "success": True,
+                "status": "Closed",
+                "message": f"Issue #{issue.number} closed.",
+            },
+            status=status.HTTP_200_OK,
+        )
 
 
 class IssueReopenView(APIView):
@@ -152,15 +189,21 @@ class IssueReopenView(APIView):
     def post(self, request, issue_id):
         issue = find_issue(issue_id)
         if not issue:
-            return Response({"error": f"Issue {issue_id} not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"error": f"Issue {issue_id} not found"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
 
-        issue.status = 'Open'
+        issue.status = "Open"
         issue.closed_at = None
         issue.closed_by = None
-        issue.save(update_fields=['status', 'closed_at', 'closed_by'])
+        issue.save(update_fields=["status", "closed_at", "closed_by"])
 
-        return Response({
-            "success": True,
-            "status": "Open",
-            "message": f"Issue #{issue.number} reopened."
-        }, status=status.HTTP_200_OK)
+        return Response(
+            {
+                "success": True,
+                "status": "Open",
+                "message": f"Issue #{issue.number} reopened.",
+            },
+            status=status.HTTP_200_OK,
+        )

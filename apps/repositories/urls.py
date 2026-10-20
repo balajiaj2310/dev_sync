@@ -1,30 +1,111 @@
 from django.urls import path
+
 from .views import (
-    RepositoriesListView, RepositoryDetailView, RepositoryBranchesView,
-    RepositoryFilesView, RepositoryFileContentView, RepositoryFileUploadView,
-    RepositoryAttachmentsView, RepositoryMembersView, RepositoryMemberDetailView,
-    RepositoryActivityView
+    RepositoriesListView,
+    RepositoryActivityView,
+    RepositoryAttachmentsView,
+    RepositoryBranchesView,
+    RepositoryDetailView,
+    RepositoryFileContentView,
+    RepositoryFilesView,
+    RepositoryFileUploadView,
+    RepositoryMemberDetailView,
+    RepositoryMembersView,
 )
 
 urlpatterns = [
-    path('repositories/', RepositoriesListView.as_view(), name='repositories-list'),
-    path('repositories', RepositoriesListView.as_view(), name='repositories-list-noslash'),
-    path('repositories/<str:repo_id>/', RepositoryDetailView.as_view(), name='repository-detail'),
-    path('repositories/<str:repo_id>', RepositoryDetailView.as_view(), name='repository-detail-noslash'),
-    path('repositories/<str:repo_id>/branches/', RepositoryBranchesView.as_view(), name='repository-branches'),
-    path('repositories/<str:repo_id>/branches', RepositoryBranchesView.as_view(), name='repository-branches-noslash'),
-    path('repositories/<str:repo_id>/files/', RepositoryFilesView.as_view(), name='repository-files'),
-    path('repositories/<str:repo_id>/files', RepositoryFilesView.as_view(), name='repository-files-noslash'),
-    path('repositories/<str:repo_id>/file/', RepositoryFileContentView.as_view(), name='repository-file'),
-    path('repositories/<str:repo_id>/file', RepositoryFileContentView.as_view(), name='repository-file-noslash'),
-    path('repositories/<str:repo_id>/upload/', RepositoryFileUploadView.as_view(), name='repository-upload'),
-    path('repositories/<str:repo_id>/upload', RepositoryFileUploadView.as_view(), name='repository-upload-noslash'),
-    path('repositories/<str:repo_id>/attachments/', RepositoryAttachmentsView.as_view(), name='repository-attachments'),
-    path('repositories/<str:repo_id>/attachments', RepositoryAttachmentsView.as_view(), name='repository-attachments-noslash'),
-    path('repositories/<str:repo_id>/members/', RepositoryMembersView.as_view(), name='repository-members'),
-    path('repositories/<str:repo_id>/members', RepositoryMembersView.as_view(), name='repository-members-noslash'),
-    path('repositories/<str:repo_id>/members/<str:username>/', RepositoryMemberDetailView.as_view(), name='repository-member-detail'),
-    path('repositories/<str:repo_id>/members/<str:username>', RepositoryMemberDetailView.as_view(), name='repository-member-detail-noslash'),
-    path('repositories/<str:repo_id>/activity/', RepositoryActivityView.as_view(), name='repository-activity'),
-    path('repositories/<str:repo_id>/activity', RepositoryActivityView.as_view(), name='repository-activity-noslash'),
+    path("repositories/", RepositoriesListView.as_view(), name="repositories-list"),
+    path(
+        "repositories", RepositoriesListView.as_view(), name="repositories-list-noslash"
+    ),
+    path(
+        "repositories/<str:repo_id>/",
+        RepositoryDetailView.as_view(),
+        name="repository-detail",
+    ),
+    path(
+        "repositories/<str:repo_id>",
+        RepositoryDetailView.as_view(),
+        name="repository-detail-noslash",
+    ),
+    path(
+        "repositories/<str:repo_id>/branches/",
+        RepositoryBranchesView.as_view(),
+        name="repository-branches",
+    ),
+    path(
+        "repositories/<str:repo_id>/branches",
+        RepositoryBranchesView.as_view(),
+        name="repository-branches-noslash",
+    ),
+    path(
+        "repositories/<str:repo_id>/files/",
+        RepositoryFilesView.as_view(),
+        name="repository-files",
+    ),
+    path(
+        "repositories/<str:repo_id>/files",
+        RepositoryFilesView.as_view(),
+        name="repository-files-noslash",
+    ),
+    path(
+        "repositories/<str:repo_id>/file/",
+        RepositoryFileContentView.as_view(),
+        name="repository-file",
+    ),
+    path(
+        "repositories/<str:repo_id>/file",
+        RepositoryFileContentView.as_view(),
+        name="repository-file-noslash",
+    ),
+    path(
+        "repositories/<str:repo_id>/upload/",
+        RepositoryFileUploadView.as_view(),
+        name="repository-upload",
+    ),
+    path(
+        "repositories/<str:repo_id>/upload",
+        RepositoryFileUploadView.as_view(),
+        name="repository-upload-noslash",
+    ),
+    path(
+        "repositories/<str:repo_id>/attachments/",
+        RepositoryAttachmentsView.as_view(),
+        name="repository-attachments",
+    ),
+    path(
+        "repositories/<str:repo_id>/attachments",
+        RepositoryAttachmentsView.as_view(),
+        name="repository-attachments-noslash",
+    ),
+    path(
+        "repositories/<str:repo_id>/members/",
+        RepositoryMembersView.as_view(),
+        name="repository-members",
+    ),
+    path(
+        "repositories/<str:repo_id>/members",
+        RepositoryMembersView.as_view(),
+        name="repository-members-noslash",
+    ),
+    path(
+        "repositories/<str:repo_id>/members/<str:username>/",
+        RepositoryMemberDetailView.as_view(),
+        name="repository-member-detail",
+    ),
+    path(
+        "repositories/<str:repo_id>/members/<str:username>",
+        RepositoryMemberDetailView.as_view(),
+        name="repository-member-detail-noslash",
+    ),
+    path(
+        "repositories/<str:repo_id>/activity/",
+        RepositoryActivityView.as_view(),
+        name="repository-activity",
+    ),
+    path(
+        "repositories/<str:repo_id>/activity",
+        RepositoryActivityView.as_view(),
+        name="repository-activity-noslash",
+    ),
 ]
