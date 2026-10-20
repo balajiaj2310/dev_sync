@@ -12,6 +12,9 @@ import secrets
 import hashlib
 import urllib.parse
 import urllib.request
+import hmac
+import struct
+import base64
 from django.contrib.auth.hashers import make_password, check_password
 
 # ==============================================================================
@@ -142,9 +145,13 @@ class OTPManager:
                 return False, "Incorrect code. Maximum attempts exceeded. Please request a new code.", None, 400
             return False, f"Incorrect verification code. {rem} attempt(s) remaining.", None, 400
 
-        # Verified! Invalidate immediately (single use)
+        # Verified! Invalidate immediately across all identifier aliases (single use)
         meta = entry.get('metadata', {})
         self._cache.pop(key, None)
+        if meta.get('username'):
+            self._cache.pop(str(meta['username']).strip().lower(), None)
+        if meta.get('email'):
+            self._cache.pop(str(meta['email']).strip().lower(), None)
         return True, "Code successfully verified.", meta, 200
 
     def clear(self, identifier):
@@ -879,3 +886,137 @@ def calculate_notifications_summary(notifications):
         'repository': sum(1 for n in notifications if n.get('category') == 'repository')
     }
 
+
+
+# ==============================================================================
+# 8. Protected Re-authentication & Two-Factor Authentication (TOTP)
+# ==============================================================================
+
+class ReauthManager:
+    """
+    Manages short-lived, single-use re-authentication challenge authorizations.
+    Enforces that sensitive account actions (password changes, 2FA management)
+    require explicit recent re-auth, expiring after 300 seconds.
+    """
+    def __init__(self, ttl_seconds=300):
+        self.ttl = ttl_seconds
+        # username -> list of active { 'token': str, 'expires_at': float }
+        self._tokens = {}
+
+    def issue_token(self, username):
+        u = str(username).strip().lower()
+        token = secrets.token_urlsafe(32)
+        expires_at = time.time() + self.ttl
+        if u not in self._tokens:
+            self._tokens[u] = []
+        # Prune expired tokens
+        now = time.time()
+        self._tokens[u] = [t for t in self._tokens[u] if t['expires_at'] > now]
+        self._tokens[u].append({'token': token, 'expires_at': expires_at})
+        return token, self.ttl
+
+    def validate_token(self, username, token):
+        if not token or not username:
+            return False, "Re-authentication token is required."
+        u = str(username).strip().lower()
+        now = time.time()
+        tokens = self._tokens.get(u, [])
+        valid = [t for t in tokens if t['expires_at'] > now and secrets.compare_digest(t['token'], str(token))]
+        if not valid:
+            return False, "Re-authentication authorization has expired or is invalid. Please verify your identity again."
+        return True, "Valid"
+
+    def consume_token(self, username, token):
+        ok, msg = self.validate_token(username, token)
+        if not ok:
+            return False, msg
+        u = str(username).strip().lower()
+        # Single-use consumption
+        self._tokens[u] = [t for t in self._tokens.get(u, []) if not secrets.compare_digest(t['token'], str(token))]
+        return True, "Authorization consumed"
+
+
+class TOTPManager:
+    """
+    RFC 6238 compliant Time-Based One-Time Password (TOTP) manager in pure Python.
+    Generates enrollment secrets, verifies 6-digit codes, and manages recovery codes.
+    """
+    @staticmethod
+    def generate_secret():
+        """Generates a cryptographically secure 20-byte base32 secret."""
+        return base64.b32encode(secrets.token_bytes(20)).decode('utf-8')
+
+    @staticmethod
+    def get_provisioning_uri(username, secret, issuer="DevSync"):
+        """Constructs a standard otpauth URI recognized by authenticator apps."""
+        encoded_user = urllib.parse.quote(str(username))
+        encoded_issuer = urllib.parse.quote(issuer)
+        return f"otpauth://totp/{encoded_issuer}:{encoded_user}?secret={secret}&issuer={encoded_issuer}&algorithm=SHA1&digits=6&period=30"
+
+    @staticmethod
+    def compute_totp(secret_b32, t=None, time_step=30):
+        if t is None:
+            t = time.time()
+        counter = int(t // time_step)
+        try:
+            key = base64.b32decode(secret_b32, casefold=True)
+        except Exception:
+            return "000000"
+        msg = struct.pack(">Q", counter)
+        h = hmac.new(key, msg, hashlib.sha1).digest()
+        o = h[19] & 0x0F
+        code = (struct.unpack(">I", h[o:o+4])[0] & 0x7FFFFFFF) % 1000000
+        return f"{code:06d}"
+
+    @classmethod
+    def verify_code(cls, secret_b32, code, time_step=30, window=1):
+        """Verifies submitted code with a +/- window time-drift tolerance."""
+        if not secret_b32 or not code:
+            return False
+        clean_code = str(code).strip()
+        if len(clean_code) != 6 or not clean_code.isdigit():
+            return False
+        now = time.time()
+        for w in range(-window, window + 1):
+            expected = cls.compute_totp(secret_b32, now + w * time_step, time_step)
+            if secrets.compare_digest(expected, clean_code):
+                return True
+        return False
+
+    @staticmethod
+    def generate_recovery_codes(count=8):
+        """
+        Generates 8 secure alphanumeric recovery codes (formatted as XXXX-XXXX).
+        Returns (plaintext_list, hashed_list) so that only hashes are persisted.
+        """
+        plain = []
+        hashed = []
+        for _ in range(count):
+            p1 = secrets.token_hex(2).upper()
+            p2 = secrets.token_hex(2).upper()
+            code = f"{p1}-{p2}"
+            plain.append(code)
+            h = hashlib.sha256(code.encode('utf-8')).hexdigest()
+            hashed.append(h)
+        return plain, hashed
+
+    @staticmethod
+    def verify_and_consume_recovery_code(profile, submitted_code):
+        """
+        Verifies if submitted code matches one of the user's stored recovery code hashes,
+        and consumes it immediately (single-use).
+        """
+        if not submitted_code:
+            return False, "Recovery code is required."
+        clean = str(submitted_code).strip().upper()
+        h = hashlib.sha256(clean.encode('utf-8')).hexdigest()
+        hashes = profile.get('two_factor_recovery_codes', [])
+        for i, stored_hash in enumerate(hashes):
+            if secrets.compare_digest(stored_hash, h):
+                hashes.pop(i)
+                return True, "Recovery code verified and consumed."
+        return False, "Invalid recovery code."
+
+
+reauth_manager = ReauthManager()
+totp_manager = TOTPManager()

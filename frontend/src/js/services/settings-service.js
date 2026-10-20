@@ -1,6 +1,7 @@
 /**
  * DevSync Settings & Security Service
  * Handles Account Security, Sessions, Login History,
+ * Protected Password Changes, RFC 6238 2FA (TOTP),
  * Preferences, Privacy, and Danger Zone Account Deletion.
  * Integrates end-to-end with the DevSync backend API.
  */
@@ -10,12 +11,28 @@ import { apiClient } from '../core/api-client.js';
 
 export const SettingsService = {
   // ==========================================
-  // Security Settings
+  // Security Overview & Re-authentication
   // ==========================================
   async getSecuritySettings() {
     return await apiClient.get('/auth/security/');
   },
 
+  async getSecurityOverview() {
+    return await apiClient.get('/auth/security/overview/');
+  },
+
+  async reauthenticate(currentPassword) {
+    if (!currentPassword) {
+      throw new Error('Current password is required to verify your identity.');
+    }
+    return await apiClient.post('/auth/security/reauthenticate/', {
+      password: currentPassword
+    });
+  },
+
+  // ==========================================
+  // Email & Mobile Updates
+  // ==========================================
   async updateEmail(newEmail, currentPassword) {
     if (!newEmail || !newEmail.includes('@')) {
       throw new Error('Please provide a valid email address.');
@@ -40,7 +57,6 @@ export const SettingsService = {
       otp: otpCode
     });
 
-    // Update local user session if cached
     try {
       const sessionRaw = localStorage.getItem(APP_CONFIG.storageKeys.userSession);
       if (sessionRaw) {
@@ -68,6 +84,9 @@ export const SettingsService = {
     return await apiClient.post('/auth/email/resend-verification/');
   },
 
+  // ==========================================
+  // Password Management (Standard & Protected)
+  // ==========================================
   async changePassword(currentPassword, newPassword) {
     if (!currentPassword) {
       throw new Error('Current password is required.');
@@ -85,17 +104,80 @@ export const SettingsService = {
     });
   },
 
+  async changePasswordProtected({ reauthToken, currentPassword, newPassword, confirmPassword, revokeOtherSessions = true }) {
+    if (!reauthToken) {
+      throw new Error('Re-authentication authorization is required. Please verify your identity first.');
+    }
+    if (!currentPassword) {
+      throw new Error('Current password is required.');
+    }
+    if (!newPassword || newPassword.length < 8) {
+      throw new Error('New password must be at least 8 characters long.');
+    }
+    if (confirmPassword && confirmPassword !== newPassword) {
+      throw new Error('New passwords do not match.');
+    }
+
+    return await apiClient.post('/auth/password/change-protected/', {
+      reauth_token: reauthToken,
+      current_password: currentPassword,
+      new_password: newPassword,
+      confirm_password: confirmPassword,
+      revoke_other_sessions: revokeOtherSessions
+    });
+  },
+
   // ==========================================
-  // Two-Factor Authentication (2FA) [LATER]
+  // Two-Factor Authentication (2FA) (TOTP)
   // ==========================================
   async getTwoFactorState() {
-    return {
-      enabled: false,
-      secret: 'DVSC-2FA-COMING-SOON',
-      recoveryCodesRemaining: 0,
-      recoveryCodes: [],
-      status: 'Two-factor authentication (TOTP) is tagged [LATER] and coming in v2.0.'
-    };
+    try {
+      const overview = await this.getSecurityOverview();
+      return {
+        enabled: overview.two_factor_enabled || false,
+        type: overview.two_factor_type || 'Not Enabled',
+        recoveryCodesRemaining: overview.recovery_codes_count || 0,
+        status: overview.two_factor_enabled ? 'Active protection via Authenticator App (TOTP)' : 'Not enabled'
+      };
+    } catch (_) {
+      return {
+        enabled: false,
+        type: 'Not Enabled',
+        recoveryCodesRemaining: 0,
+        status: 'Not enabled'
+      };
+    }
+  },
+
+  async setupTwoFactor({ reauthToken, password }) {
+    return await apiClient.post('/auth/2fa/setup/', {
+      reauth_token: reauthToken,
+      password: password
+    });
+  },
+
+  async enableTwoFactor({ code, secret }) {
+    if (!code || code.trim().length !== 6) {
+      throw new Error('Please enter a valid 6-digit verification code.');
+    }
+    return await apiClient.post('/auth/2fa/enable/', {
+      code: code.trim(),
+      secret: secret
+    });
+  },
+
+  async disableTwoFactor({ password, reauthToken }) {
+    return await apiClient.post('/auth/2fa/disable/', {
+      password,
+      reauth_token: reauthToken
+    });
+  },
+
+  async regenerateRecoveryCodes({ password, reauthToken }) {
+    return await apiClient.post('/auth/2fa/recovery-codes/regenerate/', {
+      password,
+      reauth_token: reauthToken
+    });
   },
 
   // ==========================================
@@ -168,7 +250,6 @@ export const SettingsService = {
       confirmation: confirmationText.trim()
     });
 
-    // Clear local session and tokens
     if (typeof window !== 'undefined' && window.localStorage) {
       localStorage.removeItem(APP_CONFIG.storageKeys.authToken);
       localStorage.removeItem(APP_CONFIG.storageKeys.userSession);

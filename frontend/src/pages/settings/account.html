@@ -173,25 +173,30 @@
                    PANEL 2: SECURITY (MAIN PRIORITY — DEFAULT SELECTED)
                    ======================================================= -->
               <section id="panel-security" class="settings-panel active" role="tabpanel" aria-labelledby="tab-security">
-                <div class="settings-section-header">
-                  <h2 class="settings-section-title">
-                    Account Security
-                  </h2>
-                  <p class="settings-section-desc">Manage your sign-in details, authentication methods and account protection.</p>
+                <div class="settings-section-header d-flex justify-content-between align-items-center flex-wrap gap-3">
+                  <div>
+                    <h2 class="settings-section-title">Password &amp; Security</h2>
+                    <p class="settings-section-desc">Overview of your account credentials, multi-factor protection, and active devices.</p>
+                  </div>
+                  <a href="security.html" class="btn btn-primary btn-sm d-inline-flex align-items-center gap-2">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    Manage Password and Security &rarr;
+                  </a>
                 </div>
 
-                <!-- Security Overview Status Card (Prompt §5) -->
-                <div class="security-overview-card">
+                <!-- Password and Security Summary Card (Section 3) -->
+                <div class="security-overview-card mb-4">
                   <div class="security-overview-header">
                     <div class="security-overview-title-wrap">
                       <div class="security-overview-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                       </div>
                       <div>
-                        <h3 class="security-overview-title">Security Status Overview</h3>
-                        <p class="security-overview-subtitle">Real-time status of your credentials, multi-factor protection, and active devices.</p>
+                        <h3 class="security-overview-title">Account Protection Overview</h3>
+                        <p class="security-overview-subtitle">Real-time status of your password, authentication factors, and active sessions.</p>
                       </div>
                     </div>
+                    <span class="badge badge-mint px-3 py-1 font-monospace" style="font-size: 11.5px;">PROTECTED</span>
                   </div>
 
                   <!-- 4 Indicators Grid -->
@@ -215,21 +220,21 @@
                           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                           Password
                         </span>
-                        <span id="overviewPasswordStatus" class="indicator-status-pill pill-success">Configured</span>
+                        <span id="overviewPasswordStatus" class="indicator-status-pill pill-verified">Configured</span>
                       </div>
-                      <p id="overviewPasswordSubtext" class="indicator-subtext">Changed 42 days ago</p>
+                      <p id="overviewPasswordSubtext" class="indicator-subtext">Last changed recently</p>
                     </div>
 
                     <!-- Indicator 3: 2FA -->
                     <div class="security-indicator-box">
                       <div class="indicator-top">
                         <span class="indicator-label">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
-                          Two-Factor Auth
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                          2FA
                         </span>
-                        <span id="overview2faStatus" class="indicator-status-pill pill-warning">Not enabled</span>
+                        <span id="overview2faStatus" class="indicator-status-pill pill-subtle">Not enabled</span>
                       </div>
-                      <p id="overview2faSubtext" class="indicator-subtext">Needs attention</p>
+                      <p id="overview2faSubtext" class="indicator-subtext">Authenticator App (TOTP)</p>
                     </div>
 
                     <!-- Indicator 4: Active Sessions -->
@@ -239,392 +244,99 @@
                           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
                           Sessions
                         </span>
-                        <span id="overviewSessionsStatus" class="indicator-status-pill pill-info">3 active</span>
+                        <span id="overviewSessionsStatus" class="indicator-status-pill pill-info">1 Active</span>
                       </div>
-                      <p id="overviewSessionsSubtext" class="indicator-subtext">Across 3 devices</p>
+                      <p id="overviewSessionsSubtext" class="indicator-subtext">This device</p>
                     </div>
                   </div>
 
-                  <!-- Quick Action Banner when 2FA is needed -->
-                  <div id="overviewTwoFaBanner" class="security-overview-banner">
-                    <div class="security-overview-banner-text">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                      Two-factor authentication is currently disabled. Protect your repositories with an extra security layer.
+                  <!-- Security Verification Notice Banner -->
+                  <div class="security-overview-banner mt-4 p-3 d-flex align-items-center justify-content-between flex-wrap gap-3" style="background: #E8FBF3; border: 1px solid #A8F0D0; border-radius: 8px;">
+                    <div class="d-flex align-items-center gap-2">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#21865B" stroke-width="2" style="flex-shrink: 0;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                      <span style="font-size: 13px; color: #165339; line-height: 1.45;">
+                        To protect your account from unauthorized access on unattended devices, sensitive actions—including changing passwords, enrolling in 2FA, or revoking sessions—require recent re-authentication and are isolated inside the dedicated Security Center.
+                      </span>
                     </div>
-                    <button type="button" class="btn btn-mint btn-sm" id="btnBannerEnable2fa">Enable 2FA Now</button>
+                    <a href="security.html" class="btn btn-sm btn-outline-dark text-nowrap" style="font-weight: 600;">
+                      Open Security Center &rarr;
+                    </a>
                   </div>
                 </div>
 
-                <!-- Responsive Security Card Grid (Prompt §6) -->
-                <div class="settings-card-grid">
-
-                  <!-- CARD A: EMAIL & ACCOUNT VERIFICATION -->
-                  <article class="settings-card" aria-label="Email and Account Verification">
-                    <div class="settings-card-header">
-                      <div class="settings-card-title-group">
-                        <h3 class="settings-card-title">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                          Email &amp; Verification
-                        </h3>
-                        <p class="settings-card-subtitle">Your verified primary email for notifications, security alerts, and commit attribution.</p>
-                      </div>
-                    </div>
-
-                    <div class="settings-card-body">
-                      <div class="d-flex align-items-center justify-content-between p-3 border rounded mb-3" style="background-color: var(--color-surface-subtle);">
-                        <div>
-                          <div class="d-flex align-items-center gap-2 mb-1">
-                            <strong id="currentEmailDisplay" style="font-size: 14px;">naveen@devsync.dev</strong>
-                            <span id="currentEmailBadge" class="indicator-status-pill pill-verified">Verified</span>
-                          </div>
-                          <span class="text-secondary" style="font-size: 11.5px;">Confirmed on account registration</span>
+                <!-- Fast Links Grid -->
+                <div class="settings-card-grid mb-4">
+                  <!-- Fast Card 1: Password Management -->
+                  <div class="settings-card">
+                    <div class="settings-card-header d-flex justify-content-between align-items-start">
+                      <div>
+                        <div class="card-icon-bubble">
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                         </div>
-                      </div>
-
-                      <div class="d-flex gap-2">
-                        <button type="button" class="btn btn-outline btn-sm" data-modal-target="modalUpdateEmail">
-                          Update Email
-                        </button>
-                        <button type="button" class="btn btn-outline btn-sm" id="btnResendVerification">
-                          Resend Verification Email
-                        </button>
+                        <h3 class="card-title mt-2">Password Management</h3>
+                        <p class="card-subtitle">Update your password with cryptographic PBKDF2 hashing and automated session revocation.</p>
                       </div>
                     </div>
-                  </article>
-
-                  <!-- CARD B: PASSWORD & AUTHENTICATION -->
-                  <article class="settings-card" aria-label="Password and Authentication">
-                    <div class="settings-card-header">
-                      <div class="settings-card-title-group">
-                        <h3 class="settings-card-title">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                          Change Password
-                        </h3>
-                        <p class="settings-card-subtitle">Ensure your account is using a long, random password to stay secure.</p>
-                      </div>
+                    <div class="settings-card-body pt-2">
+                      <a href="change-password.html" class="btn btn-secondary btn-sm w-100 justify-content-center">
+                        Change Password (Protected) &rarr;
+                      </a>
                     </div>
+                  </div>
 
-                    <div class="settings-card-body">
-                      <form id="formChangePassword">
-                        <div class="settings-form-row">
-                          <label class="settings-label" for="currentPasswordInput">Current Password</label>
-                          <div class="password-field-wrapper">
-                            <input type="password" id="currentPasswordInput" class="settings-input" placeholder="••••••••••••" required autocomplete="current-password" />
-                            <button type="button" class="password-eye-btn" data-target="currentPasswordInput" aria-label="Toggle password visibility">
-                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                            </button>
-                          </div>
+                  <!-- Fast Card 2: Two-Factor Authentication -->
+                  <div class="settings-card">
+                    <div class="settings-card-header d-flex justify-content-between align-items-start">
+                      <div>
+                        <div class="card-icon-bubble">
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                         </div>
+                        <h3 class="card-title mt-2">Two-Factor Authentication</h3>
+                        <p class="card-subtitle">Protect your account using standard RFC 6238 TOTP authenticator apps and recovery codes.</p>
+                      </div>
+                    </div>
+                    <div class="settings-card-body pt-2">
+                      <a href="security.html#2fa" class="btn btn-secondary btn-sm w-100 justify-content-center">
+                        Configure 2FA &amp; Recovery Codes &rarr;
+                      </a>
+                    </div>
+                  </div>
 
-                        <div class="settings-form-row">
-                          <label class="settings-label" for="newPasswordInput">New Password</label>
-                          <div class="password-field-wrapper">
-                            <input type="password" id="newPasswordInput" class="settings-input" placeholder="Enter new strong password" required autocomplete="new-password" />
-                            <button type="button" class="password-eye-btn" data-target="newPasswordInput" aria-label="Toggle password visibility">
-                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                            </button>
-                          </div>
-
-                          <!-- Live Requirements Checklist -->
-                          <div class="password-requirements-box">
-                            <div class="req-header">Password requirements:</div>
-                            <ul class="req-list">
-                              <li class="req-item" id="reqLen">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>
-                                8+ characters
-                              </li>
-                              <li class="req-item" id="reqUpper">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>
-                                1 uppercase letter
-                              </li>
-                              <li class="req-item" id="reqNum">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>
-                                1 number (0-9)
-                              </li>
-                              <li class="req-item" id="reqSymbol">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>
-                                1 special symbol
-                              </li>
-                            </ul>
-                          </div>
+                  <!-- Fast Card 3: Active Sessions -->
+                  <div class="settings-card">
+                    <div class="settings-card-header d-flex justify-content-between align-items-start">
+                      <div>
+                        <div class="card-icon-bubble">
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
                         </div>
+                        <h3 class="card-title mt-2">Active Sessions &amp; Devices</h3>
+                        <p class="card-subtitle">Review unrecognized browsers, check operating systems, or sign out all other devices.</p>
+                      </div>
+                    </div>
+                    <div class="settings-card-body pt-2">
+                      <a href="security.html#sessions" class="btn btn-secondary btn-sm w-100 justify-content-center">
+                        Review Active Devices &rarr;
+                      </a>
+                    </div>
+                  </div>
 
-                        <div class="settings-form-row">
-                          <label class="settings-label" for="confirmPasswordInput">Confirm New Password</label>
-                          <div class="password-field-wrapper">
-                            <input type="password" id="confirmPasswordInput" class="settings-input" placeholder="Repeat new password" required autocomplete="new-password" />
-                            <button type="button" class="password-eye-btn" data-target="confirmPasswordInput" aria-label="Toggle password visibility">
-                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                            </button>
-                          </div>
+                  <!-- Fast Card 4: Audit Log -->
+                  <div class="settings-card">
+                    <div class="settings-card-header d-flex justify-content-between align-items-start">
+                      <div>
+                        <div class="card-icon-bubble">
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>
                         </div>
-
-                        <div class="d-flex align-items-center justify-content-between pt-2">
-                          <a href="../auth/forgot-password.html" class="text-secondary" style="font-size: 12px; text-decoration: underline;">Reset via Email</a>
-                          <button type="submit" class="btn btn-primary btn-sm">Update Password</button>
-                        </div>
-                      </form>
-                    </div>
-                  </article>
-
-                  <!-- CARD C: TWO-FACTOR AUTHENTICATION (PROMINENT) -->
-                  <article class="settings-card" aria-label="Two-Factor Authentication">
-                    <div class="settings-card-header">
-                      <div class="settings-card-title-group">
-                        <h3 class="settings-card-title">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                          Two-Factor Authentication (2FA)
-                        </h3>
-                        <p class="settings-card-subtitle">Add an extra layer of defense using Time-based One-Time Passwords (TOTP).</p>
+                        <h3 class="card-title mt-2">Login Activity &amp; Audit Log</h3>
+                        <p class="card-subtitle">Immutable timeline of recent sign-ins, IP addresses, token refreshes, and security events.</p>
                       </div>
                     </div>
-
-                    <div class="settings-card-body">
-                      <!-- Disabled State Banner -->
-                      <div id="twoFaCardDisabled" class="twofa-status-banner twofa-disabled-banner">
-                        <div class="twofa-banner-content">
-                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                          <div>
-                            <div>Status: <strong>Disabled</strong></div>
-                            <span style="font-size: 11.5px; opacity: 0.9;">Sign in requires only your email &amp; password</span>
-                          </div>
-                        </div>
-                        <button type="button" class="btn btn-primary btn-sm" data-modal-target="modalSetup2FA">Set Up 2FA</button>
-                      </div>
-
-                      <!-- Enabled State Banner -->
-                      <div id="twoFaCardEnabled" class="twofa-status-banner twofa-enabled-banner" style="display: none;">
-                        <div class="twofa-banner-content">
-                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                          <div>
-                            <div>Status: <strong>Active &amp; Protected</strong></div>
-                            <span id="twoFaCodesRemaining" style="font-size: 11.5px; opacity: 0.9;">10 backup codes remaining</span>
-                          </div>
-                        </div>
-                        <div class="d-flex gap-2">
-                          <button type="button" class="btn btn-outline btn-sm" id="btnViewRecoveryCodes">Backup Codes</button>
-                          <button type="button" class="btn btn-ghost btn-sm text-danger" data-modal-target="modalDisable2FA">Disable</button>
-                        </div>
-                      </div>
-
-                      <p class="text-secondary mb-0" style="font-size: 12.5px; line-height: 1.5;">
-                        Compatible with standard authenticator applications including Google Authenticator, 1Password, Authy, and Microsoft Authenticator.
-                      </p>
+                    <div class="settings-card-body pt-2">
+                      <a href="security.html#audit" class="btn btn-secondary btn-sm w-100 justify-content-center">
+                        View Security History &rarr;
+                      </a>
                     </div>
-                  </article>
-
-                  <!-- CARD D: ACTIVE SESSIONS AND DEVICES -->
-                  <article class="settings-card" aria-label="Active Sessions and Devices">
-                    <div class="settings-card-header">
-                      <div class="settings-card-title-group">
-                        <h3 class="settings-card-title">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-                          Active Sessions
-                        </h3>
-                        <p class="settings-card-subtitle">Devices and locations currently signed in to your account.</p>
-                      </div>
-                    </div>
-
-                    <div class="settings-card-body">
-                      <div id="sessionsListContainer" class="session-rows-container mb-3">
-                        <!-- Populated by settings.js -->
-                      </div>
-
-                      <div class="pt-2 d-flex justify-content-end">
-                        <button type="button" class="btn btn-outline btn-sm text-danger" id="btnRevokeAllOtherSessions">
-                          Sign Out Other Sessions
-                        </button>
-                      </div>
-                    </div>
-                  </article>
-
-                  <!-- CARD E: LOGIN ACTIVITY & AUDIT TABLE (FULL WIDTH) -->
-                  <article class="settings-card settings-card-full" aria-label="Login Activity and Audit Logs">
-                    <div class="settings-card-header">
-                      <div class="settings-card-title-group">
-                        <h3 class="settings-card-title">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                          Recent Authentication Activity
-                        </h3>
-                        <p class="settings-card-subtitle">Audit log of recent sign-ins, token refreshes, and security events.</p>
-                      </div>
-                    </div>
-
-                    <div class="settings-card-body">
-                      <div class="audit-table-wrap mb-3">
-                        <table class="audit-table">
-                          <thead>
-                            <tr>
-                              <th>Date &amp; Time</th>
-                              <th>Event</th>
-                              <th>Device / Browser</th>
-                              <th>Location / IP</th>
-                              <th>Status</th>
-                            </tr>
-                          </thead>
-                          <tbody id="auditTableBody">
-                            <!-- Hydrated by settings.js -->
-                          </tbody>
-                        </table>
-                      </div>
-                      <div class="text-secondary text-right" style="font-size: 11.5px;">
-                        Audit records are retained for 90 days. All timestamps are in local system time.
-                      </div>
-                    </div>
-                  </article>
-
-                  <!-- CARD F: RECOVERY AND BACKUP -->
-                  <article class="settings-card" aria-label="Recovery and Backup">
-                    <div class="settings-card-header">
-                      <div class="settings-card-title-group">
-                        <h3 class="settings-card-title">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
-                          Account Recovery
-                        </h3>
-                        <p class="settings-card-subtitle">Backup options if you lose access to your primary authenticator device.</p>
-                      </div>
-                    </div>
-
-                    <div class="settings-card-body">
-                      <div class="p-3 border rounded mb-3" style="background-color: var(--color-surface-subtle);">
-                        <div class="d-flex align-items-center justify-content-between mb-1">
-                          <strong style="font-size: 13.5px;">Emergency Recovery Codes</strong>
-                          <span class="indicator-status-pill pill-info">10 generated</span>
-                        </div>
-                        <p class="text-secondary mb-3" style="font-size: 12px; line-height: 1.4;">
-                          One-time codes that can bypass 2FA in an emergency. Store them in a secure password manager.
-                        </p>
-                        <button type="button" class="btn btn-outline btn-sm" data-modal-target="modalRegenCodesConfirm">
-                          Regenerate Recovery Codes
-                        </button>
-                      </div>
-
-                      <div class="settings-form-row">
-                        <label class="settings-label" for="recoverySecondaryEmail">Secondary Recovery Email</label>
-                        <div class="d-flex gap-2">
-                          <input type="email" id="recoverySecondaryEmail" class="settings-input" value="naveen.backup@gmail.com" readonly style="background-color: var(--color-surface-subtle);" />
-                          <button type="button" class="btn btn-outline btn-sm" data-modal-target="modalUpdateEmail">Change</button>
-                        </div>
-                      </div>
-                    </div>
-                  </article>
-
-                  <!-- CARD G: SECURITY ALERTS -->
-                  <article class="settings-card" aria-label="Security Alerts Preferences">
-                    <div class="settings-card-header">
-                      <div class="settings-card-title-group">
-                        <h3 class="settings-card-title">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-                          Security Alerts
-                        </h3>
-                        <p class="settings-card-subtitle">Choose which security events notify you immediately by email and push.</p>
-                      </div>
-                    </div>
-
-                    <div class="settings-card-body">
-                      <div class="settings-toggle-row">
-                        <div class="settings-toggle-info">
-                          <div class="settings-toggle-title">Unrecognized Device Sign-In</div>
-                          <p class="settings-toggle-desc">Notify when a session starts from a new IP, browser, or location.</p>
-                        </div>
-                        <label class="devsync-switch">
-                          <input type="checkbox" id="alertNewSignIn" class="alert-pref-toggle" checked />
-                          <span class="devsync-slider"></span>
-                        </label>
-                      </div>
-
-                      <div class="settings-toggle-row">
-                        <div class="settings-toggle-info">
-                          <div class="settings-toggle-title">Password Change Alerts</div>
-                          <p class="settings-toggle-desc">Send alert confirmation whenever account credentials are changed.</p>
-                        </div>
-                        <label class="devsync-switch">
-                          <input type="checkbox" id="alertPasswordChange" class="alert-pref-toggle" checked />
-                          <span class="devsync-slider"></span>
-                        </label>
-                      </div>
-
-                      <div class="settings-toggle-row">
-                        <div class="settings-toggle-info">
-                          <div class="settings-toggle-title">Email Address Updates</div>
-                          <p class="settings-toggle-desc">Dispatch verification links to both old and new addresses.</p>
-                        </div>
-                        <label class="devsync-switch">
-                          <input type="checkbox" id="alertEmailChange" class="alert-pref-toggle" checked />
-                          <span class="devsync-slider"></span>
-                        </label>
-                      </div>
-
-                      <div class="settings-toggle-row">
-                        <div class="settings-toggle-info">
-                          <div class="settings-toggle-title">2FA Configuration Changes</div>
-                          <p class="settings-toggle-desc">Alert when two-factor authentication is enabled, disabled, or regenerated.</p>
-                        </div>
-                        <label class="devsync-switch">
-                          <input type="checkbox" id="alert2FAChange" class="alert-pref-toggle" checked />
-                          <span class="devsync-slider"></span>
-                        </label>
-                      </div>
-
-                      <div class="settings-toggle-row">
-                        <div class="settings-toggle-info">
-                          <div class="settings-toggle-title">Session Revocation Notices</div>
-                          <p class="settings-toggle-desc">Notify when an active session is terminated remotely.</p>
-                        </div>
-                        <label class="devsync-switch">
-                          <input type="checkbox" id="alertSessionRevocation" class="alert-pref-toggle" checked />
-                          <span class="devsync-slider"></span>
-                        </label>
-                      </div>
-                    </div>
-                  </article>
-
-                  <!-- CARD H: CONNECTED APPLICATIONS (FULL WIDTH) -->
-                  <article class="settings-card settings-card-full" aria-label="Connected Applications">
-                    <div class="settings-card-header">
-                      <div class="settings-card-title-group">
-                        <h3 class="settings-card-title">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-                          Connected Applications &amp; CLI Tokens
-                        </h3>
-                        <p class="settings-card-subtitle">Third-party integrations, developer tools, and extensions with authorized API tokens.</p>
-                      </div>
-                    </div>
-
-                    <div class="settings-card-body">
-                      <div id="connectedAppsContainer">
-                        <!-- Hydrated by settings.js -->
-                      </div>
-                    </div>
-                  </article>
-
-                  <!-- DANGER ZONE (PROMPT §7 — BOTTOM OF SECURITY) -->
-                  <article class="settings-card settings-card-full danger-zone-card" aria-label="Danger Zone">
-                    <div class="settings-card-header">
-                      <div class="settings-card-title-group">
-                        <h3 class="settings-card-title danger-zone-title">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                          Danger Zone
-                        </h3>
-                        <p class="danger-zone-desc">
-                          Permanently delete your DevSync user account and all personal repositories. Once deleted, all repos, issues, pull requests, and personal data are completely wiped and cannot be recovered.
-                        </p>
-                      </div>
-                    </div>
-
-                    <div class="settings-card-body">
-                      <div class="d-flex align-items-center justify-content-between p-3 border rounded border-danger-subtle" style="background-color: #FFFDFD;">
-                        <div>
-                          <strong class="text-danger" style="font-size: 13.5px;">Delete Developer Account</strong>
-                          <p class="text-secondary mb-0" style="font-size: 12px;">This action is permanent and cannot be undone.</p>
-                        </div>
-                        <button type="button" class="btn btn-danger btn-sm" id="btnOpenDeleteModal">
-                          Delete Account
-                        </button>
-                      </div>
-                    </div>
-                  </article>
-
+                  </div>
                 </div>
               </section>
 

@@ -1,0 +1,10 @@
+/**
+ * DevSync Password Recovery Stylesheet
+ * Scoped styles for:
+ * - Step A: Forgot Password (Request Code)
+ * - Step B: Verify Recovery Code (6-digit OTP, countdown, resend cooldown)
+ * - Step C: Set New Password (strength meter, requirements validation)
+ * - Step D: Password Reset Success (session invalidation receipt)
+ */
+
+@import url('auth.css');

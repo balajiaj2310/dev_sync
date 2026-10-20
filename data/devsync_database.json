@@ -5,10 +5,10 @@
       "name": "Naveen Kumar D",
       "username": "naveen3438",
       "email": "naveen@devsync.dev",
-      "password": "pbkdf2_sha256$1500000$sC5jaVSZwgscMWKgtbgeAm$rX1t1SO/DsERDQsBQFAnmFOtJlfV1Oi90KAiy+vXMJI=",
+      "password": "pbkdf2_sha256$1500000$UlirKLn977obLqVOg1C59Q$YRcgjeBXILnderyqzLFDuZBu8YoeV65PjeCN0py0Ay8=",
       "role": "Developer",
       "isVerified": true,
-      "avatar": "/public/images/avatars/avatar_naveen3438_9025f8e4f6d4.png",
+      "avatar": "/public/images/avatars/avatar_naveen3438_d21a7d1ebd79.png",
       "headline": "Full-Stack Engineer & DevSync Contributor",
       "bio": "I'm a BCA student at Bengaluru City University with a strong interest in web development, backend systems and developer tools. I enjoy building real world projects, learning new technologies and collaborating with other developers. Currently exploring Django, Flask and cloud deployment. My goal is to work on impactful projects and contribute to open source.",
       "location": "Bengaluru, Karnataka, India",
@@ -291,173 +291,503 @@
       "passwordLastChanged": "Just now",
       "security_audit_log": [
         {
-          "id": "sec-0ab91db01891",
-          "action": "session_revocation",
-          "description": "Revoked 0 active session(s) across other devices.",
-          "ip": "127.0.0.1",
-          "device": "API Client / Unknown OS",
-          "timestamp": "2026-10-20 16:40:40 UTC",
-          "time_ago": "Just now",
-          "status": "success"
-        },
-        {
-          "id": "sec-81ee5e393b62",
-          "action": "password_change",
-          "description": "Password changed successfully via Settings.",
-          "ip": "127.0.0.1",
-          "device": "API Client / Unknown OS",
-          "timestamp": "2026-10-20 16:40:40 UTC",
-          "time_ago": "Just now",
-          "status": "success"
-        },
-        {
-          "id": "sec-ea70b2b73cf1",
-          "action": "password_change",
-          "description": "Password changed successfully via Settings.",
-          "ip": "127.0.0.1",
-          "device": "API Client / Unknown OS",
-          "timestamp": "2026-10-20 16:40:36 UTC",
-          "time_ago": "Just now",
-          "status": "success"
-        },
-        {
-          "id": "sec-a0e53f72de60",
-          "action": "login",
-          "description": "Signed in successfully via API Client / Unknown OS",
-          "ip": "127.0.0.1",
-          "device": "API Client / Unknown OS",
-          "timestamp": "2026-10-20 16:40:27 UTC",
-          "time_ago": "Just now",
-          "status": "success"
-        },
-        {
-          "id": "sec-f437229bb984",
+          "id": "sec-b8417c8967f9",
           "action": "session_revocation",
           "description": "Revoked 1 active session(s) across other devices.",
           "ip": "127.0.0.1",
           "device": "API Client / Unknown OS",
-          "timestamp": "2026-10-20 16:07:45 UTC",
+          "timestamp": "2026-10-20 18:04:48 UTC",
           "time_ago": "Just now",
           "status": "success"
         },
         {
-          "id": "sec-89240d7749dd",
+          "id": "sec-8928744b8c1c",
           "action": "password_change",
           "description": "Password changed successfully via Settings.",
           "ip": "127.0.0.1",
           "device": "API Client / Unknown OS",
-          "timestamp": "2026-10-20 16:07:45 UTC",
+          "timestamp": "2026-10-20 18:04:48 UTC",
           "time_ago": "Just now",
           "status": "success"
         },
         {
-          "id": "sec-474d4ace2a75",
+          "id": "sec-9782ed0411cd",
           "action": "password_change",
           "description": "Password changed successfully via Settings.",
           "ip": "127.0.0.1",
           "device": "API Client / Unknown OS",
-          "timestamp": "2026-10-20 16:07:42 UTC",
+          "timestamp": "2026-10-20 18:04:44 UTC",
           "time_ago": "Just now",
           "status": "success"
         },
         {
-          "id": "sec-bbae6f8873e7",
+          "id": "sec-6c1300c8f8c6",
           "action": "login",
           "description": "Signed in successfully via API Client / Unknown OS",
           "ip": "127.0.0.1",
           "device": "API Client / Unknown OS",
-          "timestamp": "2026-10-20 16:07:35 UTC",
+          "timestamp": "2026-10-20 18:04:37 UTC",
           "time_ago": "Just now",
           "status": "success"
         },
         {
-          "id": "sec-d482e8688ed7",
-          "action": "session_revocation",
-          "description": "Revoked 1 active session(s) across other devices.",
-          "ip": "127.0.0.1",
-          "device": "API Client / Unknown OS",
-          "timestamp": "2026-10-20 16:06:49 UTC",
-          "time_ago": "Just now",
-          "status": "success"
-        },
-        {
-          "id": "sec-09585d69005f",
-          "action": "password_change",
-          "description": "Password changed successfully via Settings.",
-          "ip": "127.0.0.1",
-          "device": "API Client / Unknown OS",
-          "timestamp": "2026-10-20 16:06:49 UTC",
-          "time_ago": "Just now",
-          "status": "success"
-        },
-        {
-          "id": "sec-199654453fc2",
-          "action": "password_change",
-          "description": "Password changed successfully via Settings.",
-          "ip": "127.0.0.1",
-          "device": "API Client / Unknown OS",
-          "timestamp": "2026-10-20 16:06:45 UTC",
-          "time_ago": "Just now",
-          "status": "success"
-        },
-        {
-          "id": "sec-7b9049202f86",
-          "action": "login",
-          "description": "Signed in successfully via API Client / Unknown OS",
-          "ip": "127.0.0.1",
-          "device": "API Client / Unknown OS",
-          "timestamp": "2026-10-20 16:06:39 UTC",
-          "time_ago": "Just now",
-          "status": "success"
-        },
-        {
-          "id": "sec-eb3a26a2cfe2",
+          "id": "sec-7a2e1bf3cbf8",
           "action": "session_revocation",
           "description": "Revoked 0 active session(s) across other devices.",
           "ip": "127.0.0.1",
           "device": "API Client / Unknown OS",
-          "timestamp": "2026-10-20 16:06:09 UTC",
+          "timestamp": "2026-10-20 18:04:08 UTC",
           "time_ago": "Just now",
           "status": "success"
         },
         {
-          "id": "sec-c0367dcca810",
-          "action": "password_change",
-          "description": "Password changed successfully via Settings.",
-          "ip": "127.0.0.1",
-          "device": "API Client / Unknown OS",
-          "timestamp": "2026-10-20 16:06:09 UTC",
+          "id": "sec-e4822c8f4e4a",
+          "action": "Two-Factor Authentication Disabled",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "warning",
+          "timestamp": "2026-10-20 18:04:08 UTC",
           "time_ago": "Just now",
           "status": "success"
         },
         {
-          "id": "sec-1fa505015a33",
-          "action": "password_change",
-          "description": "Password changed successfully via Settings.",
-          "ip": "127.0.0.1",
-          "device": "API Client / Unknown OS",
-          "timestamp": "2026-10-20 16:06:06 UTC",
+          "id": "sec-ba31e1e038a0",
+          "action": "Two-Factor Authentication Enabled",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "success",
+          "timestamp": "2026-10-20 18:04:05 UTC",
           "time_ago": "Just now",
           "status": "success"
         },
         {
-          "id": "sec-d2805790d12c",
+          "id": "sec-8b2e0f885b05",
+          "action": "Password Changed (Protected Workflow)",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "success",
+          "timestamp": "2026-10-20 18:04:04 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-0a9c882c1c05",
+          "action": "Re-authentication Successful",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "success",
+          "timestamp": "2026-10-20 18:04:02 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-866ff3d40aeb",
+          "action": "Password Changed (Protected Workflow)",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "success",
+          "timestamp": "2026-10-20 18:04:01 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-7840174d3dbb",
+          "action": "Re-authentication Successful",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "success",
+          "timestamp": "2026-10-20 18:03:58 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-16bd5d790537",
+          "action": "Re-authentication Successful",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "success",
+          "timestamp": "2026-10-20 18:03:57 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-3eadd999aa52",
+          "action": "Re-authentication Failed",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "failed",
+          "timestamp": "2026-10-20 18:03:55 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-cd54f1894971",
           "action": "login",
           "description": "Signed in successfully via API Client / Unknown OS",
           "ip": "127.0.0.1",
           "device": "API Client / Unknown OS",
-          "timestamp": "2026-10-20 16:06:00 UTC",
+          "timestamp": "2026-10-20 18:03:54 UTC",
           "time_ago": "Just now",
           "status": "success"
         },
         {
-          "id": "sec-ab585bde",
-          "action": "account_setup",
-          "description": "DevSync developer account initialized.",
+          "id": "sec-e8a9a33b5e8f",
+          "action": "session_revocation",
+          "description": "Revoked 1 active session(s) across other devices.",
           "ip": "127.0.0.1",
-          "device": "Web Browser",
-          "timestamp": "2026-10-20 16:04:00 UTC",
-          "time_ago": "Account setup",
+          "device": "API Client / Unknown OS",
+          "timestamp": "2026-10-20 17:26:07 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-bc05b3c023d5",
+          "action": "password_change",
+          "description": "Password changed successfully via Settings.",
+          "ip": "127.0.0.1",
+          "device": "API Client / Unknown OS",
+          "timestamp": "2026-10-20 17:26:07 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-eb7eaf644bfd",
+          "action": "password_change",
+          "description": "Password changed successfully via Settings.",
+          "ip": "127.0.0.1",
+          "device": "API Client / Unknown OS",
+          "timestamp": "2026-10-20 17:26:04 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-54d88c3d3e8b",
+          "action": "login",
+          "description": "Signed in successfully via API Client / Unknown OS",
+          "ip": "127.0.0.1",
+          "device": "API Client / Unknown OS",
+          "timestamp": "2026-10-20 17:25:56 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-861b8128c19e",
+          "action": "session_revocation",
+          "description": "Revoked 0 active session(s) across other devices.",
+          "ip": "127.0.0.1",
+          "device": "API Client / Unknown OS",
+          "timestamp": "2026-10-20 17:25:27 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-278ab8e8ee5b",
+          "action": "Two-Factor Authentication Disabled",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "warning",
+          "timestamp": "2026-10-20 17:25:27 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-03f194e8b90d",
+          "action": "Two-Factor Authentication Enabled",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "success",
+          "timestamp": "2026-10-20 17:25:24 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-1079d3439d17",
+          "action": "Password Changed (Protected Workflow)",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "success",
+          "timestamp": "2026-10-20 17:25:23 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-caab7be9cf18",
+          "action": "Re-authentication Successful",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "success",
+          "timestamp": "2026-10-20 17:25:20 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-b984c4ac7826",
+          "action": "Password Changed (Protected Workflow)",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "success",
+          "timestamp": "2026-10-20 17:25:19 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-952ed7cc4c0d",
+          "action": "Re-authentication Successful",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "success",
+          "timestamp": "2026-10-20 17:25:14 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-4df0d9b435ba",
+          "action": "Re-authentication Successful",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "success",
+          "timestamp": "2026-10-20 17:25:13 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-765655bb0555",
+          "action": "Re-authentication Failed",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "failed",
+          "timestamp": "2026-10-20 17:25:11 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-b66b74cc19bb",
+          "action": "login",
+          "description": "Signed in successfully via API Client / Unknown OS",
+          "ip": "127.0.0.1",
+          "device": "API Client / Unknown OS",
+          "timestamp": "2026-10-20 17:25:10 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-43fd26a7d445",
+          "action": "Two-Factor Authentication Disabled",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "warning",
+          "timestamp": "2026-10-20 17:24:34 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-8e4c3d5d7a9e",
+          "action": "Two-Factor Authentication Enabled",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "success",
+          "timestamp": "2026-10-20 17:24:33 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-164d1b8b3eb2",
+          "action": "login",
+          "description": "Signed in successfully via API Client / Unknown OS",
+          "ip": "127.0.0.1",
+          "device": "API Client / Unknown OS",
+          "timestamp": "2026-10-20 17:24:32 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-bdc4cebe2ebf",
+          "action": "login",
+          "description": "Signed in successfully via API Client / Unknown OS",
+          "ip": "127.0.0.1",
+          "device": "API Client / Unknown OS",
+          "timestamp": "2026-10-20 17:24:15 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-468b64479288",
+          "action": "Two-Factor Authentication Enabled",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "success",
+          "timestamp": "2026-10-20 17:24:07 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-2f7dd92953f9",
+          "action": "login",
+          "description": "Signed in successfully via API Client / Unknown OS",
+          "ip": "127.0.0.1",
+          "device": "API Client / Unknown OS",
+          "timestamp": "2026-10-20 17:24:07 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-c1b0e72dcbee",
+          "action": "session_revocation",
+          "description": "Revoked 0 active session(s) across other devices.",
+          "ip": "127.0.0.1",
+          "device": "API Client / Unknown OS",
+          "timestamp": "2026-10-20 17:23:34 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-620a902025a2",
+          "action": "Password Changed (Protected Workflow)",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "success",
+          "timestamp": "2026-10-20 17:23:34 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-830d01c7857e",
+          "action": "Re-authentication Successful",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "success",
+          "timestamp": "2026-10-20 17:23:32 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-81413f5d364e",
+          "action": "Password Changed (Protected Workflow)",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "success",
+          "timestamp": "2026-10-20 17:23:31 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-a54e30704640",
+          "action": "Re-authentication Successful",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "success",
+          "timestamp": "2026-10-20 17:23:27 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-f705baec615b",
+          "action": "Re-authentication Successful",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "success",
+          "timestamp": "2026-10-20 17:23:26 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-b35ae1011127",
+          "action": "Re-authentication Failed",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "failed",
+          "timestamp": "2026-10-20 17:23:24 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-048f35bf2929",
+          "action": "login",
+          "description": "Signed in successfully via API Client / Unknown OS",
+          "ip": "127.0.0.1",
+          "device": "API Client / Unknown OS",
+          "timestamp": "2026-10-20 17:23:22 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-cd7c6d132d46",
+          "action": "Re-authentication Successful",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "success",
+          "timestamp": "2026-10-20 17:19:16 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-0b7b49e6dc2f",
+          "action": "Re-authentication Failed",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "failed",
+          "timestamp": "2026-10-20 17:19:15 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-1abeef6c2f9b",
+          "action": "login",
+          "description": "Signed in successfully via API Client / Unknown OS",
+          "ip": "127.0.0.1",
+          "device": "API Client / Unknown OS",
+          "timestamp": "2026-10-20 17:19:14 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-9874fb3b01d6",
+          "action": "Password Changed (Protected Workflow)",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "success",
+          "timestamp": "2026-10-20 17:11:08 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-c969253cc1d7",
+          "action": "Re-authentication Successful",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "success",
+          "timestamp": "2026-10-20 17:11:05 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-d2134f43f67f",
+          "action": "Password Changed (Protected Workflow)",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "success",
+          "timestamp": "2026-10-20 17:11:04 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-a0c59846c710",
+          "action": "Re-authentication Successful",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "success",
+          "timestamp": "2026-10-20 17:11:02 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-01a9c3d2a514",
+          "action": "login",
+          "description": "Signed in successfully via API Client / Unknown OS",
+          "ip": "127.0.0.1",
+          "device": "API Client / Unknown OS",
+          "timestamp": "2026-10-20 17:11:01 UTC",
+          "time_ago": "Just now",
           "status": "success"
         }
       ],
@@ -638,6 +968,36 @@
       "emailVerified": true,
       "passwordLastChanged": "Recently",
       "security_audit_log": [
+        {
+          "id": "sec-5449fba66ae9",
+          "action": "login",
+          "description": "Signed in successfully via Browser / Unknown OS",
+          "ip": "127.0.0.1",
+          "device": "Browser / Unknown OS",
+          "timestamp": "2026-10-20 18:05:47 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-ffd0a7b0e342",
+          "action": "login",
+          "description": "Signed in successfully via API Client / Unknown OS",
+          "ip": "127.0.0.1",
+          "device": "API Client / Unknown OS",
+          "timestamp": "2026-10-20 18:03:33 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-7f0411ecadea",
+          "action": "login",
+          "description": "Signed in successfully via Browser / Unknown OS",
+          "ip": "127.0.0.1",
+          "device": "Browser / Unknown OS",
+          "timestamp": "2026-10-20 17:26:43 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
         {
           "id": "sec-08d318d07ff7",
           "action": "login",
@@ -2958,6 +3318,408 @@
         "pullRequestsCount": 0,
         "issuesCount": 0
       }
+    },
+    "tester_1792517199": {
+      "id": "dev-tester_1792517199",
+      "name": "Test Developer",
+      "username": "tester_1792517199",
+      "email": "tester_1792517199@example.com",
+      "password": "pbkdf2_sha256$1500000$sAOCIl5YH6k7FlCJlNE4sT$a5aeQzwJLFQi9c4WZnhNp9T4pS+tNfl1OWxQnBtjD+g=",
+      "role": "Developer",
+      "isVerified": true,
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+      "headline": "Passionate Developer building meaningful web applications and exploring modern technologies.",
+      "bio": "Hello, I am Test Developer. I enjoy building software, collaborating with fellow engineers, and shipping high-quality code on DevSync.",
+      "location": "Bengaluru, India",
+      "website": "https://tester_1792517199.dev",
+      "social": {
+        "github": "https://github.com/tester_1792517199",
+        "linkedin": "https://linkedin.com/in/tester_1792517199",
+        "instagram": "https://instagram.com/tester_1792517199"
+      },
+      "collaborationStatus": "Available for collaboration",
+      "collaborationStatusType": "available",
+      "openToInvitations": true,
+      "education": {
+        "degree": "BCA Student",
+        "institution": "Bengaluru City University",
+        "location": "Bengaluru, India",
+        "field": "Computer Applications",
+        "timeline": "2022 - 2025"
+      },
+      "experience": [
+        {
+          "role": "Full Stack Contributor",
+          "organization": "DevSync Community",
+          "timeline": "2024 - Present",
+          "description": "Building open source developer collaboration tools and web applications."
+        }
+      ],
+      "skills": [
+        {
+          "name": "Python",
+          "category": "Backend",
+          "color": "blue"
+        },
+        {
+          "name": "Django",
+          "category": "Backend",
+          "color": "mint"
+        },
+        {
+          "name": "JavaScript",
+          "category": "Frontend",
+          "color": "amber"
+        },
+        {
+          "name": "React",
+          "category": "Frontend",
+          "color": "cyan"
+        },
+        {
+          "name": "Git",
+          "category": "Tool",
+          "color": "neutral"
+        },
+        {
+          "name": "GitHub",
+          "category": "Tool",
+          "color": "neutral"
+        }
+      ],
+      "pinnedProjects": [
+        "repo-tester_1792517199-core"
+      ],
+      "projects": [
+        {
+          "id": "repo-tester_1792517199-core",
+          "name": "tester_1792517199-workspace",
+          "description": "Personal developer workspace and project repository on DevSync.",
+          "tags": [
+            {
+              "name": "Python",
+              "color": "blue"
+            },
+            {
+              "name": "JavaScript",
+              "color": "amber"
+            }
+          ],
+          "stars": 12,
+          "forks": 3,
+          "updated": "Updated recently",
+          "visibility": "Public",
+          "iconBg": "#0D9488",
+          "relationship": "Owner"
+        }
+      ],
+      "achievements": [
+        {
+          "id": "ach-1-tester_1792517199",
+          "title": "First Project",
+          "description": "Created first public project",
+          "color": "green",
+          "date": "2024"
+        },
+        {
+          "id": "ach-2-tester_1792517199",
+          "title": "Collaborator",
+          "description": "Worked with 5+ developers",
+          "color": "blue",
+          "date": "2024"
+        }
+      ],
+      "activities": [
+        {
+          "id": "act-1-tester_1792517199",
+          "title": "Joined DevSync",
+          "description": "Created account and public profile on DevSync.",
+          "time": "Recently"
+        }
+      ],
+      "teams": [],
+      "collaborators": [],
+      "mobile": "",
+      "mobileVerified": false,
+      "emailVerified": true,
+      "passwordLastChanged": "Recently",
+      "security_audit_log": [
+        {
+          "id": "sec-6ed22e35504e",
+          "action": "login",
+          "description": "Signed in successfully via Browser / Unknown OS",
+          "ip": "127.0.0.1",
+          "device": "Browser / Unknown OS",
+          "timestamp": "2026-10-20 17:26:42 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-73d4d3ed",
+          "action": "account_setup",
+          "description": "DevSync developer account initialized.",
+          "ip": "127.0.0.1",
+          "device": "Web Browser",
+          "timestamp": "2026-10-20 17:26:41 UTC",
+          "time_ago": "Account setup",
+          "status": "success"
+        }
+      ],
+      "notification_preferences": {
+        "direct_messages": {
+          "in_app": true,
+          "email": true
+        },
+        "mentions": {
+          "in_app": true,
+          "email": true
+        },
+        "team_invitations": {
+          "in_app": true,
+          "email": true
+        },
+        "task_assignments": {
+          "in_app": true,
+          "email": false
+        },
+        "task_deadlines": {
+          "in_app": true,
+          "email": true
+        },
+        "weekly_digest": {
+          "in_app": false,
+          "email": false
+        }
+      },
+      "general_preferences": {
+        "language": "en",
+        "timezone": "Asia/Kolkata (IST)",
+        "theme": "light",
+        "compact_density": false,
+        "inline_diffs": true,
+        "tab_size": 2,
+        "editor_font": "JetBrains Mono",
+        "default_page": "overview"
+      },
+      "visibility_controls": {
+        "profile": "public",
+        "email": "private",
+        "mobile": "private",
+        "location": "public",
+        "website": "public",
+        "activity_graph": "public"
+      },
+      "stats": {
+        "followers": 0,
+        "following": 0,
+        "projects": 1,
+        "teams": 0,
+        "repositoriesCount": 1,
+        "contributionsCount": 0,
+        "pullRequestsCount": 0,
+        "issuesCount": 0
+      }
+    },
+    "tester_1792519543": {
+      "id": "dev-tester_1792519543",
+      "name": "Test Developer",
+      "username": "tester_1792519543",
+      "email": "tester_1792519543@example.com",
+      "password": "pbkdf2_sha256$1500000$10FuQRhd74LaL998l2lYIz$URt7dPvrA6FY1oTHSUcC1WK4QifPZmqxs8tR+gFGvsc=",
+      "role": "Developer",
+      "isVerified": true,
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+      "headline": "Passionate Developer building meaningful web applications and exploring modern technologies.",
+      "bio": "Hello, I am Test Developer. I enjoy building software, collaborating with fellow engineers, and shipping high-quality code on DevSync.",
+      "location": "Bengaluru, India",
+      "website": "https://tester_1792519543.dev",
+      "social": {
+        "github": "https://github.com/tester_1792519543",
+        "linkedin": "https://linkedin.com/in/tester_1792519543",
+        "instagram": "https://instagram.com/tester_1792519543"
+      },
+      "collaborationStatus": "Available for collaboration",
+      "collaborationStatusType": "available",
+      "openToInvitations": true,
+      "education": {
+        "degree": "BCA Student",
+        "institution": "Bengaluru City University",
+        "location": "Bengaluru, India",
+        "field": "Computer Applications",
+        "timeline": "2022 - 2025"
+      },
+      "experience": [
+        {
+          "role": "Full Stack Contributor",
+          "organization": "DevSync Community",
+          "timeline": "2024 - Present",
+          "description": "Building open source developer collaboration tools and web applications."
+        }
+      ],
+      "skills": [
+        {
+          "name": "Python",
+          "category": "Backend",
+          "color": "blue"
+        },
+        {
+          "name": "Django",
+          "category": "Backend",
+          "color": "mint"
+        },
+        {
+          "name": "JavaScript",
+          "category": "Frontend",
+          "color": "amber"
+        },
+        {
+          "name": "React",
+          "category": "Frontend",
+          "color": "cyan"
+        },
+        {
+          "name": "Git",
+          "category": "Tool",
+          "color": "neutral"
+        },
+        {
+          "name": "GitHub",
+          "category": "Tool",
+          "color": "neutral"
+        }
+      ],
+      "pinnedProjects": [
+        "repo-tester_1792519543-core"
+      ],
+      "projects": [
+        {
+          "id": "repo-tester_1792519543-core",
+          "name": "tester_1792519543-workspace",
+          "description": "Personal developer workspace and project repository on DevSync.",
+          "tags": [
+            {
+              "name": "Python",
+              "color": "blue"
+            },
+            {
+              "name": "JavaScript",
+              "color": "amber"
+            }
+          ],
+          "stars": 12,
+          "forks": 3,
+          "updated": "Updated recently",
+          "visibility": "Public",
+          "iconBg": "#0D9488",
+          "relationship": "Owner"
+        }
+      ],
+      "achievements": [
+        {
+          "id": "ach-1-tester_1792519543",
+          "title": "First Project",
+          "description": "Created first public project",
+          "color": "green",
+          "date": "2024"
+        },
+        {
+          "id": "ach-2-tester_1792519543",
+          "title": "Collaborator",
+          "description": "Worked with 5+ developers",
+          "color": "blue",
+          "date": "2024"
+        }
+      ],
+      "activities": [
+        {
+          "id": "act-1-tester_1792519543",
+          "title": "Joined DevSync",
+          "description": "Created account and public profile on DevSync.",
+          "time": "Recently"
+        }
+      ],
+      "teams": [],
+      "collaborators": [],
+      "mobile": "",
+      "mobileVerified": false,
+      "emailVerified": true,
+      "passwordLastChanged": "Recently",
+      "security_audit_log": [
+        {
+          "id": "sec-f091f18143aa",
+          "action": "login",
+          "description": "Signed in successfully via Browser / Unknown OS",
+          "ip": "127.0.0.1",
+          "device": "Browser / Unknown OS",
+          "timestamp": "2026-10-20 18:05:46 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-d8933668",
+          "action": "account_setup",
+          "description": "DevSync developer account initialized.",
+          "ip": "127.0.0.1",
+          "device": "Web Browser",
+          "timestamp": "2026-10-20 18:05:45 UTC",
+          "time_ago": "Account setup",
+          "status": "success"
+        }
+      ],
+      "notification_preferences": {
+        "direct_messages": {
+          "in_app": true,
+          "email": true
+        },
+        "mentions": {
+          "in_app": true,
+          "email": true
+        },
+        "team_invitations": {
+          "in_app": true,
+          "email": true
+        },
+        "task_assignments": {
+          "in_app": true,
+          "email": false
+        },
+        "task_deadlines": {
+          "in_app": true,
+          "email": true
+        },
+        "weekly_digest": {
+          "in_app": false,
+          "email": false
+        }
+      },
+      "general_preferences": {
+        "language": "en",
+        "timezone": "Asia/Kolkata (IST)",
+        "theme": "light",
+        "compact_density": false,
+        "inline_diffs": true,
+        "tab_size": 2,
+        "editor_font": "JetBrains Mono",
+        "default_page": "overview"
+      },
+      "visibility_controls": {
+        "profile": "public",
+        "email": "private",
+        "mobile": "private",
+        "location": "public",
+        "website": "public",
+        "activity_graph": "public"
+      },
+      "stats": {
+        "followers": 0,
+        "following": 0,
+        "projects": 1,
+        "teams": 0,
+        "repositoriesCount": 1,
+        "contributionsCount": 0,
+        "pullRequestsCount": 0,
+        "issuesCount": 0
+      }
     }
   },
   "repositories": {
@@ -2971,7 +3733,7 @@
       "visibility": "Private",
       "defaultBranch": "main",
       "created_at": 1789829765.893267,
-      "updated_at": 1792509811.6455839,
+      "updated_at": 1792519563.231825,
       "stars": 28,
       "forks": 5,
       "branches": [
@@ -3243,6 +4005,28 @@
             "last_actor": "naveen3438",
             "sha256": "554ef4ff0ced9f04543c8cc11359b316e7629036515fb7181c9c0f4bf56db71c",
             "content": "modified code with authorization"
+          },
+          {
+            "path": "services/auth_provider_1792517216.py",
+            "name": "auth_provider_1792517216.py",
+            "type": "file",
+            "size": 32,
+            "updated_at": 1792517216.2426052,
+            "last_commit": "Update auth_provider logic with authorization",
+            "last_actor": "naveen3438",
+            "sha256": "554ef4ff0ced9f04543c8cc11359b316e7629036515fb7181c9c0f4bf56db71c",
+            "content": "modified code with authorization"
+          },
+          {
+            "path": "services/auth_provider_1792519563.py",
+            "name": "auth_provider_1792519563.py",
+            "type": "file",
+            "size": 32,
+            "updated_at": 1792519563.2214239,
+            "last_commit": "Update auth_provider logic with authorization",
+            "last_actor": "naveen3438",
+            "sha256": "554ef4ff0ced9f04543c8cc11359b316e7629036515fb7181c9c0f4bf56db71c",
+            "content": "modified code with authorization"
           }
         ],
         "feature/authentication": [
@@ -3259,6 +4043,24 @@
         ]
       },
       "attachments": [
+        {
+          "id": "att_4e7f25904962",
+          "name": "API_Swagger_Specification.json",
+          "size": 20,
+          "uploaded_by": "naveen3438",
+          "uploaded_at": 1792519563.231825,
+          "file_type": "application/json",
+          "description": "OpenAPI contract specification"
+        },
+        {
+          "id": "att_e3e603d87271",
+          "name": "API_Swagger_Specification.json",
+          "size": 20,
+          "uploaded_by": "naveen3438",
+          "uploaded_at": 1792517216.274603,
+          "file_type": "application/json",
+          "description": "OpenAPI contract specification"
+        },
         {
           "id": "att_df94c7a15f32",
           "name": "API_Swagger_Specification.json",
@@ -3324,6 +4126,50 @@
         }
       ],
       "audit_log": [
+        {
+          "id": "aud_987744165e45",
+          "action": "file_overwrite",
+          "branch": "develop",
+          "file_path": "services/auth_provider_1792519563.py",
+          "actor": "naveen3438",
+          "timestamp": 1792519563.2214239,
+          "summary": "Update auth_provider logic with authorization",
+          "sha256": "554ef4ff0ced9f04543c8cc11359b316e7629036515fb7181c9c0f4bf56db71c",
+          "size": 32
+        },
+        {
+          "id": "aud_026e87e00f6b",
+          "action": "file_upload",
+          "branch": "develop",
+          "file_path": "services/auth_provider_1792519563.py",
+          "actor": "naveen3438",
+          "timestamp": 1792519563.1616015,
+          "summary": "Add authentication service provider module",
+          "sha256": "891db46eb3458220b0b14e13475275304f8091d580143003f669440b4c0102aa",
+          "size": 36
+        },
+        {
+          "id": "aud_85bf77a0fdb0",
+          "action": "file_overwrite",
+          "branch": "develop",
+          "file_path": "services/auth_provider_1792517216.py",
+          "actor": "naveen3438",
+          "timestamp": 1792517216.2426052,
+          "summary": "Update auth_provider logic with authorization",
+          "sha256": "554ef4ff0ced9f04543c8cc11359b316e7629036515fb7181c9c0f4bf56db71c",
+          "size": 32
+        },
+        {
+          "id": "aud_5fc556769eba",
+          "action": "file_upload",
+          "branch": "develop",
+          "file_path": "services/auth_provider_1792517216.py",
+          "actor": "naveen3438",
+          "timestamp": 1792517216.1983018,
+          "summary": "Add authentication service provider module",
+          "sha256": "891db46eb3458220b0b14e13475275304f8091d580143003f669440b4c0102aa",
+          "size": 36
+        },
         {
           "id": "aud_4086694805b9",
           "action": "file_overwrite",
@@ -3675,6 +4521,172 @@
     }
   },
   "activity_events": [
+    {
+      "id": "evt_d2542ace73f1",
+      "type": "attachment_uploaded",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": null,
+      "title": "Uploaded project attachment: API_Swagger_Specification.json",
+      "description": "OpenAPI contract specification",
+      "timestamp": 1792519563.231825,
+      "visibility": "Private",
+      "metadata": {
+        "attachment_id": "att_4e7f25904962",
+        "file_name": "API_Swagger_Specification.json",
+        "size": 20
+      },
+      "dedup_hash": "34aba12462b8cd4c92c750cd9a12f246592a3c06834ae881bfa449e2ac0ceb00"
+    },
+    {
+      "id": "evt_62247a399072",
+      "type": "file_uploaded",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": "develop",
+      "title": "Uploaded services/auth_provider_1792519563.py to develop",
+      "description": "Add authentication service provider module",
+      "timestamp": 1792519563.1621683,
+      "visibility": "Private",
+      "metadata": {
+        "file_path": "services/auth_provider_1792519563.py",
+        "sha256": "891db46eb3458220b0b14e13475275304f8091d580143003f669440b4c0102aa",
+        "size": 36
+      },
+      "dedup_hash": "105b36d347e66888e0c22527b8ccdd40f498b2fc97467b2012dad4b3b60f9c57"
+    },
+    {
+      "id": "evt_82afc03ce646",
+      "type": "collaborator_removed",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": null,
+      "title": "Removed collaborator @tarapatel",
+      "description": "Collaborator @tarapatel was removed from devsync-core.",
+      "timestamp": 1792519563.1506531,
+      "visibility": "Private",
+      "metadata": {},
+      "dedup_hash": "1753734aa2da09cea6901a82975b203737ccb8fbe5c9062adaacbffbaf371306"
+    },
+    {
+      "id": "evt_13346284a10d",
+      "type": "collaborator_updated",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": null,
+      "title": "Updated role/responsibility for @tarapatel",
+      "description": "Role: Collaborator | Responsibility: Lead SRE & Security",
+      "timestamp": 1792519563.1252947,
+      "visibility": "Private",
+      "metadata": {},
+      "dedup_hash": "370f95e4ba0192cb3fa257a7318461e6b46f331998c0b45d00819060391dacff"
+    },
+    {
+      "id": "evt_0514f6660344",
+      "type": "collaborator_added",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": null,
+      "title": "Added collaborator @tarapatel as Collaborator",
+      "description": "Assigned responsibility: DevOps & SRE",
+      "timestamp": 1792519563.1165092,
+      "visibility": "Private",
+      "metadata": {},
+      "dedup_hash": "24555c4aefa3539953d37764bdf73365f66e673f6486e63aa831bc0081853a83"
+    },
+    {
+      "id": "evt_bcb3b5692456",
+      "type": "attachment_uploaded",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": null,
+      "title": "Uploaded project attachment: API_Swagger_Specification.json",
+      "description": "OpenAPI contract specification",
+      "timestamp": 1792517216.274603,
+      "visibility": "Private",
+      "metadata": {
+        "attachment_id": "att_e3e603d87271",
+        "file_name": "API_Swagger_Specification.json",
+        "size": 20
+      },
+      "dedup_hash": "cd374b08ebbe0f1ea7141f07167d0ebf06a5fc72c1c549bdbdcff44bc1271f87"
+    },
+    {
+      "id": "evt_53c3a7cd4f04",
+      "type": "file_uploaded",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": "develop",
+      "title": "Uploaded services/auth_provider_1792517216.py to develop",
+      "description": "Add authentication service provider module",
+      "timestamp": 1792517216.1983018,
+      "visibility": "Private",
+      "metadata": {
+        "file_path": "services/auth_provider_1792517216.py",
+        "sha256": "891db46eb3458220b0b14e13475275304f8091d580143003f669440b4c0102aa",
+        "size": 36
+      },
+      "dedup_hash": "e50ba1f315ac6168e80a3ecc3d63437155ade92d1fbf3b40ba94743ffca735e6"
+    },
+    {
+      "id": "evt_bc452ba98a0f",
+      "type": "collaborator_removed",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": null,
+      "title": "Removed collaborator @tarapatel",
+      "description": "Collaborator @tarapatel was removed from devsync-core.",
+      "timestamp": 1792517216.1480079,
+      "visibility": "Private",
+      "metadata": {},
+      "dedup_hash": "98785cc101dee341302c926e5694f90a2dbc75cd8978ee0c86e1eefed17e9a5a"
+    },
+    {
+      "id": "evt_2de535f0192c",
+      "type": "collaborator_updated",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": null,
+      "title": "Updated role/responsibility for @tarapatel",
+      "description": "Role: Collaborator | Responsibility: Lead SRE & Security",
+      "timestamp": 1792517216.1006672,
+      "visibility": "Private",
+      "metadata": {},
+      "dedup_hash": "dbf1b347c6d053460b587b4a05b96eecfb14355f8361c83dc7d4f53e3dad3c30"
+    },
+    {
+      "id": "evt_d81c8aee39b4",
+      "type": "collaborator_added",
+      "actor": "naveen3438",
+      "actor_name": "naveen3438",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": null,
+      "title": "Added collaborator @tarapatel as Collaborator",
+      "description": "Assigned responsibility: DevOps & SRE",
+      "timestamp": 1792517216.0818229,
+      "visibility": "Private",
+      "metadata": {},
+      "dedup_hash": "042896fc210990b4df0fc31888201521094a97db18d8a6d6aea7761d025d2404"
+    },
     {
       "id": "evt_0e200067aa2c",
       "type": "attachment_uploaded",
@@ -4408,7 +5420,7 @@
       },
       "target": "devsync-core",
       "link": "/src/pages/pull-requests/detail.html?id=pr-42",
-      "unread": true,
+      "unread": false,
       "timestamp": 1792513608.39801,
       "connection_status": null,
       "connection_developer_id": null
@@ -4426,7 +5438,7 @@
       },
       "target": "devsync-core",
       "link": "/src/pages/repositories/commits.html?repo=devsync-core",
-      "unread": true,
+      "unread": false,
       "timestamp": 1792507308.39801,
       "connection_status": null,
       "connection_developer_id": null
@@ -4444,9 +5456,9 @@
       },
       "target": "Developer Network",
       "link": "/src/pages/developers/connections.html",
-      "unread": true,
+      "unread": false,
       "timestamp": 1792500108.39801,
-      "connection_status": "pending",
+      "connection_status": "accepted",
       "connection_developer_id": "tarapatel"
     },
     {
@@ -4462,7 +5474,7 @@
       },
       "target": "devsync-core",
       "link": "/src/pages/issues/detail.html?id=issue-94",
-      "unread": true,
+      "unread": false,
       "timestamp": 1792420908.39801,
       "connection_status": null,
       "connection_developer_id": null
@@ -4518,42 +5530,6 @@
       "link": "/src/pages/teams/members.html",
       "unread": false,
       "timestamp": 1792168908.39801,
-      "connection_status": null,
-      "connection_developer_id": null
-    },
-    {
-      "id": "notif_conn_2",
-      "category": "connection",
-      "type": "connection_request",
-      "title": "Connection request from Ananya Roy",
-      "message": "Ananya Roy (UI/UX Designer & Frontend Dev) wants to connect with you.",
-      "actor": {
-        "username": "ananyaroy",
-        "name": "Ananya Roy",
-        "avatar": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=120&q=80"
-      },
-      "target": "Developer Network",
-      "link": "/src/pages/developers/connections.html",
-      "unread": false,
-      "timestamp": 1791996108.39801,
-      "connection_status": "accepted",
-      "connection_developer_id": "ananyaroy"
-    },
-    {
-      "id": "notif_repo_2",
-      "category": "repository",
-      "type": "repository_created",
-      "title": "Arjun Mehta created repository: portfolio-site",
-      "message": "A new public repository \"portfolio-site\" was created in the organization.",
-      "actor": {
-        "username": "arjunmehta",
-        "name": "Arjun Mehta",
-        "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80"
-      },
-      "target": "portfolio-site",
-      "link": "/src/pages/repositories/detail.html?repo=portfolio-site",
-      "unread": false,
-      "timestamp": 1791650508.39801,
       "connection_status": null,
       "connection_developer_id": null
     }

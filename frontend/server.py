@@ -51,7 +51,8 @@ from backend_settings import (
     revoke_single_session, revoke_all_other_sessions,
     validate_username, validate_password_strength,
     strip_exif_and_sanitize_image, sanitize_public_profile,
-    get_default_notifications, calculate_notifications_summary
+    get_default_notifications, calculate_notifications_summary,
+    reauth_manager, totp_manager
 )
 
 otp_manager = OTPManager()
@@ -1113,12 +1114,60 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
             '/settings/preferences': 'src/pages/settings/preferences.html',
             '/notifications': 'src/pages/notifications/index.html',
             '/notifications/': 'src/pages/notifications/index.html',
+            '/settings/security': 'src/pages/settings/security.html',
+            '/settings/security/': 'src/pages/settings/security.html',
+            '/settings/security/password': 'src/pages/settings/change-password.html',
+            '/settings/security/password/': 'src/pages/settings/change-password.html',
+            '/forgot-password': 'src/pages/auth/forgot-password.html',
+            '/forgot-password/': 'src/pages/auth/forgot-password.html',
+            '/auth/forgot-password': 'src/pages/auth/forgot-password.html',
+            '/auth/forgot-password/': 'src/pages/auth/forgot-password.html',
+            '/verify-code': 'src/pages/auth/verify-code.html',
+            '/verify-code/': 'src/pages/auth/verify-code.html',
+            '/auth/verify-code': 'src/pages/auth/verify-code.html',
+            '/auth/verify-code/': 'src/pages/auth/verify-code.html',
+            '/reset-password': 'src/pages/auth/reset-password.html',
+            '/reset-password/': 'src/pages/auth/reset-password.html',
+            '/auth/reset-password': 'src/pages/auth/reset-password.html',
+            '/auth/reset-password/': 'src/pages/auth/reset-password.html',
+
         }
         if path in route_map:
             target = os.path.join(FRONTEND_DIR, route_map[path].replace('/', os.sep))
             if os.path.exists(target):
                 self.serve_html_file(target)
                 return
+
+        # Security Overview Endpoint (GET /api/v1/auth/security/overview, /api/v1/settings/security/overview)
+        if path in ('/api/v1/auth/security/overview', '/api/v1/auth/security/overview/', '/api/v1/settings/security/overview', '/api/v1/settings/security/overview/'):
+            auth_user = self.get_authenticated_user()
+            if not auth_user:
+                self.send_json(401, {'error': 'Authentication required. Please sign in.'})
+                return
+            dev = get_developer_by_identifier(auth_user['username'])
+            if not dev:
+                self.send_json(404, {'error': 'User not found.'})
+                return
+            curr_token = self.get_session_token()
+            user_sessions = get_user_active_sessions(ACTIVE_SESSIONS, auth_user['username'], curr_token)
+            
+            pwd_last_changed = dev.get('passwordLastChanged', 'Recently')
+            if isinstance(pwd_last_changed, (int, float)):
+                pwd_last_changed = time.strftime("%b %d, %Y", time.gmtime(pwd_last_changed))
+
+            self.send_json(200, {
+                'success': True,
+                'password_configured': True,
+                'password_last_changed': pwd_last_changed,
+                'two_factor_enabled': bool(dev.get('two_factor_enabled', False)),
+                'two_factor_type': dev.get('two_factor_type', 'Authenticator App (TOTP)' if dev.get('two_factor_enabled') else 'Not Enabled'),
+                'active_sessions_count': max(1, len(user_sessions)),
+                'recovery_codes_count': len(dev.get('two_factor_recovery_codes', [])),
+                'registered_email': dev.get('email', ''),
+                'registered_mobile': dev.get('mobile', ''),
+                'security_events_count': len(dev.get('security_audit_log', []))
+            })
+            return
 
         # Notifications API Endpoint (GET /api/v1/notifications/ and /api/notifications/)
         if path in ('/api/v1/notifications', '/api/v1/notifications/', '/api/notifications', '/api/notifications/'):
@@ -1663,6 +1712,294 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
             save_database()
             summary = calculate_notifications_summary(NOTIFICATIONS)
             self.send_json(200, {'success': True, 'action': action, 'developer_id': target_dev, 'summary': summary})
+            return
+
+        # ======================================================================
+        # DevSync Protected Password & Security Handlers
+        # ======================================================================
+
+        # A. Re-authenticate account holder (POST /api/v1/auth/security/reauthenticate)
+        if path in ('/api/v1/auth/security/reauthenticate', '/api/v1/auth/security/reauthenticate/', '/api/v1/auth/reauthenticate', '/api/v1/auth/reauthenticate/'):
+            auth_user = self.get_authenticated_user()
+            if not auth_user:
+                self.send_json(401, {'error': 'Authentication required. Please sign in.'})
+                return
+            dev = get_developer_by_identifier(auth_user['username'])
+            if not dev:
+                self.send_json(404, {'error': 'User not found.'})
+                return
+            length = int(self.headers.get('Content-Length', 0))
+            body = json.loads(self.rfile.read(length).decode('utf-8')) if length > 0 else {}
+            password = str(body.get('password', '')).strip()
+            if not password or not check_password(password, dev['password']):
+                add_audit_log(dev, 'Re-authentication Failed', self.client_address[0], parse_device_string(self.headers.get('User-Agent', '')), 'failed')
+                save_database()
+                self.send_json(400, {'error': 'Incorrect password. Verification challenge failed.'})
+                return
+            
+            reauth_token, ttl = reauth_manager.issue_token(dev['username'])
+            add_audit_log(dev, 'Re-authentication Successful', self.client_address[0], parse_device_string(self.headers.get('User-Agent', '')), 'success')
+            save_database()
+            self.send_json(200, {
+                'success': True,
+                'reauth_token': reauth_token,
+                'expires_in': ttl,
+                'message': 'Identity verified. You may proceed with sensitive security changes.'
+            })
+            return
+
+        # B. Protected Change Password with Re-auth Token (POST /api/v1/auth/password/change-protected)
+        if path in ('/api/v1/auth/password/change-protected', '/api/v1/auth/password/change-protected/'):
+            auth_user = self.get_authenticated_user()
+            if not auth_user:
+                self.send_json(401, {'error': 'Authentication required. Please sign in.'})
+                return
+            dev = get_developer_by_identifier(auth_user['username'])
+            if not dev:
+                self.send_json(404, {'error': 'User not found.'})
+                return
+            length = int(self.headers.get('Content-Length', 0))
+            body = json.loads(self.rfile.read(length).decode('utf-8')) if length > 0 else {}
+            
+            reauth_token = str(body.get('reauth_token', '')).strip()
+            valid, msg = reauth_manager.validate_token(dev['username'], reauth_token)
+            if not valid:
+                self.send_json(401, {'error': msg})
+                return
+            
+            current_pass = str(body.get('current_password', body.get('currentPassword', ''))).strip()
+            if not current_pass or not check_password(current_pass, dev['password']):
+                self.send_json(400, {'error': 'Current password verification failed.'})
+                return
+            
+            new_pass = str(body.get('new_password', body.get('newPassword', ''))).strip()
+            confirm_pass = str(body.get('confirm_password', body.get('confirmPassword', ''))).strip()
+
+            if confirm_pass and confirm_pass != new_pass:
+                self.send_json(400, {'error': 'New passwords do not match.'})
+                return
+
+            if new_pass == current_pass:
+                self.send_json(400, {'error': 'New password cannot be the same as current password.'})
+                return
+            val_ok, val_err = validate_password_strength(new_pass)
+            if not val_ok:
+                self.send_json(400, {'error': val_err})
+                return
+
+            # Apply change using Django PBKDF2 hasher
+            dev['password'] = make_password(new_pass)
+            dev['passwordLastChanged'] = time.time()
+            reauth_manager.consume_token(dev['username'], reauth_token)
+
+            # Revoke other sessions if requested
+            if body.get('revoke_other_sessions', True):
+                curr_tok = self.get_session_token()
+                revoke_all_other_sessions(ACTIVE_SESSIONS, dev['username'], curr_tok)
+
+            add_audit_log(dev, 'Password Changed (Protected Workflow)', self.client_address[0], parse_device_string(self.headers.get('User-Agent', '')), 'success')
+            save_database()
+
+            # Send email confirmation
+            user_email = dev.get('email', '')
+            if user_email and send_mail:
+                try:
+                    send_mail(
+                        subject="Security Alert: Your DevSync Password Was Changed",
+                        message=f"Hello {dev.get('name', dev['username'])},\n\nYour DevSync account password was successfully updated through the protected security workflow.\n\nIf you did not perform this change, please contact security immediately.\n\n— The DevSync Security Team",
+                        from_email=DEFAULT_FROM_EMAIL,
+                        recipient_list=[user_email],
+                        fail_silently=True
+                    )
+                except Exception as mail_err:
+                    print(f"[Mail Warning] {mail_err}")
+
+            self.send_json(200, {
+                'success': True,
+                'message': 'Password successfully updated. Confirmation email has been sent.'
+            })
+            return
+
+        # C. 2FA Setup Initiation (POST /api/v1/auth/2fa/setup)
+        if path in ('/api/v1/auth/2fa/setup', '/api/v1/auth/2fa/setup/'):
+            auth_user = self.get_authenticated_user()
+            if not auth_user:
+                self.send_json(401, {'error': 'Authentication required. Please sign in.'})
+                return
+            dev = get_developer_by_identifier(auth_user['username'])
+            if not dev:
+                self.send_json(404, {'error': 'User not found.'})
+                return
+            length = int(self.headers.get('Content-Length', 0))
+            body = json.loads(self.rfile.read(length).decode('utf-8')) if length > 0 else {}
+            
+            # Require re-auth token or current password
+            reauth_token = str(body.get('reauth_token', '')).strip()
+            password = str(body.get('password', '')).strip()
+            if reauth_token:
+                valid, msg = reauth_manager.validate_token(dev['username'], reauth_token)
+                if not valid:
+                    self.send_json(401, {'error': msg})
+                    return
+            elif password:
+                if not check_password(password, dev['password']):
+                    self.send_json(400, {'error': 'Incorrect password.'})
+                    return
+            else:
+                self.send_json(400, {'error': 'Re-authentication authorization is required to configure 2FA.'})
+                return
+
+            secret = totp_manager.generate_secret()
+            dev['_pending_2fa_secret'] = secret
+            uri = totp_manager.get_provisioning_uri(dev['username'], secret)
+            save_database()
+            formatted_key = " ".join([secret[i:i+4] for i in range(0, len(secret), 4)])
+            self.send_json(200, {
+                'success': True,
+                'secret': secret,
+                'formatted_key': formatted_key,
+                'provisioning_uri': uri,
+                'message': '2FA enrollment initialized. Verify a 6-digit code from your authenticator app to enable.'
+            })
+            return
+
+        # D. 2FA Verification & Activation (POST /api/v1/auth/2fa/enable)
+        if path in ('/api/v1/auth/2fa/enable', '/api/v1/auth/2fa/enable/'):
+            auth_user = self.get_authenticated_user()
+            if not auth_user:
+                self.send_json(401, {'error': 'Authentication required. Please sign in.'})
+                return
+            dev = get_developer_by_identifier(auth_user['username'])
+            if not dev:
+                self.send_json(404, {'error': 'User not found.'})
+                return
+            length = int(self.headers.get('Content-Length', 0))
+            body = json.loads(self.rfile.read(length).decode('utf-8')) if length > 0 else {}
+            
+            code = str(body.get('code', '')).strip()
+            secret = str(body.get('secret', '')).strip() or dev.get('_pending_2fa_secret')
+            if not secret:
+                self.send_json(400, {'error': 'No 2FA enrollment session found. Please initialize setup again.'})
+                return
+
+            if not totp_manager.verify_code(secret, code):
+                self.send_json(400, {'error': 'Invalid 6-digit verification code. Please check the code in your authenticator app.'})
+                return
+
+            plain_codes, hashed_codes = totp_manager.generate_recovery_codes()
+            dev['two_factor_enabled'] = True
+            dev['two_factor_secret'] = secret
+            dev['two_factor_recovery_codes'] = hashed_codes
+            dev['two_factor_type'] = 'Authenticator App (TOTP)'
+            dev.pop('_pending_2fa_secret', None)
+
+            add_audit_log(dev, 'Two-Factor Authentication Enabled', self.client_address[0], parse_device_string(self.headers.get('User-Agent', '')), 'success')
+            save_database()
+
+            # Email notification
+            user_email = dev.get('email', '')
+            if user_email and send_mail:
+                try:
+                    send_mail(
+                        subject="Security Alert: Two-Factor Authentication Enabled",
+                        message=f"Hello {dev.get('name', dev['username'])},\n\nTwo-Factor Authentication (TOTP) was enabled on your DevSync account.\n\n— The DevSync Security Team",
+                        from_email=DEFAULT_FROM_EMAIL,
+                        recipient_list=[user_email],
+                        fail_silently=True
+                    )
+                except Exception:
+                    pass
+
+            self.send_json(200, {
+                'success': True,
+                'recovery_codes': plain_codes,
+                'message': 'Two-Factor Authentication is now enabled. Please store your recovery codes in a secure location.'
+            })
+            return
+
+        # E. 2FA Disable (POST /api/v1/auth/2fa/disable)
+        if path in ('/api/v1/auth/2fa/disable', '/api/v1/auth/2fa/disable/'):
+            auth_user = self.get_authenticated_user()
+            if not auth_user:
+                self.send_json(401, {'error': 'Authentication required. Please sign in.'})
+                return
+            dev = get_developer_by_identifier(auth_user['username'])
+            if not dev:
+                self.send_json(404, {'error': 'User not found.'})
+                return
+            length = int(self.headers.get('Content-Length', 0))
+            body = json.loads(self.rfile.read(length).decode('utf-8')) if length > 0 else {}
+            
+            password = str(body.get('password', '')).strip()
+            reauth_token = str(body.get('reauth_token', '')).strip()
+            if reauth_token:
+                valid, msg = reauth_manager.validate_token(dev['username'], reauth_token)
+                if not valid:
+                    self.send_json(401, {'error': msg})
+                    return
+            elif password:
+                if not check_password(password, dev['password']):
+                    self.send_json(400, {'error': 'Incorrect password. Verification challenge failed.'})
+                    return
+            else:
+                self.send_json(400, {'error': 'Password verification is required to disable Two-Factor Authentication.'})
+                return
+
+            dev['two_factor_enabled'] = False
+            dev.pop('two_factor_secret', None)
+            dev.pop('two_factor_recovery_codes', None)
+            dev['two_factor_type'] = 'Not Enabled'
+
+            add_audit_log(dev, 'Two-Factor Authentication Disabled', self.client_address[0], parse_device_string(self.headers.get('User-Agent', '')), 'warning')
+            save_database()
+
+            self.send_json(200, {
+                'success': True,
+                'message': 'Two-Factor Authentication has been disabled.'
+            })
+            return
+
+        # F. Regenerate Recovery Codes (POST /api/v1/auth/2fa/recovery-codes/regenerate)
+        if path in ('/api/v1/auth/2fa/recovery-codes/regenerate', '/api/v1/auth/2fa/recovery-codes/regenerate/'):
+            auth_user = self.get_authenticated_user()
+            if not auth_user:
+                self.send_json(401, {'error': 'Authentication required. Please sign in.'})
+                return
+            dev = get_developer_by_identifier(auth_user['username'])
+            if not dev:
+                self.send_json(404, {'error': 'User not found.'})
+                return
+            if not dev.get('two_factor_enabled'):
+                self.send_json(400, {'error': 'Two-Factor Authentication is not enabled on this account.'})
+                return
+            length = int(self.headers.get('Content-Length', 0))
+            body = json.loads(self.rfile.read(length).decode('utf-8')) if length > 0 else {}
+            
+            password = str(body.get('password', '')).strip()
+            reauth_token = str(body.get('reauth_token', '')).strip()
+            if reauth_token:
+                valid, msg = reauth_manager.validate_token(dev['username'], reauth_token)
+                if not valid:
+                    self.send_json(401, {'error': msg})
+                    return
+            elif password:
+                if not check_password(password, dev['password']):
+                    self.send_json(400, {'error': 'Incorrect password.'})
+                    return
+            else:
+                self.send_json(400, {'error': 'Password verification is required to regenerate recovery codes.'})
+                return
+
+            plain_codes, hashed_codes = totp_manager.generate_recovery_codes()
+            dev['two_factor_recovery_codes'] = hashed_codes
+            add_audit_log(dev, '2FA Recovery Codes Regenerated', self.client_address[0], parse_device_string(self.headers.get('User-Agent', '')), 'success')
+            save_database()
+
+            self.send_json(200, {
+                'success': True,
+                'recovery_codes': plain_codes,
+                'message': 'Fresh recovery codes generated. Your previous codes are now invalid.'
+            })
             return
 
         # ======================================================================
