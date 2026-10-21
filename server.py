@@ -782,64 +782,86 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
 
     def resolve_local_path(self, req_path):
         """Map requested URL path to an actual file inside frontend directory."""
-        path = req_path.lstrip('/')
+        if not req_path:
+            return None
+
+        # URL decode and guard against path traversal attempts
+        unquoted = urllib.parse.unquote(req_path)
+        if '..' in unquoted or unquoted.startswith('\\') or '/../' in unquoted or unquoted.endswith('/..'):
+            return None
+
+        path = unquoted.lstrip('/')
         if path.startswith('frontend/'):
             path = path[len('frontend/'):]
 
-        # Check direct path in frontend
-        candidate = os.path.join(FRONTEND_DIR, path.replace('/', os.sep))
-        if os.path.exists(candidate) and not os.path.isdir(candidate):
-            return candidate
+        # Never serve dotfiles or private root directories (.env, .git, data, etc.)
+        first_segment = path.split('/')[0] if '/' in path else path
+        if first_segment.startswith('.') or first_segment in ('data', 'node_modules', '__pycache__'):
+            return None
+
+        candidates = [
+            os.path.join(FRONTEND_DIR, path.replace('/', os.sep))
+        ]
 
         # Aliases for common root-relative asset requests:
         if path.startswith('assets/'):
-            candidate = os.path.join(FRONTEND_DIR, 'src', path.replace('/', os.sep))
-            if os.path.exists(candidate) and not os.path.isdir(candidate):
-                return candidate
+            candidates.append(os.path.join(FRONTEND_DIR, 'src', path.replace('/', os.sep)))
 
         if path.startswith('css/'):
-            candidate = os.path.join(FRONTEND_DIR, 'src', 'assets', path.replace('/', os.sep))
-            if os.path.exists(candidate) and not os.path.isdir(candidate):
-                return candidate
+            candidates.append(os.path.join(FRONTEND_DIR, 'src', 'assets', path.replace('/', os.sep)))
 
         if path.startswith('js/'):
-            candidate = os.path.join(FRONTEND_DIR, 'src', path.replace('/', os.sep))
-            if os.path.exists(candidate) and not os.path.isdir(candidate):
-                return candidate
+            candidates.append(os.path.join(FRONTEND_DIR, 'src', path.replace('/', os.sep)))
 
         if path.startswith('public/'):
-            candidate = os.path.join(FRONTEND_DIR, path.replace('/', os.sep))
-            if os.path.exists(candidate) and not os.path.isdir(candidate):
-                return candidate
+            candidates.append(os.path.join(FRONTEND_DIR, path.replace('/', os.sep)))
 
         if path.startswith('pages/'):
-            candidate = os.path.join(FRONTEND_DIR, 'src', path.replace('/', os.sep))
-            if os.path.exists(candidate) and not os.path.isdir(candidate):
-                return candidate
+            candidates.append(os.path.join(FRONTEND_DIR, 'src', path.replace('/', os.sep)))
 
         # Nested relative asset lookups (e.g. from /developers/<username>/)
         if 'assets/' in path:
             idx = path.find('assets/')
-            candidate = os.path.join(FRONTEND_DIR, 'src', path[idx:].replace('/', os.sep))
-            if os.path.exists(candidate) and not os.path.isdir(candidate):
-                return candidate
+            candidates.append(os.path.join(FRONTEND_DIR, 'src', path[idx:].replace('/', os.sep)))
 
         if 'public/' in path:
             idx = path.find('public/')
-            candidate = os.path.join(FRONTEND_DIR, path[idx:].replace('/', os.sep))
-            if os.path.exists(candidate) and not os.path.isdir(candidate):
-                return candidate
+            candidates.append(os.path.join(FRONTEND_DIR, path[idx:].replace('/', os.sep)))
 
         if 'js/' in path:
             idx = path.find('js/')
-            candidate = os.path.join(FRONTEND_DIR, 'src', path[idx:].replace('/', os.sep))
-            if os.path.exists(candidate) and not os.path.isdir(candidate):
-                return candidate
+            candidates.append(os.path.join(FRONTEND_DIR, 'src', path[idx:].replace('/', os.sep)))
 
-        if os.path.isdir(candidate):
-            idx = os.path.join(candidate, 'index.html')
-            if os.path.exists(idx):
-                return idx
+        real_frontend = os.path.realpath(FRONTEND_DIR)
+
+        for candidate in candidates:
+            if not os.path.exists(candidate):
+                continue
+
+            real_candidate = os.path.realpath(candidate)
+            # MUST strictly reside within FRONTEND_DIR
+            if not (real_candidate.startswith(real_frontend + os.sep) or real_candidate == real_frontend):
+                continue
+
+            if os.path.isdir(real_candidate):
+                idx = os.path.join(real_candidate, 'index.html')
+                if os.path.exists(idx):
+                    real_idx = os.path.realpath(idx)
+                    if real_idx.startswith(real_frontend + os.sep):
+                        return real_idx
+                continue
+
+            # Must not serve sensitive extensions or hidden files (.py, .pyc, .env, .sqlite3, etc.)
+            base_name = os.path.basename(real_candidate)
+            _, ext = os.path.splitext(base_name)
+            ext = ext.lower()
+            if base_name.startswith('.') or ext in ('.py', '.pyc', '.env', '.sqlite3', '.bak', '.swp', '.log'):
+                continue
+            # Block JSON database dumps unless in assets/public
+            if ext == '.json' and not ('assets' in real_candidate or 'public' in real_candidate):
+                continue
+
+            return real_candidate
 
         return None
 
@@ -856,7 +878,12 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
         self.wfile.write(data)
 
     def serve_html_file(self, file_path):
-        with open(file_path, 'rb') as f:
+        real_file = os.path.realpath(file_path)
+        real_frontend = os.path.realpath(FRONTEND_DIR)
+        if not (real_file.startswith(real_frontend + os.sep) or real_file == real_frontend):
+            self.serve_custom_error(404)
+            return
+        with open(real_file, 'rb') as f:
             content = f.read()
         self.send_response(200)
         self.send_header('Content-Type', 'text/html; charset=utf-8')
@@ -931,13 +958,13 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
             return
 
         # Friendly Auth Aliases: Redirect to canonical location for perfect relative asset resolution
-        if path in ('/login', '/signin', '/auth/sign-in'):
+        if path in ('/login', '/signin', '/auth/sign-in', '/sign-in', '/login/', '/signin/', '/auth/sign-in/', '/sign-in/'):
             self.send_response(302)
             self.send_header('Location', '/src/pages/auth/sign-in.html')
             self.end_headers()
             return
 
-        if path in ('/signup', '/register', '/auth/sign-up'):
+        if path in ('/signup', '/register', '/auth/sign-up', '/sign-up', '/signup/', '/register/', '/auth/sign-up/', '/sign-up/'):
             self.send_response(302)
             self.send_header('Location', '/src/pages/auth/sign-up.html')
             self.end_headers()
@@ -2683,6 +2710,7 @@ Valid for 10 minutes.
 
             # Set HttpOnly, SameSite Session Cookie
             resp_data = json.dumps({
+                'success': True,
                 'access': token,
                 'token': token,
                 'user': user_summary,

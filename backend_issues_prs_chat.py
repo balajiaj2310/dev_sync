@@ -1161,8 +1161,8 @@ def create_pull_request(data, actor_username, repositories=None, dev_profiles=No
     if not repo:
         return None, f"Repository '{repository_id}' does not exist."
 
-    source_branch = str(data.get('sourceBranch', '')).strip()
-    target_branch = str(data.get('targetBranch', 'main')).strip()
+    source_branch = str(data.get('sourceBranch') or data.get('source_branch') or '').strip()
+    target_branch = str(data.get('targetBranch') or data.get('target_branch') or 'main').strip()
 
     if not source_branch:
         return None, "Source branch is required."
@@ -1564,6 +1564,12 @@ def react_to_message(conversation_id, message_id, emoji, actor_username):
                 msg = found
                 break
     if not msg:
+        for chid, chlist in CHANNEL_MESSAGES.items():
+            found = next((m for m in chlist if m.get('id') == message_id), None)
+            if found:
+                msg = found
+                break
+    if not msg:
         return None, "Message not found."
 
     reactions = msg.setdefault('reactions', {})
@@ -1731,10 +1737,10 @@ def handle_get(handler, path, url_parts, auth_user=None):
     if path in ('/api/v1/issues', '/api/issues', '/api/v1/issues/', '/api/issues/'):
         query = urllib.parse.parse_qs(url_parts.query)
         status = query.get('status', [''])[0].strip()
-        repo = query.get('repository', [''])[0].strip()
+        repo = (query.get('repo') or query.get('repository') or [''])[0].strip()
         label = query.get('label', [''])[0].strip()
         author = query.get('author', [''])[0].strip()
-        search = query.get('search', [''])[0].strip()
+        search = (query.get('q') or query.get('search') or [''])[0].strip()
         sort = query.get('sort', ['newest'])[0].strip()
 
         issues_res = list_issues(status=status, repository=repo, label=label, author=author, search=search, sort=sort)
@@ -1756,9 +1762,9 @@ def handle_get(handler, path, url_parts, auth_user=None):
     if path in ('/api/v1/pull-requests', '/api/pull-requests', '/api/v1/pull-requests/', '/api/pull-requests/'):
         query = urllib.parse.parse_qs(url_parts.query)
         status = query.get('status', [''])[0].strip()
-        repo = query.get('repository', [''])[0].strip()
+        repo = (query.get('repo') or query.get('repository') or [''])[0].strip()
         author = query.get('author', [''])[0].strip()
-        search = query.get('search', [''])[0].strip()
+        search = (query.get('q') or query.get('search') or [''])[0].strip()
         sort = query.get('sort', ['newest'])[0].strip()
 
         pr_res = list_pull_requests(status=status, repository=repo, author=author, search=search, sort=sort)
@@ -1823,7 +1829,7 @@ def handle_get(handler, path, url_parts, auth_user=None):
         return True
 
     # 10. Channel Messages
-    m_ch_msgs = re.match(r'^/api/(?:v1/)?(?:chat/communities/[^/]+/channels|community/channels)/([^/]+)/messages/?$', path)
+    m_ch_msgs = re.match(r'^/api/(?:v1/)?(?:chat/communities/[^/]+/channels|community/channels|chat/channels)/([^/]+)/messages/?$', path)
     if m_ch_msgs:
         ch_id = m_ch_msgs.group(1)
         msgs = get_channel_messages(ch_id)
@@ -1868,9 +1874,11 @@ def handle_post(handler, path, url_parts, auth_user, dev_profiles, repositories,
             body = json.loads(post_data.decode('utf-8'))
         except Exception:
             body = {}
-        comment, err = add_issue_comment(issue_id, body.get('text', ''), actor, dev_profiles)
+        comment_text = body.get('text') or body.get('comment') or body.get('body') or ''
+        comment, err = add_issue_comment(issue_id, comment_text, actor, dev_profiles)
         if err:
-            handler.send_json(400, {'error': err})
+            status_code = 404 if 'not found' in err.lower() else 400
+            handler.send_json(status_code, {'error': err})
             return True
         save_fn()
         resp_obj = {'success': True, 'comment': comment}
@@ -1885,7 +1893,8 @@ def handle_post(handler, path, url_parts, auth_user, dev_profiles, repositories,
         actor = auth_user['username'].lower() if auth_user else handler.headers.get('X-DevSync-User', 'naveen3438').strip().lower()
         issue, err = set_issue_status(issue_id, 'Closed', actor)
         if err:
-            handler.send_json(400, {'error': err})
+            status_code = 404 if 'not found' in err.lower() else 400
+            handler.send_json(status_code, {'error': err})
             return True
         save_fn()
         handler.send_json(200, issue)
@@ -1898,7 +1907,8 @@ def handle_post(handler, path, url_parts, auth_user, dev_profiles, repositories,
         actor = auth_user['username'].lower() if auth_user else handler.headers.get('X-DevSync-User', 'naveen3438').strip().lower()
         issue, err = set_issue_status(issue_id, 'Open', actor)
         if err:
-            handler.send_json(400, {'error': err})
+            status_code = 404 if 'not found' in err.lower() else 400
+            handler.send_json(status_code, {'error': err})
             return True
         save_fn()
         handler.send_json(200, issue)
@@ -1922,8 +1932,8 @@ def handle_post(handler, path, url_parts, auth_user, dev_profiles, repositories,
         handler.send_json(201, new_pr)
         return True
 
-    # 6. Review Pull Request
-    m_pr_rev = re.match(r'^/api/(?:v1/)?pull-requests/([^/]+)/review/?$', path)
+    # 6. Review / Comment Pull Request
+    m_pr_rev = re.match(r'^/api/(?:v1/)?pull-requests/([^/]+)/(?:review|comments)/?$', path)
     if m_pr_rev:
         pr_id = m_pr_rev.group(1)
         actor = auth_user['username'].lower() if auth_user else handler.headers.get('X-DevSync-User', 'naveen3438').strip().lower()
@@ -1933,7 +1943,9 @@ def handle_post(handler, path, url_parts, auth_user, dev_profiles, repositories,
             body = json.loads(post_data.decode('utf-8'))
         except Exception:
             body = {}
-        rev, err = review_pull_request(pr_id, body.get('action', 'comment'), body.get('comment', ''), actor)
+        action = body.get('action', 'comment')
+        comment_text = body.get('comment') or body.get('text') or body.get('body') or ''
+        rev, err = review_pull_request(pr_id, action, comment_text, actor)
         if err:
             handler.send_json(400, {'error': err})
             return True
@@ -1967,7 +1979,7 @@ def handle_post(handler, path, url_parts, auth_user, dev_profiles, repositories,
         actor = auth_user['username'].lower() if auth_user else handler.headers.get('X-DevSync-User', 'balajikumar').strip().lower()
         merged_pr, err = merge_pull_request(pr_id, actor, repositories)
         if err:
-            status_code = 403 if 'Forbidden' in err else 400
+            status_code = 404 if 'not found' in err.lower() else (403 if 'forbidden' in err.lower() else 400)
             handler.send_json(status_code, {'error': err})
             return True
         save_fn()
@@ -2041,7 +2053,8 @@ def handle_post(handler, path, url_parts, auth_user, dev_profiles, repositories,
             dev_profiles=dev_profiles
         )
         if err:
-            handler.send_json(403 if 'Forbidden' in err else 400, {'error': err})
+            status_code = 404 if 'not found' in err.lower() else (403 if 'forbidden' in err.lower() else 400)
+            handler.send_json(status_code, {'error': err})
             return True
         save_fn()
         handler.send_json(201, msg)
@@ -2058,7 +2071,7 @@ def handle_post(handler, path, url_parts, auth_user, dev_profiles, repositories,
         return True
 
     # 13. React to Message
-    m_react = re.match(r'^/api/(?:v1/)?chat/messages/([^/]+)/react/?$', path)
+    m_react = re.match(r'^/api/(?:v1/)?chat/messages/([^/]+)/(?:react|reactions)/?$', path)
     if m_react:
         msg_id = m_react.group(1)
         actor = auth_user['username'].lower() if auth_user else handler.headers.get('X-DevSync-User', 'naveen3438').strip().lower()
@@ -2069,17 +2082,18 @@ def handle_post(handler, path, url_parts, auth_user, dev_profiles, repositories,
         except Exception:
             body = {}
         conv_id = body.get('conversation_id', 'conv-direct-balaji')
-        emoji = body.get('emoji', '👍')
+        emoji = body.get('emoji') or body.get('reaction') or '👍'
         reactions, err = react_to_message(conv_id, msg_id, emoji, actor)
         if err:
-            handler.send_json(400, {'error': err})
+            status_code = 404 if 'not found' in err.lower() else 400
+            handler.send_json(status_code, {'error': err})
             return True
         save_fn()
         handler.send_json(200, {'success': True, 'reactions': reactions})
         return True
 
     # 14. Post Channel Message
-    m_comm_post = re.match(r'^/api/(?:v1/)?(?:chat/communities/[^/]+/channels|community/channels)/([^/]+)/messages/?$', path)
+    m_comm_post = re.match(r'^/api/(?:v1/)?(?:chat/communities/[^/]+/channels|community/channels|chat/channels)/([^/]+)/messages/?$', path)
     if m_comm_post:
         ch_id = m_comm_post.group(1)
         actor = auth_user['username'].lower() if auth_user else handler.headers.get('X-DevSync-User', 'naveen3438').strip().lower()
@@ -2089,7 +2103,8 @@ def handle_post(handler, path, url_parts, auth_user, dev_profiles, repositories,
             body = json.loads(post_data.decode('utf-8'))
         except Exception:
             body = {}
-        msg, err = post_channel_message(ch_id, body.get('text', ''), actor, dev_profiles)
+        msg_text = body.get('text') or body.get('content') or body.get('message') or ''
+        msg, err = post_channel_message(ch_id, msg_text, actor, dev_profiles)
         if err:
             handler.send_json(400, {'error': err})
             return True
@@ -2163,14 +2178,22 @@ def handle_patch(handler, path, url_parts, auth_user, save_fn):
         except Exception:
             handler.send_json(400, {'error': 'Invalid JSON body'})
             return True
+        VALID_ROLES = {'Maintainer', 'Lead Maintainer', 'Collaborator', 'Viewer', 'Contributor', 'Core Contributor', 'Admin', 'Owner', 'Developer'}
         if 'globalRole' in body:
-            member['globalRole'] = str(body['globalRole']).strip()
+            g_role = str(body['globalRole']).strip()
+            if g_role not in VALID_ROLES:
+                handler.send_json(400, {'error': f'Invalid globalRole: {g_role}'})
+                return True
+            member['globalRole'] = g_role
         if 'availability' in body:
             member['availability'] = str(body['availability']).strip()
-        if 'project' in body and 'role' in body:
-            proj = str(body['project']).strip()
-            role = str(body['role']).strip()
-            member.setdefault('projectRoles', {})[proj] = role
+        if 'role' in body or ('project' in body and 'role' in body):
+            role_val = str(body.get('role', '')).strip()
+            if role_val not in VALID_ROLES:
+                handler.send_json(400, {'error': f'Invalid role: {role_val}'})
+                return True
+            proj = str(body.get('project', 'devsync-core')).strip()
+            member.setdefault('projectRoles', {})[proj] = role_val
         save_fn()
         handler.send_json(200, {'success': True, 'member': member})
         return True
@@ -2187,7 +2210,8 @@ def handle_delete(handler, path, url_parts, auth_user, save_fn):
         project_filter = query.get('project', [None])[0]
         ok, err = remove_team_member(target_username, project_filter)
         if not ok:
-            handler.send_json(400, {'error': err})
+            status_code = 404 if 'not found' in err.lower() else 400
+            handler.send_json(status_code, {'error': err})
             return True
         save_fn()
         handler.send_json(200, {'success': True, 'message': f'Member @{target_username} removed.'})
