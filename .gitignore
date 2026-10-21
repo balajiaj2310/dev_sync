@@ -29,3 +29,4 @@ backups/
 data/.test_last_otp.txt
 
 data/.test_last_email_otp.txt
+data/repositories/test-workspace-suite/

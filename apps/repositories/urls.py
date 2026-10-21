@@ -3,7 +3,11 @@ from .views import (
     RepositoriesListView, RepositoryDetailView, RepositoryBranchesView,
     RepositoryFilesView, RepositoryFileContentView, RepositoryFileUploadView,
     RepositoryAttachmentsView, RepositoryMembersView, RepositoryMemberDetailView,
-    RepositoryActivityView
+    RepositoryActivityView,
+    WorkspaceInfoView, WorkspaceTreeView, WorkspaceFileView,
+    WorkspaceFilesCreateView, WorkspaceFilesRenameView, WorkspaceArchiveView,
+    WorkspaceExecuteView, WorkspaceHistoryView, WorkspaceGitStatusView,
+    WorkspaceGitCommitView, WorkspaceIdeConfigView
 )
 
 urlpatterns = [
@@ -27,4 +31,25 @@ urlpatterns = [
     path('repositories/<str:repo_id>/members/<str:username>', RepositoryMemberDetailView.as_view(), name='repository-member-detail-noslash'),
     path('repositories/<str:repo_id>/activity/', RepositoryActivityView.as_view(), name='repository-activity'),
     path('repositories/<str:repo_id>/activity', RepositoryActivityView.as_view(), name='repository-activity-noslash'),
+    path('workspace/<str:repo_id>/info/', WorkspaceInfoView.as_view(), name='workspace-info'),
+    path('workspace/<str:repo_id>/info', WorkspaceInfoView.as_view(), name='workspace-info-noslash'),
+    path('workspace/<str:repo_id>/tree/', WorkspaceTreeView.as_view(), name='workspace-tree'),
+    path('workspace/<str:repo_id>/tree', WorkspaceTreeView.as_view(), name='workspace-tree-noslash'),
+    path('workspace/<str:repo_id>/file/', WorkspaceFileView.as_view(), name='workspace-file'),
+    path('workspace/<str:repo_id>/file', WorkspaceFileView.as_view(), name='workspace-file-noslash'),
+    path('workspace/<str:repo_id>/files/create/', WorkspaceFilesCreateView.as_view(), name='workspace-files-create'),
+    path('workspace/<str:repo_id>/files/create', WorkspaceFilesCreateView.as_view(), name='workspace-files-create-noslash'),
+    path('workspace/<str:repo_id>/files/rename/', WorkspaceFilesRenameView.as_view(), name='workspace-files-rename'),
+    path('workspace/<str:repo_id>/files/rename', WorkspaceFilesRenameView.as_view(), name='workspace-files-rename-noslash'),
+    path('workspace/<str:repo_id>/archive.zip', WorkspaceArchiveView.as_view(), name='workspace-archive'),
+    path('workspace/<str:repo_id>/execute/', WorkspaceExecuteView.as_view(), name='workspace-execute'),
+    path('workspace/<str:repo_id>/execute', WorkspaceExecuteView.as_view(), name='workspace-execute-noslash'),
+    path('workspace/<str:repo_id>/history/', WorkspaceHistoryView.as_view(), name='workspace-history'),
+    path('workspace/<str:repo_id>/history', WorkspaceHistoryView.as_view(), name='workspace-history-noslash'),
+    path('workspace/<str:repo_id>/git/status/', WorkspaceGitStatusView.as_view(), name='workspace-git-status'),
+    path('workspace/<str:repo_id>/git/status', WorkspaceGitStatusView.as_view(), name='workspace-git-status-noslash'),
+    path('workspace/<str:repo_id>/git/commit/', WorkspaceGitCommitView.as_view(), name='workspace-git-commit'),
+    path('workspace/<str:repo_id>/git/commit', WorkspaceGitCommitView.as_view(), name='workspace-git-commit-noslash'),
+    path('workspace/<str:repo_id>/ide-config/', WorkspaceIdeConfigView.as_view(), name='workspace-ide-config'),
+    path('workspace/<str:repo_id>/ide-config', WorkspaceIdeConfigView.as_view(), name='workspace-ide-config-noslash'),
 ]

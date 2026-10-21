@@ -21,6 +21,15 @@ class ApiClient {
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
+    try {
+      const rawUser = localStorage.getItem(APP_CONFIG.storageKeys.userSession) || localStorage.getItem('devsync_auth_user');
+      if (rawUser) {
+        const parsed = JSON.parse(rawUser);
+        if (parsed && parsed.username) {
+          headers['X-DevSync-User'] = parsed.username;
+        }
+      }
+    } catch (_) {}
     // Include Django CSRF token if cookie exists
     const csrfMatch = document.cookie.match(/csrftoken=([^;]+)/);
     if (csrfMatch) {

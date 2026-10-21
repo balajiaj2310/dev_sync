@@ -144,6 +144,8 @@ from backend_collaboration import (
     get_pulse_progress, get_pulse_team_contributions, handle_branch_file_upload,
     handle_attachment_upload, sanitize_file_path, calculate_contribution_intelligence
 )
+import backend_execution
+import backend_workspace
 
 def dispatch_verification_email(email, otp):
     """
@@ -1517,6 +1519,121 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
             return
 
 # ------------------------------------------------------------------
+        # Code Workspace Endpoints
+        # ------------------------------------------------------------------
+        # GET /api/v1/workspace/<repo_id>/archive.zip
+        m_ws_zip = re.match(r'^/api/(?:v1/)?workspace/([^/]+)/archive\.zip$', path)
+        if m_ws_zip:
+            repo_id = m_ws_zip.group(1)
+            query = urllib.parse.parse_qs(url_parts.query)
+            branch = query.get('branch', [None])[0]
+            auth_user = self.get_authenticated_user()
+            ok, data, filename, status_code = backend_workspace.create_workspace_zip_archive(
+                repo_id, branch, auth_user=auth_user
+            )
+            if not ok:
+                self.send_json(status_code, data)
+                return
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/zip')
+            self.send_header('Content-Disposition', f'attachment; filename="{filename}"')
+            self.send_header('Content-Length', str(len(data)))
+            self.end_headers()
+            self.wfile.write(data)
+            return
+
+        # GET /api/v1/workspace/<repo_id>/info (or /api/v1/repositories/<repo_id>/workspace)
+        m_ws_info = re.match(r'^/api/(?:v1/)?(?:workspace|repositories)/([^/]+)/(?:info|workspace)/?$', path)
+        if not m_ws_info and re.match(r'^/api/(?:v1/)?workspace/([^/]+)/?$', path) and not path.endswith('/languages'):
+            m_ws_info = re.match(r'^/api/(?:v1/)?workspace/([^/]+)/?$', path)
+        if m_ws_info:
+            repo_id = m_ws_info.group(1)
+            auth_user = self.get_authenticated_user()
+            ok, data, status_code = backend_workspace.get_workspace_info(repo_id, auth_user=auth_user)
+            self.send_json(status_code, data)
+            return
+
+        # GET /api/v1/workspace/<repo_id>/tree
+        m_ws_tree = re.match(r'^/api/(?:v1/)?workspace/([^/]+)/tree/?$', path)
+        if m_ws_tree:
+            repo_id = m_ws_tree.group(1)
+            query = urllib.parse.parse_qs(url_parts.query)
+            branch = query.get('branch', [None])[0]
+            auth_user = self.get_authenticated_user()
+            ok, data, status_code = backend_workspace.get_workspace_tree(repo_id, branch=branch, auth_user=auth_user)
+            self.send_json(status_code, data)
+            return
+
+        # GET /api/v1/workspace/<repo_id>/file
+        m_ws_file = re.match(r'^/api/(?:v1/)?workspace/([^/]+)/file/?$', path)
+        if m_ws_file:
+            repo_id = m_ws_file.group(1)
+            query = urllib.parse.parse_qs(url_parts.query)
+            branch = query.get('branch', [None])[0]
+            file_path = query.get('path', [query.get('file', [''])[0]])[0]
+            auth_user = self.get_authenticated_user()
+            ok, data, status_code = backend_workspace.get_workspace_file(repo_id, branch, file_path, auth_user=auth_user)
+            self.send_json(status_code, data)
+            return
+
+        # GET /api/v1/workspace/<repo_id>/languages or /api/v1/workspace/languages
+        m_ws_langs = re.match(r'^/api/(?:v1/)?workspace/(?:([^/]+)/)?languages/?$', path)
+        if m_ws_langs:
+            lang_list = []
+            for lang_key, meta in backend_execution.SUPPORTED_LANGUAGES.items():
+                lang_list.append({
+                    'key': lang_key,
+                    'name': meta.get('name', lang_key.title()),
+                    'monacoId': meta.get('monaco_lang', lang_key),
+                    'extension': meta.get('extension', f".{lang_key}"),
+                    'version': meta.get('version', 'latest'),
+                    'defaultFileName': f"main{meta.get('extension', f'.{lang_key}')}",
+                    'boilerplate': meta.get('boilerplate', '')
+                })
+            self.send_json(200, {'languages': lang_list, 'count': len(lang_list)})
+            return
+
+        # GET /api/v1/workspace/<repo_id>/history
+        m_ws_hist = re.match(r'^/api/(?:v1/)?workspace/([^/]+)/history/?$', path)
+        if m_ws_hist:
+            repo_id = m_ws_hist.group(1)
+            query = urllib.parse.parse_qs(url_parts.query)
+            try:
+                limit = int(query.get('limit', [20])[0])
+            except ValueError:
+                limit = 20
+            auth_user = self.get_authenticated_user()
+            ok, data, status_code = backend_workspace.get_workspace_execution_history(repo_id, limit=limit, auth_user=auth_user)
+            self.send_json(status_code, data)
+            return
+
+        # GET /api/v1/workspace/<repo_id>/git/status
+        m_ws_git_status = re.match(r'^/api/(?:v1/)?workspace/([^/]+)/git/status/?$', path)
+        if m_ws_git_status:
+            repo_id = m_ws_git_status.group(1)
+            query = urllib.parse.parse_qs(url_parts.query)
+            branch = query.get('branch', [None])[0]
+            auth_user = self.get_authenticated_user()
+            ok, data, status_code = backend_workspace.get_workspace_git_status(repo_id, branch=branch, auth_user=auth_user)
+            self.send_json(status_code, data)
+            return
+
+        # GET /api/v1/workspace/<repo_id>/ide-config
+        m_ws_ide = re.match(r'^/api/(?:v1/)?workspace/([^/]+)/ide-config/?$', path)
+        if m_ws_ide:
+            repo_id = m_ws_ide.group(1)
+            query = urllib.parse.parse_qs(url_parts.query)
+            branch = query.get('branch', [None])[0]
+            auth_user = self.get_authenticated_user()
+            host = self.headers.get('Host', 'localhost:8000')
+            host_url = f"http://{host}"
+            ok, data, status_code = backend_workspace.get_external_ide_config(
+                repo_id, branch, host_url=host_url, auth_user=auth_user
+            )
+            self.send_json(status_code, data)
+            return
+
+        # ------------------------------------------------------------------
         # Repositories & Collaboration Endpoints
         # ------------------------------------------------------------------
         # GET /api/v1/repositories/<repo_id>/members
@@ -3588,6 +3705,144 @@ Valid for 10 minutes.
             })
             return
 
+        # ------------------------------------------------------------------
+        # Code Workspace POST Endpoints
+        # ------------------------------------------------------------------
+        # POST /api/v1/workspace/<repo_id>/file (save file)
+        m_ws_save = re.match(r'^/api/(?:v1/)?workspace/([^/]+)/file/?$', path)
+        if m_ws_save:
+            repo_id = m_ws_save.group(1)
+            length = int(self.headers.get('Content-Length', 0))
+            post_data = self.rfile.read(length) if length > 0 else b'{}'
+            try:
+                body = json.loads(post_data.decode('utf-8'))
+            except Exception:
+                self.send_json(400, {'error': 'Invalid JSON in request body'})
+                return
+
+            branch = body.get('branch')
+            file_path = body.get('path', body.get('filePath', ''))
+            content = body.get('content', '')
+            commit_msg = body.get('commitMessage', body.get('message', ''))
+            auth_user = self.get_authenticated_user()
+
+            ok, data, status_code = backend_workspace.save_workspace_file(
+                repo_id, branch, file_path, content, commit_message=commit_msg,
+                auth_user=auth_user, base_data_dir=DATA_DIR
+            )
+            if ok:
+                save_database()
+            self.send_json(status_code, data)
+            return
+
+        # POST /api/v1/workspace/<repo_id>/files/create (create file/dir)
+        m_ws_create = re.match(r'^/api/(?:v1/)?workspace/([^/]+)/files/create/?$', path)
+        if m_ws_create:
+            repo_id = m_ws_create.group(1)
+            length = int(self.headers.get('Content-Length', 0))
+            post_data = self.rfile.read(length) if length > 0 else b'{}'
+            try:
+                body = json.loads(post_data.decode('utf-8'))
+            except Exception:
+                self.send_json(400, {'error': 'Invalid JSON in request body'})
+                return
+
+            branch = body.get('branch')
+            file_path = body.get('path', body.get('filePath', ''))
+            item_type = body.get('type', 'file')
+            content = body.get('content', '')
+            commit_msg = body.get('commitMessage', body.get('message', ''))
+            auth_user = self.get_authenticated_user()
+
+            ok, data, status_code = backend_workspace.create_workspace_file_or_folder(
+                repo_id, branch, file_path, item_type=item_type, initial_content=content,
+                commit_message=commit_msg, auth_user=auth_user, base_data_dir=DATA_DIR
+            )
+            if ok:
+                save_database()
+            self.send_json(status_code, data)
+            return
+
+        # POST /api/v1/workspace/<repo_id>/files/rename (rename file/dir)
+        m_ws_rename = re.match(r'^/api/(?:v1/)?workspace/([^/]+)/files/rename/?$', path)
+        if m_ws_rename:
+            repo_id = m_ws_rename.group(1)
+            length = int(self.headers.get('Content-Length', 0))
+            post_data = self.rfile.read(length) if length > 0 else b'{}'
+            try:
+                body = json.loads(post_data.decode('utf-8'))
+            except Exception:
+                self.send_json(400, {'error': 'Invalid JSON in request body'})
+                return
+
+            branch = body.get('branch')
+            old_path = body.get('oldPath', body.get('old_path', ''))
+            new_path = body.get('newPath', body.get('new_path', ''))
+            commit_msg = body.get('commitMessage', body.get('message', ''))
+            auth_user = self.get_authenticated_user()
+
+            ok, data, status_code = backend_workspace.rename_workspace_path(
+                repo_id, branch, old_path, new_path, commit_message=commit_msg,
+                auth_user=auth_user, base_data_dir=DATA_DIR
+            )
+            if ok:
+                save_database()
+            self.send_json(status_code, data)
+            return
+
+        # POST /api/v1/workspace/<repo_id>/execute (run code)
+        m_ws_exec = re.match(r'^/api/(?:v1/)?workspace/([^/]+)/execute/?$', path)
+        if m_ws_exec:
+            repo_id = m_ws_exec.group(1)
+            length = int(self.headers.get('Content-Length', 0))
+            post_data = self.rfile.read(length) if length > 0 else b'{}'
+            try:
+                body = json.loads(post_data.decode('utf-8'))
+            except Exception:
+                self.send_json(400, {'error': 'Invalid JSON in request body'})
+                return
+
+            branch = body.get('branch')
+            file_path = body.get('filePath', body.get('path', ''))
+            source_code = body.get('sourceCode', body.get('source_code', body.get('content', '')))
+            language = body.get('language')
+            stdin = body.get('stdin', '')
+            args = body.get('args', [])
+            provider_name = body.get('provider')
+            auth_user = self.get_authenticated_user()
+
+            ok, data, status_code = backend_workspace.execute_workspace_code(
+                repo_id, branch, file_path, source_code, language=language,
+                stdin=stdin, args=args, auth_user=auth_user, provider_name=provider_name
+            )
+            self.send_json(status_code, data)
+            return
+
+        # POST /api/v1/workspace/<repo_id>/git/commit (create commit)
+        m_ws_commit = re.match(r'^/api/(?:v1/)?workspace/([^/]+)/git/commit/?$', path)
+        if m_ws_commit:
+            repo_id = m_ws_commit.group(1)
+            length = int(self.headers.get('Content-Length', 0))
+            post_data = self.rfile.read(length) if length > 0 else b'{}'
+            try:
+                body = json.loads(post_data.decode('utf-8'))
+            except Exception:
+                self.send_json(400, {'error': 'Invalid JSON in request body'})
+                return
+
+            branch = body.get('branch')
+            message = body.get('message', body.get('commitMessage', ''))
+            files = body.get('files', [])
+            auth_user = self.get_authenticated_user()
+
+            ok, data, status_code = backend_workspace.commit_workspace_changes(
+                repo_id, branch, message, files=files, auth_user=auth_user
+            )
+            if ok:
+                save_database()
+            self.send_json(status_code, data)
+            return
+
         # Pin Project Endpoint (POST /api/developers/<username>/pin, POST /api/v1/developers/<username>/pin)
         if '/pin' in path and ('/api/developers/' in path or '/api/v1/developers/' in path):
             parts = path.split('/')
@@ -3851,12 +4106,75 @@ Valid for 10 minutes.
 
         self.serve_custom_error(405)
 
+    def do_PUT(self):
+        url_parts = urllib.parse.urlsplit(self.path)
+        path = url_parts.path.rstrip('/')
+
+        # PUT /api/v1/workspace/<repo_id>/file
+        m_ws_save = re.match(r'^/api/(?:v1/)?workspace/([^/]+)/file/?$', path)
+        if m_ws_save:
+            repo_id = m_ws_save.group(1)
+            length = int(self.headers.get('Content-Length', 0))
+            post_data = self.rfile.read(length) if length > 0 else b'{}'
+            try:
+                body = json.loads(post_data.decode('utf-8'))
+            except Exception:
+                self.send_json(400, {'error': 'Invalid JSON in request body'})
+                return
+
+            branch = body.get('branch')
+            file_path = body.get('path', body.get('filePath', ''))
+            content = body.get('content', '')
+            commit_msg = body.get('commitMessage', body.get('message', ''))
+            auth_user = self.get_authenticated_user()
+
+            ok, data, status_code = backend_workspace.save_workspace_file(
+                repo_id, branch, file_path, content, commit_message=commit_msg,
+                auth_user=auth_user, base_data_dir=DATA_DIR
+            )
+            if ok:
+                save_database()
+            self.send_json(status_code, data)
+            return
+
+        self.serve_custom_error(405)
+
     def do_DELETE(self):
         url_parts = urllib.parse.urlsplit(self.path)
         path = url_parts.path.rstrip('/')
 
         # Issues, PRs, Teams, and Chat DELETE dispatch
         if backend_issues_prs_chat.handle_delete(self, path, url_parts, self.get_authenticated_user(), save_database):
+            return
+
+        # DELETE /api/v1/workspace/<repo_id>/file
+        m_ws_del = re.match(r'^/api/(?:v1/)?workspace/([^/]+)/file/?$', path)
+        if m_ws_del:
+            repo_id = m_ws_del.group(1)
+            query = urllib.parse.parse_qs(url_parts.query)
+            branch = query.get('branch', [None])[0]
+            target_path = query.get('path', [query.get('file', [''])[0]])[0]
+            commit_msg = query.get('message', [None])[0]
+
+            length = int(self.headers.get('Content-Length', 0))
+            if length > 0:
+                try:
+                    post_data = self.rfile.read(length)
+                    body = json.loads(post_data.decode('utf-8'))
+                    branch = branch or body.get('branch')
+                    target_path = target_path or body.get('path') or body.get('filePath')
+                    commit_msg = commit_msg or body.get('commitMessage') or body.get('message')
+                except Exception:
+                    pass
+
+            auth_user = self.get_authenticated_user()
+            ok, data, status_code = backend_workspace.delete_workspace_path(
+                repo_id, branch, target_path, commit_message=commit_msg,
+                auth_user=auth_user, base_data_dir=DATA_DIR
+            )
+            if ok:
+                save_database()
+            self.send_json(status_code, data)
             return
 
         # Delete notification via DELETE: /api/v1/notifications/<notif_id>

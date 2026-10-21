@@ -5,7 +5,7 @@
       "name": "Naveen Kumar D",
       "username": "naveen3438",
       "email": "naveen@devsync.dev",
-      "password": "pbkdf2_sha256$1500000$BhLdDTKiWq0lL17kBV0gpH$eCeTL7jwZplHzA58najN1pYP/T8NwL9W6dWeaIC5+zc=",
+      "password": "pbkdf2_sha256$1500000$gEtBLjSXp4Llhc60rfCiU7$HUSyC8nbhViQmaE5hUSAOYAJ/Kfs41Coj1it8sW6UHw=",
       "role": "Developer",
       "isVerified": true,
       "avatar": "/public/images/avatars/avatar_naveen3438_55aa05a81e11.png",
@@ -289,8 +289,218 @@
       "mobile": "",
       "mobileVerified": false,
       "emailVerified": true,
-      "passwordLastChanged": 1792570582.2304075,
+      "passwordLastChanged": 1792599338.0115955,
       "security_audit_log": [
+        {
+          "id": "sec-5d2350f23fb8",
+          "action": "login",
+          "description": "Signed in successfully via API Client / Unknown OS",
+          "ip": "127.0.0.1",
+          "device": "API Client / Unknown OS",
+          "timestamp": "2026-10-21 16:15:47 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-a8cd5365508f",
+          "action": "login",
+          "description": "Signed in successfully via API Client / Unknown OS",
+          "ip": "127.0.0.1",
+          "device": "API Client / Unknown OS",
+          "timestamp": "2026-10-21 16:15:45 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-6ff00a2ab594",
+          "action": "login",
+          "description": "Signed in successfully via API Client / Unknown OS",
+          "ip": "127.0.0.1",
+          "device": "API Client / Unknown OS",
+          "timestamp": "2026-10-21 16:15:44 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-876515143925",
+          "action": "login",
+          "description": "Signed in successfully via API Client / Unknown OS",
+          "ip": "127.0.0.1",
+          "device": "API Client / Unknown OS",
+          "timestamp": "2026-10-21 16:15:40 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-0c559da77fe7",
+          "action": "login",
+          "description": "Signed in successfully via API Client / Unknown OS",
+          "ip": "127.0.0.1",
+          "device": "API Client / Unknown OS",
+          "timestamp": "2026-10-21 16:15:39 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-45cd9a32b147",
+          "action": "Password Changed (Protected Workflow)",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "success",
+          "timestamp": "2026-10-21 16:15:38 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-454bdc51fb87",
+          "action": "Re-authentication Successful",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "success",
+          "timestamp": "2026-10-21 16:15:35 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-65e6dcc1820a",
+          "action": "Password Changed (Protected Workflow)",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "success",
+          "timestamp": "2026-10-21 16:15:34 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-64a020ab1690",
+          "action": "Re-authentication Successful",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "success",
+          "timestamp": "2026-10-21 16:15:32 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-6d6c02e57170",
+          "action": "login",
+          "description": "Signed in successfully via API Client / Unknown OS",
+          "ip": "127.0.0.1",
+          "device": "API Client / Unknown OS",
+          "timestamp": "2026-10-21 16:15:29 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-fefe9fb7e88f",
+          "action": "login",
+          "description": "Signed in successfully via API Client / Unknown OS",
+          "ip": "127.0.0.1",
+          "device": "API Client / Unknown OS",
+          "timestamp": "2026-10-21 16:15:27 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-d0f4bd0e61d2",
+          "action": "session_revocation",
+          "description": "Revoked 0 active session(s) across other devices.",
+          "ip": "127.0.0.1",
+          "device": "API Client / Unknown OS",
+          "timestamp": "2026-10-21 16:15:21 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-c725f756aab8",
+          "action": "Two-Factor Authentication Disabled",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "warning",
+          "timestamp": "2026-10-21 16:15:21 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-d2885f0e1743",
+          "action": "Two-Factor Authentication Enabled",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "success",
+          "timestamp": "2026-10-21 16:15:18 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-348190fca5c0",
+          "action": "Password Changed (Protected Workflow)",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "success",
+          "timestamp": "2026-10-21 16:15:17 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-615319d3f455",
+          "action": "Re-authentication Successful",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "success",
+          "timestamp": "2026-10-21 16:15:15 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-8a9b26145df3",
+          "action": "Password Changed (Protected Workflow)",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "success",
+          "timestamp": "2026-10-21 16:15:14 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-01e6824c9d62",
+          "action": "Re-authentication Successful",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "success",
+          "timestamp": "2026-10-21 16:15:09 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-b02b1f11be0c",
+          "action": "Re-authentication Successful",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "success",
+          "timestamp": "2026-10-21 16:15:05 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-d28a3c6908fb",
+          "action": "Re-authentication Failed",
+          "description": "127.0.0.1",
+          "ip": "API Client / Unknown OS",
+          "device": "failed",
+          "timestamp": "2026-10-21 16:15:04 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-e715c875b2c0",
+          "action": "login",
+          "description": "Signed in successfully via API Client / Unknown OS",
+          "ip": "127.0.0.1",
+          "device": "API Client / Unknown OS",
+          "timestamp": "2026-10-21 16:15:03 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
         {
           "id": "sec-c0e05ea6b341",
           "action": "login",
@@ -580,216 +790,6 @@
           "timestamp": "2026-10-21 08:11:28 UTC",
           "time_ago": "Just now",
           "status": "success"
-        },
-        {
-          "id": "sec-70a9f058baf5",
-          "action": "Password Changed (Protected Workflow)",
-          "description": "127.0.0.1",
-          "ip": "API Client / Unknown OS",
-          "device": "success",
-          "timestamp": "2026-10-21 08:11:27 UTC",
-          "time_ago": "Just now",
-          "status": "success"
-        },
-        {
-          "id": "sec-ba7768c50071",
-          "action": "Re-authentication Successful",
-          "description": "127.0.0.1",
-          "ip": "API Client / Unknown OS",
-          "device": "success",
-          "timestamp": "2026-10-21 08:11:24 UTC",
-          "time_ago": "Just now",
-          "status": "success"
-        },
-        {
-          "id": "sec-cbc60ba878e9",
-          "action": "login",
-          "description": "Signed in successfully via API Client / Unknown OS",
-          "ip": "127.0.0.1",
-          "device": "API Client / Unknown OS",
-          "timestamp": "2026-10-21 08:11:21 UTC",
-          "time_ago": "Just now",
-          "status": "success"
-        },
-        {
-          "id": "sec-d5ed9e767021",
-          "action": "login",
-          "description": "Signed in successfully via API Client / Unknown OS",
-          "ip": "127.0.0.1",
-          "device": "API Client / Unknown OS",
-          "timestamp": "2026-10-21 08:11:19 UTC",
-          "time_ago": "Just now",
-          "status": "success"
-        },
-        {
-          "id": "sec-942984403fe1",
-          "action": "session_revocation",
-          "description": "Revoked 0 active session(s) across other devices.",
-          "ip": "127.0.0.1",
-          "device": "API Client / Unknown OS",
-          "timestamp": "2026-10-21 08:11:13 UTC",
-          "time_ago": "Just now",
-          "status": "success"
-        },
-        {
-          "id": "sec-0703be7ac910",
-          "action": "Two-Factor Authentication Disabled",
-          "description": "127.0.0.1",
-          "ip": "API Client / Unknown OS",
-          "device": "warning",
-          "timestamp": "2026-10-21 08:11:13 UTC",
-          "time_ago": "Just now",
-          "status": "success"
-        },
-        {
-          "id": "sec-02a3416222f3",
-          "action": "Two-Factor Authentication Enabled",
-          "description": "127.0.0.1",
-          "ip": "API Client / Unknown OS",
-          "device": "success",
-          "timestamp": "2026-10-21 08:11:10 UTC",
-          "time_ago": "Just now",
-          "status": "success"
-        },
-        {
-          "id": "sec-dd6b8b78de03",
-          "action": "Password Changed (Protected Workflow)",
-          "description": "127.0.0.1",
-          "ip": "API Client / Unknown OS",
-          "device": "success",
-          "timestamp": "2026-10-21 08:11:09 UTC",
-          "time_ago": "Just now",
-          "status": "success"
-        },
-        {
-          "id": "sec-3254254e56e4",
-          "action": "Re-authentication Successful",
-          "description": "127.0.0.1",
-          "ip": "API Client / Unknown OS",
-          "device": "success",
-          "timestamp": "2026-10-21 08:11:06 UTC",
-          "time_ago": "Just now",
-          "status": "success"
-        },
-        {
-          "id": "sec-96282f7c67b4",
-          "action": "Password Changed (Protected Workflow)",
-          "description": "127.0.0.1",
-          "ip": "API Client / Unknown OS",
-          "device": "success",
-          "timestamp": "2026-10-21 08:11:05 UTC",
-          "time_ago": "Just now",
-          "status": "success"
-        },
-        {
-          "id": "sec-f51c92204c44",
-          "action": "Re-authentication Successful",
-          "description": "127.0.0.1",
-          "ip": "API Client / Unknown OS",
-          "device": "success",
-          "timestamp": "2026-10-21 08:11:01 UTC",
-          "time_ago": "Just now",
-          "status": "success"
-        },
-        {
-          "id": "sec-34b526a477a4",
-          "action": "Re-authentication Successful",
-          "description": "127.0.0.1",
-          "ip": "API Client / Unknown OS",
-          "device": "success",
-          "timestamp": "2026-10-21 08:11:00 UTC",
-          "time_ago": "Just now",
-          "status": "success"
-        },
-        {
-          "id": "sec-9005c010c36b",
-          "action": "Re-authentication Failed",
-          "description": "127.0.0.1",
-          "ip": "API Client / Unknown OS",
-          "device": "failed",
-          "timestamp": "2026-10-21 08:10:59 UTC",
-          "time_ago": "Just now",
-          "status": "success"
-        },
-        {
-          "id": "sec-227d717ef9c2",
-          "action": "login",
-          "description": "Signed in successfully via API Client / Unknown OS",
-          "ip": "127.0.0.1",
-          "device": "API Client / Unknown OS",
-          "timestamp": "2026-10-21 08:10:58 UTC",
-          "time_ago": "Just now",
-          "status": "success"
-        },
-        {
-          "id": "sec-ff5c993dece4",
-          "action": "login",
-          "description": "Signed in successfully via API Client / Unknown OS",
-          "ip": "127.0.0.1",
-          "device": "API Client / Unknown OS",
-          "timestamp": "2026-10-21 08:05:20 UTC",
-          "time_ago": "Just now",
-          "status": "success"
-        },
-        {
-          "id": "sec-c00af48eaa49",
-          "action": "login",
-          "description": "Signed in successfully via API Client / Unknown OS",
-          "ip": "127.0.0.1",
-          "device": "API Client / Unknown OS",
-          "timestamp": "2026-10-21 08:05:17 UTC",
-          "time_ago": "Just now",
-          "status": "success"
-        },
-        {
-          "id": "sec-c83993b2f59c",
-          "action": "login",
-          "description": "Signed in successfully via API Client / Unknown OS",
-          "ip": "127.0.0.1",
-          "device": "API Client / Unknown OS",
-          "timestamp": "2026-10-21 08:05:12 UTC",
-          "time_ago": "Just now",
-          "status": "success"
-        },
-        {
-          "id": "sec-18c4cf03b40a",
-          "action": "login",
-          "description": "Signed in successfully via API Client / Unknown OS",
-          "ip": "127.0.0.1",
-          "device": "API Client / Unknown OS",
-          "timestamp": "2026-10-21 08:05:00 UTC",
-          "time_ago": "Just now",
-          "status": "success"
-        },
-        {
-          "id": "sec-139a6f7ae77e",
-          "action": "login",
-          "description": "Signed in successfully via API Client / Unknown OS",
-          "ip": "127.0.0.1",
-          "device": "API Client / Unknown OS",
-          "timestamp": "2026-10-21 08:04:58 UTC",
-          "time_ago": "Just now",
-          "status": "success"
-        },
-        {
-          "id": "sec-087830f2574e",
-          "action": "Password Changed (Protected Workflow)",
-          "description": "127.0.0.1",
-          "ip": "API Client / Unknown OS",
-          "device": "success",
-          "timestamp": "2026-10-21 08:04:57 UTC",
-          "time_ago": "Just now",
-          "status": "success"
-        },
-        {
-          "id": "sec-b6d4f0c7c9a3",
-          "action": "Re-authentication Successful",
-          "description": "127.0.0.1",
-          "ip": "API Client / Unknown OS",
-          "device": "success",
-          "timestamp": "2026-10-21 08:04:53 UTC",
-          "time_ago": "Just now",
-          "status": "success"
         }
       ],
       "notification_preferences": {
@@ -971,6 +971,66 @@
       "emailVerified": true,
       "passwordLastChanged": "Recently",
       "security_audit_log": [
+        {
+          "id": "sec-a9c9a40de7c6",
+          "action": "login",
+          "description": "Signed in successfully via API Client / Unknown OS",
+          "ip": "127.0.0.1",
+          "device": "API Client / Unknown OS",
+          "timestamp": "2026-10-21 16:15:59 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-13d1a27d77ce",
+          "action": "login",
+          "description": "Signed in successfully via API Client / Unknown OS",
+          "ip": "127.0.0.1",
+          "device": "API Client / Unknown OS",
+          "timestamp": "2026-10-21 16:15:48 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-50d547a7d9ae",
+          "action": "login",
+          "description": "Signed in successfully via API Client / Unknown OS",
+          "ip": "127.0.0.1",
+          "device": "API Client / Unknown OS",
+          "timestamp": "2026-10-21 16:15:42 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-93ec40969bc5",
+          "action": "login",
+          "description": "Signed in successfully via API Client / Unknown OS",
+          "ip": "127.0.0.1",
+          "device": "API Client / Unknown OS",
+          "timestamp": "2026-10-21 16:15:41 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-55e22ea9107b",
+          "action": "login",
+          "description": "Signed in successfully via API Client / Unknown OS",
+          "ip": "127.0.0.1",
+          "device": "API Client / Unknown OS",
+          "timestamp": "2026-10-21 16:15:30 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-6537d6263cf3",
+          "action": "login",
+          "description": "Signed in successfully via API Client / Unknown OS",
+          "ip": "127.0.0.1",
+          "device": "API Client / Unknown OS",
+          "timestamp": "2026-10-21 16:14:54 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
         {
           "id": "sec-5838bf7a1d1f",
           "action": "login",
@@ -1408,66 +1468,6 @@
           "ip": "127.0.0.1",
           "device": "API Client / Unknown OS",
           "timestamp": "2026-10-21 06:28:00 UTC",
-          "time_ago": "Just now",
-          "status": "success"
-        },
-        {
-          "id": "sec-5e824a260e0f",
-          "action": "login",
-          "description": "Signed in successfully via API Client / Unknown OS",
-          "ip": "127.0.0.1",
-          "device": "API Client / Unknown OS",
-          "timestamp": "2026-10-21 06:27:58 UTC",
-          "time_ago": "Just now",
-          "status": "success"
-        },
-        {
-          "id": "sec-64a622c2bd22",
-          "action": "login",
-          "description": "Signed in successfully via API Client / Unknown OS",
-          "ip": "127.0.0.1",
-          "device": "API Client / Unknown OS",
-          "timestamp": "2026-10-21 06:27:42 UTC",
-          "time_ago": "Just now",
-          "status": "success"
-        },
-        {
-          "id": "sec-020363158720",
-          "action": "login",
-          "description": "Signed in successfully via API Client / Unknown OS",
-          "ip": "127.0.0.1",
-          "device": "API Client / Unknown OS",
-          "timestamp": "2026-10-21 06:27:07 UTC",
-          "time_ago": "Just now",
-          "status": "success"
-        },
-        {
-          "id": "sec-69856841f782",
-          "action": "login",
-          "description": "Signed in successfully via API Client / Unknown OS",
-          "ip": "127.0.0.1",
-          "device": "API Client / Unknown OS",
-          "timestamp": "2026-10-21 05:28:28 UTC",
-          "time_ago": "Just now",
-          "status": "success"
-        },
-        {
-          "id": "sec-29db5708231c",
-          "action": "login",
-          "description": "Signed in successfully via API Client / Unknown OS",
-          "ip": "127.0.0.1",
-          "device": "API Client / Unknown OS",
-          "timestamp": "2026-10-21 05:28:23 UTC",
-          "time_ago": "Just now",
-          "status": "success"
-        },
-        {
-          "id": "sec-983e17dbc15e",
-          "action": "login",
-          "description": "Signed in successfully via API Client / Unknown OS",
-          "ip": "127.0.0.1",
-          "device": "API Client / Unknown OS",
-          "timestamp": "2026-10-21 05:28:22 UTC",
           "time_ago": "Just now",
           "status": "success"
         }
@@ -6544,6 +6544,197 @@
         "pullRequestsCount": 0,
         "issuesCount": 0
       }
+    },
+    "signup_user_1792599431": {
+      "id": "dev-signup_user_1792599431",
+      "name": "Signup Test User",
+      "username": "signup_user_1792599431",
+      "email": "signup_user_1792599431@example.com",
+      "password": "pbkdf2_sha256$1500000$MTRcoNdgwgpn6p2qLaJ2Gr$bXQ/c0zV1qwosoY1xvbUDcp4v9eZgx3tXzCdz+lT4Lk=",
+      "role": "Developer",
+      "isVerified": true,
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+      "headline": "Passionate Developer building meaningful web applications and exploring modern technologies.",
+      "bio": "Hello, I am Signup Test User. I enjoy building software, collaborating with fellow engineers, and shipping high-quality code on DevSync.",
+      "location": "Bengaluru, India",
+      "website": "https://signup_user_1792599431.dev",
+      "social": {
+        "github": "https://github.com/signup_user_1792599431",
+        "linkedin": "https://linkedin.com/in/signup_user_1792599431",
+        "instagram": "https://instagram.com/signup_user_1792599431"
+      },
+      "collaborationStatus": "Available for collaboration",
+      "collaborationStatusType": "available",
+      "openToInvitations": true,
+      "education": {
+        "degree": "BCA Student",
+        "institution": "Bengaluru City University",
+        "location": "Bengaluru, India",
+        "field": "Computer Applications",
+        "timeline": "2022 - 2025"
+      },
+      "experience": [
+        {
+          "role": "Full Stack Contributor",
+          "organization": "DevSync Community",
+          "timeline": "2024 - Present",
+          "description": "Building open source developer collaboration tools and web applications."
+        }
+      ],
+      "skills": [
+        {
+          "name": "Python",
+          "category": "Backend",
+          "color": "blue"
+        },
+        {
+          "name": "Django",
+          "category": "Backend",
+          "color": "mint"
+        },
+        {
+          "name": "JavaScript",
+          "category": "Frontend",
+          "color": "amber"
+        },
+        {
+          "name": "React",
+          "category": "Frontend",
+          "color": "cyan"
+        },
+        {
+          "name": "Git",
+          "category": "Tool",
+          "color": "neutral"
+        },
+        {
+          "name": "GitHub",
+          "category": "Tool",
+          "color": "neutral"
+        }
+      ],
+      "pinnedProjects": [
+        "repo-signup_user_1792599431-core"
+      ],
+      "projects": [
+        {
+          "id": "repo-signup_user_1792599431-core",
+          "name": "signup_user_1792599431-workspace",
+          "description": "Personal developer workspace and project repository on DevSync.",
+          "tags": [
+            {
+              "name": "Python",
+              "color": "blue"
+            },
+            {
+              "name": "JavaScript",
+              "color": "amber"
+            }
+          ],
+          "stars": 12,
+          "forks": 3,
+          "updated": "Updated recently",
+          "visibility": "Public",
+          "iconBg": "#0D9488",
+          "relationship": "Owner"
+        }
+      ],
+      "achievements": [
+        {
+          "id": "ach-1-signup_user_1792599431",
+          "title": "First Project",
+          "description": "Created first public project",
+          "color": "green",
+          "date": "2024"
+        },
+        {
+          "id": "ach-2-signup_user_1792599431",
+          "title": "Collaborator",
+          "description": "Worked with 5+ developers",
+          "color": "blue",
+          "date": "2024"
+        }
+      ],
+      "activities": [
+        {
+          "id": "act-1-signup_user_1792599431",
+          "title": "Joined DevSync",
+          "description": "Created account and public profile on DevSync.",
+          "time": "Recently"
+        }
+      ],
+      "teams": [],
+      "collaborators": [],
+      "mobile": "",
+      "mobileVerified": false,
+      "emailVerified": true,
+      "passwordLastChanged": "Recently",
+      "security_audit_log": [
+        {
+          "id": "sec-cd6e69ab",
+          "action": "account_setup",
+          "description": "DevSync developer account initialized.",
+          "ip": "127.0.0.1",
+          "device": "Web Browser",
+          "timestamp": "2026-10-21 16:17:24 UTC",
+          "time_ago": "Account setup",
+          "status": "success"
+        }
+      ],
+      "notification_preferences": {
+        "direct_messages": {
+          "in_app": true,
+          "email": true
+        },
+        "mentions": {
+          "in_app": true,
+          "email": true
+        },
+        "team_invitations": {
+          "in_app": true,
+          "email": true
+        },
+        "task_assignments": {
+          "in_app": true,
+          "email": false
+        },
+        "task_deadlines": {
+          "in_app": true,
+          "email": true
+        },
+        "weekly_digest": {
+          "in_app": false,
+          "email": false
+        }
+      },
+      "general_preferences": {
+        "language": "en",
+        "timezone": "Asia/Kolkata (IST)",
+        "theme": "light",
+        "compact_density": false,
+        "inline_diffs": true,
+        "tab_size": 2,
+        "editor_font": "JetBrains Mono",
+        "default_page": "overview"
+      },
+      "visibility_controls": {
+        "profile": "public",
+        "email": "private",
+        "mobile": "private",
+        "location": "public",
+        "website": "public",
+        "activity_graph": "public"
+      },
+      "stats": {
+        "followers": 0,
+        "following": 0,
+        "projects": 1,
+        "teams": 0,
+        "repositoriesCount": 1,
+        "contributionsCount": 0,
+        "pullRequestsCount": 0,
+        "issuesCount": 0
+      }
     }
   },
   "repositories": {
@@ -6557,7 +6748,7 @@
       "visibility": "Private",
       "defaultBranch": "main",
       "created_at": 1789829765.893267,
-      "updated_at": 1792556961.9571726,
+      "updated_at": 1792599511.1227036,
       "stars": 28,
       "forks": 5,
       "branches": [
@@ -6737,10 +6928,11 @@
             "path": "README.md",
             "name": "README.md",
             "type": "file",
-            "size": 1520,
-            "updated_at": 1792512438.4515972,
-            "last_commit": "Merge PR #43: Test PR",
+            "size": 92,
+            "updated_at": 1792599511.1227036,
+            "last_commit": "Update README.md",
             "last_actor": "balajikumar",
+            "sha256": "ff374a235ae2841d1957c0af66a636e16866805794a63adac26945a7a7e408d5",
             "content": "# DevSync Core (Develop Branch)\nContains bleeding-edge features for testing and validation.\n"
           },
           {
@@ -6824,10 +7016,21 @@
             "name": "otp.py",
             "type": "file",
             "size": 1920,
-            "updated_at": 1792570595.0671418,
-            "last_commit": "Merge PR #67: E2E Integration PR 1792570594",
+            "updated_at": 1792599344.2992465,
+            "last_commit": "Merge PR #68: E2E Integration PR 1792599344",
             "last_actor": "naveen3438",
             "content": "# DevSync Email OTP Module\n"
+          },
+          {
+            "path": "http_test.py",
+            "name": "http_test.py",
+            "type": "file",
+            "size": 18,
+            "updated_at": 1792599134.1075943,
+            "last_commit": "Test commit from HTTP",
+            "last_actor": "balajikumar",
+            "sha256": "6f39969b1c6f974f193d66df7ab4008a87a534ea163b19d1ccb52651b8fd3ae0",
+            "content": "print(\"HTTP test\")"
           }
         ],
         "develop": [
@@ -7057,6 +7260,94 @@
         }
       ],
       "audit_log": [
+        {
+          "id": "aud_66b4b44a16e4",
+          "action": "file_save",
+          "branch": "main",
+          "file_path": "README.md",
+          "actor": "balajikumar",
+          "timestamp": 1792599511.1227036,
+          "summary": "Update README.md",
+          "sha256": "ff374a235ae2841d1957c0af66a636e16866805794a63adac26945a7a7e408d5",
+          "size": 92
+        },
+        {
+          "id": "aud_c4636ac067d0",
+          "action": "file_save",
+          "branch": "main",
+          "file_path": "README.md",
+          "actor": "balajikumar",
+          "timestamp": 1792599510.610412,
+          "summary": "Update README.md",
+          "sha256": "ff374a235ae2841d1957c0af66a636e16866805794a63adac26945a7a7e408d5",
+          "size": 92
+        },
+        {
+          "id": "aud_0f828704056e",
+          "action": "file_save",
+          "branch": "main",
+          "file_path": "README.md",
+          "actor": "balajikumar",
+          "timestamp": 1792599509.134212,
+          "summary": "Update README.md",
+          "sha256": "ff374a235ae2841d1957c0af66a636e16866805794a63adac26945a7a7e408d5",
+          "size": 92
+        },
+        {
+          "id": "aud_22d3231eeb5f",
+          "action": "file_save",
+          "branch": "main",
+          "file_path": "http_test.py",
+          "actor": "balajikumar",
+          "timestamp": 1792599134.1075943,
+          "summary": "Test commit from HTTP",
+          "sha256": "6f39969b1c6f974f193d66df7ab4008a87a534ea163b19d1ccb52651b8fd3ae0",
+          "size": 18
+        },
+        {
+          "id": "aud_e6f2bbbe4284",
+          "action": "file_save",
+          "branch": "main",
+          "file_path": "http_test.py",
+          "actor": "balajikumar",
+          "timestamp": 1792597947.523859,
+          "summary": "Test commit from HTTP",
+          "sha256": "6f39969b1c6f974f193d66df7ab4008a87a534ea163b19d1ccb52651b8fd3ae0",
+          "size": 18
+        },
+        {
+          "id": "aud_a5670397dfba",
+          "action": "file_save",
+          "branch": "main",
+          "file_path": "http_test.py",
+          "actor": "balajikumar",
+          "timestamp": 1792597535.7771583,
+          "summary": "Test commit from HTTP",
+          "sha256": "6f39969b1c6f974f193d66df7ab4008a87a534ea163b19d1ccb52651b8fd3ae0",
+          "size": 18
+        },
+        {
+          "id": "aud_3a97c12da638",
+          "action": "file_save",
+          "branch": "main",
+          "file_path": "http_test.py",
+          "actor": "balajikumar",
+          "timestamp": 1792596670.8634858,
+          "summary": "Test commit from HTTP",
+          "sha256": "6f39969b1c6f974f193d66df7ab4008a87a534ea163b19d1ccb52651b8fd3ae0",
+          "size": 18
+        },
+        {
+          "id": "aud_fab25bc6de78",
+          "action": "file_create",
+          "branch": "main",
+          "file_path": "http_test.py",
+          "actor": "balajikumar",
+          "timestamp": 1792596284.1858823,
+          "summary": "Test commit from HTTP",
+          "sha256": "6f39969b1c6f974f193d66df7ab4008a87a534ea163b19d1ccb52651b8fd3ae0",
+          "size": 18
+        },
         {
           "id": "aud_3ea01cf34283",
           "action": "file_overwrite",
@@ -7478,6 +7769,15 @@
           "timestamp": 1792570595.0671604,
           "summary": "Merged PR #67: E2E Integration PR 1792570594 from feature/authentication into main",
           "sha256": "3e4c80ede8e316ef054a6aa6002bc623cad51284ea7f12323b8ac325ac45bf37"
+        },
+        {
+          "id": "aud_merge_159680f2",
+          "action": "merge_pull_request",
+          "branch": "main",
+          "actor": "naveen3438",
+          "timestamp": 1792599344.2992578,
+          "summary": "Merged PR #68: E2E Integration PR 1792599344 from feature/authentication into main",
+          "sha256": "b4fe6c6eb8d7476b7fd045dfeeb1050b94cedfa8eb3b00158bfe775fc076a219"
         }
       ]
     },
@@ -8348,9 +8648,182 @@
       },
       "attachments": [],
       "audit_log": []
+    },
+    "e2e-project-1792599371": {
+      "id": "repo-e2e-project-1792599371",
+      "name": "e2e-project-1792599371",
+      "owner": "balajikumar",
+      "description": "E2E automated test repository",
+      "language": "Python",
+      "languageColor": "#3572A5",
+      "visibility": "Public",
+      "defaultBranch": "main",
+      "created_at": 1792599373.7009842,
+      "updated_at": 1792599373.7009842,
+      "stars": 0,
+      "forks": 0,
+      "branches": [
+        "main"
+      ],
+      "members": [
+        {
+          "username": "balajikumar",
+          "role": "Owner",
+          "responsibility": "Project Owner",
+          "assignedTasks": [],
+          "joined_at": 1792599373.7009842
+        }
+      ],
+      "milestones": [],
+      "tasks": [],
+      "files": {
+        "main": [
+          {
+            "path": "README.md",
+            "name": "README.md",
+            "type": "file",
+            "size": 56,
+            "updated_at": 1792599373.7009842,
+            "last_commit": "Initial commit with README.md",
+            "last_actor": "balajikumar",
+            "content": "# e2e-project-1792599371\n\nE2E automated test repository\n"
+          }
+        ]
+      },
+      "attachments": [],
+      "audit_log": []
     }
   },
   "activity_events": [
+    {
+      "id": "evt_a41dde1c95f5",
+      "type": "file_uploaded",
+      "actor": "balajikumar",
+      "actor_name": "balajikumar",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": "main",
+      "title": "Saved README.md in workspace",
+      "description": "Update README.md",
+      "timestamp": 1792599509.1403131,
+      "visibility": "Private",
+      "metadata": {
+        "file_path": "README.md",
+        "sha256": "ff374a235ae2841d1957c0af66a636e16866805794a63adac26945a7a7e408d5",
+        "size": 92
+      },
+      "dedup_hash": "21254c83901176f5529a75303853698d9cccd976984975e57ec992b3676e2f8e"
+    },
+    {
+      "id": "evt_c6ebd30edcf5",
+      "type": "repository_created",
+      "actor": "balajikumar",
+      "actor_name": "balajikumar",
+      "actor_avatar": "",
+      "repository": "e2e-project-1792599371",
+      "branch": "main",
+      "title": "Created public repository e2e-project-1792599371",
+      "description": "E2E automated test repository",
+      "timestamp": 1792599373.7010071,
+      "visibility": "Public",
+      "metadata": {},
+      "dedup_hash": "813be1478acb8e1db0f2c00f19f0b4d88a0cabee1a1414dcca9a13f49f2618d0"
+    },
+    {
+      "id": "evt_e544e4200be1",
+      "type": "file_uploaded",
+      "actor": "balajikumar",
+      "actor_name": "balajikumar",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": "main",
+      "title": "Saved http_test.py in workspace",
+      "description": "Test commit from HTTP",
+      "timestamp": 1792599134.1089897,
+      "visibility": "Private",
+      "metadata": {
+        "file_path": "http_test.py",
+        "sha256": "6f39969b1c6f974f193d66df7ab4008a87a534ea163b19d1ccb52651b8fd3ae0",
+        "size": 18
+      },
+      "dedup_hash": "6e101bdf8aa581008b687deee9639435f489a7c97696c7e791f9ea6750e696c4"
+    },
+    {
+      "id": "evt_2dcc443dcf94",
+      "type": "file_uploaded",
+      "actor": "balajikumar",
+      "actor_name": "balajikumar",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": "main",
+      "title": "Saved http_test.py in workspace",
+      "description": "Test commit from HTTP",
+      "timestamp": 1792597947.5251718,
+      "visibility": "Private",
+      "metadata": {
+        "file_path": "http_test.py",
+        "sha256": "6f39969b1c6f974f193d66df7ab4008a87a534ea163b19d1ccb52651b8fd3ae0",
+        "size": 18
+      },
+      "dedup_hash": "bcb17ae874a3c7f9263e7e620ced767f47033f9529aba145d4996b2849a760ea"
+    },
+    {
+      "id": "evt_8c6788c60609",
+      "type": "file_uploaded",
+      "actor": "balajikumar",
+      "actor_name": "balajikumar",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": "main",
+      "title": "Saved http_test.py in workspace",
+      "description": "Test commit from HTTP",
+      "timestamp": 1792597535.7795181,
+      "visibility": "Private",
+      "metadata": {
+        "file_path": "http_test.py",
+        "sha256": "6f39969b1c6f974f193d66df7ab4008a87a534ea163b19d1ccb52651b8fd3ae0",
+        "size": 18
+      },
+      "dedup_hash": "a4c801f75bd82241f1756df812303a36d445c381b9b05104ee7508f98c66f199"
+    },
+    {
+      "id": "evt_355f44c22691",
+      "type": "file_uploaded",
+      "actor": "balajikumar",
+      "actor_name": "balajikumar",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": "main",
+      "title": "Saved http_test.py in workspace",
+      "description": "Test commit from HTTP",
+      "timestamp": 1792596670.864582,
+      "visibility": "Private",
+      "metadata": {
+        "file_path": "http_test.py",
+        "sha256": "6f39969b1c6f974f193d66df7ab4008a87a534ea163b19d1ccb52651b8fd3ae0",
+        "size": 18
+      },
+      "dedup_hash": "9d3da2d13343933699678cd8fee4c43a1f608e883231b59bccc842e61ada5166"
+    },
+    {
+      "id": "evt_44099b14afe2",
+      "type": "file_uploaded",
+      "actor": "balajikumar",
+      "actor_name": "balajikumar",
+      "actor_avatar": "",
+      "repository": "devsync-core",
+      "branch": "main",
+      "title": "Saved http_test.py in workspace",
+      "description": "Test commit from HTTP",
+      "timestamp": 1792596284.188343,
+      "visibility": "Private",
+      "metadata": {
+        "file_path": "http_test.py",
+        "sha256": "6f39969b1c6f974f193d66df7ab4008a87a534ea163b19d1ccb52651b8fd3ae0",
+        "size": 18
+      },
+      "dedup_hash": "6993cab68ea0f6c058e0224ad8b57ddc04645f6318478d9b260fb2594b0d28ba"
+    },
     {
       "id": "evt_fdc806d73607",
       "type": "repository_created",
@@ -10284,24 +10757,6 @@
       "created": 1792570527.0368047,
       "last_active": 1792570527.0905397
     },
-    "devsync_token_776be7da490f27cbd60c703b9742f403cffa95d3": {
-      "id": "sess_64734506e349e3918378",
-      "token": "devsync_token_776be7da490f27cbd60c703b9742f403cffa95d3",
-      "username": "naveen3438",
-      "user": {
-        "id": "dev-naveen",
-        "name": "Naveen Kumar D",
-        "username": "naveen3438",
-        "email": "naveen@devsync.dev",
-        "role": "Developer",
-        "avatar": "/public/images/avatars/avatar_naveen3438_55aa05a81e11.png",
-        "location": "Bengaluru, Karnataka, India"
-      },
-      "device": "API Client / Unknown OS",
-      "ip": "127.0.0.1",
-      "created": 1792570569.29903,
-      "last_active": 1792570578.521304
-    },
     "devsync_token_6df22399e1f1d3becdc9c24522ccccf55671155f": {
       "id": "sess_b9c390347aa704b89ef2",
       "token": "devsync_token_6df22399e1f1d3becdc9c24522ccccf55671155f",
@@ -10319,42 +10774,6 @@
       "ip": "127.0.0.1",
       "created": 1792570570.8784728,
       "last_active": 1792570571.4275293
-    },
-    "devsync_token_8a39307ccb6aad5306760f7b05bcd53fe872e432": {
-      "id": "sess_2d54e0971950fa1ba374",
-      "token": "devsync_token_8a39307ccb6aad5306760f7b05bcd53fe872e432",
-      "username": "naveen3438",
-      "user": {
-        "id": "dev-naveen",
-        "name": "Naveen Kumar D",
-        "username": "naveen3438",
-        "email": "naveen@devsync.dev",
-        "role": "Developer",
-        "avatar": "/public/images/avatars/avatar_naveen3438_55aa05a81e11.png",
-        "location": "Bengaluru, Karnataka, India"
-      },
-      "device": "API Client / Unknown OS",
-      "ip": "127.0.0.1",
-      "created": 1792570583.8068838,
-      "last_active": 1792570583.9252746
-    },
-    "devsync_token_374dbb78519ccc6c543d3b6d5d4661d243a2196c": {
-      "id": "sess_a688e0200f7e61875084",
-      "token": "devsync_token_374dbb78519ccc6c543d3b6d5d4661d243a2196c",
-      "username": "naveen3438",
-      "user": {
-        "id": "dev-naveen",
-        "name": "Naveen Kumar D",
-        "username": "naveen3438",
-        "email": "naveen@devsync.dev",
-        "role": "Developer",
-        "avatar": "/public/images/avatars/avatar_naveen3438_55aa05a81e11.png",
-        "location": "Bengaluru, Karnataka, India"
-      },
-      "device": "API Client / Unknown OS",
-      "ip": "127.0.0.1",
-      "created": 1792570586.2127,
-      "last_active": 1792570586.3102963
     },
     "devsync_token_d6f18bb94c80c73d2134127d45e2630ebed2f13a": {
       "id": "sess_79255567a5746dd97354",
@@ -10392,60 +10811,6 @@
       "created": 1792570591.0740235,
       "last_active": 1792570591.9470947
     },
-    "devsync_token_dda4b7d145690495e7d9da5690deed267c0ab34c": {
-      "id": "sess_a078ce1ad11d1d3d6f66",
-      "token": "devsync_token_dda4b7d145690495e7d9da5690deed267c0ab34c",
-      "username": "naveen3438",
-      "user": {
-        "id": "dev-naveen",
-        "name": "Naveen Kumar D",
-        "username": "naveen3438",
-        "email": "naveen@devsync.dev",
-        "role": "Developer",
-        "avatar": "/public/images/avatars/avatar_naveen3438_55aa05a81e11.png",
-        "location": "Bengaluru, Karnataka, India"
-      },
-      "device": "API Client / Unknown OS",
-      "ip": "127.0.0.1",
-      "created": 1792570594.7946289,
-      "last_active": 1792570595.148304
-    },
-    "devsync_token_484c5ca8bb02f328adec62c61a9275053e61598d": {
-      "id": "sess_e0ff6ffeea2a89e42f77",
-      "token": "devsync_token_484c5ca8bb02f328adec62c61a9275053e61598d",
-      "username": "naveen3438",
-      "user": {
-        "id": "dev-naveen",
-        "name": "Naveen Kumar D",
-        "username": "naveen3438",
-        "email": "naveen@devsync.dev",
-        "role": "Developer",
-        "avatar": "/public/images/avatars/avatar_naveen3438_55aa05a81e11.png",
-        "location": "Bengaluru, Karnataka, India"
-      },
-      "device": "API Client / Unknown OS",
-      "ip": "127.0.0.1",
-      "created": 1792570597.845807,
-      "last_active": 1792570598.2126372
-    },
-    "devsync_token_6ae0191847d35ee331b81414dbcf998bc84d4fd0": {
-      "id": "sess_6fabc854b25a9055f397",
-      "token": "devsync_token_6ae0191847d35ee331b81414dbcf998bc84d4fd0",
-      "username": "naveen3438",
-      "user": {
-        "id": "dev-naveen",
-        "name": "Naveen Kumar D",
-        "username": "naveen3438",
-        "email": "naveen@devsync.dev",
-        "role": "Developer",
-        "avatar": "/public/images/avatars/avatar_naveen3438_55aa05a81e11.png",
-        "location": "Bengaluru, Karnataka, India"
-      },
-      "device": "API Client / Unknown OS",
-      "ip": "127.0.0.1",
-      "created": 1792570600.2504258,
-      "last_active": 1792570600.3171751
-    },
     "devsync_token_ef57cfbb8a1e26aadff0bdc29ea69287678e16cc": {
       "id": "sess_9bebcda332f7f7f879b4",
       "token": "devsync_token_ef57cfbb8a1e26aadff0bdc29ea69287678e16cc",
@@ -10477,24 +10842,6 @@
       },
       "created": 1792570697.5204375
     },
-    "devsync_token_16fb86d10a30af2f5f31d797eb43f23edf31f74e": {
-      "id": "sess_04df50f1d1c6635310c6",
-      "token": "devsync_token_16fb86d10a30af2f5f31d797eb43f23edf31f74e",
-      "username": "naveen3438",
-      "user": {
-        "id": "dev-naveen",
-        "name": "Naveen Kumar D",
-        "username": "naveen3438",
-        "email": "naveen@devsync.dev",
-        "role": "Developer",
-        "avatar": "/public/images/avatars/avatar_naveen3438_55aa05a81e11.png",
-        "location": "Bengaluru, Karnataka, India"
-      },
-      "device": "Microsoft Edge / Windows",
-      "ip": "127.0.0.1",
-      "created": 1792572388.9164822,
-      "last_active": 1792573623.183846
-    },
     "devsync_token_42615b167bfc14bd28f61ce2120623b7103b4e64": {
       "id": "sess_20c34c9f8e47056cf971",
       "token": "devsync_token_42615b167bfc14bd28f61ce2120623b7103b4e64",
@@ -10511,7 +10858,232 @@
       "device": "Microsoft Edge / Windows",
       "ip": "127.0.0.1",
       "created": 1792573624.3413517,
-      "last_active": 1792573624.3413522
+      "last_active": 1792599698.46503
+    },
+    "test-ws-http-token-balajikumar": {
+      "username": "balajikumar",
+      "user": {
+        "id": "dev-balaji",
+        "name": "Balaji",
+        "username": "balajikumar",
+        "email": "balaji@devsync.dev",
+        "role": "Core Contributor",
+        "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80",
+        "location": "Chennai, India"
+      },
+      "created": 1792599134.0545805,
+      "last_active": 1792599134.1073208
+    },
+    "devsync_token_31132805572d13a04460cee254b5759b09168bd8": {
+      "id": "sess_57ba8d2b878140f42c38",
+      "token": "devsync_token_31132805572d13a04460cee254b5759b09168bd8",
+      "username": "balajikumar",
+      "user": {
+        "id": "dev-balaji",
+        "name": "Balaji",
+        "username": "balajikumar",
+        "email": "balaji@devsync.dev",
+        "role": "Core Contributor",
+        "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80",
+        "location": "Chennai, India"
+      },
+      "device": "API Client / Unknown OS",
+      "ip": "127.0.0.1",
+      "created": 1792599294.2224243,
+      "last_active": 1792599294.2567053
+    },
+    "devsync_token_21a4a8e0c045d55784ab05fb4c144eaa97ac16c6": {
+      "id": "sess_8fa9bcea6371a57e227d",
+      "token": "devsync_token_21a4a8e0c045d55784ab05fb4c144eaa97ac16c6",
+      "username": "naveen3438",
+      "user": {
+        "id": "dev-naveen",
+        "name": "Naveen Kumar D",
+        "username": "naveen3438",
+        "email": "naveen@devsync.dev",
+        "role": "Developer",
+        "avatar": "/public/images/avatars/avatar_naveen3438_55aa05a81e11.png",
+        "location": "Bengaluru, Karnataka, India"
+      },
+      "device": "API Client / Unknown OS",
+      "ip": "127.0.0.1",
+      "created": 1792599329.3642688,
+      "last_active": 1792599335.874062
+    },
+    "devsync_token_f63a2d29b8af35e0ce8e49b091591ec21b136384": {
+      "id": "sess_571cdff94c6f66588c91",
+      "token": "devsync_token_f63a2d29b8af35e0ce8e49b091591ec21b136384",
+      "username": "balajikumar",
+      "user": {
+        "id": "dev-balaji",
+        "name": "Balaji",
+        "username": "balajikumar",
+        "email": "balaji@devsync.dev",
+        "role": "Core Contributor",
+        "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80",
+        "location": "Chennai, India"
+      },
+      "device": "API Client / Unknown OS",
+      "ip": "127.0.0.1",
+      "created": 1792599330.6076617,
+      "last_active": 1792599331.1830685
+    },
+    "devsync_token_7013b623359f3ac9cae6440eb1c91ba2609ac0df": {
+      "id": "sess_cb6b4a8166d5379fb4d6",
+      "token": "devsync_token_7013b623359f3ac9cae6440eb1c91ba2609ac0df",
+      "username": "naveen3438",
+      "user": {
+        "id": "dev-naveen",
+        "name": "Naveen Kumar D",
+        "username": "naveen3438",
+        "email": "naveen@devsync.dev",
+        "role": "Developer",
+        "avatar": "/public/images/avatars/avatar_naveen3438_55aa05a81e11.png",
+        "location": "Bengaluru, Karnataka, India"
+      },
+      "device": "API Client / Unknown OS",
+      "ip": "127.0.0.1",
+      "created": 1792599339.219858,
+      "last_active": 1792599339.2565503
+    },
+    "devsync_token_55c07fd3feafa170ea3cb215ebc9f4585efa77e1": {
+      "id": "sess_5d35a1b4ac1e3f20110d",
+      "token": "devsync_token_55c07fd3feafa170ea3cb215ebc9f4585efa77e1",
+      "username": "naveen3438",
+      "user": {
+        "id": "dev-naveen",
+        "name": "Naveen Kumar D",
+        "username": "naveen3438",
+        "email": "naveen@devsync.dev",
+        "role": "Developer",
+        "avatar": "/public/images/avatars/avatar_naveen3438_55aa05a81e11.png",
+        "location": "Bengaluru, Karnataka, India"
+      },
+      "device": "API Client / Unknown OS",
+      "ip": "127.0.0.1",
+      "created": 1792599340.4965835,
+      "last_active": 1792599340.5357575
+    },
+    "devsync_token_c5ae04e73e226efed31f9890e55a9585d82385dc": {
+      "id": "sess_69ea92ad855bbdd16318",
+      "token": "devsync_token_c5ae04e73e226efed31f9890e55a9585d82385dc",
+      "username": "balajikumar",
+      "user": {
+        "id": "dev-balaji",
+        "name": "Balaji",
+        "username": "balajikumar",
+        "email": "balaji@devsync.dev",
+        "role": "Core Contributor",
+        "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80",
+        "location": "Chennai, India"
+      },
+      "device": "API Client / Unknown OS",
+      "ip": "127.0.0.1",
+      "created": 1792599341.8025923,
+      "last_active": 1792599341.8457057
+    },
+    "devsync_token_a4f66b76657581262b7d11344b51b7a6f1f0409e": {
+      "id": "sess_e82feff41d3d12781047",
+      "token": "devsync_token_a4f66b76657581262b7d11344b51b7a6f1f0409e",
+      "username": "balajikumar",
+      "user": {
+        "id": "dev-balaji",
+        "name": "Balaji",
+        "username": "balajikumar",
+        "email": "balaji@devsync.dev",
+        "role": "Core Contributor",
+        "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80",
+        "location": "Chennai, India"
+      },
+      "device": "API Client / Unknown OS",
+      "ip": "127.0.0.1",
+      "created": 1792599342.889737,
+      "last_active": 1792599343.081046
+    },
+    "devsync_token_6f83a56617c5147e401783698dc3ef67e8d3d24d": {
+      "id": "sess_cc2257b73b1f0cdbed31",
+      "token": "devsync_token_6f83a56617c5147e401783698dc3ef67e8d3d24d",
+      "username": "naveen3438",
+      "user": {
+        "id": "dev-naveen",
+        "name": "Naveen Kumar D",
+        "username": "naveen3438",
+        "email": "naveen@devsync.dev",
+        "role": "Developer",
+        "avatar": "/public/images/avatars/avatar_naveen3438_55aa05a81e11.png",
+        "location": "Bengaluru, Karnataka, India"
+      },
+      "device": "API Client / Unknown OS",
+      "ip": "127.0.0.1",
+      "created": 1792599344.1379344,
+      "last_active": 1792599344.347257
+    },
+    "devsync_token_c4f1caa66c7fda7ba332a9a5d8c318a96d334197": {
+      "id": "sess_cb0344e65a399d29eb22",
+      "token": "devsync_token_c4f1caa66c7fda7ba332a9a5d8c318a96d334197",
+      "username": "naveen3438",
+      "user": {
+        "id": "dev-naveen",
+        "name": "Naveen Kumar D",
+        "username": "naveen3438",
+        "email": "naveen@devsync.dev",
+        "role": "Developer",
+        "avatar": "/public/images/avatars/avatar_naveen3438_55aa05a81e11.png",
+        "location": "Bengaluru, Karnataka, India"
+      },
+      "device": "API Client / Unknown OS",
+      "ip": "127.0.0.1",
+      "created": 1792599345.628326,
+      "last_active": 1792599345.7903392
+    },
+    "devsync_token_1dbf88a37972c7af7d5a5055390522f64e7f1803": {
+      "id": "sess_d0e8f8227608e7fe8ab7",
+      "token": "devsync_token_1dbf88a37972c7af7d5a5055390522f64e7f1803",
+      "username": "naveen3438",
+      "user": {
+        "id": "dev-naveen",
+        "name": "Naveen Kumar D",
+        "username": "naveen3438",
+        "email": "naveen@devsync.dev",
+        "role": "Developer",
+        "avatar": "/public/images/avatars/avatar_naveen3438_55aa05a81e11.png",
+        "location": "Bengaluru, Karnataka, India"
+      },
+      "device": "API Client / Unknown OS",
+      "ip": "127.0.0.1",
+      "created": 1792599347.0167468,
+      "last_active": 1792599347.052584
+    },
+    "devsync_token_1511bddb5f7bb06d4af7ed2eb9a770f8c8a09bca": {
+      "id": "sess_4b09201581e65667e327",
+      "token": "devsync_token_1511bddb5f7bb06d4af7ed2eb9a770f8c8a09bca",
+      "username": "balajikumar",
+      "user": {
+        "id": "dev-balaji",
+        "name": "Balaji",
+        "username": "balajikumar",
+        "email": "balaji@devsync.dev",
+        "role": "Core Contributor",
+        "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80",
+        "location": "Chennai, India"
+      },
+      "device": "API Client / Unknown OS",
+      "ip": "127.0.0.1",
+      "created": 1792599359.6724784,
+      "last_active": 1792599359.672479
+    },
+    "devsync_token_255719814eecfc293e6b46df2bfa1d85e9da11b1": {
+      "username": "signup_user_1792599431",
+      "user": {
+        "id": "dev-signup_user_1792599431",
+        "name": "Signup Test User",
+        "username": "signup_user_1792599431",
+        "email": "signup_user_1792599431@example.com",
+        "role": "Developer",
+        "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+        "location": "Bengaluru, India"
+      },
+      "created": 1792599444.8398185
     }
   },
   "version": "1.3.0",
@@ -11305,6 +11877,36 @@
           "authorAvatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80",
           "text": "Reproduced and verified in staging test environment.",
           "created_at": 1792570591.366198,
+          "time": "Just now"
+        }
+      ]
+    },
+    "issue-122": {
+      "id": "issue-122",
+      "number": 122,
+      "title": "E2E Integration Test Issue 1792599342",
+      "repository": "devsync-core",
+      "labels": [
+        "bug",
+        "e2e-test"
+      ],
+      "author": "balajikumar",
+      "authorName": "Balaji",
+      "authorAvatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80",
+      "commentsCount": 1,
+      "status": "Open",
+      "created_at": 1792599342.9242082,
+      "updated_at": 1792599343.0426764,
+      "updated": "Just now",
+      "description": "Automated E2E test verifying full issue lifecycle.",
+      "comments": [
+        {
+          "id": "comm-122-1",
+          "author": "balajikumar",
+          "authorName": "Balaji",
+          "authorAvatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80",
+          "text": "Reproduced and verified in staging test environment.",
+          "created_at": 1792599342.966323,
           "time": "Just now"
         }
       ]
@@ -12927,6 +13529,57 @@
       ],
       "merged_at": 1792570595.067193,
       "merged_by": "naveen3438"
+    },
+    "pr-68": {
+      "id": "pr-68",
+      "number": 68,
+      "title": "E2E Integration PR 1792599344",
+      "repository": "devsync-core",
+      "labels": [
+        "enhancement"
+      ],
+      "author": "naveen3438",
+      "authorName": "Naveen Kumar D",
+      "authorAvatar": "/public/images/avatars/avatar_naveen3438_55aa05a81e11.png",
+      "reviewers": [],
+      "commentsCount": 1,
+      "status": "Merged",
+      "statusClass": "badge-status-merged",
+      "created_at": 1792599344.2044785,
+      "updated_at": 1792599344.2992876,
+      "updated": "Just now",
+      "sourceBranch": "feature/authentication",
+      "targetBranch": "main",
+      "description": "Comprehensive E2E verification PR for automated testing.",
+      "commitsCount": 1,
+      "changedFilesCount": 1,
+      "commits": [
+        {
+          "hash": "7f6d2a17",
+          "message": "E2E Integration PR 1792599344",
+          "author": "Naveen Kumar D",
+          "time": "Just now"
+        }
+      ],
+      "changedFiles": [
+        {
+          "path": "apps/auth/otp.py",
+          "additions": 12,
+          "deletions": 2,
+          "diff": "+ // Code additions for branch feature/authentication\n+ # DevSync Email OTP Module\n"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "rev-27d21274",
+          "author": "naveen3438",
+          "action": "comment",
+          "comment": "Code review looks great. All test suites passing. Ready for merge.",
+          "created_at": 1792599344.2525709
+        }
+      ],
+      "merged_at": 1792599344.2992873,
+      "merged_by": "naveen3438"
     }
   },
   "teams": {
@@ -13228,9 +13881,9 @@
       ],
       "isOnline": true,
       "unreadCount": 0,
-      "updated_at": 1792570606.535408,
-      "lastMessage": "Automated E2E discussion test message 1792570604.5054574",
-      "lastMessageTime": "1:46 PM"
+      "updated_at": 1792599352.3504446,
+      "lastMessage": "Automated E2E discussion test message 1792599350.3142178",
+      "lastMessageTime": "9:45 PM"
     },
     "conv-direct-priya": {
       "id": "conv-direct-priya",
@@ -13783,6 +14436,25 @@
             "naveen3438"
           ]
         }
+      },
+      {
+        "id": "msg_caa4baf8fcd1",
+        "conversation_id": "conv-direct-balaji",
+        "sender": "balajikumar",
+        "senderName": "Balaji",
+        "senderAvatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80",
+        "text": "Automated E2E discussion test message 1792599350.3142178",
+        "timestamp": 1792599352.3504076,
+        "time": "9:45 PM",
+        "status": "read",
+        "reply_to": null,
+        "replyTo": null,
+        "attachment": null,
+        "reactions": {
+          "\ud83d\ude80": [
+            "naveen3438"
+          ]
+        }
       }
     ],
     "conv-direct-priya": [
@@ -14244,6 +14916,22 @@
         "senderAvatar": "/public/images/avatars/avatar_naveen3438_55aa05a81e11.png",
         "time": "1:46 PM",
         "text": "Automated E2E discussion message 1792570598",
+        "reactions": {
+          "\ud83d\ude80": [
+            "naveen3438"
+          ]
+        }
+      },
+      {
+        "id": "cmsg_a7cc1f59a394",
+        "channelId": "ch-general",
+        "author": "Naveen Kumar D",
+        "authorAvatar": "/public/images/avatars/avatar_naveen3438_55aa05a81e11.png",
+        "sender": "naveen3438",
+        "senderName": "Naveen Kumar D",
+        "senderAvatar": "/public/images/avatars/avatar_naveen3438_55aa05a81e11.png",
+        "time": "9:45 PM",
+        "text": "Automated E2E discussion message 1792599345",
         "reactions": {
           "\ud83d\ude80": [
             "naveen3438"

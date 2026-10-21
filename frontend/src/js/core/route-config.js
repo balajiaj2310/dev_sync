@@ -51,6 +51,7 @@ export const ROUTES = {
 
   get REPOSITORIES() { return `${getBasePath()}/repositories/list.html`; },
   get REPOSITORY_DETAIL() { return `${getBasePath()}/repositories/detail.html`; },
+  get REPOSITORY_WORKSPACE() { return `${getBasePath()}/repositories/workspace.html`; },
   get REPOSITORY_CREATE() { return `${getBasePath()}/repositories/create.html`; },
   get REPOSITORY_FILES() { return `${getBasePath()}/repositories/files.html`; },
   get REPOSITORY_COMMITS() { return `${getBasePath()}/repositories/commits.html`; },

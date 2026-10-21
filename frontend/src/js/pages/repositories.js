@@ -89,7 +89,8 @@ export async function initRepositoriesPage() {
           <span class="badge ${repo.visibility === 'Public' ? 'badge-public' : 'badge-private'}">${escapeHtml(repo.visibility || 'Private')}</span>
         </td>
         <td>
-          <a href="${ROUTES.REPOSITORY_DETAIL}?repo=${encodeURIComponent(repo.name || repo.id)}" class="btn btn-outline btn-sm" style="padding: 2px 8px; font-size: 11px;">Workspace &rarr;</a>
+          <a href="${ROUTES.REPOSITORY_DETAIL}?repo=${encodeURIComponent(repo.name || repo.id)}" class="btn btn-outline btn-sm" style="padding: 2px 8px; font-size: 11px;">Details &rarr;</a>
+          <a href="${ROUTES.REPOSITORY_WORKSPACE}?repo=${encodeURIComponent(repo.name || repo.id)}" class="btn btn-primary btn-sm ml-1" style="padding: 2px 8px; font-size: 11px;" title="Open in Browser IDE">IDE &lt;/&gt;</a>
         </td>
       </tr>
     `).join('');
@@ -177,6 +178,11 @@ export async function initRepositoryDetailPage() {
     document.title = `${repo.name} — DevSync Workspace`;
 
     // Populate Header
+    const openWorkspaceBtn = document.getElementById('openWorkspaceBtn');
+    if (openWorkspaceBtn) {
+      openWorkspaceBtn.href = `${ROUTES.REPOSITORY_WORKSPACE}?repo=${encodeURIComponent(repo.name || repo.id)}&branch=${encodeURIComponent(currentBranch)}`;
+    }
+
     const nameEl = document.getElementById('repoNameDisplay');
     if (nameEl) nameEl.textContent = repo.name;
     const ownerEl = document.getElementById('repoOwnerDisplay');

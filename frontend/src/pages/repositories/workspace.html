@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Code Workspace  DevSync</title>
+  <link rel="icon" type="image/svg+xml" href="../../../public/favicon.svg">
+  <link rel="stylesheet" href="../../assets/css/tokens.css">
+  <link rel="stylesheet" href="../../assets/css/reset.css">
+  <link rel="stylesheet" href="../../assets/css/typography.css">
+  <link rel="stylesheet" href="../../assets/css/global.css">
+  <link rel="stylesheet" href="../../assets/css/utilities.css">
+  <link rel="stylesheet" href="../../assets/css/layout/header.css">
+  <link rel="stylesheet" href="../../assets/css/layout/sidebar.css">
+  <link rel="stylesheet" href="../../assets/css/layout/responsive.css">
+  <link rel="stylesheet" href="../../assets/css/components/buttons.css">
+  <link rel="stylesheet" href="../../assets/css/components/cards.css">
+  <link rel="stylesheet" href="../../assets/css/components/forms.css">
+  <link rel="stylesheet" href="../../assets/css/components/badges.css">
+  <link rel="stylesheet" href="../../assets/css/components/dropdowns.css">
+  <link rel="stylesheet" href="../../assets/css/components/notifications.css">
+  <link rel="stylesheet" href="../../assets/css/components/modals.css">
+  <link rel="stylesheet" href="../../assets/css/pages/workspace.css">
+  <!-- Monaco Editor AMD Loader from CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js"></script>
+</head>
+<body data-authenticated="true" data-page="workspace" class="workspace-page-body">
+  <div class="app-container" id="workspaceRoot">
+    <!-- Top Global Header -->
+    <header class="app-topbar" style="height: 52px; min-height: 52px; padding: 0 16px;">
+      <div class="topbar-left" style="display: flex; align-items: center; gap: 12px;">
+        <a href="detail.html" class="workspace-repo-title" id="repoBreadcrumb">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          <span id="repoNameDisplay">devsync-core</span>
+        </a>
+        <div class="workspace-branch-badge">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>
+          <select id="workspaceBranchSelect" class="workspace-branch-select" aria-label="Current Branch">
+            <option value="main">main</option>
+          </select>
+        </div>
+        <div id="saveStatusIndicator" style="font-size: 11px; color: #64748b; display: flex; align-items: center; gap: 4px;">
+          <span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:#10b981;"></span>
+          <span>Saved</span>
+        </div>
+      </div>
+
+      <div class="topbar-right" style="display: flex; align-items: center; gap: 8px;">
+        <select id="workspaceLangSelect" class="form-select form-select-sm" style="width: 130px; font-size: 12px;" aria-label="Select Programming Language">
+          <option value="python">Python 3</option>
+          <option value="javascript">JavaScript</option>
+          <option value="c">C (GCC)</option>
+          <option value="cpp">C++ (G++)</option>
+          <option value="java">Java (OpenJDK)</option>
+        </select>
+
+        <button type="button" class="btn btn-outline btn-sm" id="saveBtn" title="Save file (Ctrl+S)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          <span>Save</span>
+        </button>
+
+        <button type="button" class="btn btn-run-code btn-sm" id="runBtn" title="Execute Code (Ctrl+Enter)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          <span>Run</span>
+        </button>
+
+        <button type="button" class="btn btn-outline btn-sm" id="openIdeBtn" title="Open in VS Code, PyCharm, IntelliJ...">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          <span>Open in IDE</span>
+        </button>
+
+        <a href="#" class="btn btn-outline btn-sm" id="downloadZipBtn" title="Download ZIP Archive" download>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span>ZIP</span>
+        </a>
+
+        <a href="detail.html" class="btn btn-outline btn-sm" id="backToRepoBtn" title="Back to Repository Overview">
+          <span>Exit Workspace</span>
+        </a>
+      </div>
+    </header>
+
+    <!-- Workspace Main Shell -->
+    <div class="workspace-shell">
+      <div class="workspace-body">
+        <!-- Sidebar: File Explorer -->
+        <aside class="workspace-sidebar" id="workspaceSidebar">
+          <div class="workspace-sidebar-header">
+            <span>Explorer</span>
+            <div class="workspace-sidebar-actions">
+              <button class="sidebar-icon-btn" id="newFileBtn" title="New File" aria-label="New File">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+              </button>
+              <button class="sidebar-icon-btn" id="newFolderBtn" title="New Folder" aria-label="New Folder">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg>
+              </button>
+              <button class="sidebar-icon-btn" id="refreshTreeBtn" title="Refresh Tree" aria-label="Refresh Tree">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+              </button>
+              <button class="sidebar-icon-btn" id="toggleSidebarBtn" title="Collapse Sidebar" aria-label="Collapse Sidebar">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="11 17 6 12 11 7"/><polyline points="18 17 13 12 18 7"/></svg>
+              </button>
+            </div>
+          </div>
+          <!-- File Tree -->
+          <div class="workspace-file-tree" id="fileTreeContainer">
+            <div style="padding: 16px; font-size: 12px; color: #64748b; text-align: center;">Loading project files...</div>
+          </div>
+        </aside>
+
+        <!-- Main Editor Section -->
+        <main class="workspace-main">
+          <!-- Editor Tabs Bar -->
+          <div class="workspace-tabs-bar" id="editorTabsBar" role="tablist">
+            <!-- Tabs dynamically injected here -->
+          </div>
+
+          <!-- Code Editor Area -->
+          <div class="workspace-editor-container">
+            <div id="monacoEditorRoot"></div>
+            <textarea id="fallbackEditor" class="fallback-editor-textarea" style="display: none;" spellcheck="false" placeholder="Type your code here..."></textarea>
+          </div>
+
+          <!-- Bottom Console / Execution Panel -->
+          <div class="workspace-bottom-panel" id="bottomPanel">
+            <div class="panel-resize-handle" id="bottomResizeHandle"></div>
+            <div class="panel-header">
+              <div class="panel-tabs">
+                <button type="button" class="panel-tab active" data-tab="output">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+                  <span>Output</span>
+                </button>
+                <button type="button" class="panel-tab" data-tab="errors">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                  <span>Errors</span>
+                  <span class="panel-badge badge-error" id="errorCountBadge" style="display: none;">0</span>
+                </button>
+                <button type="button" class="panel-tab" data-tab="stdin">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                  <span>Input (stdin)</span>
+                </button>
+                <button type="button" class="panel-tab" data-tab="history">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>
+                  <span>History</span>
+                </button>
+                <button type="button" class="panel-tab" data-tab="git">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 0 1 2 2v7"/><line x1="6" y1="9" x2="6" y2="21"/></svg>
+                  <span>Git Changes</span>
+                </button>
+              </div>
+
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <button class="sidebar-icon-btn" id="clearOutputBtn" title="Clear Console">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                </button>
+                <button class="sidebar-icon-btn" id="togglePanelBtn" title="Collapse / Expand Panel">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Panel Body -->
+            <div class="panel-body" id="panelBody">
+              <!-- Output View -->
+              <div id="viewOutput">
+                <div class="console-meta-bar" id="consoleMetaBar" style="display: none;">
+                  <span id="metaStatus">Ready</span>
+                  <span id="metaWallTime">0 ms</span>
+                  <span id="metaMemory">0 KB</span>
+                  <span id="metaExitCode">Exit 0</span>
+                </div>
+                <pre class="console-output-text" id="stdoutText">Click "Run" or press Ctrl+Enter to execute your code.</pre>
+              </div>
+
+              <!-- Errors View -->
+              <div id="viewErrors" style="display: none;">
+                <pre class="console-output-text console-stderr" id="stderrText">No errors reported.</pre>
+              </div>
+
+              <!-- Stdin View -->
+              <div id="viewStdin" class="stdin-container" style="display: none;">
+                <p style="font-size: 12px; color: #64748b; margin: 0;">Provide standard input lines for your program:</p>
+                <textarea id="stdinInput" class="stdin-textarea" placeholder="Enter input text for stdin..."></textarea>
+                <div style="display: flex; justify-content: flex-end;">
+                  <button type="button" class="btn btn-primary btn-sm" id="runWithStdinBtn">Run with Input</button>
+                </div>
+              </div>
+
+              <!-- History View -->
+              <div id="viewHistory" style="display: none;">
+                <div id="historyListContainer">
+                  <p style="font-size: 12px; color: #64748b; margin: 0;">No execution history recorded yet.</p>
+                </div>
+              </div>
+
+              <!-- Git View -->
+              <div id="viewGit" style="display: none;">
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                  <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <span style="font-size: 12px; font-weight: 600;">Workspace Git Changes</span>
+                    <button type="button" class="btn btn-primary btn-sm" id="openCommitModalBtn">Commit to Branch</button>
+                  </div>
+                  <div id="gitStatusList" style="font-size: 12px; color: #475569;">
+                    Loading Git status...
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: New File -->
+  <div class="modal" id="newFileModal" tabindex="-1" style="display: none;">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">New File</h5>
+          <button type="button" class="btn-close" data-modal-close>&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group mb-3">
+            <label class="form-label" for="newFilePathInput">File Path</label>
+            <input type="text" id="newFilePathInput" class="form-control" placeholder="e.g. src/app.py or test.js" required />
+            <small class="form-text text-muted">Include path folders if you want to create them automatically.</small>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-modal-close>Cancel</button>
+          <button type="button" class="btn btn-primary" id="confirmNewFileBtn">Create File</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: New Folder -->
+  <div class="modal" id="newFolderModal" tabindex="-1" style="display: none;">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">New Folder</h5>
+          <button type="button" class="btn-close" data-modal-close>&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group mb-3">
+            <label class="form-label" for="newFolderPathInput">Folder Path</label>
+            <input type="text" id="newFolderPathInput" class="form-control" placeholder="e.g. services or utils" required />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-modal-close>Cancel</button>
+          <button type="button" class="btn btn-primary" id="confirmNewFolderBtn">Create Folder</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Rename File / Folder -->
+  <div class="modal" id="renameModal" tabindex="-1" style="display: none;">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Rename Path</h5>
+          <button type="button" class="btn-close" data-modal-close>&times;</button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="renameOldPath" />
+          <div class="form-group mb-3">
+            <label class="form-label" for="renameNewPathInput">New Path</label>
+            <input type="text" id="renameNewPathInput" class="form-control" required />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-modal-close>Cancel</button>
+          <button type="button" class="btn btn-primary" id="confirmRenameBtn">Rename</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Delete Confirmation -->
+  <div class="modal" id="deleteModal" tabindex="-1" style="display: none;">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Delete File</h5>
+          <button type="button" class="btn-close" data-modal-close>&times;</button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="deleteTarget" />
+          <p>Are you sure you want to delete <strong id="deleteTargetDisplay"></strong>?</p>
+          <p class="text-danger" style="font-size: 13px;">This action cannot be undone.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-modal-close>Cancel</button>
+          <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: External IDE & Clone URLs -->
+  <div class="modal" id="ideModal" tabindex="-1" style="display: none;">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Open in External IDE or Clone</h5>
+          <button type="button" class="btn-close" data-modal-close>&times;</button>
+        </div>
+        <div class="modal-body">
+          <p style="font-size: 13px; color: #64748b;">
+            Open this repository directly in your desktop IDE using deep-link protocols, or clone via Git.
+          </p>
+
+          <div class="ide-grid" id="ideLinksGrid">
+            <!-- IDE deep links populated dynamically -->
+          </div>
+
+          <h6 style="font-size: 13px; font-weight: 700; margin-top: 16px;">Clone via Git</h6>
+          <div class="clone-box">
+            <span id="httpsCloneUrl">git clone ...</span>
+            <button type="button" class="btn btn-outline btn-sm" id="copyCloneBtn">Copy</button>
+          </div>
+
+          <h6 style="font-size: 13px; font-weight: 700; margin-top: 16px;">CLI Quick Start</h6>
+          <pre style="background: #f1f5f9; padding: 12px; border-radius: 6px; font-size: 12px; margin: 0;" id="cliInstructionsText"></pre>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-modal-close>Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Git Commit -->
+  <div class="modal" id="gitCommitModal" tabindex="-1" style="display: none;">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Commit Changes</h5>
+          <button type="button" class="btn-close" data-modal-close>&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group mb-3">
+            <label class="form-label" for="commitMessageInput">Commit Message</label>
+            <input type="text" id="commitMessageInput" class="form-control" placeholder="e.g. Implement matrix multiplication algorithm" required />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-modal-close>Cancel</button>
+          <button type="button" class="btn btn-primary" id="confirmGitCommitBtn">Commit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main JavaScript bundle -->
+  <script type="module" src="../../js/main.js"></script>
+</body>
+</html>
