@@ -27,3 +27,5 @@ backups/
 
 # Test temporary artifacts
 data/.test_last_otp.txt
+
+data/.test_last_email_otp.txt

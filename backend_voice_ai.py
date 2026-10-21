@@ -18,8 +18,9 @@ except ImportError:
 # Gemini configuration
 GEMINI_LIVE_MODEL = "gemini-3.8-live"
 GEMINI_LIVE_FALLBACK_MODEL = "gemini-2.0-flash-exp"
-GEMINI_TEXT_MODELS = ["gemini-3.5-flash", "gemini-3.6-flash"]
-GEMINI_TTS_MODEL = "gemini-3.1-flash-tts-preview"
+GEMINI_TEXT_MODELS = ["gemini-flash-lite-latest", "gemini-3.5-flash-lite", "gemini-3.8-flash", "gemini-3.7-flash"]
+GEMINI_TTS_MODELS = ["gemini-3.8-flash-lite-tts", "gemini-3.8-flash-tts", "gemini-3.1-flash-tts-preview"]
+GEMINI_TTS_MODEL = "gemini-3.8-flash-lite-tts"
 GEMINI_WS_URL = "wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContentConstrained"
 
 SUPPORTED_VOICES = [
@@ -161,12 +162,13 @@ def build_system_instruction(user_profile=None, active_repo=None, active_branch=
         "DevSync is a developer collaboration platform for code repositories, branch management, pull requests, issues, teams, and Project Pulse analytics.",
         f"You are currently talking with @{username} ({user_name}).",
         "",
-        "### CORE GUIDELINES FOR VOICE CONVERSATION:",
-        "1. Spoken responses must be concise, crisp, and conversational (1 to 3 sentences by default).",
-        "2. Avoid reading aloud complex markdown syntax like asterisks, hash headers, or long URLs. Speak smoothly as if pairing in person.",
-        "3. When discussing code, state high-level logic clearly. If deep code is needed, explain the structure and offer to send code to the screen.",
-        "4. NEVER invent pull requests, issues, or repositories. Always stick to the verified facts provided in the workspace context below.",
-        "5. For destructive actions (e.g., merging PRs, deleting branches, force pushing), always ask for explicit confirmation first.",
+        "### CORE GUIDELINES FOR NATURAL HUMAN-LIKE VOICE CONVERSATION:",
+        "1. Talk naturally, warmly, and conversationally like an empathetic senior developer sitting right next to your pair-programming teammate.",
+        "2. Address the developer naturally with friendly phrasing (e.g., 'Hey Naveen! Let\'s look into that...', 'Great question! Here is what\'s going on...').",
+        "3. Speak in flowing, natural spoken English without dry robotic recitations, markdown bullets, or asterisks.",
+        "4. Keep voice replies clear, warm, and engaging (2 to 4 spoken sentences by default) so the conversation feels effortless and human.",
+        "5. NEVER invent pull requests, issues, or repositories. Always stick to the verified facts provided in the workspace context below.",
+        "6. For destructive actions (e.g., merging PRs, deleting branches, force pushing), always ask for explicit confirmation first.",
         ""
     ]
 
@@ -274,7 +276,7 @@ def generate_gemini_text_chat(prompt, context_instruction=None):
     payload = {
         "contents": contents,
         "generationConfig": {
-            "temperature": 0.4,
+            "temperature": 0.65,
             "maxOutputTokens": 1000
         }
     }
@@ -289,7 +291,7 @@ def generate_gemini_text_chat(prompt, context_instruction=None):
                 headers=headers,
                 method="POST"
             )
-            with urllib.request.urlopen(req, timeout=6) as resp:
+            with urllib.request.urlopen(req, timeout=4) as resp:
                 data = json.loads(resp.read().decode('utf-8'))
                 candidates = data.get('candidates', [])
                 if candidates:
@@ -299,6 +301,8 @@ def generate_gemini_text_chat(prompt, context_instruction=None):
                         return reply_text.strip()
         except Exception as e:
             print(f"[Gemini Text Chat] Model {model_name} failed: {e}")
+            if "timed out" in str(e).lower() or isinstance(e, TimeoutError):
+                break
             continue
 
     return None
@@ -317,7 +321,6 @@ def synthesize_speech(text, voice_name="Puck"):
     if len(clean_text) > 400:
         clean_text = clean_text[:400] + "..."
 
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_TTS_MODEL}:generateContent?key={api_key}"
     payload = {
         "contents": [{"parts": [{"text": clean_text}]}],
         "generationConfig": {
@@ -332,28 +335,31 @@ def synthesize_speech(text, voice_name="Puck"):
         }
     }
 
-    try:
-        req = urllib.request.Request(
-            url,
-            data=json.dumps(payload).encode('utf-8'),
-            headers={"Content-Type": "application/json"},
-            method="POST"
-        )
-        with urllib.request.urlopen(req, timeout=12) as resp:
-            data = json.loads(resp.read().decode('utf-8'))
-            candidates = data.get('candidates', [])
-            if candidates:
-                parts = candidates[0].get('content', {}).get('parts', [])
-                for part in parts:
-                    inline = part.get('inlineData')
-                    if inline and inline.get('data'):
-                        return {
-                            "mimeType": inline.get('mimeType', 'audio/l16; rate=24000; channels=1'),
-                            "audioBase64": inline.get('data'),
-                            "text": clean_text,
-                            "sampleRate": 24000
-                        }
-    except Exception as e:
-        print(f"[Gemini TTS] Synthesis failed: {e}")
+    for tts_model in GEMINI_TTS_MODELS:
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{tts_model}:generateContent?key={api_key}"
+        try:
+            req = urllib.request.Request(
+                url,
+                data=json.dumps(payload).encode('utf-8'),
+                headers={"Content-Type": "application/json"},
+                method="POST"
+            )
+            with urllib.request.urlopen(req, timeout=15) as resp:
+                data = json.loads(resp.read().decode('utf-8'))
+                candidates = data.get('candidates', [])
+                if candidates:
+                    parts = candidates[0].get('content', {}).get('parts', [])
+                    for part in parts:
+                        inline = part.get('inlineData')
+                        if inline and inline.get('data'):
+                            return {
+                                "mimeType": inline.get('mimeType', 'audio/l16; rate=24000; channels=1'),
+                                "audioBase64": inline.get('data'),
+                                "text": clean_text,
+                                "sampleRate": 24000
+                            }
+        except Exception as e:
+            print(f"[Gemini TTS] Model {tts_model} failed: {e}")
+            continue
 
     return None

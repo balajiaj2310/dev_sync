@@ -24,7 +24,9 @@ SUITES = [
     "test_phase3_frontend_static",
     "test_phase4_database_integrity",
     "test_phase5_security_audit",
-    "test_phase6_e2e_journeys"
+    "test_phase6_e2e_journeys",
+    "tests.test_e2e_feature_repairs",
+    "tests.test_email_otp_delivery"
 ]
 
 def run_master():

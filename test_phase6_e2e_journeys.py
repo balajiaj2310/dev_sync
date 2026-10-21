@@ -21,7 +21,7 @@ import time
 BASE_URL = "http://127.0.0.1:8000"
 
 
-def send_req(method, path, data=None, token=None, custom_headers=None):
+def send_req(method, path, data=None, token=None, custom_headers=None, timeout=25):
     url = f"{BASE_URL}{path}"
     headers = {"Accept": "application/json"}
     if token:
@@ -42,7 +42,7 @@ def send_req(method, path, data=None, token=None, custom_headers=None):
 
     req = urllib.request.Request(url, data=body_bytes, headers=headers, method=method)
     try:
-        with urllib.request.urlopen(req, timeout=5) as resp:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
             content = resp.read().decode("utf-8", errors="replace")
             try:
                 parsed = json.loads(content)

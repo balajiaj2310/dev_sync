@@ -636,6 +636,19 @@ INITIAL_CONVERSATIONS = {
         'lastMessage': 'Database indexes are staged in #39. Query times dropped from 240ms to 18ms.',
         'lastMessageTime': '11:15 AM'
     },
+    'conv-direct-balaji-priya': {
+        'id': 'conv-direct-balaji-priya',
+        'type': 'direct',
+        'title': 'Priya S',
+        'avatar': 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=120&q=80',
+        'members': ['balajikumar', 'priyas'],
+        'admins': ['balajikumar'],
+        'isOnline': True,
+        'unreadCount': 0,
+        'updated_at': NOW - 2000,
+        'lastMessage': 'Can you check the migration plan for PostgreSQL 16?',
+        'lastMessageTime': '10:35 AM'
+    },
     'conv-group-core': {
         'id': 'conv-group-core',
         'type': 'group',
@@ -722,6 +735,21 @@ INITIAL_MESSAGES = {
             'status': 'read',
             'reply_to': None,
             'reactions': {'⚡': ['naveen3438', 'balajikumar']}
+        }
+    ],
+    'conv-direct-balaji-priya': [
+        {
+            'id': 'msg-bp1',
+            'conversation_id': 'conv-direct-balaji-priya',
+            'sender': 'priyas',
+            'senderName': 'Priya S',
+            'senderAvatar': 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=64&q=80',
+            'text': 'Can you check the migration plan for PostgreSQL 16?',
+            'timestamp': NOW - 2000,
+            'time': '10:35 AM',
+            'status': 'read',
+            'reply_to': None,
+            'reactions': {'👍': ['balajikumar']}
         }
     ],
     'conv-group-core': [
@@ -1471,7 +1499,7 @@ def remove_team_member(username, project_name=None):
 # --------------------------------------------------------------------------
 # DevSync Chat Business Logic
 # --------------------------------------------------------------------------
-def list_conversations(current_user_username):
+def list_conversations(current_user_username, dev_profiles=None):
     """Return all conversations visible to the current user."""
     u = current_user_username.strip().lower()
     results = []
@@ -1479,6 +1507,30 @@ def list_conversations(current_user_username):
         members_lower = [m.lower() for m in conv.get('members', [])]
         if u in members_lower or conv.get('type') == 'public_group':
             c_copy = dict(conv)
+            # For direct messages, dynamically compute title & avatar for the counterparty
+            if c_copy.get('type') == 'direct':
+                counterparties = [m for m in conv.get('members', []) if m.lower() != u]
+                if counterparties:
+                    other_u = counterparties[0]
+                    if dev_profiles and other_u in dev_profiles:
+                        p = dev_profiles[other_u]
+                        c_copy['title'] = p.get('fullName') or p.get('name') or other_u
+                        if p.get('avatarUrl') or p.get('avatar'):
+                            c_copy['avatar'] = p.get('avatarUrl') or p.get('avatar')
+                    elif other_u.lower() == 'balajikumar':
+                        c_copy['title'] = 'Balaji'
+                        c_copy['avatar'] = 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80'
+                    elif other_u.lower() == 'naveen3438':
+                        c_copy['title'] = 'Naveen Kumar D'
+                        c_copy['avatar'] = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80'
+                    elif other_u.lower() == 'priyas':
+                        c_copy['title'] = 'Priya S'
+                        c_copy['avatar'] = 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=120&q=80'
+                    elif other_u.lower() == 'karthik':
+                        c_copy['title'] = 'Karthik'
+                        c_copy['avatar'] = 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=120&q=80'
+                    else:
+                        c_copy['title'] = other_u
             # Fetch latest message preview
             msgs = MESSAGES.get(conv['id'], [])
             if msgs:
@@ -1494,6 +1546,11 @@ def get_messages(conversation_id, current_user_username, page=1, page_size=50):
     """Get paginated message stream for a conversation."""
     conv = CONVERSATIONS.get(conversation_id)
     if not conv:
+        if conversation_id in CHANNEL_MESSAGES or any(
+            any(ch.get('id') == conversation_id for ch in comm.get('channels', []))
+            for comm in COMMUNITIES.values()
+        ):
+            return get_channel_messages(conversation_id), None
         return None, "Conversation not found."
 
     u = current_user_username.strip().lower()
@@ -1514,6 +1571,11 @@ def post_message(conversation_id, text, current_user_username, reply_to=None, at
     """Post a message into a conversation."""
     conv = CONVERSATIONS.get(conversation_id)
     if not conv:
+        if conversation_id in CHANNEL_MESSAGES or any(
+            any(ch.get('id') == conversation_id for ch in comm.get('channels', []))
+            for comm in COMMUNITIES.values()
+        ):
+            return post_channel_message(conversation_id, text, current_user_username, dev_profiles)
         return None, "Conversation not found."
 
     u = current_user_username.strip().lower()
@@ -1543,6 +1605,7 @@ def post_message(conversation_id, text, current_user_username, reply_to=None, at
         'time': datetime.now().strftime('%I:%M %p').lstrip('0'),
         'status': 'sent',
         'reply_to': reply_to,
+        'replyTo': reply_to,
         'attachment': attachment,
         'reactions': {}
     }
@@ -1585,7 +1648,15 @@ def react_to_message(conversation_id, message_id, emoji, actor_username):
 def create_conversation(data, actor_username, dev_profiles=None):
     """Create a new 1:1 direct chat or group conversation."""
     conv_type = data.get('type', 'direct')
-    members = list(set([actor_username] + data.get('members', [])))
+    raw_members = list(data.get('members', []))
+    if not raw_members and data.get('participants'):
+        for p in data['participants']:
+            u = p.get('username') or p.get('name')
+            if u:
+                raw_members.append(str(u).lower().replace(' ', ''))
+    if data.get('recipientUsername'):
+        raw_members.append(str(data['recipientUsername']).lower().strip())
+    members = list(set([actor_username] + raw_members))
 
     if conv_type == 'direct':
         if len(members) < 2:
@@ -1651,7 +1722,12 @@ def list_communities():
 
 def get_channel_messages(channel_id):
     """Return messages for a specific community text channel."""
-    return CHANNEL_MESSAGES.get(channel_id, [])
+    msgs = CHANNEL_MESSAGES.get(channel_id, [])
+    for m in msgs:
+        m.setdefault('sender', m.get('author', 'Developer'))
+        m.setdefault('senderName', m.get('author', 'Developer'))
+        m.setdefault('senderAvatar', m.get('authorAvatar', ''))
+    return msgs
 
 def post_channel_message(channel_id, text, actor_username, dev_profiles=None):
     """Post message to a community text channel."""
@@ -1671,6 +1747,9 @@ def post_channel_message(channel_id, text, actor_username, dev_profiles=None):
         'channelId': channel_id,
         'author': author_name,
         'authorAvatar': author_avatar,
+        'sender': actor_username,
+        'senderName': author_name,
+        'senderAvatar': author_avatar,
         'time': datetime.now().strftime('%I:%M %p').lstrip('0'),
         'text': t,
         'reactions': {}
@@ -1731,7 +1810,7 @@ def delete_status(status_id, actor_username):
 # ==========================================================================
 import urllib.parse
 
-def handle_get(handler, path, url_parts, auth_user=None):
+def handle_get(handler, path, url_parts, auth_user=None, dev_profiles=None):
     """Handle GET requests for Issues, Pull Requests, Teams, and Chat."""
     # 1. Issues List
     if path in ('/api/v1/issues', '/api/issues', '/api/v1/issues/', '/api/issues/'):
@@ -1801,7 +1880,7 @@ def handle_get(handler, path, url_parts, auth_user=None):
     # 7. Chat Conversations
     if path in ('/api/v1/chat/conversations', '/api/v1/chat/conversations/'):
         caller = auth_user['username'].lower() if auth_user else handler.headers.get('X-DevSync-User', 'naveen3438').strip().lower()
-        handler.send_json(200, list_conversations(caller))
+        handler.send_json(200, list_conversations(caller, dev_profiles=dev_profiles))
         return True
 
     # 8. Chat Messages
@@ -2044,11 +2123,12 @@ def handle_post(handler, path, url_parts, auth_user, dev_profiles, repositories,
         except Exception:
             handler.send_json(400, {'error': 'Invalid JSON body'})
             return True
+        text_payload = body.get('text') or body.get('content') or body.get('message') or ''
         msg, err = post_message(
             conv_id,
-            body.get('text', ''),
+            text_payload,
             actor,
-            reply_to=body.get('reply_to'),
+            reply_to=body.get('reply_to') or body.get('replyTo'),
             attachment=body.get('attachment'),
             dev_profiles=dev_profiles
         )
@@ -2178,22 +2258,27 @@ def handle_patch(handler, path, url_parts, auth_user, save_fn):
         except Exception:
             handler.send_json(400, {'error': 'Invalid JSON body'})
             return True
-        VALID_ROLES = {'Maintainer', 'Lead Maintainer', 'Collaborator', 'Viewer', 'Contributor', 'Core Contributor', 'Admin', 'Owner', 'Developer'}
+        VALID_ROLES = {
+            'Maintainer', 'Lead Maintainer', 'Collaborator', 'Viewer', 'Contributor',
+            'Core Contributor', 'Admin', 'Owner', 'Developer', 'Fullstack Developer',
+            'Frontend Developer', 'Backend Developer', 'UI/UX Designer', 'Lead'
+        }
+        VALID_ROLES_MAP = {r.lower(): r for r in VALID_ROLES}
         if 'globalRole' in body:
-            g_role = str(body['globalRole']).strip()
-            if g_role not in VALID_ROLES:
-                handler.send_json(400, {'error': f'Invalid globalRole: {g_role}'})
+            g_role_raw = str(body['globalRole']).strip()
+            if g_role_raw.lower() not in VALID_ROLES_MAP:
+                handler.send_json(400, {'error': f'Invalid globalRole: {g_role_raw}'})
                 return True
-            member['globalRole'] = g_role
+            member['globalRole'] = VALID_ROLES_MAP[g_role_raw.lower()]
         if 'availability' in body:
             member['availability'] = str(body['availability']).strip()
         if 'role' in body or ('project' in body and 'role' in body):
-            role_val = str(body.get('role', '')).strip()
-            if role_val not in VALID_ROLES:
-                handler.send_json(400, {'error': f'Invalid role: {role_val}'})
+            role_val_raw = str(body.get('role', '')).strip()
+            if role_val_raw.lower() not in VALID_ROLES_MAP:
+                handler.send_json(400, {'error': f'Invalid role: {role_val_raw}'})
                 return True
             proj = str(body.get('project', 'devsync-core')).strip()
-            member.setdefault('projectRoles', {})[proj] = role_val
+            member.setdefault('projectRoles', {})[proj] = VALID_ROLES_MAP[role_val_raw.lower()]
         save_fn()
         handler.send_json(200, {'success': True, 'member': member})
         return True

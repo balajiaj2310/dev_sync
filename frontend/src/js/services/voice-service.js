@@ -36,7 +36,9 @@ export class DevSyncVoiceService {
     this.scheduledAudioTime = 0;
     this.activeAudioSources = [];
 
-    // Fallback Recognition
+    // Speech Recognition & Processing Lock
+    this.speechRecognizer = null;
+    this.isProcessingSpeech = false;
     this.fallbackRecognition = null;
     this.isFallbackMode = false;
 
@@ -84,147 +86,175 @@ export class DevSyncVoiceService {
     try {
       this.setState('requesting_mic');
 
-      // Check MediaDevices availability
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        console.warn('[DevSync Voice] MediaDevices not available, switching to Voice Relay.');
-        await this.activateFallbackMode();
-        return;
-      }
+      // 1. Request microphone access for audio levels & orb reactivity
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        try {
+          this.micStream = await navigator.mediaDevices.getUserMedia({
+            audio: {
+              channelCount: 1,
+              sampleRate: 16000,
+              echoCancellation: true,
+              noiseSuppression: true,
+              autoGainControl: true
+            }
+          });
 
-      // 1. Request microphone access
-      try {
-        this.micStream = await navigator.mediaDevices.getUserMedia({
-          audio: {
-            channelCount: 1,
-            sampleRate: 16000,
-            echoCancellation: true,
-            noiseSuppression: true,
-            autoGainControl: true
+          // Setup AudioContext & Analyser for reactive Voice Orb & soundwaves
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (AudioContextClass) {
+            this.inputAudioCtx = new AudioContextClass({ sampleRate: 16000 });
+            if (this.inputAudioCtx.state === 'suspended') {
+              await this.inputAudioCtx.resume();
+            }
+
+            const micSource = this.inputAudioCtx.createMediaStreamSource(this.micStream);
+            this.inputAnalyser = this.inputAudioCtx.createAnalyser();
+            this.inputAnalyser.fftSize = 256;
+
+            this.inputProcessor = this.inputAudioCtx.createScriptProcessor(4096, 1, 1);
+            micSource.connect(this.inputAnalyser);
+            this.inputAnalyser.connect(this.inputProcessor);
+            this.inputProcessor.connect(this.inputAudioCtx.destination);
+
+            this.bindMicrophoneStreaming();
           }
-        });
-      } catch (micErr) {
-        console.warn('[DevSync Voice] Microphone access blocked or unavailable:', micErr);
-        this.onError('Microphone access blocked. Click any Quick Voice Command to pair with speech output.');
-        await this.activateFallbackMode();
-        return;
+        } catch (micErr) {
+          console.warn('[DevSync Voice] Media stream permission prompt notice:', micErr);
+          if (micErr.name === 'NotAllowedError' || micErr.name === 'PermissionDeniedError') {
+            this.onError('Microphone access was denied. You can still type doubts in the input bar or tap Quick Commands.');
+            this.setState('ended');
+            return;
+          }
+        }
       }
 
-      this.setState('connecting');
-
-      // 2. Fetch short-lived ephemeral token and project context in parallel
-      const [tokenRes, contextRes] = await Promise.all([
-        fetch(this.options.tokenEndpoint, { credentials: 'same-origin' }).then(r => r.json()),
-        fetch(`${this.options.contextEndpoint}?repo=${encodeURIComponent(this.options.activeRepo)}&branch=${encodeURIComponent(this.options.activeBranch)}`, { credentials: 'same-origin' }).then(r => r.json())
-      ]);
-
-      if (!tokenRes.ok || !tokenRes.token) {
-        throw new Error(tokenRes.error || 'Failed to obtain Gemini Live ephemeral session token.');
-      }
-
-      this.ephemeralToken = tokenRes.token;
-      this.systemInstruction = contextRes.systemInstruction || 'You are the DevSync Voice AI assistant.';
-
-      // 3. Initialize Audio Output Context
       await this.ensureAudioOutputContext();
-
-      // 4. Initialize Microphone Input Pipeline (16kHz PCM mono)
-      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-      this.inputAudioCtx = new AudioContextClass({ sampleRate: 16000 });
-      if (this.inputAudioCtx.state === 'suspended') {
-        await this.inputAudioCtx.resume();
-      }
-
-      const micSource = this.inputAudioCtx.createMediaStreamSource(this.micStream);
-      this.inputAnalyser = this.inputAudioCtx.createAnalyser();
-      this.inputAnalyser.fftSize = 256;
-
-      // Script processor for PCM chunking (buffer size 4096 = ~256ms of audio at 16kHz)
-      this.inputProcessor = this.inputAudioCtx.createScriptProcessor(4096, 1, 1);
-      micSource.connect(this.inputAnalyser);
-      this.inputAnalyser.connect(this.inputProcessor);
-      this.inputProcessor.connect(this.inputAudioCtx.destination);
 
       // Start Session Timer
       this.sessionSeconds = 0;
+      if (this.sessionTimer) clearInterval(this.sessionTimer);
       this.sessionTimer = setInterval(() => {
         this.sessionSeconds += 1;
         this.onTimerTick(this.formatTimer(this.sessionSeconds));
       }, 1000);
 
-      // 5. Connect WebSocket to Gemini Live
-      this.connectWebSocket(tokenRes);
+      // 2. Initialize and start continuous Speech Recognition
+      const started = this.initSpeechRecognizer();
+      if (!started) {
+        console.warn('[DevSync Voice] SpeechRecognition API not supported in this browser. Quick Commands & Text input bar active.');
+        this.setState('listening', 'Voice Assistant Active (Type below or Tap Commands)');
+      } else {
+        this.setState('listening', 'Listening to your voice...');
+      }
 
     } catch (err) {
       console.error('[DevSync Voice] Session initiation failed:', err);
       this.onError(err.message || 'Microphone or connection failed.');
-      this.activateFallbackMode();
+      this.setState('ended');
     }
   }
 
-  connectWebSocket(tokenData) {
-    const wsBaseUrl = tokenData.wsEndpoint || 'wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContentConstrained';
-    const wsUrl = `${wsBaseUrl}?access_token=${encodeURIComponent(this.ephemeralToken)}`;
-
-    let socketOpened = false;
+  initSpeechRecognizer() {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      return false;
+    }
 
     try {
-      this.ws = new WebSocket(wsUrl);
+      if (this.speechRecognizer) {
+        try { this.speechRecognizer.abort(); } catch (e) {}
+      }
 
-      this.ws.onopen = () => {
-        socketOpened = true;
-        console.log('[DevSync Voice] WebSocket connected to Gemini Live.');
+      this.speechRecognizer = new SpeechRecognition();
+      this.speechRecognizer.continuous = true;
+      this.speechRecognizer.interimResults = false;
+      this.speechRecognizer.maxAlternatives = 1;
+      this.speechRecognizer.lang = this.options.language || 'en-US';
 
-        // Live model name: prefer gemini-2.0-flash-exp or configured model
-        const targetModel = tokenData.model ? (tokenData.model.startsWith('models/') ? tokenData.model : `models/${tokenData.model}`) : "models/gemini-2.0-flash-exp";
+      this.speechRecognizer.onstart = () => {
+        if (this.state !== 'speaking' && this.state !== 'thinking') {
+          this.setState('listening', 'Listening to your voice...');
+        }
+      };
 
-        // Send Setup message
-        const setupPayload = {
-          setup: {
-            model: targetModel,
-            generationConfig: {
-              responseModalities: ["AUDIO"],
-              speechConfig: {
-                voiceConfig: {
-                  prebuiltVoiceConfig: {
-                    voiceName: this.options.voiceName || "Puck"
-                  }
-                }
-              }
-            },
-            systemInstruction: {
-              parts: [{ text: this.systemInstruction }]
+      this.speechRecognizer.onresult = async (event) => {
+        if (this.isProcessingSpeech || this.isMuted) return;
+
+        let finalTranscript = '';
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          if (event.results[i].isFinal) {
+            finalTranscript += event.results[i][0].transcript;
+          }
+        }
+
+        const cleanTranscript = finalTranscript.trim();
+        if (cleanTranscript.length > 0) {
+          this.isProcessingSpeech = true;
+          this.pauseRecognition();
+
+          // Display recognized speech in conversation transcript
+          this.onTranscript('user', cleanTranscript, true);
+
+          // Route through the validated assistant pipeline
+          try {
+            await this.sendSpokenCommand(cleanTranscript);
+          } finally {
+            this.isProcessingSpeech = false;
+            if (this.state === 'listening' && !this.isMuted) {
+              this.resumeRecognition();
             }
           }
-        };
-
-        this.ws.send(JSON.stringify(setupPayload));
-        this.setState('listening');
-        this.bindMicrophoneStreaming();
-      };
-
-      this.ws.onmessage = (event) => {
-        this.handleServerMessage(event.data);
-      };
-
-      this.ws.onerror = (error) => {
-        console.warn('[DevSync Voice] WebSocket error, checking fallback:', error);
-        if (!socketOpened) {
-          this.activateFallbackMode();
         }
       };
 
-      this.ws.onclose = (event) => {
-        console.log('[DevSync Voice] WebSocket closed:', event.code, event.reason);
-        if (!socketOpened) {
-          this.activateFallbackMode();
-        } else if (this.state !== 'ended') {
+      this.speechRecognizer.onerror = (e) => {
+        console.warn('[DevSync Voice SpeechRecognition Event]:', e.error);
+        if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
+          this.onError('Microphone permission was not granted. Please allow microphone in browser settings.');
           this.stopSession();
+        } else if (e.error === 'no-speech') {
+          // Normal silence, keep session alive
         }
       };
 
-    } catch (wsErr) {
-      console.warn('[DevSync Voice] WebSocket initiation error, falling back:', wsErr);
-      this.activateFallbackMode();
+      this.speechRecognizer.onend = () => {
+        // Automatically restart speech recognition if session is active and not thinking/speaking
+        if (this.state === 'listening' && !this.isProcessingSpeech && !this.isMuted) {
+          setTimeout(() => {
+            if (this.state === 'listening' && !this.isProcessingSpeech && !this.isMuted) {
+              try {
+                this.speechRecognizer.start();
+              } catch (startErr) {
+                // Already started or restarting
+              }
+            }
+          }, 300);
+        }
+      };
+
+      this.speechRecognizer.start();
+      return true;
+    } catch (e) {
+      console.warn('[DevSync Voice] Speech recognition start exception:', e);
+      return false;
+    }
+  }
+
+  pauseRecognition() {
+    if (this.speechRecognizer) {
+      try {
+        this.speechRecognizer.abort();
+      } catch (e) {}
+    }
+  }
+
+  resumeRecognition() {
+    if (this.speechRecognizer && this.state === 'listening' && !this.isProcessingSpeech && !this.isMuted) {
+      try {
+        this.speechRecognizer.start();
+      } catch (e) {
+        // Already active
+      }
     }
   }
 
@@ -342,7 +372,8 @@ export class DevSyncVoiceService {
         bytes[i] = binaryString.charCodeAt(i);
       }
 
-      const pcm16 = new Int16Array(bytes.buffer);
+      const numSamples = Math.floor(bytes.byteLength / 2);
+      const pcm16 = new Int16Array(bytes.buffer, 0, numSamples);
       const float32 = new Float32Array(pcm16.length);
       for (let i = 0; i < pcm16.length; i++) {
         float32[i] = pcm16[i] / 32768.0;
@@ -412,8 +443,9 @@ export class DevSyncVoiceService {
 
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
-      console.warn('[DevSync Voice] SpeechRecognition API unavailable. Quick Commands are active.');
-      this.setState('listening', 'Voice Relay Active (Tap Quick Commands)');
+      console.warn('[DevSync Voice] SpeechRecognition API unavailable. Quick Commands & Text Bar are active.');
+      this.setState('listening', 'Voice Relay Active (Type below or Tap Commands)');
+      this.onTranscript('ai', 'DevSync Voice Assistant is active. Type your doubts in the input bar below or tap a Quick Command.', true);
       return;
     }
 
@@ -476,23 +508,52 @@ export class DevSyncVoiceService {
       }).then(r => r.json());
 
       if (synthRes.ok && synthRes.audioBase64) {
-        this.playPcmAudioChunk(synthRes.audioBase64);
-        this.waitForAudioCompletion();
+        try {
+          const mime = synthRes.mimeType || 'audio/wav';
+          const audioUrl = `data:${mime};base64,${synthRes.audioBase64}`;
+          const voiceAudio = new Audio(audioUrl);
+
+          voiceAudio.onplay = () => {
+            this.setState('speaking');
+          };
+          voiceAudio.onended = () => {
+            this.setState(this.isMuted ? 'muted' : 'listening');
+            this.resumeRecognition();
+          };
+          voiceAudio.onerror = () => {
+            this.playPcmAudioChunk(synthRes.audioBase64);
+            this.waitForAudioCompletion();
+            this.resumeRecognition();
+          };
+
+          await voiceAudio.play();
+        } catch (playErr) {
+          console.warn('[DevSync Voice] Audio play exception, falling back to PCM:', playErr);
+          this.playPcmAudioChunk(synthRes.audioBase64);
+          this.waitForAudioCompletion();
+          this.resumeRecognition();
+        }
       } else {
         // Native SpeechSynthesis fallback
         if (window.speechSynthesis) {
           const utter = new SpeechSynthesisUtterance(replyText);
+          utter.lang = this.options.language || 'en-US';
           utter.onstart = () => this.setState('speaking');
-          utter.onend = () => this.setState('listening');
+          utter.onend = () => {
+            this.setState('listening');
+            this.resumeRecognition();
+          };
           window.speechSynthesis.speak(utter);
         } else {
           this.setState('listening');
+          this.resumeRecognition();
         }
       }
 
     } catch (err) {
       console.error('[DevSync Voice] Command execution failed:', err);
       this.setState('listening');
+      this.resumeRecognition();
     }
   }
 
@@ -523,6 +584,15 @@ export class DevSyncVoiceService {
       this.ws.close();
       this.ws = null;
     }
+
+    // Stop Speech Recognizer
+    if (this.speechRecognizer) {
+      try {
+        this.speechRecognizer.abort();
+      } catch (e) {}
+      this.speechRecognizer = null;
+    }
+    this.isProcessingSpeech = false;
 
     // Stop Fallback Recognition
     if (this.fallbackRecognition) {

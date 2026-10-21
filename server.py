@@ -20,12 +20,34 @@ import hashlib
 import django
 from django.conf import settings
 
+def _clean_env(key, default=''):
+    val = os.environ.get(key, default)
+    if val is None:
+        return default
+    return str(val).strip().strip('"\'')
+
 # Load environment configuration from .env if present
 try:
     from dotenv import load_dotenv
-    load_dotenv()
+    _env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '.env')
+    load_dotenv(dotenv_path=_env_path, override=True)
 except Exception:
     pass
+
+_email_host = _clean_env('EMAIL_HOST', 'smtp.gmail.com')
+_email_user = _clean_env('EMAIL_HOST_USER')
+_email_pass = _clean_env('EMAIL_HOST_PASSWORD')
+try:
+    _email_port = int(_clean_env('EMAIL_PORT', '587') or 587)
+except ValueError:
+    _email_port = 587
+
+_email_backend = _clean_env('EMAIL_BACKEND')
+if not _email_backend or 'emailbackend' in _email_backend.lower():
+    _email_backend = 'django.core.mail.backends.smtp.EmailBackend' if _email_host else 'django.core.mail.backends.console.EmailBackend'
+
+_email_tls = _clean_env('EMAIL_USE_TLS', 'True').lower() in ('true', '1', 'yes')
+_default_from = _clean_env('DEFAULT_FROM_EMAIL', 'DevSync Security <devsyncfind@gmail.com>')
 
 if not settings.configured:
     settings.configure(
@@ -35,19 +57,67 @@ if not settings.configured:
             'django.contrib.auth.hashers.Argon2PasswordHasher',
             'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
         ],
-        EMAIL_BACKEND=os.environ.get('EMAIL_BACKEND') or ('django.core.mail.backends.smtp.EmailBackend' if (os.environ.get('EMAIL_HOST', '').strip()) else 'django.core.mail.backends.console.EmailBackend'),
-        EMAIL_HOST=os.environ.get('EMAIL_HOST', 'localhost'),
-        EMAIL_PORT=int(os.environ.get('EMAIL_PORT', 587) or 587),
-        EMAIL_USE_TLS=os.environ.get('EMAIL_USE_TLS', 'True').lower() in ('true', '1'),
-        EMAIL_HOST_USER=os.environ.get('EMAIL_HOST_USER', ''),
-        EMAIL_HOST_PASSWORD=os.environ.get('EMAIL_HOST_PASSWORD', ''),
-        DEFAULT_FROM_EMAIL=os.environ.get('DEFAULT_FROM_EMAIL', 'DevSync Security <security@devsync.example>'),
-        EMAIL_TIMEOUT=int(os.environ.get('EMAIL_TIMEOUT', 4) or 4),
+        EMAIL_BACKEND=_email_backend,
+        EMAIL_HOST=_email_host,
+        EMAIL_PORT=_email_port,
+        EMAIL_USE_TLS=_email_tls,
+        EMAIL_HOST_USER=_email_user,
+        EMAIL_HOST_PASSWORD=_email_pass,
+        DEFAULT_FROM_EMAIL=_default_from,
+        EMAIL_TIMEOUT=int(_clean_env('EMAIL_TIMEOUT', '10') or 10),
     )
     django.setup()
 
 from django.contrib.auth.hashers import make_password, check_password
-from django.core.mail import send_mail
+from django.core.mail import send_mail, get_connection
+
+def validate_smtp_configuration():
+    """
+    Validates required SMTP configuration parameters without exposing secrets.
+    Returns (is_configured: bool, reason: str or None, config_summary: dict).
+    """
+    host = _clean_env('EMAIL_HOST')
+    user = _clean_env('EMAIL_HOST_USER')
+    password = _clean_env('EMAIL_HOST_PASSWORD')
+    port = _clean_env('EMAIL_PORT', '587')
+
+    summary = {
+        'host': host or None,
+        'port': port,
+        'user': user or None,
+        'tls': _clean_env('EMAIL_USE_TLS', 'True'),
+        'has_password': bool(password),
+    }
+
+    if not host:
+        return False, "EMAIL_HOST is not configured in .env", summary
+    if not user:
+        return False, "EMAIL_HOST_USER is not configured in .env", summary
+    if '@' not in user or '.' not in user.split('@')[-1]:
+        return False, f"EMAIL_HOST_USER is invalid ({user})", summary
+    if not password:
+        return False, "EMAIL_HOST_PASSWORD is not configured in .env", summary
+
+    return True, None, summary
+
+def get_configured_email_connection():
+    """
+    Constructs a Django email connection from current environment variables.
+    Allows real-time credential updates and test environment isolation.
+    """
+    is_configured, _, _ = validate_smtp_configuration()
+    if not is_configured:
+        return get_connection(backend='django.core.mail.backends.console.EmailBackend')
+
+    return get_connection(
+        backend='django.core.mail.backends.smtp.EmailBackend',
+        host=_clean_env('EMAIL_HOST', 'smtp.gmail.com'),
+        port=int(_clean_env('EMAIL_PORT', '587') or 587),
+        username=_clean_env('EMAIL_HOST_USER'),
+        password=_clean_env('EMAIL_HOST_PASSWORD'),
+        use_tls=_clean_env('EMAIL_USE_TLS', 'True').lower() in ('true', '1', 'yes'),
+        timeout=int(_clean_env('EMAIL_TIMEOUT', '10') or 10)
+    )
 
 # Google OAuth Configuration (from environment variables)
 GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID', '').strip()
@@ -77,10 +147,23 @@ from backend_collaboration import (
 
 def dispatch_verification_email(email, otp):
     """
-    Dispatch verification email using Django's email facilities.
-    Supports SMTP when configured, or Console/Development backend.
-    Logs development notice clearly when SMTP is unconfigured.
+    Dispatch verification email using Django's email facilities and configured SMTP.
+    - If SMTP is configured, dispatches real email via smtp.gmail.com / configured host.
+    - If SMTP delivery fails, returns (False, error_message, True) so callers return 502 (no fake fallback).
+    - If SMTP is unconfigured in development mode, logs development notice to console and returns (True, None, False).
+    - If SMTP is unconfigured in production mode, returns (False, 'SMTP required in production', False).
     """
+    is_configured, reason, _ = validate_smtp_configuration()
+    env_mode = _clean_env('DEVSYNC_ENV', _clean_env('ENVIRONMENT', 'development')).lower()
+    is_production = env_mode in ('production', 'prod')
+
+    if not is_configured:
+        if is_production:
+            return False, f"Email delivery service unconfigured: {reason}. Production requires valid SMTP.", False
+
+        print(f"\n======================================================\n[DEVSYNC DEVELOPMENT OTP NOTICE]\nRecipient: {email}\nVerification Code: {otp}\nExpiration: 10 minutes\nStatus: SMTP unconfigured in dev environment (logged to console)\n======================================================\n", flush=True)
+        return True, None, False
+
     subject = "DevSync Account Verification Code"
     message = (
         f"Hello,\n\n"
@@ -89,19 +172,35 @@ def dispatch_verification_email(email, otp):
         f"If you did not request this verification, you can safely ignore this email.\n\n"
         f"— The DevSync Security Team"
     )
-    is_smtp_configured = bool(os.environ.get('EMAIL_HOST'))
+    html_message = (
+        f"<div style='font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",Roboto,sans-serif;max-width:540px;margin:0 auto;padding:24px;border:1px solid #e2e8f0;border-radius:12px;background:#ffffff;'>"
+        f"<h2 style='color:#0f172a;margin-top:0;'>DevSync Verification Code</h2>"
+        f"<p style='color:#475569;font-size:15px;line-height:1.5;'>Please use the following 6-digit code to verify your DevSync account:</p>"
+        f"<div style='margin:24px 0;padding:16px 24px;background:#f8fafc;border-radius:8px;border:1px dashed #cbd5e1;text-align:center;'>"
+        f"<span style='font-size:32px;letter-spacing:6px;font-weight:700;color:#2563eb;font-family:monospace;'>{otp}</span>"
+        f"</div>"
+        f"<p style='color:#64748b;font-size:13px;line-height:1.5;'>This code expires in 10 minutes and can only be used once. If you did not request this code, no action is needed.</p>"
+        f"<hr style='border:none;border-top:1px solid #e2e8f0;margin:20px 0;'/>"
+        f"<p style='color:#94a3b8;font-size:12px;margin-bottom:0;'>DevSync &bull; Developer Collaboration & Intelligence Platform</p>"
+        f"</div>"
+    )
+
     try:
+        from_addr = _clean_env('DEFAULT_FROM_EMAIL', settings.DEFAULT_FROM_EMAIL or 'DevSync Security <devsyncfind@gmail.com>')
+        conn = get_configured_email_connection()
         send_mail(
             subject,
             message,
-            settings.DEFAULT_FROM_EMAIL,
+            from_addr,
             [email],
+            html_message=html_message,
+            connection=conn,
             fail_silently=False
         )
-        return True, None, is_smtp_configured
+        return True, None, True
     except Exception as e:
-        print(f"\n[DEVSYNC EMAIL NOTICE] To: {email} | OTP: {otp} | SMTP unconfigured or failed: {e}\n", flush=True)
-        return False, str(e), is_smtp_configured
+        print(f"\n[DEVSYNC EMAIL NOTICE] To: {email} | OTP: {otp} | SMTP dispatch failed: {e}\n", flush=True)
+        return False, str(e), True
 
 def verify_google_id_token(id_token):
     """
@@ -525,6 +624,7 @@ def save_database():
                 'repositories': REPOSITORIES,
                 'activity_events': ACTIVITY_EVENTS,
                 'notifications': NOTIFICATIONS,
+                'active_sessions': ACTIVE_SESSIONS,
                 'version': '1.3.0'
             }
             backend_issues_prs_chat.export_state_to_data(dump_data)
@@ -556,6 +656,11 @@ def load_database():
                     print(f"[Database] Loaded {len(ACTIVITY_EVENTS)} activity events from disk.")
                 backend_issues_prs_chat.load_state_from_data(data)
                 print(f"[Database] Loaded issues, PRs, teams, and chat state from disk.")
+                global ACTIVE_SESSIONS
+                loaded_sessions = data.get('active_sessions', {})
+                if loaded_sessions:
+                    ACTIVE_SESSIONS.update(loaded_sessions)
+                    print(f"[Database] Loaded {len(ACTIVE_SESSIONS)} active sessions from disk.")
                 global NOTIFICATIONS
                 loaded_notifs = data.get('notifications', [])
                 if loaded_notifs:
@@ -947,7 +1052,7 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
         path = url_parts.path.rstrip('/')
 
         # Issues, PRs, Teams, and Chat GET dispatch
-        if backend_issues_prs_chat.handle_get(self, path, url_parts, self.get_authenticated_user()):
+        if backend_issues_prs_chat.handle_get(self, path, url_parts, self.get_authenticated_user(), DEV_PROFILES):
             return
 
         # Root redirect (directs to DevSync Home landing page)
@@ -1240,14 +1345,14 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
         
         # AI Voice Assistant Token & Context Endpoints (GET /api/v1/ai/voice/token, /api/v1/ai/voice/context)
         if path in ('/api/v1/ai/voice/token', '/api/ai/voice/token'):
-            auth_user = self.get_authenticated_user() or DEV_PROFILES.get('dev-balaji')
+            auth_user = self.get_authenticated_user() or get_developer_by_identifier('naveen3438') or get_developer_by_identifier('balajikumar')
             token_res = backend_voice_ai.create_live_ephemeral_token()
             status_code = 200 if token_res.get('ok') else 500
             self.send_json(status_code, token_res)
             return
 
         if path in ('/api/v1/ai/voice/context', '/api/ai/voice/context'):
-            auth_user = self.get_authenticated_user() or DEV_PROFILES.get('dev-balaji')
+            auth_user = self.get_authenticated_user() or get_developer_by_identifier('naveen3438') or get_developer_by_identifier('balajikumar')
             query = urllib.parse.parse_qs(url_parts.query)
             repo_id = query.get('repo', ['devsync-core'])[0]
             branch = query.get('branch', ['main'])[0]
@@ -1785,7 +1890,7 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
             return
 
         if path in ('/api/v1/ai/voice/context', '/api/ai/voice/context'):
-            auth_user = self.get_authenticated_user() or DEV_PROFILES.get('dev-balaji')
+            auth_user = self.get_authenticated_user() or get_developer_by_identifier('naveen3438') or get_developer_by_identifier('balajikumar')
             length = int(self.headers.get('Content-Length', 0))
             post_data = self.rfile.read(length) if length > 0 else b'{}'
             try:
@@ -2679,6 +2784,35 @@ Valid for 10 minutes.
                 })
                 return
 
+            # Check if 2FA is enabled for this account
+            if matched_user.get('two_factor_enabled'):
+                two_factor_code = str(body.get('two_factor_code', body.get('totp_code', body.get('code', body.get('otp', ''))))).strip()
+                if not two_factor_code:
+                    self.send_json(200, {
+                        'requires_2fa': True,
+                        'message': 'Two-factor authentication code required.',
+                        'username': matched_user['username'],
+                        'two_factor_type': matched_user.get('two_factor_type', 'totp')
+                    })
+                    return
+                # Verify TOTP code or recovery code
+                totp_valid = False
+                totp_secret = matched_user.get('two_factor_secret')
+                if totp_secret and totp_manager.verify_code(totp_secret, two_factor_code):
+                    totp_valid = True
+                else:
+                    consumed, _ = totp_manager.verify_and_consume_recovery_code(matched_user, two_factor_code)
+                    if consumed:
+                        totp_valid = True
+                        save_database()
+                if not totp_valid:
+                    self.send_json(401, {
+                        'detail': 'Invalid two-factor authentication code.',
+                        'error': 'Invalid 2FA code',
+                        'requires_2fa': True
+                    })
+                    return
+
             # Valid credentials: create token and active session
             token = f"devsync_token_{secrets.token_hex(20)}"
             session_id = f"sess_{secrets.token_hex(10)}"
@@ -2876,12 +3010,33 @@ Valid for 10 minutes.
                 'last_sent_at': now,
                 'attempts_remaining': 5
             }
+            try:
+                os.makedirs('data', exist_ok=True)
+                with open('data/.test_last_email_otp.txt', 'w', encoding='utf-8') as _f:
+                    _f.write(otp)
+            except Exception:
+                pass
 
             dispatched, err, is_smtp_configured = dispatch_verification_email(email, otp)
 
+            if is_smtp_configured and not dispatched:
+                self.send_json(502, {
+                    'detail': f'Failed to deliver verification code via configured SMTP provider: {err}',
+                    'error': 'Email delivery failed'
+                })
+                return
+
+            if not is_smtp_configured and not dispatched:
+                self.send_json(503, {
+                    'detail': f'Email service unavailable: {err}',
+                    'error': 'SMTP unconfigured in production'
+                })
+                return
+
             response_payload = {
                 'success': True,
-                'message': f'Verification code dispatched to {email}. Please check your inbox.',
+                'message': f'Verification code dispatched to {email}. Please check your inbox.' if is_smtp_configured else f'Verification code generated for {email}. (Development mode: check server console logs)',
+                'deliveryMode': 'smtp' if is_smtp_configured else 'console',
                 'expiresInSeconds': 600,
                 'email': email
             }
@@ -2970,11 +3125,14 @@ Valid for 10 minutes.
             })
             return
 
-        # Registration Endpoint (POST /api/v1/auth/register, /auth/register/, /auth/register, /api/auth/register)
+        # Registration Endpoint (POST /api/v1/auth/register, /api/v1/auth/signup, /auth/register/, /auth/register, /api/auth/register)
         register_paths = (
             '/api/v1/auth/register', '/api/v1/auth/register/',
             '/auth/register/', '/auth/register',
-            '/api/auth/register', '/api/auth/register/'
+            '/api/auth/register', '/api/auth/register/',
+            '/api/v1/auth/signup', '/api/v1/auth/signup/',
+            '/auth/signup/', '/auth/signup',
+            '/api/auth/signup', '/api/auth/signup/'
         )
         if path in register_paths:
             length = int(self.headers.get('Content-Length', 0))
@@ -3073,6 +3231,7 @@ Valid for 10 minutes.
                 'created': time.time()
             }
             self.send_json(201, {
+                'success': True,
                 'access': token,
                 'token': token,
                 'user': user_summary,
@@ -3789,7 +3948,7 @@ Valid for 10 minutes.
         message = body.get('message', body.get('prompt', '')).strip()
 
         # Build grounded context
-        auth_user = self.get_authenticated_user() or DEV_PROFILES.get('dev-balaji')
+        auth_user = self.get_authenticated_user() or get_developer_by_identifier('naveen3438') or get_developer_by_identifier('balajikumar')
         pulse_data = calculate_contribution_intelligence(auth_user['username']) if auth_user else None
         context_instruction = backend_voice_ai.build_system_instruction(
             user_profile=auth_user,

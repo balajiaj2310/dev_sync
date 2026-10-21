@@ -354,15 +354,31 @@ export async function initTeamsPage() {
 
   // 1. Invite Member Modal Handlers
   function openInviteModal() {
-    if (inviteModal) inviteModal.style.display = 'flex';
+    if (inviteModal) {
+      inviteModal.style.display = 'flex';
+      inviteModal.classList.add('show');
+      document.body.style.overflow = 'hidden';
+      const input = inviteModal.querySelector('input, select');
+      if (input) input.focus();
+    }
   }
   function closeInviteModal() {
-    if (inviteModal) inviteModal.style.display = 'none';
+    if (inviteModal) {
+      inviteModal.classList.remove('show');
+      inviteModal.style.display = 'none';
+      document.body.style.overflow = '';
+    }
   }
 
   if (btnInvite) btnInvite.addEventListener('click', openInviteModal);
   if (closeInviteModalBtn) closeInviteModalBtn.addEventListener('click', closeInviteModal);
   if (cancelInviteBtn) cancelInviteBtn.addEventListener('click', closeInviteModal);
+
+  // Check URL query parameters for ?action=invite
+  const teamUrlParams = new URLSearchParams(window.location.search);
+  if (teamUrlParams.get('action') === 'invite') {
+    setTimeout(openInviteModal, 150);
+  }
 
   if (inviteForm) {
     inviteForm.addEventListener('submit', async (e) => {
@@ -410,10 +426,18 @@ export async function initTeamsPage() {
     targetProjectForAction = (activeProject !== 'All Projects') ? activeProject : 'devsync-core';
     if (changeRoleMemberName) changeRoleMemberName.textContent = name;
     if (changeRoleProjectName) changeRoleProjectName.textContent = targetProjectForAction;
-    if (changeRoleModal) changeRoleModal.style.display = 'flex';
+    if (changeRoleModal) {
+      changeRoleModal.style.display = 'flex';
+      changeRoleModal.classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
   }
   function closeChangeRoleModal() {
-    if (changeRoleModal) changeRoleModal.style.display = 'none';
+    if (changeRoleModal) {
+      changeRoleModal.classList.remove('show');
+      changeRoleModal.style.display = 'none';
+      document.body.style.overflow = '';
+    }
     targetMemberForAction = null;
   }
 
@@ -446,10 +470,18 @@ export async function initTeamsPage() {
     targetProjectForAction = (activeProject !== 'All Projects') ? activeProject : null;
     if (removeMemberName) removeMemberName.textContent = name;
     if (removeProjectName) removeProjectName.textContent = targetProjectForAction || 'all squads';
-    if (removeMemberModal) removeMemberModal.style.display = 'flex';
+    if (removeMemberModal) {
+      removeMemberModal.style.display = 'flex';
+      removeMemberModal.classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
   }
   function closeRemoveModal() {
-    if (removeMemberModal) removeMemberModal.style.display = 'none';
+    if (removeMemberModal) {
+      removeMemberModal.classList.remove('show');
+      removeMemberModal.style.display = 'none';
+      document.body.style.overflow = '';
+    }
     targetMemberForAction = null;
   }
 

@@ -118,15 +118,37 @@ export async function initCommunityPage() {
   // --------------------------------------------------------------------------
   async function loadInitialData() {
     try {
-      const [convsRes, statusesRes] = await Promise.all([
+      const [convsRes, statusesRes, channelsRes] = await Promise.all([
         CommunityService.getConversations(),
-        CommunityService.getStatuses()
+        CommunityService.getStatuses(),
+        CommunityService.getChannels().catch(() => [])
       ]);
 
-      conversations = Array.isArray(convsRes) ? convsRes : [];
+      let convs = Array.isArray(convsRes) ? convsRes : [];
+      const channels = Array.isArray(channelsRes) ? channelsRes : [];
+
+      const channelConvs = channels.map(ch => ({
+        id: ch.id,
+        type: 'channel',
+        title: `#${ch.name}`,
+        avatar: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=120&q=80',
+        description: ch.desc || 'Community channel',
+        isOnline: true,
+        unreadCount: ch.unread ? 1 : 0,
+        lastMessage: { text: ch.pinnedAnnouncement || ch.desc || 'Channel discussions', time: '' },
+        participants: [
+          { name: 'DevSync Community', role: 'Channel', avatar: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=64&q=80' }
+        ]
+      }));
+
+      conversations = [...convs, ...channelConvs];
       statuses = Array.isArray(statusesRes) ? statusesRes : [];
 
-      if (conversations.length > 0 && !conversations.some(c => c.id === activeConversationId)) {
+      const urlParams = new URLSearchParams(window.location.search);
+      const targetId = urlParams.get('channel') || urlParams.get('conv') || urlParams.get('id');
+      if (targetId && conversations.some(c => c.id === targetId)) {
+        activeConversationId = targetId;
+      } else if (conversations.length > 0 && !conversations.some(c => c.id === activeConversationId)) {
         activeConversationId = conversations[0].id;
       }
 
@@ -341,10 +363,24 @@ export async function initCommunityPage() {
       let html = `<div class="chat-date-divider"><span class="chat-date-pill">Today</span></div>`;
 
       html += messages.map(msg => {
-        const isOutgoing = (msg.sender || '').toLowerCase() === (currentUser.username || '').toLowerCase() || msg.isSelf;
+        const sender = msg.sender || msg.author || '';
+        const isOutgoing = sender.toLowerCase() === (currentUser.username || '').toLowerCase() ||
+                           sender.toLowerCase() === (currentUser.name || '').toLowerCase() ||
+                           msg.isSelf;
         const bubbleClass = isOutgoing ? 'outgoing' : 'incoming';
-        const senderName = msg.senderName || msg.sender || 'Developer';
-        const reactions = msg.reactions || [];
+        const senderName = msg.senderName || msg.author || msg.sender || 'Developer';
+        const replyObj = msg.replyTo || msg.reply_to;
+
+        let reactionsList = [];
+        if (Array.isArray(msg.reactions)) {
+          reactionsList = msg.reactions;
+        } else if (msg.reactions && typeof msg.reactions === 'object') {
+          reactionsList = Object.entries(msg.reactions).map(([emoji, users]) => ({
+            emoji,
+            count: Array.isArray(users) ? users.length : (typeof users === 'number' ? users : 1),
+            users: Array.isArray(users) ? users : []
+          }));
+        }
 
         return `
           <div class="chat-bubble-row ${bubbleClass}" data-msg-id="${escapeHtml(msg.id)}">
@@ -353,7 +389,7 @@ export async function initCommunityPage() {
               <button class="bubble-action-btn action-quick-react" data-emoji="👍" title="Thumbs up">👍</button>
               <button class="bubble-action-btn action-quick-react" data-emoji="🚀" title="Rocket">🚀</button>
               <button class="bubble-action-btn action-quick-react" data-emoji="❤️" title="Love">❤️</button>
-              <button class="bubble-action-btn action-reply-msg" data-msg-id="${escapeHtml(msg.id)}" data-sender="${escapeHtml(senderName)}" data-snippet="${escapeHtml(msg.text.slice(0, 50))}" title="Reply">
+              <button class="bubble-action-btn action-reply-msg" data-msg-id="${escapeHtml(msg.id)}" data-sender="${escapeHtml(senderName)}" data-snippet="${escapeHtml((msg.text || '').slice(0, 50))}" title="Reply">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg>
               </button>
             </div>
@@ -361,10 +397,10 @@ export async function initCommunityPage() {
             <div class="chat-bubble-card">
               ${!isOutgoing ? `<div class="bubble-sender-name">${escapeHtml(senderName)}</div>` : ''}
 
-              ${msg.replyTo ? `
+              ${replyObj ? `
                 <div class="bubble-reply-quote">
-                  <div class="bubble-reply-sender">${escapeHtml(msg.replyTo.senderName || 'Developer')}</div>
-                  <div class="bubble-reply-text">${escapeHtml(msg.replyTo.text || '')}</div>
+                  <div class="bubble-reply-sender">${escapeHtml(replyObj.senderName || 'Developer')}</div>
+                  <div class="bubble-reply-text">${escapeHtml(replyObj.text || '')}</div>
                 </div>
               ` : ''}
 
@@ -378,9 +414,9 @@ export async function initCommunityPage() {
               </div>
             </div>
 
-            ${reactions.length > 0 ? `
+            ${reactionsList.length > 0 ? `
               <div class="bubble-reactions-row">
-                ${reactions.map(r => `
+                ${reactionsList.map(r => `
                   <button class="reaction-pill" data-msg-id="${escapeHtml(msg.id)}" data-emoji="${escapeHtml(r.emoji)}">
                     <span>${escapeHtml(r.emoji)}</span>
                     <span style="font-weight: 600; font-size: 10px;">${r.count || 1}</span>
@@ -547,6 +583,8 @@ export async function initCommunityPage() {
   function openStatusModal(selectedStatus) {
     if (!statusModal) return;
     statusModal.style.display = 'flex';
+    statusModal.classList.add('show');
+    document.body.style.overflow = 'hidden';
 
     if (selectedStatus && statusViewerBox) {
       statusViewerBox.style.display = 'block';
@@ -560,7 +598,11 @@ export async function initCommunityPage() {
   }
 
   function closeStatusModal() {
-    if (statusModal) statusModal.style.display = 'none';
+    if (statusModal) {
+      statusModal.classList.remove('show');
+      statusModal.style.display = 'none';
+      document.body.style.overflow = '';
+    }
   }
 
   if (closeStatusModalBtn) closeStatusModalBtn.addEventListener('click', closeStatusModal);
@@ -630,19 +672,43 @@ export async function initCommunityPage() {
         // Check if direct conversation already exists
         let existing = conversations.find(c => c.type === 'direct' && c.recipientUsername === username);
         if (!existing) {
-          const newConv = {
-            id: `conv-direct-${username}-${Date.now()}`,
-            type: 'direct',
-            title: name,
-            recipientUsername: username,
-            avatar: avatar,
-            isOnline: true,
-            unreadCount: 0,
-            lastMessage: { text: 'Started conversation', time: 'Just now' },
-            participants: [{ name, role: 'Collaborator', avatar }]
-          };
-          conversations.unshift(newConv);
-          activeConversationId = newConv.id;
+          try {
+            const created = await CommunityService.createConversation({
+              type: 'direct',
+              members: [currentUser.username, username],
+              recipientUsername: username,
+              title: name,
+              avatar: avatar
+            });
+            const newConv = created || {
+              id: `conv-direct-${username}`,
+              type: 'direct',
+              title: name,
+              recipientUsername: username,
+              avatar: avatar,
+              isOnline: true,
+              unreadCount: 0,
+              lastMessage: { text: 'Started conversation', time: 'Just now' },
+              participants: [{ name, role: 'Collaborator', avatar }]
+            };
+            conversations.unshift(newConv);
+            activeConversationId = newConv.id;
+          } catch (e) {
+            console.warn('Could not persist new chat:', e);
+            const fallbackConv = {
+              id: `conv-direct-${username}-${Date.now()}`,
+              type: 'direct',
+              title: name,
+              recipientUsername: username,
+              avatar: avatar,
+              isOnline: true,
+              unreadCount: 0,
+              lastMessage: { text: 'Started conversation', time: 'Just now' },
+              participants: [{ name, role: 'Collaborator', avatar }]
+            };
+            conversations.unshift(fallbackConv);
+            activeConversationId = fallbackConv.id;
+          }
         } else {
           activeConversationId = existing.id;
         }
@@ -656,10 +722,18 @@ export async function initCommunityPage() {
   }
 
   function openNewChatModal() {
-    if (newChatModal) newChatModal.style.display = 'flex';
+    if (newChatModal) {
+      newChatModal.style.display = 'flex';
+      newChatModal.classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
   }
   function closeNewChatModal() {
-    if (newChatModal) newChatModal.style.display = 'none';
+    if (newChatModal) {
+      newChatModal.classList.remove('show');
+      newChatModal.style.display = 'none';
+      document.body.style.overflow = '';
+    }
   }
 
   if (btnOpenNewChat) btnOpenNewChat.addEventListener('click', openNewChatModal);

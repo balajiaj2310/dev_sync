@@ -4,9 +4,20 @@
  */
 
 import { MockAPI } from '../mock/mock-api.js';
+import { RepositoryService } from '../services/repository-service.js';
 import { ROUTES, navigateTo } from '../core/route-config.js';
 import { ModalManager } from '../core/modal-manager.js';
 import { toastSuccess } from '../components/toast.js';
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
 
 export async function initDashboardPage() {
   // Load Dynamic Overview Metrics
@@ -28,6 +39,31 @@ export async function initDashboardPage() {
     setMetric('metricPRs', metrics.pullRequests.count, metrics.pullRequests.trend, metrics.pullRequests.isUp);
     setMetric('metricIssues', metrics.issues.count, metrics.issues.trend, metrics.issues.isUp);
     setMetric('metricTeam', metrics.teamMembers.count, metrics.teamMembers.trend, metrics.teamMembers.isUp);
+  }
+
+  // Load Real Recent Repositories
+  const recentReposBody = document.getElementById('overviewRecentReposBody');
+  if (recentReposBody) {
+    try {
+      const repos = await RepositoryService.getRepositories();
+      if (Array.isArray(repos) && repos.length > 0) {
+        recentReposBody.innerHTML = repos.slice(0, 6).map(repo => `
+          <tr>
+            <td>
+              <a href="${ROUTES.REPOSITORY_DETAIL}?repo=${encodeURIComponent(repo.name || repo.id)}" class="table-repo-name">${escapeHtml(repo.name)}</a>
+            </td>
+            <td>
+              <span class="lang-indicator"><span class="lang-dot" style="background-color: ${repo.languageColor || '#3572A5'};"></span>${escapeHtml(repo.language || 'Python')}</span>
+            </td>
+            <td>${repo.stars || 0}</td>
+            <td class="text-secondary">${escapeHtml(repo.updated || 'Recently')}</td>
+            <td><span class="badge ${repo.visibility === 'Public' ? 'badge-public' : 'badge-private'}">${escapeHtml(repo.visibility || 'Private')}</span></td>
+          </tr>
+        `).join('');
+      }
+    } catch (e) {
+      console.warn('Could not load recent repositories for dashboard:', e);
+    }
   }
 
   // Metric Card Click Navigation

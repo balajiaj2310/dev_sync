@@ -238,16 +238,20 @@ class PasswordRecoveryManager:
             f"If you did not request a password reset, please review your account security immediately.\n\n"
             f"— The DevSync Security Team"
         )
-        try:
-            send_mail_fn(
-                "DevSync Password Reset Verification Code",
-                email_body,
-                from_email,
-                [user_email],
-                fail_silently=False
-            )
-        except Exception as e:
-            print(f"[Password Recovery] Notice: Email dispatch to {user_email} failed: {e}")
+        is_smtp_configured = bool(os.environ.get('EMAIL_HOST')) and bool(os.environ.get('EMAIL_HOST_USER')) and bool(os.environ.get('EMAIL_HOST_PASSWORD'))
+        if not is_smtp_configured:
+            print(f"\n======================================================\n[DEVSYNC RECOVERY OTP NOTICE]\nRecipient: {user_email}\nRecovery Code: {otp}\nExpiration: 10 minutes\nStatus: SMTP unconfigured in dev environment (logged to console)\n======================================================\n", flush=True)
+        else:
+            try:
+                send_mail_fn(
+                    "DevSync Password Reset Verification Code",
+                    email_body,
+                    from_email,
+                    [user_email],
+                    fail_silently=False
+                )
+            except Exception as e:
+                print(f"[Password Recovery] Notice: Email dispatch to {user_email} failed: {e}")
 
         # Check if mobile was requested
         if clean_id == user_mobile and clean_id != '':
