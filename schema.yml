@@ -1,0 +1,2080 @@
+openapi: 3.0.3
+info:
+  title: DevSync Collaboration API
+  version: 1.0.0
+  description: Production REST API for DevSync Developer Collaboration Platform
+paths:
+  /api/ai/chat:
+    post:
+      operationId: ai_chat_create
+      tags:
+      - ai
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/ai/chat/:
+    post:
+      operationId: ai_chat_create_2
+      tags:
+      - ai
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/ai/chat:
+    post:
+      operationId: v1_ai_chat_create
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/ai/chat/:
+    post:
+      operationId: v1_ai_chat_create_2
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/ai/voice/context:
+    get:
+      operationId: v1_ai_voice_context_retrieve
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/ai/voice/context/:
+    get:
+      operationId: v1_ai_voice_context_retrieve_2
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/ai/voice/synthesize:
+    post:
+      operationId: v1_ai_voice_synthesize_create
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/ai/voice/synthesize/:
+    post:
+      operationId: v1_ai_voice_synthesize_create_2
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/ai/voice/token:
+    get:
+      operationId: v1_ai_voice_token_retrieve
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: v1_ai_voice_token_create
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/ai/voice/token/:
+    get:
+      operationId: v1_ai_voice_token_retrieve_2
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: v1_ai_voice_token_create_2
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/analytics/contribution-intelligence:
+    get:
+      operationId: v1_analytics_contribution_intelligence_retrieve
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/analytics/contribution-intelligence/:
+    get:
+      operationId: v1_analytics_contribution_intelligence_retrieve_2
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/auth/2fa/disable:
+    post:
+      operationId: v1_auth_2fa_disable_create
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/auth/2fa/disable/:
+    post:
+      operationId: v1_auth_2fa_disable_create_2
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/auth/2fa/enable:
+    post:
+      operationId: v1_auth_2fa_enable_create
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/auth/2fa/enable/:
+    post:
+      operationId: v1_auth_2fa_enable_create_2
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/auth/2fa/setup:
+    post:
+      operationId: v1_auth_2fa_setup_create
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/auth/2fa/setup/:
+    post:
+      operationId: v1_auth_2fa_setup_create_2
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/auth/login:
+    post:
+      operationId: v1_auth_login_create
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/auth/login/:
+    post:
+      operationId: v1_auth_login_create_2
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/auth/me:
+    get:
+      operationId: v1_auth_me_retrieve
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/auth/me/:
+    get:
+      operationId: v1_auth_me_retrieve_2
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/auth/password/change-protected:
+    post:
+      operationId: v1_auth_password_change_protected_create
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/auth/password/change-protected/:
+    post:
+      operationId: v1_auth_password_change_protected_create_2
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/auth/password/forgot:
+    post:
+      operationId: v1_auth_password_forgot_create
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/auth/password/forgot/:
+    post:
+      operationId: v1_auth_password_forgot_create_2
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/auth/password/reset:
+    post:
+      operationId: v1_auth_password_reset_create
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/auth/password/reset/:
+    post:
+      operationId: v1_auth_password_reset_create_2
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/auth/password/verify-recovery-otp:
+    post:
+      operationId: v1_auth_password_verify_recovery_otp_create
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/auth/password/verify-recovery-otp/:
+    post:
+      operationId: v1_auth_password_verify_recovery_otp_create_2
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/auth/preferences:
+    get:
+      operationId: v1_auth_preferences_retrieve
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+    patch:
+      operationId: v1_auth_preferences_partial_update
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/auth/preferences/:
+    get:
+      operationId: v1_auth_preferences_retrieve_2
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+    patch:
+      operationId: v1_auth_preferences_partial_update_2
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/auth/security/overview:
+    get:
+      operationId: v1_auth_security_overview_retrieve
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/auth/security/overview/:
+    get:
+      operationId: v1_auth_security_overview_retrieve_2
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/auth/security/reauthenticate:
+    post:
+      operationId: v1_auth_security_reauthenticate_create
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/auth/security/reauthenticate/:
+    post:
+      operationId: v1_auth_security_reauthenticate_create_2
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/auth/sessions:
+    get:
+      operationId: v1_auth_sessions_retrieve
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/auth/sessions/:
+    get:
+      operationId: v1_auth_sessions_retrieve_2
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/auth/sessions/revoke-others:
+    post:
+      operationId: v1_auth_sessions_revoke_others_create
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/auth/sessions/revoke-others/:
+    post:
+      operationId: v1_auth_sessions_revoke_others_create_2
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/chat/conversations:
+    get:
+      operationId: v1_chat_conversations_retrieve
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/chat/conversations/:
+    get:
+      operationId: v1_chat_conversations_retrieve_2
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/chat/conversations/{conv_id}/messages:
+    get:
+      operationId: v1_chat_conversations_messages_retrieve
+      parameters:
+      - in: path
+        name: conv_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: v1_chat_conversations_messages_create
+      parameters:
+      - in: path
+        name: conv_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/chat/conversations/{conv_id}/messages/:
+    get:
+      operationId: v1_chat_conversations_messages_retrieve_2
+      parameters:
+      - in: path
+        name: conv_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: v1_chat_conversations_messages_create_2
+      parameters:
+      - in: path
+        name: conv_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/chat/messages/{msg_id}/react:
+    post:
+      operationId: v1_chat_messages_react_create
+      parameters:
+      - in: path
+        name: msg_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/chat/messages/{msg_id}/react/:
+    post:
+      operationId: v1_chat_messages_react_create_2
+      parameters:
+      - in: path
+        name: msg_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/chat/statuses:
+    get:
+      operationId: v1_chat_statuses_retrieve
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: v1_chat_statuses_create
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/chat/statuses/:
+    get:
+      operationId: v1_chat_statuses_retrieve_2
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: v1_chat_statuses_create_2
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/developers:
+    get:
+      operationId: v1_developers_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPublicProfileList'
+          description: ''
+  /api/v1/developers/:
+    get:
+      operationId: v1_developers_list_2
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPublicProfileList'
+          description: ''
+  /api/v1/developers/{username}/contribution-intelligence:
+    get:
+      operationId: v1_developers_contribution_intelligence_retrieve
+      parameters:
+      - in: path
+        name: username
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/developers/{username}/contribution-intelligence/:
+    get:
+      operationId: v1_developers_contribution_intelligence_retrieve_2
+      parameters:
+      - in: path
+        name: username
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/developers/{username}/pulse:
+    get:
+      operationId: v1_developers_pulse_retrieve
+      parameters:
+      - in: path
+        name: username
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/developers/{username}/pulse/:
+    get:
+      operationId: v1_developers_pulse_retrieve_2
+      parameters:
+      - in: path
+        name: username
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/issues:
+    get:
+      operationId: v1_issues_retrieve
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: v1_issues_create
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/issues/:
+    get:
+      operationId: v1_issues_retrieve_2
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: v1_issues_create_2
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/issues/{issue_id}:
+    get:
+      operationId: v1_issues_retrieve_3
+      parameters:
+      - in: path
+        name: issue_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/issues/{issue_id}/:
+    get:
+      operationId: v1_issues_retrieve_4
+      parameters:
+      - in: path
+        name: issue_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/issues/{issue_id}/close:
+    post:
+      operationId: v1_issues_close_create
+      parameters:
+      - in: path
+        name: issue_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/issues/{issue_id}/close/:
+    post:
+      operationId: v1_issues_close_create_2
+      parameters:
+      - in: path
+        name: issue_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/issues/{issue_id}/comments:
+    post:
+      operationId: v1_issues_comments_create
+      parameters:
+      - in: path
+        name: issue_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/issues/{issue_id}/comments/:
+    post:
+      operationId: v1_issues_comments_create_2
+      parameters:
+      - in: path
+        name: issue_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/issues/{issue_id}/reopen:
+    post:
+      operationId: v1_issues_reopen_create
+      parameters:
+      - in: path
+        name: issue_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/issues/{issue_id}/reopen/:
+    post:
+      operationId: v1_issues_reopen_create_2
+      parameters:
+      - in: path
+        name: issue_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/notifications:
+    get:
+      operationId: v1_notifications_retrieve
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/notifications/:
+    get:
+      operationId: v1_notifications_retrieve_2
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/notifications/{notif_id}:
+    delete:
+      operationId: v1_notifications_destroy
+      parameters:
+      - in: path
+        name: notif_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/v1/notifications/{notif_id}/:
+    delete:
+      operationId: v1_notifications_destroy_2
+      parameters:
+      - in: path
+        name: notif_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/v1/notifications/connection-action:
+    post:
+      operationId: v1_notifications_connection_action_create
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/notifications/connection-action/:
+    post:
+      operationId: v1_notifications_connection_action_create_2
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/notifications/mark-read:
+    post:
+      operationId: v1_notifications_mark_read_create
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/notifications/mark-read/:
+    post:
+      operationId: v1_notifications_mark_read_create_2
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/notifications/mark-unread:
+    post:
+      operationId: v1_notifications_mark_unread_create
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/notifications/mark-unread/:
+    post:
+      operationId: v1_notifications_mark_unread_create_2
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/pull-requests:
+    get:
+      operationId: v1_pull_requests_retrieve
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: v1_pull_requests_create
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/pull-requests/:
+    get:
+      operationId: v1_pull_requests_retrieve_2
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: v1_pull_requests_create_2
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/pull-requests/{pr_id}:
+    get:
+      operationId: v1_pull_requests_retrieve_3
+      parameters:
+      - in: path
+        name: pr_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/pull-requests/{pr_id}/:
+    get:
+      operationId: v1_pull_requests_retrieve_4
+      parameters:
+      - in: path
+        name: pr_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/pull-requests/{pr_id}/comments:
+    post:
+      operationId: v1_pull_requests_comments_create
+      parameters:
+      - in: path
+        name: pr_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/pull-requests/{pr_id}/comments/:
+    post:
+      operationId: v1_pull_requests_comments_create_2
+      parameters:
+      - in: path
+        name: pr_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/pull-requests/{pr_id}/merge:
+    post:
+      operationId: v1_pull_requests_merge_create
+      parameters:
+      - in: path
+        name: pr_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/pull-requests/{pr_id}/merge/:
+    post:
+      operationId: v1_pull_requests_merge_create_2
+      parameters:
+      - in: path
+        name: pr_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/pull-requests/{pr_id}/review:
+    post:
+      operationId: v1_pull_requests_review_create
+      parameters:
+      - in: path
+        name: pr_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/pull-requests/{pr_id}/review/:
+    post:
+      operationId: v1_pull_requests_review_create_2
+      parameters:
+      - in: path
+        name: pr_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/repositories:
+    get:
+      operationId: v1_repositories_retrieve
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: v1_repositories_create
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/repositories/:
+    get:
+      operationId: v1_repositories_retrieve_2
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: v1_repositories_create_2
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/repositories/{repo_id}:
+    get:
+      operationId: v1_repositories_retrieve_3
+      parameters:
+      - in: path
+        name: repo_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/repositories/{repo_id}/:
+    get:
+      operationId: v1_repositories_retrieve_4
+      parameters:
+      - in: path
+        name: repo_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/repositories/{repo_id}/activity:
+    get:
+      operationId: v1_repositories_activity_retrieve
+      parameters:
+      - in: path
+        name: repo_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/repositories/{repo_id}/activity/:
+    get:
+      operationId: v1_repositories_activity_retrieve_2
+      parameters:
+      - in: path
+        name: repo_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/repositories/{repo_id}/attachments:
+    get:
+      operationId: v1_repositories_attachments_retrieve
+      parameters:
+      - in: path
+        name: repo_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: v1_repositories_attachments_create
+      parameters:
+      - in: path
+        name: repo_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/repositories/{repo_id}/attachments/:
+    get:
+      operationId: v1_repositories_attachments_retrieve_2
+      parameters:
+      - in: path
+        name: repo_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: v1_repositories_attachments_create_2
+      parameters:
+      - in: path
+        name: repo_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/repositories/{repo_id}/branches:
+    get:
+      operationId: v1_repositories_branches_retrieve
+      parameters:
+      - in: path
+        name: repo_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: v1_repositories_branches_create
+      parameters:
+      - in: path
+        name: repo_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/repositories/{repo_id}/branches/:
+    get:
+      operationId: v1_repositories_branches_retrieve_2
+      parameters:
+      - in: path
+        name: repo_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: v1_repositories_branches_create_2
+      parameters:
+      - in: path
+        name: repo_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/repositories/{repo_id}/file:
+    get:
+      operationId: v1_repositories_file_retrieve
+      parameters:
+      - in: path
+        name: repo_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/repositories/{repo_id}/file/:
+    get:
+      operationId: v1_repositories_file_retrieve_2
+      parameters:
+      - in: path
+        name: repo_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/repositories/{repo_id}/files:
+    get:
+      operationId: v1_repositories_files_retrieve
+      parameters:
+      - in: path
+        name: repo_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/repositories/{repo_id}/files/:
+    get:
+      operationId: v1_repositories_files_retrieve_2
+      parameters:
+      - in: path
+        name: repo_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/repositories/{repo_id}/members:
+    get:
+      operationId: v1_repositories_members_retrieve
+      parameters:
+      - in: path
+        name: repo_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: v1_repositories_members_create
+      parameters:
+      - in: path
+        name: repo_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/repositories/{repo_id}/members/:
+    get:
+      operationId: v1_repositories_members_retrieve_2
+      parameters:
+      - in: path
+        name: repo_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+    post:
+      operationId: v1_repositories_members_create_2
+      parameters:
+      - in: path
+        name: repo_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/repositories/{repo_id}/members/{username}:
+    patch:
+      operationId: v1_repositories_members_partial_update
+      parameters:
+      - in: path
+        name: repo_id
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: username
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+    delete:
+      operationId: v1_repositories_members_destroy
+      parameters:
+      - in: path
+        name: repo_id
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: username
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/v1/repositories/{repo_id}/members/{username}/:
+    patch:
+      operationId: v1_repositories_members_partial_update_2
+      parameters:
+      - in: path
+        name: repo_id
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: username
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+    delete:
+      operationId: v1_repositories_members_destroy_2
+      parameters:
+      - in: path
+        name: repo_id
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: username
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/v1/repositories/{repo_id}/upload:
+    post:
+      operationId: v1_repositories_upload_create
+      parameters:
+      - in: path
+        name: repo_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/repositories/{repo_id}/upload/:
+    post:
+      operationId: v1_repositories_upload_create_2
+      parameters:
+      - in: path
+        name: repo_id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/settings/avatar:
+    post:
+      operationId: v1_settings_avatar_create
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/settings/avatar/:
+    post:
+      operationId: v1_settings_avatar_create_2
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/teams:
+    get:
+      operationId: v1_teams_retrieve
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/teams/:
+    get:
+      operationId: v1_teams_retrieve_2
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/teams/members:
+    get:
+      operationId: v1_teams_members_retrieve
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/teams/members/:
+    get:
+      operationId: v1_teams_members_retrieve_2
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/teams/members/{username}:
+    patch:
+      operationId: v1_teams_members_partial_update
+      parameters:
+      - in: path
+        name: username
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/teams/members/{username}/:
+    patch:
+      operationId: v1_teams_members_partial_update_2
+      parameters:
+      - in: path
+        name: username
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/teams/members/invite:
+    post:
+      operationId: v1_teams_members_invite_create
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/teams/members/invite/:
+    post:
+      operationId: v1_teams_members_invite_create_2
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/u/{username}:
+    get:
+      operationId: v1_u_retrieve
+      parameters:
+      - in: path
+        name: username
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/u/{username}/:
+    get:
+      operationId: v1_u_retrieve_2
+      parameters:
+      - in: path
+        name: username
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/users/me:
+    get:
+      operationId: v1_users_me_retrieve
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+    patch:
+      operationId: v1_users_me_partial_update
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/users/me/:
+    get:
+      operationId: v1_users_me_retrieve_2
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+    patch:
+      operationId: v1_users_me_partial_update_2
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+components:
+  schemas:
+    Achievement:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        title:
+          type: string
+          maxLength: 120
+        description:
+          type: string
+          maxLength: 300
+        badge_icon:
+          type: string
+          maxLength: 60
+        date_earned:
+          type: string
+          format: date
+          readOnly: true
+      required:
+      - date_earned
+      - id
+      - title
+    CollaborationStatusEnum:
+      enum:
+      - open_to_collab
+      - available_for_hire
+      - mentoring
+      - busy
+      type: string
+      description: |-
+        * `open_to_collab` - Open for Collaboration
+        * `available_for_hire` - Available for Hire
+        * `mentoring` - Mentoring Others
+        * `busy` - Focused on Projects / Busy
+    PaginatedPublicProfileList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublicProfile'
+    PublicProfile:
+      type: object
+      description: |-
+        CRITICAL SECURITY RULE: Public Profile Serializer strictly whitelists public fields.
+        Never exposes registered email, mobile phone, password hashes, or session audit logs.
+      properties:
+        username:
+          type: string
+          readOnly: true
+        name:
+          type: string
+          readOnly: true
+        headline:
+          type: string
+          maxLength: 160
+        bio:
+          type: string
+          maxLength: 2000
+        location:
+          type: string
+          maxLength: 120
+        website:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 300
+          - type: string
+            maxLength: 0
+        github_url:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 300
+          - type: string
+            maxLength: 0
+        twitter_url:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 300
+          - type: string
+            maxLength: 0
+        linkedin_url:
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 300
+          - type: string
+            maxLength: 0
+        collaboration_status:
+          $ref: '#/components/schemas/CollaborationStatusEnum'
+        experience_level:
+          type: string
+          maxLength: 40
+        avatar:
+          type: string
+          format: uri
+          nullable: true
+          readOnly: true
+        joined_date:
+          type: string
+          format: date-time
+          readOnly: true
+        skills:
+          type: array
+          items:
+            $ref: '#/components/schemas/Skill'
+          readOnly: true
+        achievements:
+          type: array
+          items:
+            $ref: '#/components/schemas/Achievement'
+          readOnly: true
+      required:
+      - achievements
+      - avatar
+      - joined_date
+      - name
+      - skills
+      - username
+    Skill:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          maxLength: 60
+        level:
+          type: string
+          maxLength: 30
+      required:
+      - id
+      - name
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
