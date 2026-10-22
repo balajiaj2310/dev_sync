@@ -71,8 +71,7 @@ class TestProtectedSecurity(unittest.TestCase):
 
     def test_01_account_html_contains_no_sensitive_forms(self):
         """CRITICAL: account.html must not contain password change forms or 2FA enrollment forms directly."""
-        repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-        account_path = os.path.join(repo_root, "frontend", "src", "pages", "settings", "account.html")
+        account_path = os.path.join(os.path.dirname(__file__), "frontend", "src", "pages", "settings", "account.html")
         with open(account_path, "r", encoding="utf-8") as f:
             content = f.read()
 
