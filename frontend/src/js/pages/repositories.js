@@ -19,6 +19,60 @@ function escapeHtml(str) {
     .replace(/'/g, '&#039;');
 }
 
+function formatFileSize(bytes) {
+  if (bytes === 0 || bytes === '0' || !bytes) return '0 B';
+  const num = typeof bytes === 'number' ? bytes : parseInt(bytes, 10);
+  if (isNaN(num)) return String(bytes);
+  if (num < 1024) return `${num} B`;
+  if (num < 1024 * 1024) return `${(num / 1024).toFixed(1)} KB`;
+  return `${(num / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function formatDate(val) {
+  if (!val) return 'Recently';
+  if (typeof val === 'number') {
+    const ms = val < 10000000000 ? val * 1000 : val;
+    const diff = (Date.now() - ms) / 1000;
+    if (diff < 60) return 'Just now';
+    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+    if (diff < 86400 * 30) return `${Math.floor(diff / 86400)}d ago`;
+    return new Date(ms).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  }
+  return String(val);
+}
+
+function getFileIcon(name, isDir) {
+  if (isDir) {
+    return `<svg class="file-icon folder-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>`;
+  }
+  const ext = name.split('.').pop().toLowerCase();
+  if (['py'].includes(ext)) {
+    return `<svg class="file-icon py-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 13h6"/><path d="M12 10v6"/></svg>`;
+  }
+  if (['md', 'txt', 'rst'].includes(ext)) {
+    return `<svg class="file-icon doc-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>`;
+  }
+  if (['js', 'ts', 'jsx', 'tsx'].includes(ext)) {
+    return `<svg class="file-icon js-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#facc15" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`;
+  }
+  if (['json', 'yaml', 'yml', 'toml'].includes(ext)) {
+    return `<svg class="file-icon config-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fb923c" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`;
+  }
+  return `<svg class="file-icon default-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>`;
+}
+
+function renderCodeLines(content) {
+  if (!content) return '<div class="code-line empty-file"><em>// Empty file (0 bytes)</em></div>';
+  const lines = content.split('\n');
+  return lines.map((line, idx) => `
+    <div class="code-line">
+      <span class="code-line-num">${idx + 1}</span>
+      <span class="code-line-text">${escapeHtml(line) || '&nbsp;'}</span>
+    </div>
+  `).join('');
+}
+
 /* ==========================================================================
    1. Repository Directory List & Create Page Controller
    ========================================================================== */
@@ -144,6 +198,7 @@ export async function initRepositoryDetailPage() {
   const repoId = urlParams.get('repo') || urlParams.get('id') || 'devsync-core';
   let currentTab = urlParams.get('tab') || 'overview';
   let currentBranch = urlParams.get('branch') || 'main';
+  let currentPath = urlParams.get('path') || '';
 
   // State
   let repo = null;
@@ -203,7 +258,7 @@ export async function initRepositoryDetailPage() {
 
     // Load Branches
     try {
-      const branchRes = await RepositoryService.getBranches(repo.id);
+      const branchRes = await RepositoryService.getBranches(repo.id, repo);
       branches = branchRes.branches || [{ name: 'main', isDefault: true }];
     } catch (err) {
       branches = [{ name: 'main', isDefault: true }];
@@ -239,12 +294,13 @@ export async function initRepositoryDetailPage() {
   function updateSidebarBadges() {
     const fileCountBadge = document.getElementById('sidebarFileCount');
     if (fileCountBadge) {
-      const count = repo.branchFiles?.[currentBranch]?.length || 0;
+      const branchFiles = repo.files?.[currentBranch] || repo.branchFiles?.[currentBranch] || [];
+      const count = branchFiles.length || repo.filesCount || 0;
       fileCountBadge.textContent = count;
     }
     const branchCountBadge = document.getElementById('sidebarBranchCount');
     if (branchCountBadge) {
-      branchCountBadge.textContent = branches.length;
+      branchCountBadge.textContent = branches.length || (repo.branches?.length || 1);
     }
     const teamCountBadge = document.getElementById('sidebarTeamCount');
     if (teamCountBadge) {
@@ -265,10 +321,11 @@ export async function initRepositoryDetailPage() {
     sidebarBranchSelect.addEventListener('change', (e) => {
       currentBranch = e.target.value;
       if (uploadBranchSelect) uploadBranchSelect.value = currentBranch;
+      currentPath = '';
       updateBranchNotice();
       updateUrl();
       updateSidebarBadges();
-      if (currentTab === 'files' || currentTab === 'overview') {
+      if (currentTab === 'files' || currentTab === 'overview' || currentTab === 'branches') {
         renderCurrentTab();
       }
     });
@@ -295,6 +352,9 @@ export async function initRepositoryDetailPage() {
       const targetTab = btn.getAttribute('data-repo-tab');
       if (targetTab === currentTab) return;
       currentTab = targetTab;
+      if (currentTab !== 'files') {
+        currentPath = '';
+      }
       tabButtons.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       updateUrl();
@@ -307,17 +367,24 @@ export async function initRepositoryDetailPage() {
     params.set('repo', repoId);
     params.set('tab', currentTab);
     params.set('branch', currentBranch);
+    if (currentTab === 'files' && currentPath) {
+      params.set('path', currentPath);
+    } else {
+      params.delete('path');
+    }
     window.history.pushState(null, '', `${window.location.pathname}?${params.toString()}`);
   }
 
   window.addEventListener('popstate', () => {
     const params = new URLSearchParams(window.location.search);
     currentTab = params.get('tab') || 'overview';
-    currentBranch = params.get('branch') || 'main';
+    currentBranch = params.get('branch') || (repo?.defaultBranch || 'main');
+    currentPath = params.get('path') || '';
     tabButtons.forEach(b => {
-      b.classList.toggle('active', b.getAttribute('data-repo-tab')) === currentTab;
+      b.classList.toggle('active', b.getAttribute('data-repo-tab') === currentTab);
     });
     if (sidebarBranchSelect) sidebarBranchSelect.value = currentBranch;
+    updateSidebarBadges();
     renderCurrentTab();
   });
 
@@ -389,7 +456,7 @@ export async function initRepositoryDetailPage() {
    * Section 3: Overview Tab
    * ------------------------------------------------------------------------- */
   async function renderOverviewTab() {
-    const files = repo.branchFiles?.[currentBranch] || [];
+    const files = repo.files?.[currentBranch] || repo.branchFiles?.[currentBranch] || [];
     const attachments = repo.attachments || [];
     const milestones = repo.milestones || [];
     const primaryMilestone = milestones[0] || {
@@ -544,92 +611,380 @@ export async function initRepositoryDetailPage() {
   }
 
   /* -------------------------------------------------------------------------
-   * Section 4: Code & Files Tab (Branch-Aware Repository Files)
+   * Section 4: Code & Files Tab (Branch-Aware Repository Files & In-Page Viewer)
    * ------------------------------------------------------------------------- */
+  function isFilePath(path) {
+    if (!path) return false;
+    const last = path.split('/').pop();
+    return last.includes('.') && !last.endsWith('/');
+  }
+
   async function renderFilesTab() {
+    if (!contentArea) return;
+
+    // If path points to a file, render the in-page file viewer
+    if (isFilePath(currentPath)) {
+      await renderFileViewer(currentPath);
+      return;
+    }
+
+    contentArea.innerHTML = `
+      <div class="file-browser-container">
+        <div class="text-center py-6 text-secondary">
+          <span class="btn-spinner"></span> Loading repository contents...
+        </div>
+      </div>
+    `;
+
     let filesRes = { files: [] };
     try {
-      filesRes = await RepositoryService.getFiles(repo.id, currentBranch, '', false);
+      filesRes = await RepositoryService.getFiles(repo.id, currentBranch, currentPath, false, repo);
     } catch (err) {
       console.warn('Failed to load files:', err);
     }
 
     currentFiles = filesRes.files || [];
 
+    // Sort: directories first, then files
+    currentFiles.sort((a, b) => {
+      if (a.type === b.type) return a.name.localeCompare(b.name);
+      return a.type === 'dir' ? -1 : 1;
+    });
+
+    // Build breadcrumbs
+    const pathSegments = currentPath ? currentPath.split('/').filter(Boolean) : [];
+    let breadcrumbHtml = `
+      <div class="file-breadcrumbs">
+        <svg class="file-icon folder-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+        <a class="file-breadcrumb-item" data-nav-path="">${escapeHtml(repo.name)}</a>
+    `;
+
+    let accumulatedPath = '';
+    pathSegments.forEach((seg, idx) => {
+      accumulatedPath = accumulatedPath ? `${accumulatedPath}/${seg}` : seg;
+      const isLast = (idx === pathSegments.length - 1);
+      breadcrumbHtml += `
+        <span class="file-breadcrumb-separator">/</span>
+        ${isLast ? `<span class="file-breadcrumb-current">${escapeHtml(seg)}</span>` : `<a class="file-breadcrumb-item" data-nav-path="${escapeHtml(accumulatedPath)}">${escapeHtml(seg)}</a>`}
+      `;
+    });
+    breadcrumbHtml += `</div>`;
+
+    // Compute parent directory path for .. row
+    let parentPath = '';
+    if (pathSegments.length > 1) {
+      parentPath = pathSegments.slice(0, -1).join('/');
+    }
+
+    const openWorkspaceUrl = `${ROUTES.REPOSITORY_WORKSPACE}?repo=${encodeURIComponent(repo.name || repo.id)}&branch=${encodeURIComponent(currentBranch)}${currentPath ? '&dir=' + encodeURIComponent(currentPath) : ''}`;
+
     contentArea.innerHTML = `
-      <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
-        <div class="d-flex align-items-center gap-3">
-          <div class="d-flex align-items-center gap-2">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>
-            <strong>${escapeHtml(currentBranch)}</strong>
+      <div class="file-browser-container">
+        <!-- Toolbar: Breadcrumbs + Branch Selector + Actions -->
+        <div class="file-browser-toolbar">
+          <div class="d-flex align-items-center gap-3 flex-wrap">
+            <div class="d-flex align-items-center gap-2">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>
+              <select class="form-select form-select-sm repo-branch-dropdown" id="fileToolbarBranchSelect" style="width: auto; min-width: 130px; font-size: 12.5px; padding: 4px 8px;" aria-label="Current Branch">
+                ${branches.map(b => `
+                  <option value="${escapeHtml(b.name)}" ${b.name === currentBranch ? 'selected' : ''}>
+                    ${escapeHtml(b.name)} ${b.isDefault ? '• default' : ''}
+                  </option>
+                `).join('')}
+              </select>
+            </div>
+            ${breadcrumbHtml}
           </div>
-          <span class="text-metadata">${currentFiles.length} items in root</span>
-        </div>
-        <div class="d-flex align-items-center gap-2">
-          <button type="button" class="btn btn-primary btn-sm" id="btnUploadFileTrigger">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-            Upload to ${escapeHtml(currentBranch)}
-          </button>
-        </div>
-      </div>
 
-      <div class="file-browser-card">
-        <div class="file-commit-header">
           <div class="d-flex align-items-center gap-2">
-            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=64&q=80" alt="Author" style="width: 22px; height: 22px; border-radius: 50%;" />
-            <strong>${escapeHtml(repo.owner || 'DevSync')}</strong>
-            <span class="text-secondary">Latest branch snapshot for ${escapeHtml(currentBranch)}</span>
-          </div>
-          <div class="d-flex align-items-center gap-3 text-secondary">
-            <code>${escapeHtml(currentBranch)}</code>
-            <span>Updated recently</span>
+            <a href="${openWorkspaceUrl}" class="btn btn-outline btn-sm d-inline-flex align-items-center gap-1" title="Open in Browser Code Workspace">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+              <span>Workspace IDE</span>
+            </a>
+            <button type="button" class="btn btn-primary btn-sm d-inline-flex align-items-center gap-1" id="btnUploadFileTrigger">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <span>Upload to ${escapeHtml(currentBranch)}</span>
+            </button>
           </div>
         </div>
 
-        ${currentFiles.length === 0 ? `
-          <div class="text-center py-6 text-secondary" style="font-size: 13.5px;">
-            No files found on branch "<strong>${escapeHtml(currentBranch)}</strong>".
-            <div class="mt-3">
+        <!-- File Browser Card -->
+        <div class="file-browser-card">
+          <!-- Commit Snapshot Header -->
+          <div class="file-commit-header">
+            <div class="d-flex align-items-center gap-2">
+              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=64&q=80" alt="Author" style="width: 22px; height: 22px; border-radius: 50%;" />
+              <strong>${escapeHtml(repo.owner || 'DevSync')}</strong>
+              <span class="text-secondary">Branch snapshot: <code>${escapeHtml(currentBranch)}</code> ${currentPath ? 'in <strong>' + escapeHtml(currentPath) + '</strong>' : ''}</span>
+            </div>
+            <div class="d-flex align-items-center gap-3 text-secondary">
+              <span>${currentFiles.length} item${currentFiles.length === 1 ? '' : 's'}</span>
+              <span>Updated recently</span>
+            </div>
+          </div>
+
+          <!-- File List Items -->
+          ${currentPath ? `
+            <div class="file-row parent-dir-row" data-parent-nav="${escapeHtml(parentPath)}" title="Go to parent directory">
+              <div class="file-name-col">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+                <span class="table-repo-name">.. (Parent Directory)</span>
+              </div>
+              <div class="file-commit-col"></div>
+              <div class="file-size-col"></div>
+              <div class="file-updated-col"></div>
+            </div>
+          ` : ''}
+
+          ${currentFiles.length === 0 ? `
+            <div class="file-empty-state">
+              <div style="font-weight: 600; font-size: 15px; margin-bottom: 6px; color: var(--color-text-primary);">
+                No files in this directory
+              </div>
+              <div class="text-secondary" style="font-size: 13px; margin-bottom: 14px;">
+                Branch "<strong>${escapeHtml(currentBranch)}</strong>" has no files at this path.
+              </div>
               <button type="button" class="btn btn-outline btn-sm" id="btnUploadFileEmptyTrigger">Upload First File</button>
             </div>
-          </div>
-        ` : currentFiles.map(file => `
-          <div class="file-row" style="cursor: pointer;" data-file-path="${escapeHtml(file.path || file.name)}">
-            <div class="file-name-col">
-              ${file.type === 'directory' ? `
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="#3572A5" stroke="none"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-              ` : `
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
-              `}
-              <span class="table-repo-name">${escapeHtml(file.name)}</span>
-            </div>
-            <span class="text-secondary" style="font-size: 12.5px;">${escapeHtml(file.commitMessage || file.message || 'Direct branch commit')}</span>
-            <div class="d-flex align-items-center gap-3 text-secondary" style="font-size: 12px;">
-              <span>${escapeHtml(file.size || '—')}</span>
-              <span>${escapeHtml(file.updated || 'recently')}</span>
-            </div>
-          </div>
-        `).join('')}
+          ` : currentFiles.map(file => {
+            const isDir = (file.type === 'dir');
+            return `
+              <div class="file-row" data-item-path="${escapeHtml(file.path)}" data-item-type="${isDir ? 'dir' : 'file'}" role="button" tabindex="0">
+                <div class="file-name-col">
+                  ${getFileIcon(file.name, isDir)}
+                  <span class="table-repo-name">${escapeHtml(file.name)}${isDir ? '/' : ''}</span>
+                </div>
+                <div class="file-commit-col" title="${escapeHtml(file.lastCommit || 'Direct branch commit')}">
+                  ${escapeHtml(file.lastCommit || 'Direct branch commit')}
+                </div>
+                <div class="file-size-col">
+                  ${isDir ? '<span class="text-secondary">—</span>' : escapeHtml(formatFileSize(file.size))}
+                </div>
+                <div class="file-updated-col">
+                  ${escapeHtml(formatDate(file.updatedAt))}
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
       </div>
     `;
 
-    document.getElementById('btnUploadFileTrigger')?.addEventListener('click', () => openModal('uploadModal'));
-    document.getElementById('btnUploadFileEmptyTrigger')?.addEventListener('click', () => openModal('uploadModal'));
+    // Event: Toolbar Branch Selector
+    const toolbarBranchSel = document.getElementById('fileToolbarBranchSelect');
+    if (toolbarBranchSel) {
+      toolbarBranchSel.addEventListener('change', (e) => {
+        currentBranch = e.target.value;
+        if (sidebarBranchSelect) sidebarBranchSelect.value = currentBranch;
+        if (uploadBranchSelect) uploadBranchSelect.value = currentBranch;
+        currentPath = '';
+        updateBranchNotice();
+        updateSidebarBadges();
+        updateUrl();
+        renderFilesTab();
+      });
+    }
 
-    contentArea.querySelectorAll('.file-row[data-file-path]').forEach(row => {
-      row.addEventListener('click', async () => {
-        const filePath = row.getAttribute('data-file-path');
-        try {
-          const res = await RepositoryService.getFile(repo.id, currentBranch, filePath);
-          document.getElementById('fileViewerTitle').textContent = res.file.name;
-          document.getElementById('fileViewerSub').textContent = `branch: ${currentBranch} • size: ${res.file.size || '—'}`;
-          document.getElementById('fileViewerContent').textContent = res.file.content || '// Empty file';
-          openModal('fileViewerModal');
-        } catch (err) {
-          toastDanger('Failed to load file contents.');
+    // Event: Breadcrumbs navigation
+    contentArea.querySelectorAll('[data-nav-path]').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        currentPath = link.getAttribute('data-nav-path') || '';
+        updateUrl();
+        renderFilesTab();
+      });
+    });
+
+    // Event: Parent directory .. row
+    contentArea.querySelectorAll('[data-parent-nav]').forEach(row => {
+      row.addEventListener('click', () => {
+        currentPath = row.getAttribute('data-parent-nav') || '';
+        updateUrl();
+        renderFilesTab();
+      });
+    });
+
+    // Event: File and Directory row clicks
+    contentArea.querySelectorAll('.file-row[data-item-path]').forEach(row => {
+      row.addEventListener('click', () => {
+        const itemPath = row.getAttribute('data-item-path');
+        const itemType = row.getAttribute('data-item-type');
+        if (itemType === 'dir') {
+          currentPath = itemPath;
+          updateUrl();
+          renderFilesTab();
+        } else {
+          currentPath = itemPath;
+          updateUrl();
+          renderFileViewer(itemPath);
         }
       });
     });
+
+    // Event: Upload buttons
+    document.getElementById('btnUploadFileTrigger')?.addEventListener('click', () => openModal('uploadModal'));
+    document.getElementById('btnUploadFileEmptyTrigger')?.addEventListener('click', () => openModal('uploadModal'));
+  }
+
+  /* -------------------------------------------------------------------------
+   * In-Page File Viewer (Read-Only Preview with Syntax Formatting)
+   * ------------------------------------------------------------------------- */
+  async function renderFileViewer(filePath) {
+    contentArea.innerHTML = `
+      <div class="file-viewer-card">
+        <div class="text-center py-8 text-secondary">
+          <span class="btn-spinner"></span> Loading file: ${escapeHtml(filePath)}...
+        </div>
+      </div>
+    `;
+
+    const pathParts = filePath.split('/');
+    const fileName = pathParts[pathParts.length - 1];
+    const parentDir = pathParts.slice(0, -1).join('/');
+
+    let fileData = null;
+    try {
+      fileData = await RepositoryService.getFile(repo.id, currentBranch, filePath, repo);
+    } catch (err) {
+      console.error('File load error:', err);
+      contentArea.innerHTML = `
+        <div class="file-viewer-card">
+          <div class="file-viewer-header">
+            <button type="button" class="btn btn-outline btn-sm btn-back-to-files">&larr; Back to Files</button>
+            <span class="badge badge-private" style="color: #f87171;">Load Error</span>
+          </div>
+          <div class="p-6 text-center">
+            <div style="font-weight: 700; font-size: 16px; color: var(--color-danger); margin-bottom: 8px;">File Not Found</div>
+            <p class="text-secondary" style="font-size: 13.5px;">The file "<strong>${escapeHtml(filePath)}</strong>" could not be loaded from branch "<strong>${escapeHtml(currentBranch)}</strong>".</p>
+            <button type="button" class="btn btn-primary btn-sm btn-back-to-files mt-3">Return to Directory</button>
+          </div>
+        </div>
+      `;
+      contentArea.querySelectorAll('.btn-back-to-files').forEach(b => {
+        b.addEventListener('click', () => {
+          currentPath = parentDir;
+          updateUrl();
+          renderFilesTab();
+        });
+      });
+      return;
+    }
+
+    const content = fileData.content || '';
+    const lines = content ? content.split('\n') : [];
+    const sizeFormatted = formatFileSize(fileData.size || content.length);
+    const ext = fileName.split('.').pop().toLowerCase();
+    const isImage = ['png', 'jpg', 'jpeg', 'gif', 'svg', 'webp'].includes(ext);
+
+    // Build breadcrumbs for file viewer
+    let breadcrumbHtml = `
+      <div class="file-breadcrumbs">
+        <svg class="file-icon folder-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+        <a class="file-breadcrumb-item" data-nav-path="">${escapeHtml(repo.name)}</a>
+    `;
+    let accum = '';
+    pathParts.forEach((part, idx) => {
+      accum = accum ? `${accum}/${part}` : part;
+      const isLast = (idx === pathParts.length - 1);
+      breadcrumbHtml += `
+        <span class="file-breadcrumb-separator">/</span>
+        ${isLast
+          ? `<span class="file-breadcrumb-current">${getFileIcon(part, false)} <strong>${escapeHtml(part)}</strong></span>`
+          : `<a class="file-breadcrumb-item" data-nav-path="${escapeHtml(accum)}">${escapeHtml(part)}</a>`
+        }
+      `;
+    });
+    breadcrumbHtml += `</div>`;
+
+    const openWorkspaceUrl = `${ROUTES.REPOSITORY_WORKSPACE}?repo=${encodeURIComponent(repo.name || repo.id)}&branch=${encodeURIComponent(currentBranch)}&file=${encodeURIComponent(filePath)}`;
+
+    contentArea.innerHTML = `
+      <div class="file-viewer-card">
+        <!-- File Viewer Top Header -->
+        <div class="file-viewer-header">
+          <div class="d-flex align-items-center gap-3 flex-wrap">
+            <button type="button" class="btn btn-outline btn-sm btn-back-to-files" title="Return to folder">
+              &larr; Back to Files
+            </button>
+            ${breadcrumbHtml}
+          </div>
+
+          <div class="d-flex align-items-center gap-2">
+            <button type="button" class="btn btn-outline btn-sm" id="btnCopyFileRaw" title="Copy raw file content">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              <span>Copy Raw</span>
+            </button>
+            <a href="${openWorkspaceUrl}" class="btn btn-primary btn-sm d-inline-flex align-items-center gap-1" title="Open and edit this file in the Workspace IDE">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+              <span>Edit in IDE</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- File Metadata Sub-Bar -->
+        <div class="file-viewer-meta px-4 py-2 bg-surface-subtle border-bottom d-flex align-items-center justify-content-between flex-wrap gap-2">
+          <div class="d-flex align-items-center gap-2">
+            <span class="file-viewer-pill">Branch: <strong>${escapeHtml(currentBranch)}</strong></span>
+            <span class="file-viewer-pill">${lines.length} lines</span>
+            <span class="file-viewer-pill">${sizeFormatted}</span>
+            <span class="file-viewer-pill">${escapeHtml(ext.toUpperCase())}</span>
+          </div>
+          <div class="text-secondary text-xs">
+            ${fileData.last_commit ? `Last commit: "${escapeHtml(fileData.last_commit)}"` : ''}
+          </div>
+        </div>
+
+        <!-- File Content Container -->
+        ${isImage ? `
+          <div class="binary-file-notice">
+            <img src="${escapeHtml(fileData.url || filePath)}" alt="${escapeHtml(fileName)}" style="max-width: 100%; max-height: 400px; border-radius: 8px; border: 1px solid var(--color-border);" />
+            <div class="text-secondary text-sm">${escapeHtml(fileName)} (${sizeFormatted})</div>
+          </div>
+        ` : `
+          <div class="code-viewer-container" id="codeViewerContainer">
+            ${renderCodeLines(content)}
+          </div>
+        `}
+      </div>
+    `;
+
+    // Event: Back to files
+    contentArea.querySelectorAll('.btn-back-to-files').forEach(btn => {
+      btn.addEventListener('click', () => {
+        currentPath = parentDir;
+        updateUrl();
+        renderFilesTab();
+      });
+    });
+
+    // Event: Breadcrumbs navigation in file viewer
+    contentArea.querySelectorAll('[data-nav-path]').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        currentPath = link.getAttribute('data-nav-path') || '';
+        updateUrl();
+        renderFilesTab();
+      });
+    });
+
+    // Event: Copy Raw Code
+    const copyBtn = document.getElementById('btnCopyFileRaw');
+    if (copyBtn) {
+      copyBtn.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(content);
+          toastSuccess(`Copied ${fileName} to clipboard!`);
+        } catch (_) {
+          const ta = document.createElement('textarea');
+          ta.value = content;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+          toastSuccess(`Copied ${fileName} to clipboard!`);
+        }
+      });
+    }
   }
 
   /* -------------------------------------------------------------------------
@@ -754,58 +1109,123 @@ export async function initRepositoryDetailPage() {
   }
 
   /* -------------------------------------------------------------------------
-   * Branches Tab
+   * Branches Tab (Isolated Workspaces, Aligned Table, Clear Actions)
    * ------------------------------------------------------------------------- */
   async function renderBranchesTab() {
-    contentArea.innerHTML = `
-      <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
-        <div>
-          <h2 class="font-heading" style="font-size: 18px; margin: 0 0 4px 0;">Repository Branches</h2>
-          <p class="text-secondary" style="font-size: 13px; margin: 0;">Branches are isolated workspaces for developing features and fixes.</p>
-        </div>
-      </div>
+    let branchesRes = { branches: [] };
+    try {
+      branchesRes = await RepositoryService.getBranches(repo.id, repo);
+    } catch (err) {
+      console.warn('Failed to load branches:', err);
+    }
 
-      <div class="table-responsive">
-        <table class="table" style="font-size: 13.5px;">
-          <thead>
-            <tr>
-              <th>Branch</th>
-              <th>Status</th>
-              <th>Latest Commit</th>
-              <th>Updated</th>
-              <th class="text-right">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${branches.map(b => `
-              <tr>
-                <td>
-                  <div class="d-flex align-items-center gap-2">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>
-                    <strong>${escapeHtml(b.name)}</strong>
-                  </div>
-                </td>
-                <td>
-                  ${b.isDefault ? `<span class="badge badge-public">Default</span>` : `<span class="text-secondary">Active</span>`}
-                </td>
-                <td><code style="font-size: 12px;">${escapeHtml(b.commitSha || 'e4f912a')}</code></td>
-                <td class="text-secondary">${escapeHtml(b.updated || 'Recently')}</td>
-                <td class="text-right">
-                  <button type="button" class="btn btn-outline btn-sm btn-switch-branch" data-branch="${escapeHtml(b.name)}" style="font-size: 11.5px; padding: 2px 8px;">
-                    ${b.name === currentBranch ? 'Viewing' : 'Switch Branch'}
-                  </button>
-                </td>
-              </tr>
-            `).join('')}
-          </tbody>
-        </table>
+    branches = branchesRes.branches || branches;
+    if (!branches || branches.length === 0) {
+      branches = [{
+        name: repo.defaultBranch || 'main',
+        isDefault: true,
+        filesCount: (repo.files?.[repo.defaultBranch || 'main']?.length || 0),
+        lastCommit: 'Initial commit',
+        lastActor: repo.owner || 'developer',
+        updatedAt: 'Recently'
+      }];
+    }
+
+    contentArea.innerHTML = `
+      <div class="branches-view-container">
+        <!-- Branches Header Bar -->
+        <div class="branches-header-bar">
+          <div>
+            <h2 class="font-heading branches-title">Repository Branches</h2>
+            <p class="text-secondary branches-subtitle">
+              ${branches.length} branch${branches.length === 1 ? '' : 'es'} tracked for <strong>${escapeHtml(repo.name)}</strong>. Isolated workspaces for developing features, reviews, and fixes.
+            </p>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <span class="branch-current-badge">
+              Active Context: <strong>${escapeHtml(currentBranch)}</strong>
+            </span>
+          </div>
+        </div>
+
+        <!-- Branches Table Card -->
+        <div class="branches-card">
+          <div class="table-responsive">
+            <table class="data-table branches-table">
+              <thead>
+                <tr>
+                  <th class="col-branch">Branch</th>
+                  <th class="col-status">Status</th>
+                  <th class="col-commit">Latest Commit</th>
+                  <th class="col-updated">Updated</th>
+                  <th class="col-actions text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${branches.map(b => {
+                  const isCurrent = (b.name === currentBranch);
+                  const isDef = Boolean(b.isDefault);
+                  return `
+                    <tr class="branch-row ${isCurrent ? 'branch-row-current' : ''}">
+                      <td class="col-branch">
+                        <div class="branch-name-wrap">
+                          <svg class="branch-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>
+                          <strong class="branch-name-text">${escapeHtml(b.name)}</strong>
+                          ${isCurrent ? `<span class="badge badge-viewing">Viewing</span>` : ''}
+                        </div>
+                      </td>
+                      <td class="col-status">
+                        ${isDef
+                          ? `<span class="badge badge-default-branch">Default</span>`
+                          : `<span class="badge badge-active-branch">Active</span>`
+                        }
+                      </td>
+                      <td class="col-commit">
+                        <div class="branch-commit-info">
+                          <span class="branch-commit-msg" title="${escapeHtml(b.lastCommit || 'Direct branch commit')}">
+                            ${escapeHtml(b.lastCommit || 'Direct branch commit')}
+                          </span>
+                          ${b.lastActor ? `<span class="text-secondary" style="font-size: 11px;">by @${escapeHtml(b.lastActor)}</span>` : ''}
+                        </div>
+                      </td>
+                      <td class="col-updated">
+                        <span class="text-secondary" style="font-size: 12.5px;">${escapeHtml(formatDate(b.updatedAt || b.updated))}</span>
+                      </td>
+                      <td class="col-actions text-right">
+                        ${isCurrent ? `
+                          <button type="button" class="btn btn-outline btn-sm btn-branch-viewing" disabled>
+                            &check; Current Branch
+                          </button>
+                        ` : `
+                          <button type="button" class="btn btn-primary btn-sm btn-switch-branch" data-branch="${escapeHtml(b.name)}">
+                            Switch Branch &rarr;
+                          </button>
+                        `}
+                      </td>
+                    </tr>
+                  `;
+                }).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     `;
 
+    // Hook up switch branch action buttons
     contentArea.querySelectorAll('.btn-switch-branch').forEach(btn => {
       btn.addEventListener('click', () => {
-        currentBranch = btn.getAttribute('data-branch');
+        const targetBranch = btn.getAttribute('data-branch');
+        if (!targetBranch) return;
+        currentBranch = targetBranch;
         if (sidebarBranchSelect) sidebarBranchSelect.value = currentBranch;
+        if (uploadBranchSelect) uploadBranchSelect.value = currentBranch;
+        currentPath = '';
+        updateBranchNotice();
+        updateSidebarBadges();
+        toastSuccess(`Switched active workspace to branch "${currentBranch}"`);
+
+        // Switch to Code & Files view to browse the selected branch
         currentTab = 'files';
         tabButtons.forEach(b => b.classList.toggle('active', b.getAttribute('data-repo-tab') === 'files'));
         updateUrl();

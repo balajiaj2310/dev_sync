@@ -3,7 +3,8 @@
  * Clean, compact data tables with subtle borders and row actions
  */
 
-.data-table {
+.data-table,
+.table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
@@ -11,7 +12,8 @@
   background-color: var(--color-surface);
 }
 
-.data-table th {
+.data-table th,
+.table th {
   padding: 12px 16px;
   background-color: var(--color-surface-subtle);
   font-family: var(--font-heading);
@@ -25,22 +27,26 @@
   white-space: nowrap;
 }
 
-.data-table td {
+.data-table td,
+.table td {
   padding: 12px 16px;
   border-bottom: 1px solid var(--color-border);
   color: var(--color-text-primary);
   vertical-align: middle;
 }
 
-.data-table tbody tr {
+.data-table tbody tr,
+.table tbody tr {
   transition: background-color var(--transition-fast);
 }
 
-.data-table tbody tr:hover {
+.data-table tbody tr:hover,
+.table tbody tr:hover {
   background-color: var(--color-surface-subtle);
 }
 
-.data-table tbody tr:last-child td {
+.data-table tbody tr:last-child td,
+.table tbody tr:last-child td {
   border-bottom: none;
 }
 
