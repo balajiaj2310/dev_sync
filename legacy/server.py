@@ -20,12 +20,34 @@ import hashlib
 import django
 from django.conf import settings
 
+def _clean_env(key, default=''):
+    val = os.environ.get(key, default)
+    if val is None:
+        return default
+    return str(val).strip().strip('"\'')
+
 # Load environment configuration from .env if present
 try:
     from dotenv import load_dotenv
-    load_dotenv()
+    _env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), '.env')
+    load_dotenv(dotenv_path=_env_path, override=True)
 except Exception:
     pass
+
+_email_host = _clean_env('EMAIL_HOST', 'smtp.gmail.com')
+_email_user = _clean_env('EMAIL_HOST_USER')
+_email_pass = _clean_env('EMAIL_HOST_PASSWORD')
+try:
+    _email_port = int(_clean_env('EMAIL_PORT', '587') or 587)
+except ValueError:
+    _email_port = 587
+
+_email_backend = _clean_env('EMAIL_BACKEND')
+if not _email_backend or 'emailbackend' in _email_backend.lower():
+    _email_backend = 'django.core.mail.backends.smtp.EmailBackend' if _email_host else 'django.core.mail.backends.console.EmailBackend'
+
+_email_tls = _clean_env('EMAIL_USE_TLS', 'True').lower() in ('true', '1', 'yes')
+_default_from = _clean_env('DEFAULT_FROM_EMAIL', 'DevSync Security <devsyncfind@gmail.com>')
 
 if not settings.configured:
     settings.configure(
@@ -35,19 +57,67 @@ if not settings.configured:
             'django.contrib.auth.hashers.Argon2PasswordHasher',
             'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
         ],
-        EMAIL_BACKEND=os.environ.get('EMAIL_BACKEND') or ('django.core.mail.backends.smtp.EmailBackend' if (os.environ.get('EMAIL_HOST', '').strip()) else 'django.core.mail.backends.console.EmailBackend'),
-        EMAIL_HOST=os.environ.get('EMAIL_HOST', 'localhost'),
-        EMAIL_PORT=int(os.environ.get('EMAIL_PORT', 587) or 587),
-        EMAIL_USE_TLS=os.environ.get('EMAIL_USE_TLS', 'True').lower() in ('true', '1'),
-        EMAIL_HOST_USER=os.environ.get('EMAIL_HOST_USER', ''),
-        EMAIL_HOST_PASSWORD=os.environ.get('EMAIL_HOST_PASSWORD', ''),
-        DEFAULT_FROM_EMAIL=os.environ.get('DEFAULT_FROM_EMAIL', 'DevSync Security <security@devsync.example>'),
-        EMAIL_TIMEOUT=int(os.environ.get('EMAIL_TIMEOUT', 4) or 4),
+        EMAIL_BACKEND=_email_backend,
+        EMAIL_HOST=_email_host,
+        EMAIL_PORT=_email_port,
+        EMAIL_USE_TLS=_email_tls,
+        EMAIL_HOST_USER=_email_user,
+        EMAIL_HOST_PASSWORD=_email_pass,
+        DEFAULT_FROM_EMAIL=_default_from,
+        EMAIL_TIMEOUT=int(_clean_env('EMAIL_TIMEOUT', '10') or 10),
     )
     django.setup()
 
 from django.contrib.auth.hashers import make_password, check_password
-from django.core.mail import send_mail
+from django.core.mail import send_mail, get_connection
+
+def validate_smtp_configuration():
+    """
+    Validates required SMTP configuration parameters without exposing secrets.
+    Returns (is_configured: bool, reason: str or None, config_summary: dict).
+    """
+    host = _clean_env('EMAIL_HOST')
+    user = _clean_env('EMAIL_HOST_USER')
+    password = _clean_env('EMAIL_HOST_PASSWORD')
+    port = _clean_env('EMAIL_PORT', '587')
+
+    summary = {
+        'host': host or None,
+        'port': port,
+        'user': user or None,
+        'tls': _clean_env('EMAIL_USE_TLS', 'True'),
+        'has_password': bool(password),
+    }
+
+    if not host:
+        return False, "EMAIL_HOST is not configured in .env", summary
+    if not user:
+        return False, "EMAIL_HOST_USER is not configured in .env", summary
+    if '@' not in user or '.' not in user.split('@')[-1]:
+        return False, f"EMAIL_HOST_USER is invalid ({user})", summary
+    if not password:
+        return False, "EMAIL_HOST_PASSWORD is not configured in .env", summary
+
+    return True, None, summary
+
+def get_configured_email_connection():
+    """
+    Constructs a Django email connection from current environment variables.
+    Allows real-time credential updates and test environment isolation.
+    """
+    is_configured, _, _ = validate_smtp_configuration()
+    if not is_configured:
+        return get_connection(backend='django.core.mail.backends.console.EmailBackend')
+
+    return get_connection(
+        backend='django.core.mail.backends.smtp.EmailBackend',
+        host=_clean_env('EMAIL_HOST', 'smtp.gmail.com'),
+        port=int(_clean_env('EMAIL_PORT', '587') or 587),
+        username=_clean_env('EMAIL_HOST_USER'),
+        password=_clean_env('EMAIL_HOST_PASSWORD'),
+        use_tls=_clean_env('EMAIL_USE_TLS', 'True').lower() in ('true', '1', 'yes'),
+        timeout=int(_clean_env('EMAIL_TIMEOUT', '10') or 10)
+    )
 
 # Google OAuth Configuration (from environment variables)
 GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID', '').strip()
@@ -74,13 +144,28 @@ from backend_collaboration import (
     get_pulse_progress, get_pulse_team_contributions, handle_branch_file_upload,
     handle_attachment_upload, sanitize_file_path, calculate_contribution_intelligence
 )
+import backend_execution
+import backend_workspace
 
 def dispatch_verification_email(email, otp):
     """
-    Dispatch verification email using Django's email facilities.
-    Supports SMTP when configured, or Console/Development backend.
-    Logs development notice clearly when SMTP is unconfigured.
+    Dispatch verification email using Django's email facilities and configured SMTP.
+    - If SMTP is configured, dispatches real email via smtp.gmail.com / configured host.
+    - If SMTP delivery fails, returns (False, error_message, True) so callers return 502 (no fake fallback).
+    - If SMTP is unconfigured in development mode, logs development notice to console and returns (True, None, False).
+    - If SMTP is unconfigured in production mode, returns (False, 'SMTP required in production', False).
     """
+    is_configured, reason, _ = validate_smtp_configuration()
+    env_mode = _clean_env('DEVSYNC_ENV', _clean_env('ENVIRONMENT', 'development')).lower()
+    is_production = env_mode in ('production', 'prod')
+
+    if not is_configured:
+        if is_production:
+            return False, f"Email delivery service unconfigured: {reason}. Production requires valid SMTP.", False
+
+        print(f"\n======================================================\n[DEVSYNC DEVELOPMENT OTP NOTICE]\nRecipient: {email}\nVerification Code: {otp}\nExpiration: 10 minutes\nStatus: SMTP unconfigured in dev environment (logged to console)\n======================================================\n", flush=True)
+        return True, None, False
+
     subject = "DevSync Account Verification Code"
     message = (
         f"Hello,\n\n"
@@ -89,19 +174,35 @@ def dispatch_verification_email(email, otp):
         f"If you did not request this verification, you can safely ignore this email.\n\n"
         f"— The DevSync Security Team"
     )
-    is_smtp_configured = bool(os.environ.get('EMAIL_HOST'))
+    html_message = (
+        f"<div style='font-family:-apple-system,BlinkMacSystemFont,\"Segoe UI\",Roboto,sans-serif;max-width:540px;margin:0 auto;padding:24px;border:1px solid #e2e8f0;border-radius:12px;background:#ffffff;'>"
+        f"<h2 style='color:#0f172a;margin-top:0;'>DevSync Verification Code</h2>"
+        f"<p style='color:#475569;font-size:15px;line-height:1.5;'>Please use the following 6-digit code to verify your DevSync account:</p>"
+        f"<div style='margin:24px 0;padding:16px 24px;background:#f8fafc;border-radius:8px;border:1px dashed #cbd5e1;text-align:center;'>"
+        f"<span style='font-size:32px;letter-spacing:6px;font-weight:700;color:#2563eb;font-family:monospace;'>{otp}</span>"
+        f"</div>"
+        f"<p style='color:#64748b;font-size:13px;line-height:1.5;'>This code expires in 10 minutes and can only be used once. If you did not request this code, no action is needed.</p>"
+        f"<hr style='border:none;border-top:1px solid #e2e8f0;margin:20px 0;'/>"
+        f"<p style='color:#94a3b8;font-size:12px;margin-bottom:0;'>DevSync &bull; Developer Collaboration & Intelligence Platform</p>"
+        f"</div>"
+    )
+
     try:
+        from_addr = _clean_env('DEFAULT_FROM_EMAIL', settings.DEFAULT_FROM_EMAIL or 'DevSync Security <devsyncfind@gmail.com>')
+        conn = get_configured_email_connection()
         send_mail(
             subject,
             message,
-            settings.DEFAULT_FROM_EMAIL,
+            from_addr,
             [email],
+            html_message=html_message,
+            connection=conn,
             fail_silently=False
         )
-        return True, None, is_smtp_configured
+        return True, None, True
     except Exception as e:
-        print(f"\n[DEVSYNC EMAIL NOTICE] To: {email} | OTP: {otp} | SMTP unconfigured or failed: {e}\n", flush=True)
-        return False, str(e), is_smtp_configured
+        print(f"\n[DEVSYNC EMAIL NOTICE] To: {email} | OTP: {otp} | SMTP dispatch failed: {e}\n", flush=True)
+        return False, str(e), True
 
 def verify_google_id_token(id_token):
     """
@@ -528,6 +629,7 @@ def save_database():
                 'repositories': REPOSITORIES,
                 'activity_events': ACTIVITY_EVENTS,
                 'notifications': NOTIFICATIONS,
+                'active_sessions': ACTIVE_SESSIONS,
                 'version': '1.3.0'
             }
             backend_issues_prs_chat.export_state_to_data(dump_data)
@@ -559,6 +661,11 @@ def load_database():
                     print(f"[Database] Loaded {len(ACTIVITY_EVENTS)} activity events from disk.")
                 backend_issues_prs_chat.load_state_from_data(data)
                 print(f"[Database] Loaded issues, PRs, teams, and chat state from disk.")
+                global ACTIVE_SESSIONS
+                loaded_sessions = data.get('active_sessions', {})
+                if loaded_sessions:
+                    ACTIVE_SESSIONS.update(loaded_sessions)
+                    print(f"[Database] Loaded {len(ACTIVE_SESSIONS)} active sessions from disk.")
                 global NOTIFICATIONS
                 loaded_notifs = data.get('notifications', [])
                 if loaded_notifs:
@@ -785,64 +892,86 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
 
     def resolve_local_path(self, req_path):
         """Map requested URL path to an actual file inside frontend directory."""
-        path = req_path.lstrip('/')
+        if not req_path:
+            return None
+
+        # URL decode and guard against path traversal attempts
+        unquoted = urllib.parse.unquote(req_path)
+        if '..' in unquoted or unquoted.startswith('\\') or '/../' in unquoted or unquoted.endswith('/..'):
+            return None
+
+        path = unquoted.lstrip('/')
         if path.startswith('frontend/'):
             path = path[len('frontend/'):]
 
-        # Check direct path in frontend
-        candidate = os.path.join(FRONTEND_DIR, path.replace('/', os.sep))
-        if os.path.exists(candidate) and not os.path.isdir(candidate):
-            return candidate
+        # Never serve dotfiles or private root directories (.env, .git, data, etc.)
+        first_segment = path.split('/')[0] if '/' in path else path
+        if first_segment.startswith('.') or first_segment in ('data', 'node_modules', '__pycache__'):
+            return None
+
+        candidates = [
+            os.path.join(FRONTEND_DIR, path.replace('/', os.sep))
+        ]
 
         # Aliases for common root-relative asset requests:
         if path.startswith('assets/'):
-            candidate = os.path.join(FRONTEND_DIR, 'src', path.replace('/', os.sep))
-            if os.path.exists(candidate) and not os.path.isdir(candidate):
-                return candidate
+            candidates.append(os.path.join(FRONTEND_DIR, 'src', path.replace('/', os.sep)))
 
         if path.startswith('css/'):
-            candidate = os.path.join(FRONTEND_DIR, 'src', 'assets', path.replace('/', os.sep))
-            if os.path.exists(candidate) and not os.path.isdir(candidate):
-                return candidate
+            candidates.append(os.path.join(FRONTEND_DIR, 'src', 'assets', path.replace('/', os.sep)))
 
         if path.startswith('js/'):
-            candidate = os.path.join(FRONTEND_DIR, 'src', path.replace('/', os.sep))
-            if os.path.exists(candidate) and not os.path.isdir(candidate):
-                return candidate
+            candidates.append(os.path.join(FRONTEND_DIR, 'src', path.replace('/', os.sep)))
 
         if path.startswith('public/'):
-            candidate = os.path.join(FRONTEND_DIR, path.replace('/', os.sep))
-            if os.path.exists(candidate) and not os.path.isdir(candidate):
-                return candidate
+            candidates.append(os.path.join(FRONTEND_DIR, path.replace('/', os.sep)))
 
         if path.startswith('pages/'):
-            candidate = os.path.join(FRONTEND_DIR, 'src', path.replace('/', os.sep))
-            if os.path.exists(candidate) and not os.path.isdir(candidate):
-                return candidate
+            candidates.append(os.path.join(FRONTEND_DIR, 'src', path.replace('/', os.sep)))
 
         # Nested relative asset lookups (e.g. from /developers/<username>/)
         if 'assets/' in path:
             idx = path.find('assets/')
-            candidate = os.path.join(FRONTEND_DIR, 'src', path[idx:].replace('/', os.sep))
-            if os.path.exists(candidate) and not os.path.isdir(candidate):
-                return candidate
+            candidates.append(os.path.join(FRONTEND_DIR, 'src', path[idx:].replace('/', os.sep)))
 
         if 'public/' in path:
             idx = path.find('public/')
-            candidate = os.path.join(FRONTEND_DIR, path[idx:].replace('/', os.sep))
-            if os.path.exists(candidate) and not os.path.isdir(candidate):
-                return candidate
+            candidates.append(os.path.join(FRONTEND_DIR, path[idx:].replace('/', os.sep)))
 
         if 'js/' in path:
             idx = path.find('js/')
-            candidate = os.path.join(FRONTEND_DIR, 'src', path[idx:].replace('/', os.sep))
-            if os.path.exists(candidate) and not os.path.isdir(candidate):
-                return candidate
+            candidates.append(os.path.join(FRONTEND_DIR, 'src', path[idx:].replace('/', os.sep)))
 
-        if os.path.isdir(candidate):
-            idx = os.path.join(candidate, 'index.html')
-            if os.path.exists(idx):
-                return idx
+        real_frontend = os.path.realpath(FRONTEND_DIR)
+
+        for candidate in candidates:
+            if not os.path.exists(candidate):
+                continue
+
+            real_candidate = os.path.realpath(candidate)
+            # MUST strictly reside within FRONTEND_DIR
+            if not (real_candidate.startswith(real_frontend + os.sep) or real_candidate == real_frontend):
+                continue
+
+            if os.path.isdir(real_candidate):
+                idx = os.path.join(real_candidate, 'index.html')
+                if os.path.exists(idx):
+                    real_idx = os.path.realpath(idx)
+                    if real_idx.startswith(real_frontend + os.sep):
+                        return real_idx
+                continue
+
+            # Must not serve sensitive extensions or hidden files (.py, .pyc, .env, .sqlite3, etc.)
+            base_name = os.path.basename(real_candidate)
+            _, ext = os.path.splitext(base_name)
+            ext = ext.lower()
+            if base_name.startswith('.') or ext in ('.py', '.pyc', '.env', '.sqlite3', '.bak', '.swp', '.log'):
+                continue
+            # Block JSON database dumps unless in assets/public
+            if ext == '.json' and not ('assets' in real_candidate or 'public' in real_candidate):
+                continue
+
+            return real_candidate
 
         return None
 
@@ -859,7 +988,12 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
         self.wfile.write(data)
 
     def serve_html_file(self, file_path):
-        with open(file_path, 'rb') as f:
+        real_file = os.path.realpath(file_path)
+        real_frontend = os.path.realpath(FRONTEND_DIR)
+        if not (real_file.startswith(real_frontend + os.sep) or real_file == real_frontend):
+            self.serve_custom_error(404)
+            return
+        with open(real_file, 'rb') as f:
             content = f.read()
         self.send_response(200)
         self.send_header('Content-Type', 'text/html; charset=utf-8')
@@ -923,7 +1057,7 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
         path = url_parts.path.rstrip('/')
 
         # Issues, PRs, Teams, and Chat GET dispatch
-        if backend_issues_prs_chat.handle_get(self, path, url_parts, self.get_authenticated_user()):
+        if backend_issues_prs_chat.handle_get(self, path, url_parts, self.get_authenticated_user(), DEV_PROFILES):
             return
 
         # Root redirect (directs to DevSync Home landing page)
@@ -934,13 +1068,13 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
             return
 
         # Friendly Auth Aliases: Redirect to canonical location for perfect relative asset resolution
-        if path in ('/login', '/signin', '/auth/sign-in'):
+        if path in ('/login', '/signin', '/auth/sign-in', '/sign-in', '/login/', '/signin/', '/auth/sign-in/', '/sign-in/'):
             self.send_response(302)
             self.send_header('Location', '/src/pages/auth/sign-in.html')
             self.end_headers()
             return
 
-        if path in ('/signup', '/register', '/auth/sign-up'):
+        if path in ('/signup', '/register', '/auth/sign-up', '/sign-up', '/signup/', '/register/', '/auth/sign-up/', '/sign-up/'):
             self.send_response(302)
             self.send_header('Location', '/src/pages/auth/sign-up.html')
             self.end_headers()
@@ -1216,14 +1350,14 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
         
         # AI Voice Assistant Token & Context Endpoints (GET /api/v1/ai/voice/token, /api/v1/ai/voice/context)
         if path in ('/api/v1/ai/voice/token', '/api/ai/voice/token'):
-            auth_user = self.get_authenticated_user() or DEV_PROFILES.get('dev-balaji')
+            auth_user = self.get_authenticated_user() or get_developer_by_identifier('naveen3438') or get_developer_by_identifier('balajikumar')
             token_res = backend_voice_ai.create_live_ephemeral_token()
             status_code = 200 if token_res.get('ok') else 500
             self.send_json(status_code, token_res)
             return
 
         if path in ('/api/v1/ai/voice/context', '/api/ai/voice/context'):
-            auth_user = self.get_authenticated_user() or DEV_PROFILES.get('dev-balaji')
+            auth_user = self.get_authenticated_user() or get_developer_by_identifier('naveen3438') or get_developer_by_identifier('balajikumar')
             query = urllib.parse.parse_qs(url_parts.query)
             repo_id = query.get('repo', ['devsync-core'])[0]
             branch = query.get('branch', ['main'])[0]
@@ -1388,6 +1522,121 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
             return
 
 # ------------------------------------------------------------------
+        # Code Workspace Endpoints
+        # ------------------------------------------------------------------
+        # GET /api/v1/workspace/<repo_id>/archive.zip
+        m_ws_zip = re.match(r'^/api/(?:v1/)?workspace/([^/]+)/archive\.zip$', path)
+        if m_ws_zip:
+            repo_id = m_ws_zip.group(1)
+            query = urllib.parse.parse_qs(url_parts.query)
+            branch = query.get('branch', [None])[0]
+            auth_user = self.get_authenticated_user()
+            ok, data, filename, status_code = backend_workspace.create_workspace_zip_archive(
+                repo_id, branch, auth_user=auth_user
+            )
+            if not ok:
+                self.send_json(status_code, data)
+                return
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/zip')
+            self.send_header('Content-Disposition', f'attachment; filename="{filename}"')
+            self.send_header('Content-Length', str(len(data)))
+            self.end_headers()
+            self.wfile.write(data)
+            return
+
+        # GET /api/v1/workspace/<repo_id>/info (or /api/v1/repositories/<repo_id>/workspace)
+        m_ws_info = re.match(r'^/api/(?:v1/)?(?:workspace|repositories)/([^/]+)/(?:info|workspace)/?$', path)
+        if not m_ws_info and re.match(r'^/api/(?:v1/)?workspace/([^/]+)/?$', path) and not path.endswith('/languages'):
+            m_ws_info = re.match(r'^/api/(?:v1/)?workspace/([^/]+)/?$', path)
+        if m_ws_info:
+            repo_id = m_ws_info.group(1)
+            auth_user = self.get_authenticated_user()
+            ok, data, status_code = backend_workspace.get_workspace_info(repo_id, auth_user=auth_user)
+            self.send_json(status_code, data)
+            return
+
+        # GET /api/v1/workspace/<repo_id>/tree
+        m_ws_tree = re.match(r'^/api/(?:v1/)?workspace/([^/]+)/tree/?$', path)
+        if m_ws_tree:
+            repo_id = m_ws_tree.group(1)
+            query = urllib.parse.parse_qs(url_parts.query)
+            branch = query.get('branch', [None])[0]
+            auth_user = self.get_authenticated_user()
+            ok, data, status_code = backend_workspace.get_workspace_tree(repo_id, branch=branch, auth_user=auth_user)
+            self.send_json(status_code, data)
+            return
+
+        # GET /api/v1/workspace/<repo_id>/file
+        m_ws_file = re.match(r'^/api/(?:v1/)?workspace/([^/]+)/file/?$', path)
+        if m_ws_file:
+            repo_id = m_ws_file.group(1)
+            query = urllib.parse.parse_qs(url_parts.query)
+            branch = query.get('branch', [None])[0]
+            file_path = query.get('path', [query.get('file', [''])[0]])[0]
+            auth_user = self.get_authenticated_user()
+            ok, data, status_code = backend_workspace.get_workspace_file(repo_id, branch, file_path, auth_user=auth_user)
+            self.send_json(status_code, data)
+            return
+
+        # GET /api/v1/workspace/<repo_id>/languages or /api/v1/workspace/languages
+        m_ws_langs = re.match(r'^/api/(?:v1/)?workspace/(?:([^/]+)/)?languages/?$', path)
+        if m_ws_langs:
+            lang_list = []
+            for lang_key, meta in backend_execution.SUPPORTED_LANGUAGES.items():
+                lang_list.append({
+                    'key': lang_key,
+                    'name': meta.get('name', lang_key.title()),
+                    'monacoId': meta.get('monaco_lang', lang_key),
+                    'extension': meta.get('extension', f".{lang_key}"),
+                    'version': meta.get('version', 'latest'),
+                    'defaultFileName': f"main{meta.get('extension', f'.{lang_key}')}",
+                    'boilerplate': meta.get('boilerplate', '')
+                })
+            self.send_json(200, {'languages': lang_list, 'count': len(lang_list)})
+            return
+
+        # GET /api/v1/workspace/<repo_id>/history
+        m_ws_hist = re.match(r'^/api/(?:v1/)?workspace/([^/]+)/history/?$', path)
+        if m_ws_hist:
+            repo_id = m_ws_hist.group(1)
+            query = urllib.parse.parse_qs(url_parts.query)
+            try:
+                limit = int(query.get('limit', [20])[0])
+            except ValueError:
+                limit = 20
+            auth_user = self.get_authenticated_user()
+            ok, data, status_code = backend_workspace.get_workspace_execution_history(repo_id, limit=limit, auth_user=auth_user)
+            self.send_json(status_code, data)
+            return
+
+        # GET /api/v1/workspace/<repo_id>/git/status
+        m_ws_git_status = re.match(r'^/api/(?:v1/)?workspace/([^/]+)/git/status/?$', path)
+        if m_ws_git_status:
+            repo_id = m_ws_git_status.group(1)
+            query = urllib.parse.parse_qs(url_parts.query)
+            branch = query.get('branch', [None])[0]
+            auth_user = self.get_authenticated_user()
+            ok, data, status_code = backend_workspace.get_workspace_git_status(repo_id, branch=branch, auth_user=auth_user)
+            self.send_json(status_code, data)
+            return
+
+        # GET /api/v1/workspace/<repo_id>/ide-config
+        m_ws_ide = re.match(r'^/api/(?:v1/)?workspace/([^/]+)/ide-config/?$', path)
+        if m_ws_ide:
+            repo_id = m_ws_ide.group(1)
+            query = urllib.parse.parse_qs(url_parts.query)
+            branch = query.get('branch', [None])[0]
+            auth_user = self.get_authenticated_user()
+            host = self.headers.get('Host', 'localhost:8000')
+            host_url = f"http://{host}"
+            ok, data, status_code = backend_workspace.get_external_ide_config(
+                repo_id, branch, host_url=host_url, auth_user=auth_user
+            )
+            self.send_json(status_code, data)
+            return
+
+        # ------------------------------------------------------------------
         # Repositories & Collaboration Endpoints
         # ------------------------------------------------------------------
         # GET /api/v1/repositories/<repo_id>/members
@@ -1761,7 +2010,7 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
             return
 
         if path in ('/api/v1/ai/voice/context', '/api/ai/voice/context'):
-            auth_user = self.get_authenticated_user() or DEV_PROFILES.get('dev-balaji')
+            auth_user = self.get_authenticated_user() or get_developer_by_identifier('naveen3438') or get_developer_by_identifier('balajikumar')
             length = int(self.headers.get('Content-Length', 0))
             post_data = self.rfile.read(length) if length > 0 else b'{}'
             try:
@@ -2655,6 +2904,35 @@ Valid for 10 minutes.
                 })
                 return
 
+            # Check if 2FA is enabled for this account
+            if matched_user.get('two_factor_enabled'):
+                two_factor_code = str(body.get('two_factor_code', body.get('totp_code', body.get('code', body.get('otp', ''))))).strip()
+                if not two_factor_code:
+                    self.send_json(200, {
+                        'requires_2fa': True,
+                        'message': 'Two-factor authentication code required.',
+                        'username': matched_user['username'],
+                        'two_factor_type': matched_user.get('two_factor_type', 'totp')
+                    })
+                    return
+                # Verify TOTP code or recovery code
+                totp_valid = False
+                totp_secret = matched_user.get('two_factor_secret')
+                if totp_secret and totp_manager.verify_code(totp_secret, two_factor_code):
+                    totp_valid = True
+                else:
+                    consumed, _ = totp_manager.verify_and_consume_recovery_code(matched_user, two_factor_code)
+                    if consumed:
+                        totp_valid = True
+                        save_database()
+                if not totp_valid:
+                    self.send_json(401, {
+                        'detail': 'Invalid two-factor authentication code.',
+                        'error': 'Invalid 2FA code',
+                        'requires_2fa': True
+                    })
+                    return
+
             # Valid credentials: create token and active session
             token = f"devsync_token_{secrets.token_hex(20)}"
             session_id = f"sess_{secrets.token_hex(10)}"
@@ -2686,6 +2964,7 @@ Valid for 10 minutes.
 
             # Set HttpOnly, SameSite Session Cookie
             resp_data = json.dumps({
+                'success': True,
                 'access': token,
                 'token': token,
                 'user': user_summary,
@@ -2851,12 +3130,33 @@ Valid for 10 minutes.
                 'last_sent_at': now,
                 'attempts_remaining': 5
             }
+            try:
+                os.makedirs('data', exist_ok=True)
+                with open('data/.test_last_email_otp.txt', 'w', encoding='utf-8') as _f:
+                    _f.write(otp)
+            except Exception:
+                pass
 
             dispatched, err, is_smtp_configured = dispatch_verification_email(email, otp)
 
+            if is_smtp_configured and not dispatched:
+                self.send_json(502, {
+                    'detail': f'Failed to deliver verification code via configured SMTP provider: {err}',
+                    'error': 'Email delivery failed'
+                })
+                return
+
+            if not is_smtp_configured and not dispatched:
+                self.send_json(503, {
+                    'detail': f'Email service unavailable: {err}',
+                    'error': 'SMTP unconfigured in production'
+                })
+                return
+
             response_payload = {
                 'success': True,
-                'message': f'Verification code dispatched to {email}. Please check your inbox.',
+                'message': f'Verification code dispatched to {email}. Please check your inbox.' if is_smtp_configured else f'Verification code generated for {email}. (Development mode: check server console logs)',
+                'deliveryMode': 'smtp' if is_smtp_configured else 'console',
                 'expiresInSeconds': 600,
                 'email': email
             }
@@ -2945,11 +3245,14 @@ Valid for 10 minutes.
             })
             return
 
-        # Registration Endpoint (POST /api/v1/auth/register, /auth/register/, /auth/register, /api/auth/register)
+        # Registration Endpoint (POST /api/v1/auth/register, /api/v1/auth/signup, /auth/register/, /auth/register, /api/auth/register)
         register_paths = (
             '/api/v1/auth/register', '/api/v1/auth/register/',
             '/auth/register/', '/auth/register',
-            '/api/auth/register', '/api/auth/register/'
+            '/api/auth/register', '/api/auth/register/',
+            '/api/v1/auth/signup', '/api/v1/auth/signup/',
+            '/auth/signup/', '/auth/signup',
+            '/api/auth/signup', '/api/auth/signup/'
         )
         if path in register_paths:
             length = int(self.headers.get('Content-Length', 0))
@@ -3048,6 +3351,7 @@ Valid for 10 minutes.
                 'created': time.time()
             }
             self.send_json(201, {
+                'success': True,
                 'access': token,
                 'token': token,
                 'user': user_summary,
@@ -3404,6 +3708,144 @@ Valid for 10 minutes.
             })
             return
 
+        # ------------------------------------------------------------------
+        # Code Workspace POST Endpoints
+        # ------------------------------------------------------------------
+        # POST /api/v1/workspace/<repo_id>/file (save file)
+        m_ws_save = re.match(r'^/api/(?:v1/)?workspace/([^/]+)/file/?$', path)
+        if m_ws_save:
+            repo_id = m_ws_save.group(1)
+            length = int(self.headers.get('Content-Length', 0))
+            post_data = self.rfile.read(length) if length > 0 else b'{}'
+            try:
+                body = json.loads(post_data.decode('utf-8'))
+            except Exception:
+                self.send_json(400, {'error': 'Invalid JSON in request body'})
+                return
+
+            branch = body.get('branch')
+            file_path = body.get('path', body.get('filePath', ''))
+            content = body.get('content', '')
+            commit_msg = body.get('commitMessage', body.get('message', ''))
+            auth_user = self.get_authenticated_user()
+
+            ok, data, status_code = backend_workspace.save_workspace_file(
+                repo_id, branch, file_path, content, commit_message=commit_msg,
+                auth_user=auth_user, base_data_dir=DATA_DIR
+            )
+            if ok:
+                save_database()
+            self.send_json(status_code, data)
+            return
+
+        # POST /api/v1/workspace/<repo_id>/files/create (create file/dir)
+        m_ws_create = re.match(r'^/api/(?:v1/)?workspace/([^/]+)/files/create/?$', path)
+        if m_ws_create:
+            repo_id = m_ws_create.group(1)
+            length = int(self.headers.get('Content-Length', 0))
+            post_data = self.rfile.read(length) if length > 0 else b'{}'
+            try:
+                body = json.loads(post_data.decode('utf-8'))
+            except Exception:
+                self.send_json(400, {'error': 'Invalid JSON in request body'})
+                return
+
+            branch = body.get('branch')
+            file_path = body.get('path', body.get('filePath', ''))
+            item_type = body.get('type', 'file')
+            content = body.get('content', '')
+            commit_msg = body.get('commitMessage', body.get('message', ''))
+            auth_user = self.get_authenticated_user()
+
+            ok, data, status_code = backend_workspace.create_workspace_file_or_folder(
+                repo_id, branch, file_path, item_type=item_type, initial_content=content,
+                commit_message=commit_msg, auth_user=auth_user, base_data_dir=DATA_DIR
+            )
+            if ok:
+                save_database()
+            self.send_json(status_code, data)
+            return
+
+        # POST /api/v1/workspace/<repo_id>/files/rename (rename file/dir)
+        m_ws_rename = re.match(r'^/api/(?:v1/)?workspace/([^/]+)/files/rename/?$', path)
+        if m_ws_rename:
+            repo_id = m_ws_rename.group(1)
+            length = int(self.headers.get('Content-Length', 0))
+            post_data = self.rfile.read(length) if length > 0 else b'{}'
+            try:
+                body = json.loads(post_data.decode('utf-8'))
+            except Exception:
+                self.send_json(400, {'error': 'Invalid JSON in request body'})
+                return
+
+            branch = body.get('branch')
+            old_path = body.get('oldPath', body.get('old_path', ''))
+            new_path = body.get('newPath', body.get('new_path', ''))
+            commit_msg = body.get('commitMessage', body.get('message', ''))
+            auth_user = self.get_authenticated_user()
+
+            ok, data, status_code = backend_workspace.rename_workspace_path(
+                repo_id, branch, old_path, new_path, commit_message=commit_msg,
+                auth_user=auth_user, base_data_dir=DATA_DIR
+            )
+            if ok:
+                save_database()
+            self.send_json(status_code, data)
+            return
+
+        # POST /api/v1/workspace/<repo_id>/execute (run code)
+        m_ws_exec = re.match(r'^/api/(?:v1/)?workspace/([^/]+)/execute/?$', path)
+        if m_ws_exec:
+            repo_id = m_ws_exec.group(1)
+            length = int(self.headers.get('Content-Length', 0))
+            post_data = self.rfile.read(length) if length > 0 else b'{}'
+            try:
+                body = json.loads(post_data.decode('utf-8'))
+            except Exception:
+                self.send_json(400, {'error': 'Invalid JSON in request body'})
+                return
+
+            branch = body.get('branch')
+            file_path = body.get('filePath', body.get('path', ''))
+            source_code = body.get('sourceCode', body.get('source_code', body.get('content', '')))
+            language = body.get('language')
+            stdin = body.get('stdin', '')
+            args = body.get('args', [])
+            provider_name = body.get('provider')
+            auth_user = self.get_authenticated_user()
+
+            ok, data, status_code = backend_workspace.execute_workspace_code(
+                repo_id, branch, file_path, source_code, language=language,
+                stdin=stdin, args=args, auth_user=auth_user, provider_name=provider_name
+            )
+            self.send_json(status_code, data)
+            return
+
+        # POST /api/v1/workspace/<repo_id>/git/commit (create commit)
+        m_ws_commit = re.match(r'^/api/(?:v1/)?workspace/([^/]+)/git/commit/?$', path)
+        if m_ws_commit:
+            repo_id = m_ws_commit.group(1)
+            length = int(self.headers.get('Content-Length', 0))
+            post_data = self.rfile.read(length) if length > 0 else b'{}'
+            try:
+                body = json.loads(post_data.decode('utf-8'))
+            except Exception:
+                self.send_json(400, {'error': 'Invalid JSON in request body'})
+                return
+
+            branch = body.get('branch')
+            message = body.get('message', body.get('commitMessage', ''))
+            files = body.get('files', [])
+            auth_user = self.get_authenticated_user()
+
+            ok, data, status_code = backend_workspace.commit_workspace_changes(
+                repo_id, branch, message, files=files, auth_user=auth_user
+            )
+            if ok:
+                save_database()
+            self.send_json(status_code, data)
+            return
+
         # Pin Project Endpoint (POST /api/developers/<username>/pin, POST /api/v1/developers/<username>/pin)
         if '/pin' in path and ('/api/developers/' in path or '/api/v1/developers/' in path):
             parts = path.split('/')
@@ -3667,12 +4109,75 @@ Valid for 10 minutes.
 
         self.serve_custom_error(405)
 
+    def do_PUT(self):
+        url_parts = urllib.parse.urlsplit(self.path)
+        path = url_parts.path.rstrip('/')
+
+        # PUT /api/v1/workspace/<repo_id>/file
+        m_ws_save = re.match(r'^/api/(?:v1/)?workspace/([^/]+)/file/?$', path)
+        if m_ws_save:
+            repo_id = m_ws_save.group(1)
+            length = int(self.headers.get('Content-Length', 0))
+            post_data = self.rfile.read(length) if length > 0 else b'{}'
+            try:
+                body = json.loads(post_data.decode('utf-8'))
+            except Exception:
+                self.send_json(400, {'error': 'Invalid JSON in request body'})
+                return
+
+            branch = body.get('branch')
+            file_path = body.get('path', body.get('filePath', ''))
+            content = body.get('content', '')
+            commit_msg = body.get('commitMessage', body.get('message', ''))
+            auth_user = self.get_authenticated_user()
+
+            ok, data, status_code = backend_workspace.save_workspace_file(
+                repo_id, branch, file_path, content, commit_message=commit_msg,
+                auth_user=auth_user, base_data_dir=DATA_DIR
+            )
+            if ok:
+                save_database()
+            self.send_json(status_code, data)
+            return
+
+        self.serve_custom_error(405)
+
     def do_DELETE(self):
         url_parts = urllib.parse.urlsplit(self.path)
         path = url_parts.path.rstrip('/')
 
         # Issues, PRs, Teams, and Chat DELETE dispatch
         if backend_issues_prs_chat.handle_delete(self, path, url_parts, self.get_authenticated_user(), save_database):
+            return
+
+        # DELETE /api/v1/workspace/<repo_id>/file
+        m_ws_del = re.match(r'^/api/(?:v1/)?workspace/([^/]+)/file/?$', path)
+        if m_ws_del:
+            repo_id = m_ws_del.group(1)
+            query = urllib.parse.parse_qs(url_parts.query)
+            branch = query.get('branch', [None])[0]
+            target_path = query.get('path', [query.get('file', [''])[0]])[0]
+            commit_msg = query.get('message', [None])[0]
+
+            length = int(self.headers.get('Content-Length', 0))
+            if length > 0:
+                try:
+                    post_data = self.rfile.read(length)
+                    body = json.loads(post_data.decode('utf-8'))
+                    branch = branch or body.get('branch')
+                    target_path = target_path or body.get('path') or body.get('filePath')
+                    commit_msg = commit_msg or body.get('commitMessage') or body.get('message')
+                except Exception:
+                    pass
+
+            auth_user = self.get_authenticated_user()
+            ok, data, status_code = backend_workspace.delete_workspace_path(
+                repo_id, branch, target_path, commit_message=commit_msg,
+                auth_user=auth_user, base_data_dir=DATA_DIR
+            )
+            if ok:
+                save_database()
+            self.send_json(status_code, data)
             return
 
         # Delete notification via DELETE: /api/v1/notifications/<notif_id>
@@ -3764,7 +4269,7 @@ Valid for 10 minutes.
         message = body.get('message', body.get('prompt', '')).strip()
 
         # Build grounded context
-        auth_user = self.get_authenticated_user() or DEV_PROFILES.get('dev-balaji')
+        auth_user = self.get_authenticated_user() or get_developer_by_identifier('naveen3438') or get_developer_by_identifier('balajikumar')
         pulse_data = calculate_contribution_intelligence(auth_user['username']) if auth_user else None
         context_instruction = backend_voice_ai.build_system_instruction(
             user_profile=auth_user,

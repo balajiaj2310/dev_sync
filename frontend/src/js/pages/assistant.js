@@ -256,13 +256,17 @@ export function initAssistantPage() {
       onStateChange: handleVoiceStateChange,
       onAudioLevel: updateVisualizer,
       onTranscript: appendTranscript,
-      onError: (err) => toastError(err),
+      onError: (err) => {
+        toastError(err);
+        appendTranscript('ai', 'Microphone access is not available in this browser. You can type your doubts in the input bar below or tap any Quick Voice Command to communicate!');
+      },
       onTimerTick: (timeStr) => {
         if (voiceSessionTimer) voiceSessionTimer.textContent = timeStr;
       }
     });
 
     await voiceService.startSession();
+    appendTranscript('ai', 'DevSync Voice AI is active and ready. Speak through your microphone or type your doubts below!');
   }
 
   btnVoiceAction?.addEventListener('click', toggleVoiceSession);
@@ -282,6 +286,59 @@ export function initAssistantPage() {
       toastInfo('Voice session ended.');
     }
   });
+
+  // 2.5 Transcript Text Bar Input (Type doubts directly in Voice Studio)
+  const voiceTranscriptForm = document.getElementById('voiceTranscriptForm');
+  const voiceTranscriptInput = document.getElementById('voiceTranscriptInput');
+  const btnVoiceTranscriptSend = document.getElementById('btnVoiceTranscriptSend');
+
+  async function handleTranscriptSubmit(e) {
+    if (e) e.preventDefault();
+    const text = voiceTranscriptInput?.value?.trim();
+    if (!text) return;
+
+    voiceTranscriptInput.value = '';
+    appendTranscript('user', text, true);
+
+    if (!voiceService || voiceService.state === 'idle' || voiceService.state === 'ended') {
+      voiceService = new DevSyncVoiceService({
+        activeRepo,
+        activeBranch,
+        voiceName: selectedVoice,
+        language: selectedLanguage,
+        onStateChange: handleVoiceStateChange,
+        onAudioLevel: updateVisualizer,
+        onTranscript: appendTranscript,
+        onError: (err) => toastError(err),
+        onTimerTick: (timeStr) => {
+          if (voiceSessionTimer) voiceSessionTimer.textContent = timeStr;
+        }
+      });
+    }
+
+    if (btnVoiceTranscriptSend) {
+      btnVoiceTranscriptSend.disabled = true;
+      btnVoiceTranscriptSend.innerHTML = '<span class="btn-spinner"></span>';
+    }
+
+    try {
+      await voiceService.sendSpokenCommand(text);
+    } catch (err) {
+      console.error('Error sending transcript text:', err);
+      toastError('Failed to communicate with DevSync AI.');
+    } finally {
+      if (btnVoiceTranscriptSend) {
+        btnVoiceTranscriptSend.disabled = false;
+        btnVoiceTranscriptSend.innerHTML = `
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          <span>Send</span>
+        `;
+      }
+      voiceTranscriptInput?.focus();
+    }
+  }
+
+  voiceTranscriptForm?.addEventListener('submit', handleTranscriptSubmit);
 
   // Quick Voice Commands
   quickCmdBtns.forEach(btn => {

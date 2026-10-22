@@ -636,6 +636,19 @@ INITIAL_CONVERSATIONS = {
         'lastMessage': 'Database indexes are staged in #39. Query times dropped from 240ms to 18ms.',
         'lastMessageTime': '11:15 AM'
     },
+    'conv-direct-balaji-priya': {
+        'id': 'conv-direct-balaji-priya',
+        'type': 'direct',
+        'title': 'Priya S',
+        'avatar': 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=120&q=80',
+        'members': ['balajikumar', 'priyas'],
+        'admins': ['balajikumar'],
+        'isOnline': True,
+        'unreadCount': 0,
+        'updated_at': NOW - 2000,
+        'lastMessage': 'Can you check the migration plan for PostgreSQL 16?',
+        'lastMessageTime': '10:35 AM'
+    },
     'conv-group-core': {
         'id': 'conv-group-core',
         'type': 'group',
@@ -722,6 +735,21 @@ INITIAL_MESSAGES = {
             'status': 'read',
             'reply_to': None,
             'reactions': {'⚡': ['naveen3438', 'balajikumar']}
+        }
+    ],
+    'conv-direct-balaji-priya': [
+        {
+            'id': 'msg-bp1',
+            'conversation_id': 'conv-direct-balaji-priya',
+            'sender': 'priyas',
+            'senderName': 'Priya S',
+            'senderAvatar': 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=64&q=80',
+            'text': 'Can you check the migration plan for PostgreSQL 16?',
+            'timestamp': NOW - 2000,
+            'time': '10:35 AM',
+            'status': 'read',
+            'reply_to': None,
+            'reactions': {'👍': ['balajikumar']}
         }
     ],
     'conv-group-core': [
@@ -1161,8 +1189,8 @@ def create_pull_request(data, actor_username, repositories=None, dev_profiles=No
     if not repo:
         return None, f"Repository '{repository_id}' does not exist."
 
-    source_branch = str(data.get('sourceBranch', '')).strip()
-    target_branch = str(data.get('targetBranch', 'main')).strip()
+    source_branch = str(data.get('sourceBranch') or data.get('source_branch') or '').strip()
+    target_branch = str(data.get('targetBranch') or data.get('target_branch') or 'main').strip()
 
     if not source_branch:
         return None, "Source branch is required."
@@ -1471,7 +1499,7 @@ def remove_team_member(username, project_name=None):
 # --------------------------------------------------------------------------
 # DevSync Chat Business Logic
 # --------------------------------------------------------------------------
-def list_conversations(current_user_username):
+def list_conversations(current_user_username, dev_profiles=None):
     """Return all conversations visible to the current user."""
     u = current_user_username.strip().lower()
     results = []
@@ -1479,6 +1507,30 @@ def list_conversations(current_user_username):
         members_lower = [m.lower() for m in conv.get('members', [])]
         if u in members_lower or conv.get('type') == 'public_group':
             c_copy = dict(conv)
+            # For direct messages, dynamically compute title & avatar for the counterparty
+            if c_copy.get('type') == 'direct':
+                counterparties = [m for m in conv.get('members', []) if m.lower() != u]
+                if counterparties:
+                    other_u = counterparties[0]
+                    if dev_profiles and other_u in dev_profiles:
+                        p = dev_profiles[other_u]
+                        c_copy['title'] = p.get('fullName') or p.get('name') or other_u
+                        if p.get('avatarUrl') or p.get('avatar'):
+                            c_copy['avatar'] = p.get('avatarUrl') or p.get('avatar')
+                    elif other_u.lower() == 'balajikumar':
+                        c_copy['title'] = 'Balaji'
+                        c_copy['avatar'] = 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80'
+                    elif other_u.lower() == 'naveen3438':
+                        c_copy['title'] = 'Naveen Kumar D'
+                        c_copy['avatar'] = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80'
+                    elif other_u.lower() == 'priyas':
+                        c_copy['title'] = 'Priya S'
+                        c_copy['avatar'] = 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=120&q=80'
+                    elif other_u.lower() == 'karthik':
+                        c_copy['title'] = 'Karthik'
+                        c_copy['avatar'] = 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=120&q=80'
+                    else:
+                        c_copy['title'] = other_u
             # Fetch latest message preview
             msgs = MESSAGES.get(conv['id'], [])
             if msgs:
@@ -1494,6 +1546,11 @@ def get_messages(conversation_id, current_user_username, page=1, page_size=50):
     """Get paginated message stream for a conversation."""
     conv = CONVERSATIONS.get(conversation_id)
     if not conv:
+        if conversation_id in CHANNEL_MESSAGES or any(
+            any(ch.get('id') == conversation_id for ch in comm.get('channels', []))
+            for comm in COMMUNITIES.values()
+        ):
+            return get_channel_messages(conversation_id), None
         return None, "Conversation not found."
 
     u = current_user_username.strip().lower()
@@ -1514,6 +1571,11 @@ def post_message(conversation_id, text, current_user_username, reply_to=None, at
     """Post a message into a conversation."""
     conv = CONVERSATIONS.get(conversation_id)
     if not conv:
+        if conversation_id in CHANNEL_MESSAGES or any(
+            any(ch.get('id') == conversation_id for ch in comm.get('channels', []))
+            for comm in COMMUNITIES.values()
+        ):
+            return post_channel_message(conversation_id, text, current_user_username, dev_profiles)
         return None, "Conversation not found."
 
     u = current_user_username.strip().lower()
@@ -1543,6 +1605,7 @@ def post_message(conversation_id, text, current_user_username, reply_to=None, at
         'time': datetime.now().strftime('%I:%M %p').lstrip('0'),
         'status': 'sent',
         'reply_to': reply_to,
+        'replyTo': reply_to,
         'attachment': attachment,
         'reactions': {}
     }
@@ -1564,6 +1627,12 @@ def react_to_message(conversation_id, message_id, emoji, actor_username):
                 msg = found
                 break
     if not msg:
+        for chid, chlist in CHANNEL_MESSAGES.items():
+            found = next((m for m in chlist if m.get('id') == message_id), None)
+            if found:
+                msg = found
+                break
+    if not msg:
         return None, "Message not found."
 
     reactions = msg.setdefault('reactions', {})
@@ -1579,7 +1648,15 @@ def react_to_message(conversation_id, message_id, emoji, actor_username):
 def create_conversation(data, actor_username, dev_profiles=None):
     """Create a new 1:1 direct chat or group conversation."""
     conv_type = data.get('type', 'direct')
-    members = list(set([actor_username] + data.get('members', [])))
+    raw_members = list(data.get('members', []))
+    if not raw_members and data.get('participants'):
+        for p in data['participants']:
+            u = p.get('username') or p.get('name')
+            if u:
+                raw_members.append(str(u).lower().replace(' ', ''))
+    if data.get('recipientUsername'):
+        raw_members.append(str(data['recipientUsername']).lower().strip())
+    members = list(set([actor_username] + raw_members))
 
     if conv_type == 'direct':
         if len(members) < 2:
@@ -1645,7 +1722,12 @@ def list_communities():
 
 def get_channel_messages(channel_id):
     """Return messages for a specific community text channel."""
-    return CHANNEL_MESSAGES.get(channel_id, [])
+    msgs = CHANNEL_MESSAGES.get(channel_id, [])
+    for m in msgs:
+        m.setdefault('sender', m.get('author', 'Developer'))
+        m.setdefault('senderName', m.get('author', 'Developer'))
+        m.setdefault('senderAvatar', m.get('authorAvatar', ''))
+    return msgs
 
 def post_channel_message(channel_id, text, actor_username, dev_profiles=None):
     """Post message to a community text channel."""
@@ -1665,6 +1747,9 @@ def post_channel_message(channel_id, text, actor_username, dev_profiles=None):
         'channelId': channel_id,
         'author': author_name,
         'authorAvatar': author_avatar,
+        'sender': actor_username,
+        'senderName': author_name,
+        'senderAvatar': author_avatar,
         'time': datetime.now().strftime('%I:%M %p').lstrip('0'),
         'text': t,
         'reactions': {}
@@ -1725,16 +1810,16 @@ def delete_status(status_id, actor_username):
 # ==========================================================================
 import urllib.parse
 
-def handle_get(handler, path, url_parts, auth_user=None):
+def handle_get(handler, path, url_parts, auth_user=None, dev_profiles=None):
     """Handle GET requests for Issues, Pull Requests, Teams, and Chat."""
     # 1. Issues List
     if path in ('/api/v1/issues', '/api/issues', '/api/v1/issues/', '/api/issues/'):
         query = urllib.parse.parse_qs(url_parts.query)
         status = query.get('status', [''])[0].strip()
-        repo = query.get('repository', [''])[0].strip()
+        repo = (query.get('repo') or query.get('repository') or [''])[0].strip()
         label = query.get('label', [''])[0].strip()
         author = query.get('author', [''])[0].strip()
-        search = query.get('search', [''])[0].strip()
+        search = (query.get('q') or query.get('search') or [''])[0].strip()
         sort = query.get('sort', ['newest'])[0].strip()
 
         issues_res = list_issues(status=status, repository=repo, label=label, author=author, search=search, sort=sort)
@@ -1756,9 +1841,9 @@ def handle_get(handler, path, url_parts, auth_user=None):
     if path in ('/api/v1/pull-requests', '/api/pull-requests', '/api/v1/pull-requests/', '/api/pull-requests/'):
         query = urllib.parse.parse_qs(url_parts.query)
         status = query.get('status', [''])[0].strip()
-        repo = query.get('repository', [''])[0].strip()
+        repo = (query.get('repo') or query.get('repository') or [''])[0].strip()
         author = query.get('author', [''])[0].strip()
-        search = query.get('search', [''])[0].strip()
+        search = (query.get('q') or query.get('search') or [''])[0].strip()
         sort = query.get('sort', ['newest'])[0].strip()
 
         pr_res = list_pull_requests(status=status, repository=repo, author=author, search=search, sort=sort)
@@ -1795,7 +1880,7 @@ def handle_get(handler, path, url_parts, auth_user=None):
     # 7. Chat Conversations
     if path in ('/api/v1/chat/conversations', '/api/v1/chat/conversations/'):
         caller = auth_user['username'].lower() if auth_user else handler.headers.get('X-DevSync-User', 'naveen3438').strip().lower()
-        handler.send_json(200, list_conversations(caller))
+        handler.send_json(200, list_conversations(caller, dev_profiles=dev_profiles))
         return True
 
     # 8. Chat Messages
@@ -1823,7 +1908,7 @@ def handle_get(handler, path, url_parts, auth_user=None):
         return True
 
     # 10. Channel Messages
-    m_ch_msgs = re.match(r'^/api/(?:v1/)?(?:chat/communities/[^/]+/channels|community/channels)/([^/]+)/messages/?$', path)
+    m_ch_msgs = re.match(r'^/api/(?:v1/)?(?:chat/communities/[^/]+/channels|community/channels|chat/channels)/([^/]+)/messages/?$', path)
     if m_ch_msgs:
         ch_id = m_ch_msgs.group(1)
         msgs = get_channel_messages(ch_id)
@@ -1868,9 +1953,11 @@ def handle_post(handler, path, url_parts, auth_user, dev_profiles, repositories,
             body = json.loads(post_data.decode('utf-8'))
         except Exception:
             body = {}
-        comment, err = add_issue_comment(issue_id, body.get('text', ''), actor, dev_profiles)
+        comment_text = body.get('text') or body.get('comment') or body.get('body') or ''
+        comment, err = add_issue_comment(issue_id, comment_text, actor, dev_profiles)
         if err:
-            handler.send_json(400, {'error': err})
+            status_code = 404 if 'not found' in err.lower() else 400
+            handler.send_json(status_code, {'error': err})
             return True
         save_fn()
         resp_obj = {'success': True, 'comment': comment}
@@ -1885,7 +1972,8 @@ def handle_post(handler, path, url_parts, auth_user, dev_profiles, repositories,
         actor = auth_user['username'].lower() if auth_user else handler.headers.get('X-DevSync-User', 'naveen3438').strip().lower()
         issue, err = set_issue_status(issue_id, 'Closed', actor)
         if err:
-            handler.send_json(400, {'error': err})
+            status_code = 404 if 'not found' in err.lower() else 400
+            handler.send_json(status_code, {'error': err})
             return True
         save_fn()
         handler.send_json(200, issue)
@@ -1898,7 +1986,8 @@ def handle_post(handler, path, url_parts, auth_user, dev_profiles, repositories,
         actor = auth_user['username'].lower() if auth_user else handler.headers.get('X-DevSync-User', 'naveen3438').strip().lower()
         issue, err = set_issue_status(issue_id, 'Open', actor)
         if err:
-            handler.send_json(400, {'error': err})
+            status_code = 404 if 'not found' in err.lower() else 400
+            handler.send_json(status_code, {'error': err})
             return True
         save_fn()
         handler.send_json(200, issue)
@@ -1922,8 +2011,8 @@ def handle_post(handler, path, url_parts, auth_user, dev_profiles, repositories,
         handler.send_json(201, new_pr)
         return True
 
-    # 6. Review Pull Request
-    m_pr_rev = re.match(r'^/api/(?:v1/)?pull-requests/([^/]+)/review/?$', path)
+    # 6. Review / Comment Pull Request
+    m_pr_rev = re.match(r'^/api/(?:v1/)?pull-requests/([^/]+)/(?:review|comments)/?$', path)
     if m_pr_rev:
         pr_id = m_pr_rev.group(1)
         actor = auth_user['username'].lower() if auth_user else handler.headers.get('X-DevSync-User', 'naveen3438').strip().lower()
@@ -1933,7 +2022,9 @@ def handle_post(handler, path, url_parts, auth_user, dev_profiles, repositories,
             body = json.loads(post_data.decode('utf-8'))
         except Exception:
             body = {}
-        rev, err = review_pull_request(pr_id, body.get('action', 'comment'), body.get('comment', ''), actor)
+        action = body.get('action', 'comment')
+        comment_text = body.get('comment') or body.get('text') or body.get('body') or ''
+        rev, err = review_pull_request(pr_id, action, comment_text, actor)
         if err:
             handler.send_json(400, {'error': err})
             return True
@@ -1967,7 +2058,7 @@ def handle_post(handler, path, url_parts, auth_user, dev_profiles, repositories,
         actor = auth_user['username'].lower() if auth_user else handler.headers.get('X-DevSync-User', 'balajikumar').strip().lower()
         merged_pr, err = merge_pull_request(pr_id, actor, repositories)
         if err:
-            status_code = 403 if 'Forbidden' in err else 400
+            status_code = 404 if 'not found' in err.lower() else (403 if 'forbidden' in err.lower() else 400)
             handler.send_json(status_code, {'error': err})
             return True
         save_fn()
@@ -2032,16 +2123,18 @@ def handle_post(handler, path, url_parts, auth_user, dev_profiles, repositories,
         except Exception:
             handler.send_json(400, {'error': 'Invalid JSON body'})
             return True
+        text_payload = body.get('text') or body.get('content') or body.get('message') or ''
         msg, err = post_message(
             conv_id,
-            body.get('text', ''),
+            text_payload,
             actor,
-            reply_to=body.get('reply_to'),
+            reply_to=body.get('reply_to') or body.get('replyTo'),
             attachment=body.get('attachment'),
             dev_profiles=dev_profiles
         )
         if err:
-            handler.send_json(403 if 'Forbidden' in err else 400, {'error': err})
+            status_code = 404 if 'not found' in err.lower() else (403 if 'forbidden' in err.lower() else 400)
+            handler.send_json(status_code, {'error': err})
             return True
         save_fn()
         handler.send_json(201, msg)
@@ -2058,7 +2151,7 @@ def handle_post(handler, path, url_parts, auth_user, dev_profiles, repositories,
         return True
 
     # 13. React to Message
-    m_react = re.match(r'^/api/(?:v1/)?chat/messages/([^/]+)/react/?$', path)
+    m_react = re.match(r'^/api/(?:v1/)?chat/messages/([^/]+)/(?:react|reactions)/?$', path)
     if m_react:
         msg_id = m_react.group(1)
         actor = auth_user['username'].lower() if auth_user else handler.headers.get('X-DevSync-User', 'naveen3438').strip().lower()
@@ -2069,17 +2162,18 @@ def handle_post(handler, path, url_parts, auth_user, dev_profiles, repositories,
         except Exception:
             body = {}
         conv_id = body.get('conversation_id', 'conv-direct-balaji')
-        emoji = body.get('emoji', '👍')
+        emoji = body.get('emoji') or body.get('reaction') or '👍'
         reactions, err = react_to_message(conv_id, msg_id, emoji, actor)
         if err:
-            handler.send_json(400, {'error': err})
+            status_code = 404 if 'not found' in err.lower() else 400
+            handler.send_json(status_code, {'error': err})
             return True
         save_fn()
         handler.send_json(200, {'success': True, 'reactions': reactions})
         return True
 
     # 14. Post Channel Message
-    m_comm_post = re.match(r'^/api/(?:v1/)?(?:chat/communities/[^/]+/channels|community/channels)/([^/]+)/messages/?$', path)
+    m_comm_post = re.match(r'^/api/(?:v1/)?(?:chat/communities/[^/]+/channels|community/channels|chat/channels)/([^/]+)/messages/?$', path)
     if m_comm_post:
         ch_id = m_comm_post.group(1)
         actor = auth_user['username'].lower() if auth_user else handler.headers.get('X-DevSync-User', 'naveen3438').strip().lower()
@@ -2089,7 +2183,8 @@ def handle_post(handler, path, url_parts, auth_user, dev_profiles, repositories,
             body = json.loads(post_data.decode('utf-8'))
         except Exception:
             body = {}
-        msg, err = post_channel_message(ch_id, body.get('text', ''), actor, dev_profiles)
+        msg_text = body.get('text') or body.get('content') or body.get('message') or ''
+        msg, err = post_channel_message(ch_id, msg_text, actor, dev_profiles)
         if err:
             handler.send_json(400, {'error': err})
             return True
@@ -2163,14 +2258,27 @@ def handle_patch(handler, path, url_parts, auth_user, save_fn):
         except Exception:
             handler.send_json(400, {'error': 'Invalid JSON body'})
             return True
+        VALID_ROLES = {
+            'Maintainer', 'Lead Maintainer', 'Collaborator', 'Viewer', 'Contributor',
+            'Core Contributor', 'Admin', 'Owner', 'Developer', 'Fullstack Developer',
+            'Frontend Developer', 'Backend Developer', 'UI/UX Designer', 'Lead'
+        }
+        VALID_ROLES_MAP = {r.lower(): r for r in VALID_ROLES}
         if 'globalRole' in body:
-            member['globalRole'] = str(body['globalRole']).strip()
+            g_role_raw = str(body['globalRole']).strip()
+            if g_role_raw.lower() not in VALID_ROLES_MAP:
+                handler.send_json(400, {'error': f'Invalid globalRole: {g_role_raw}'})
+                return True
+            member['globalRole'] = VALID_ROLES_MAP[g_role_raw.lower()]
         if 'availability' in body:
             member['availability'] = str(body['availability']).strip()
-        if 'project' in body and 'role' in body:
-            proj = str(body['project']).strip()
-            role = str(body['role']).strip()
-            member.setdefault('projectRoles', {})[proj] = role
+        if 'role' in body or ('project' in body and 'role' in body):
+            role_val_raw = str(body.get('role', '')).strip()
+            if role_val_raw.lower() not in VALID_ROLES_MAP:
+                handler.send_json(400, {'error': f'Invalid role: {role_val_raw}'})
+                return True
+            proj = str(body.get('project', 'devsync-core')).strip()
+            member.setdefault('projectRoles', {})[proj] = VALID_ROLES_MAP[role_val_raw.lower()]
         save_fn()
         handler.send_json(200, {'success': True, 'member': member})
         return True
@@ -2187,7 +2295,8 @@ def handle_delete(handler, path, url_parts, auth_user, save_fn):
         project_filter = query.get('project', [None])[0]
         ok, err = remove_team_member(target_username, project_filter)
         if not ok:
-            handler.send_json(400, {'error': err})
+            status_code = 404 if 'not found' in err.lower() else 400
+            handler.send_json(status_code, {'error': err})
             return True
         save_fn()
         handler.send_json(200, {'success': True, 'message': f'Member @{target_username} removed.'})

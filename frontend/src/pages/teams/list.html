@@ -64,7 +64,13 @@
             <h1 class="text-page-title mb-1">Teams & Engineering Squads</h1>
             <p class="text-secondary" style="font-size: 13.5px; margin: 0;">Organize collaborators and repositories across squads.</p>
           </div>
-          <a href="members.html" class="btn btn-primary btn-pill">Manage Members &rarr;</a>
+          <div class="d-flex align-items-center gap-2">
+            <a href="members.html?action=invite" class="btn btn-outline btn-pill" id="btnInviteMember">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Invite Member
+            </a>
+            <a href="members.html" class="btn btn-primary btn-pill">Manage Members &rarr;</a>
+          </div>
         </div>
 
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--space-5);">
