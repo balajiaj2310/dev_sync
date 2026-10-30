@@ -83,42 +83,247 @@
     <!-- Workspace Main Shell -->
     <div class="workspace-shell">
       <div class="workspace-body">
-        <!-- Sidebar: File Explorer -->
+
+        <!-- ── ACTIVITY BAR ──────────────────────────────────────────── -->
+        <nav class="workspace-activity-bar" aria-label="Activity Bar">
+          <!-- Explorer -->
+          <button class="activity-btn active" id="activityExplorer" data-panel="explorer" title="Explorer" aria-label="Explorer">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+            </svg>
+          </button>
+          <!-- Global Search -->
+          <button class="activity-btn" id="activitySearch" data-panel="search" title="Global Search" aria-label="Global Search">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+          </button>
+          <!-- Source Control -->
+          <button class="activity-btn" id="activityGit" data-panel="git" title="Source Control" aria-label="Source Control">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 0 1 2 2v7"/><line x1="6" y1="9" x2="6" y2="21"/>
+            </svg>
+            <span class="activity-badge" id="gitChangeBadge"></span>
+          </button>
+          <!-- Extensions -->
+          <button class="activity-btn" id="activityExtensions" data-panel="extensions" title="Extensions" aria-label="Extensions">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"/><line x1="16" y1="8" x2="2" y2="22"/><line x1="17.5" y1="15" x2="9" y2="15"/>
+            </svg>
+          </button>
+          <div class="activity-spacer"></div>
+          <!-- Settings -->
+          <button class="activity-btn" id="activitySettings" data-panel="settings" title="Settings & Preferences" aria-label="Settings">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            </svg>
+          </button>
+        </nav>
+
+        <!-- ── SIDEBAR ─────────────────────────────────────────────── -->
         <aside class="workspace-sidebar" id="workspaceSidebar">
-          <div class="workspace-sidebar-header">
-            <span>Explorer</span>
-            <div class="workspace-sidebar-actions">
-              <button class="sidebar-icon-btn" id="newFileBtn" title="New File" aria-label="New File">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
-              </button>
-              <button class="sidebar-icon-btn" id="newFolderBtn" title="New Folder" aria-label="New Folder">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg>
-              </button>
-              <button class="sidebar-icon-btn" id="refreshTreeBtn" title="Refresh Tree" aria-label="Refresh Tree">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-              </button>
-              <button class="sidebar-icon-btn" id="toggleSidebarBtn" title="Collapse Sidebar" aria-label="Collapse Sidebar">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="11 17 6 12 11 7"/><polyline points="18 17 13 12 18 7"/></svg>
-              </button>
+
+          <!-- Panel: EXPLORER (default) -->
+          <div class="workspace-sidebar-panel panel-active" id="panelExplorer">
+            <div class="workspace-sidebar-header">
+              <span>Explorer</span>
+              <div class="workspace-sidebar-actions">
+                <button class="sidebar-icon-btn" id="newFileBtn" title="New File" aria-label="New File">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+                </button>
+                <button class="sidebar-icon-btn" id="newFolderBtn" title="New Folder" aria-label="New Folder">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/><line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg>
+                </button>
+                <button class="sidebar-icon-btn" id="refreshTreeBtn" title="Refresh Tree" aria-label="Refresh Tree">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                </button>
+                <button class="sidebar-icon-btn" id="toggleSidebarBtn" title="Collapse Sidebar" aria-label="Collapse Sidebar">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="11 17 6 12 11 7"/><polyline points="18 17 13 12 18 7"/></svg>
+                </button>
+              </div>
+            </div>
+            <!-- File Tree -->
+            <div class="workspace-file-tree" id="fileTreeContainer">
+              <div style="padding: 16px; font-size: 12px; color: #64748b; text-align: center;">Loading project files...</div>
             </div>
           </div>
-          <!-- File Tree -->
-          <div class="workspace-file-tree" id="fileTreeContainer">
-            <div style="padding: 16px; font-size: 12px; color: #64748b; text-align: center;">Loading project files...</div>
+
+          <!-- Panel: GLOBAL SEARCH -->
+          <div class="workspace-sidebar-panel" id="panelSearch">
+            <div class="sidebar-panel-header">
+              <span>Global Search</span>
+              <button class="sidebar-icon-btn" id="runGlobalSearchBtn" title="Search">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              </button>
+            </div>
+            <div class="search-panel-body">
+              <div class="search-panel-input-wrap">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" id="globalSearchInput" placeholder="Search in files..." autocomplete="off" spellcheck="false"/>
+              </div>
+              <label style="display:flex; align-items:center; gap:6px; font-size:11px; color:#64748b; cursor:pointer;">
+                <input type="checkbox" id="globalSearchCaseSensitive"> Case sensitive
+              </label>
+              <div class="search-panel-results" id="globalSearchResults">
+                <p style="font-size:12px; color:#94a3b8; text-align:center; padding:16px 0; margin:0;">Type to search across all files.</p>
+              </div>
+            </div>
           </div>
+
+          <!-- Panel: SOURCE CONTROL (Visual Git) -->
+          <div class="workspace-sidebar-panel" id="panelGit">
+            <div class="sidebar-panel-header">
+              <span>Source Control</span>
+              <button class="sidebar-icon-btn" id="refreshGitPanelBtn" title="Refresh">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+              </button>
+            </div>
+            <div class="git-panel-body">
+              <!-- Commit area -->
+              <div class="git-commit-area">
+                <textarea id="gitCommitMsgInline" class="git-commit-input" placeholder="Commit message..." rows="2"></textarea>
+                <button type="button" class="git-commit-btn" id="gitCommitInlineBtn">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><line x1="1.05" y1="12" x2="7" y2="12"/><line x1="17" y1="12" x2="22.95" y2="12"/></svg>
+                  Commit to <span id="gitCommitBranchLabel">main</span>
+                </button>
+              </div>
+              <!-- Changes list -->
+              <div class="git-changes-section">
+                <div class="git-section-label">Changes</div>
+                <div id="gitSidebarChanges">
+                  <p style="font-size:12px; color:#94a3b8; margin:0;">Loading changes...</p>
+                </div>
+              </div>
+              <!-- Recent commits -->
+              <div class="git-changes-section">
+                <div class="git-section-label">Recent Commits</div>
+                <div id="gitSidebarCommits" style="font-size:12px; color:#475569;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Panel: EXTENSIONS MARKETPLACE -->
+          <div class="workspace-sidebar-panel" id="panelExtensions">
+            <div class="sidebar-panel-header">
+              <span>Extensions</span>
+            </div>
+            <div class="ext-panel-body">
+              <div class="ext-search-bar">
+                <input type="text" id="extSearchInput" class="ext-search-input" placeholder="Search extensions..." autocomplete="off"/>
+              </div>
+              <div class="ext-tabs">
+                <button class="ext-tab active" data-ext-tab="all">All</button>
+                <button class="ext-tab" data-ext-tab="installed">Installed</button>
+                <button class="ext-tab" data-ext-tab="theme">Themes</button>
+                <button class="ext-tab" data-ext-tab="formatter">Formatters</button>
+                <button class="ext-tab" data-ext-tab="productivity">Productivity</button>
+              </div>
+              <div class="ext-list" id="extListContainer">
+                <!-- Extension cards rendered by JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Panel: SETTINGS & PREFERENCES -->
+          <div class="workspace-sidebar-panel" id="panelSettings">
+            <div class="sidebar-panel-header">
+              <span>Settings</span>
+            </div>
+            <div class="settings-panel-body">
+
+              <!-- Theme -->
+              <div class="settings-group">
+                <div class="settings-group-label">Color Theme</div>
+                <div class="theme-grid" id="themePickerGrid">
+                  <!-- Rendered by JS -->
+                </div>
+              </div>
+
+              <!-- Editor -->
+              <div class="settings-group">
+                <div class="settings-group-label">Editor</div>
+                <div class="settings-row">
+                  <label for="settingFontSize">Font Size</label>
+                  <input type="range" id="settingFontSize" min="10" max="22" step="1" value="13">
+                  <span class="settings-value-label" id="settingFontSizeVal">13</span>
+                </div>
+                <div class="settings-row">
+                  <label for="settingTabSize">Tab Size</label>
+                  <select id="settingTabSize">
+                    <option value="2">2 spaces</option>
+                    <option value="4" selected>4 spaces</option>
+                    <option value="8">8 spaces</option>
+                  </select>
+                </div>
+                <div class="settings-row">
+                  <label for="settingWordWrap">Word Wrap</label>
+                  <select id="settingWordWrap">
+                    <option value="off" selected>Off</option>
+                    <option value="on">On</option>
+                    <option value="wordWrapColumn">At column</option>
+                  </select>
+                </div>
+                <div class="settings-row">
+                  <label for="settingMinimap">Minimap</label>
+                  <select id="settingMinimap">
+                    <option value="true" selected>Show</option>
+                    <option value="false">Hide</option>
+                  </select>
+                </div>
+                <div class="settings-row">
+                  <label for="settingLineNumbers">Line Numbers</label>
+                  <select id="settingLineNumbers">
+                    <option value="on" selected>On</option>
+                    <option value="off">Off</option>
+                    <option value="relative">Relative</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Keybindings note -->
+              <div class="settings-group">
+                <div class="settings-group-label">Keybindings</div>
+                <div style="font-size:11px; color:#64748b; line-height:1.6;">
+                  <div><kbd style="background:#f1f5f9; padding:1px 5px; border-radius:3px; border:1px solid #e2e8f0;">Ctrl+S</kbd> — Save file</div>
+                  <div style="margin-top:4px;"><kbd style="background:#f1f5f9; padding:1px 5px; border-radius:3px; border:1px solid #e2e8f0;">Ctrl+Enter</kbd> — Run code</div>
+                  <div style="margin-top:4px;"><kbd style="background:#f1f5f9; padding:1px 5px; border-radius:3px; border:1px solid #e2e8f0;">Ctrl+P</kbd> — Quick file open</div>
+                  <div style="margin-top:4px;"><kbd style="background:#f1f5f9; padding:1px 5px; border-radius:3px; border:1px solid #e2e8f0;">Ctrl+Shift+F</kbd> — Format document</div>
+                  <div style="margin-top:4px;"><kbd style="background:#f1f5f9; padding:1px 5px; border-radius:3px; border:1px solid #e2e8f0;">Escape</kbd> — Close quick picker</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </aside>
 
-        <!-- Main Editor Section -->
+        <!-- ── MAIN EDITOR SECTION ────────────────────────────────── -->
         <main class="workspace-main">
           <!-- Editor Tabs Bar -->
           <div class="workspace-tabs-bar" id="editorTabsBar" role="tablist">
-            <!-- Tabs dynamically injected here -->
+            <!-- Tabs dynamically injected -->
+            <!-- Markdown preview toggle (shown only for .md files) -->
+            <button id="mdPreviewToggleBtn" class="md-preview-toggle-btn" data-open="false" title="Toggle Markdown Preview">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              Preview
+            </button>
           </div>
 
-          <!-- Code Editor Area -->
-          <div class="workspace-editor-container">
-            <div id="monacoEditorRoot"></div>
+          <!-- Code Editor Area (flex row: editor + optional md preview) -->
+          <div class="workspace-editor-container" style="display:flex; flex-direction:row; position:relative;">
+            <div id="monacoEditorRoot" style="flex:1; min-width:0;"></div>
             <textarea id="fallbackEditor" class="fallback-editor-textarea" style="display: none;" spellcheck="false" placeholder="Type your code here..."></textarea>
+
+            <!-- Diff editor overlay (shown when clicking "View Diff" on a changed file) -->
+            <div class="diff-editor-overlay" id="diffEditorOverlay">
+              <div class="diff-editor-toolbar">
+                <div>
+                  <strong id="diffFileName">file.py</strong>
+                  <span style="margin-left:12px; color:#64748b;">HEAD → Working Copy</span>
+                </div>
+                <button class="diff-close-btn" id="closeDiffBtn">✕ Close Diff</button>
+              </div>
+              <div id="diffEditorRoot"></div>
+            </div>
           </div>
 
           <!-- Bottom Console / Execution Panel -->
@@ -147,6 +352,10 @@
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 0 1 2 2v7"/><line x1="6" y1="9" x2="6" y2="21"/></svg>
                   <span>Git Changes</span>
                 </button>
+                <button type="button" class="panel-tab" data-tab="todo">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                  <span>TODOs</span>
+                </button>
               </div>
 
               <div style="display: flex; align-items: center; gap: 8px;">
@@ -170,6 +379,12 @@
                   <span id="metaExitCode">Exit 0</span>
                 </div>
                 <pre class="console-output-text" id="stdoutText">Click "Run" or press Ctrl+Enter to execute your code.</pre>
+                <!-- AI auto-fix button (shown on error) -->
+                <div id="aiFixBtnContainer" style="display:none; margin-top:10px;">
+                  <button class="ai-fix-btn" id="aiAutoFixBtn">
+                    <span>✨</span> Ask AI Mentor to Fix
+                  </button>
+                </div>
               </div>
 
               <!-- Errors View -->
@@ -193,7 +408,7 @@
                 </div>
               </div>
 
-              <!-- Git View -->
+              <!-- Git View (bottom panel) -->
               <div id="viewGit" style="display: none;">
                 <div style="display: flex; flex-direction: column; gap: 8px;">
                   <div style="display: flex; align-items: center; justify-content: space-between;">
@@ -205,6 +420,13 @@
                   </div>
                 </div>
               </div>
+
+              <!-- TODO View (bottom panel) -->
+              <div id="viewTodo" style="display: none;">
+                <div class="todo-tree-container" id="todoTreeContainer">
+                  <p class="todo-empty">Open a file to scan for TODOs, FIXMEs and NOTEs.</p>
+                </div>
+              </div>
             </div>
           </div>
         </main>
@@ -212,7 +434,42 @@
     </div>
   </div>
 
-  <!-- Modal: New File -->
+  <!-- ── AI Response Drawer ──────────────────────────────────────────── -->
+  <div class="ai-response-drawer" id="aiResponseDrawer" role="complementary" aria-label="AI Assistant">
+    <div class="ai-drawer-header">
+      <div class="ai-drawer-title">
+        <span>✨</span>
+        <span id="aiDrawerTitle">AI Code Assistant</span>
+      </div>
+      <button class="ai-drawer-close" id="aiDrawerClose" title="Close">✕</button>
+    </div>
+    <div class="ai-drawer-body" id="aiDrawerBody">
+      <div class="ai-loading-state" id="aiLoadingState" style="display:none;">
+        <div class="ai-loading-spinner"></div>
+        <span>Analyzing your code...</span>
+      </div>
+      <div id="aiResponseContent" style="display:none; flex-direction:column; gap:12px;"></div>
+      <div id="aiDrawerEmpty" style="display:flex; flex-direction:column; align-items:center; gap:12px; padding:32px 16px; color:#64748b; text-align:center; font-size:13px;">
+        <span style="font-size:32px;">✨</span>
+        <div>Select code in the editor and right-click to use AI actions:<br><strong>Explain Code</strong>, <strong>Generate Tests</strong>, or <strong>Optimize</strong>.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Quick File Picker (Ctrl+P) ────────────────────────────────── -->
+  <div class="quick-picker-backdrop" id="quickPickerBackdrop" role="dialog" aria-label="Quick Open File" aria-modal="true">
+    <div class="quick-picker-modal">
+      <div class="quick-picker-input-row">
+        <svg class="quick-picker-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+        <input type="text" id="quickPickerInput" class="quick-picker-input" placeholder="Type to search files (e.g. app.py)" autocomplete="off" spellcheck="false"/>
+      </div>
+      <div class="quick-picker-results" id="quickPickerResults">
+        <div class="quick-picker-empty">Start typing to find files...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Modal: New File ────────────────────────────────────────────── -->
   <div class="modal" id="newFileModal" tabindex="-1" style="display: none;">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
@@ -235,7 +492,7 @@
     </div>
   </div>
 
-  <!-- Modal: New Folder -->
+  <!-- ── Modal: New Folder ─────────────────────────────────────────── -->
   <div class="modal" id="newFolderModal" tabindex="-1" style="display: none;">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
@@ -257,7 +514,7 @@
     </div>
   </div>
 
-  <!-- Modal: Rename File / Folder -->
+  <!-- ── Modal: Rename File / Folder ──────────────────────────────── -->
   <div class="modal" id="renameModal" tabindex="-1" style="display: none;">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
@@ -280,7 +537,7 @@
     </div>
   </div>
 
-  <!-- Modal: Delete Confirmation -->
+  <!-- ── Modal: Delete Confirmation ───────────────────────────────── -->
   <div class="modal" id="deleteModal" tabindex="-1" style="display: none;">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
@@ -301,7 +558,7 @@
     </div>
   </div>
 
-  <!-- Modal: External IDE & Clone URLs -->
+  <!-- ── Modal: External IDE & Clone URLs ─────────────────────────── -->
   <div class="modal" id="ideModal" tabindex="-1" style="display: none;">
     <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content">
@@ -313,17 +570,14 @@
           <p style="font-size: 13px; color: #64748b;">
             Open this repository directly in your desktop IDE using deep-link protocols, or clone via Git.
           </p>
-
           <div class="ide-grid" id="ideLinksGrid">
             <!-- IDE deep links populated dynamically -->
           </div>
-
           <h6 style="font-size: 13px; font-weight: 700; margin-top: 16px;">Clone via Git</h6>
           <div class="clone-box">
             <span id="httpsCloneUrl">git clone ...</span>
             <button type="button" class="btn btn-outline btn-sm" id="copyCloneBtn">Copy</button>
           </div>
-
           <h6 style="font-size: 13px; font-weight: 700; margin-top: 16px;">CLI Quick Start</h6>
           <pre style="background: #f1f5f9; padding: 12px; border-radius: 6px; font-size: 12px; margin: 0;" id="cliInstructionsText"></pre>
         </div>
@@ -334,7 +588,7 @@
     </div>
   </div>
 
-  <!-- Modal: Git Commit -->
+  <!-- ── Modal: Git Commit ─────────────────────────────────────────── -->
   <div class="modal" id="gitCommitModal" tabindex="-1" style="display: none;">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
