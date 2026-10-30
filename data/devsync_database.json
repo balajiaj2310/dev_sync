@@ -970,6 +970,16 @@
       "passwordLastChanged": "Recently",
       "security_audit_log": [
         {
+          "id": "sec-128b5ac42f20",
+          "action": "login",
+          "description": "Signed in successfully via Microsoft Edge / Windows",
+          "ip": "127.0.0.1",
+          "device": "Microsoft Edge / Windows",
+          "timestamp": "2026-10-30 09:00:41 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
           "id": "sec-69807b7692d5",
           "action": "login",
           "description": "Signed in successfully via Microsoft Edge / Windows",
@@ -1456,16 +1466,6 @@
           "ip": "127.0.0.1",
           "device": "API Client / Unknown OS",
           "timestamp": "2026-10-21 07:04:08 UTC",
-          "time_ago": "Just now",
-          "status": "success"
-        },
-        {
-          "id": "sec-e4694b366932",
-          "action": "login",
-          "description": "Signed in successfully via API Client / Unknown OS",
-          "ip": "127.0.0.1",
-          "device": "API Client / Unknown OS",
-          "timestamp": "2026-10-21 07:03:28 UTC",
           "time_ago": "Just now",
           "status": "success"
         }
@@ -6923,8 +6923,7 @@
         "contributionsCount": 0,
         "pullRequestsCount": 0,
         "issuesCount": 0
-      },
-      "google_id": "100048543302912273779"
+      }
     }
   },
   "repositories": {
@@ -11328,6 +11327,38 @@
       "ip": "127.0.0.1",
       "created": 1793341321.267591,
       "last_active": 1793341321.2675917
+    },
+    "devsync_token_0d56a3456b9f017519910511f0390dbb2d5025e3": {
+      "username": "naveen6363179",
+      "user": {
+        "id": "dev-naveen6363179",
+        "name": "Naveen Kumar",
+        "username": "naveen6363179",
+        "email": "naveen6363179@gmail.com",
+        "role": "Developer",
+        "avatar": "https://lh3.googleusercontent.com/a/ACg8ocI4VwmIJRFJVzdiy-rTpSG5LYnfSCziDPkUtKonH1zkjQ_1Rzdt-A=s96-c",
+        "location": "Bengaluru, India"
+      },
+      "created": 1793349628.828054,
+      "last_active": 1793350840.5519247
+    },
+    "devsync_token_2ddf24446b8d59489cae689debcbc12e85726eb3": {
+      "id": "sess_a1b9ea2530080e0667c6",
+      "token": "devsync_token_2ddf24446b8d59489cae689debcbc12e85726eb3",
+      "username": "balajikumar",
+      "user": {
+        "id": "dev-balaji",
+        "name": "Balaji",
+        "username": "balajikumar",
+        "email": "balaji@devsync.dev",
+        "role": "Core Contributor",
+        "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80",
+        "location": "Chennai, India"
+      },
+      "device": "Microsoft Edge / Windows",
+      "ip": "127.0.0.1",
+      "created": 1793350841.8391817,
+      "last_active": 1793350841.8391829
     }
   },
   "version": "1.3.0",

@@ -739,7 +739,8 @@
       if (!requestedUser) {
         // Check session or default to naveen3438
         try {
-          const session = JSON.parse(localStorage.getItem('devsync_user_session') || '{}');
+          const raw = localStorage.getItem('devsync_user_session') || localStorage.getItem('devsync_auth_user') || localStorage.getItem('devsync_user');
+          const session = raw ? JSON.parse(raw) : null;
           if (session && session.username) requestedUser = session.username;
         } catch(e) {}
       }
@@ -1123,18 +1124,20 @@
         });
       }
 
-      // If requested user is not naveen3438, switch to that user
-      if (requestedUser !== 'naveen3438' && dev) {
+      // If profile is available in local database, render it immediately
+      if (dev && requestedUser !== 'naveen3438') {
         updateProfileView(dev);
-      } else if (!dev) {
-        // Try fetching from API
-        fetch(`/api/v1/developers/${requestedUser}/`)
-          .then(r => r.json())
-          .then(data => {
-            if (data && data.name) updateProfileView(data);
-          })
-          .catch(() => {});
       }
+      // Always fetch latest authoritative profile from backend API
+      fetch(`/api/v1/developers/${encodeURIComponent(requestedUser)}/`)
+        .then(r => r.json())
+        .then(data => {
+          if (data && (data.name || data.username)) {
+            dev = data;
+            updateProfileView(data);
+          }
+        })
+        .catch(() => {});
 
       // Interaction: Follow Button
       const followBtn = document.getElementById('btnFollowDev');

@@ -46,15 +46,18 @@ export function initHeader() {
     const currentUser = user || AuthService.getCurrentUserSession();
     if (!currentUser) return;
 
+    const username = currentUser.username || 'developer';
+    const displayName = currentUser.name || currentUser.username || 'Developer';
+
     const avatarEls = document.querySelectorAll('.user-avatar');
     avatarEls.forEach(img => {
       if (currentUser.avatar) img.src = currentUser.avatar;
-      img.alt = currentUser.name || currentUser.username;
+      img.alt = displayName;
     });
 
     const nameEls = document.querySelectorAll('.user-name');
     nameEls.forEach(el => {
-      el.textContent = currentUser.name || currentUser.username;
+      el.textContent = displayName;
     });
 
     const roleEls = document.querySelectorAll('.user-role');
@@ -64,10 +67,15 @@ export function initHeader() {
 
     const dropdownHeader = document.querySelector('.dropdown-header');
     if (dropdownHeader) {
-      dropdownHeader.textContent = Signed in as @;
+      dropdownHeader.textContent = `Signed in as @${username}`;
     }
 
-    const profileTarget = ${ROUTES.DEVELOPER_PROFILE}?username=;
+    const welcomeTag = document.querySelector('.dashboard-welcome-tag');
+    if (welcomeTag) {
+      welcomeTag.textContent = `WELCOME BACK, ${displayName}`;
+    }
+
+    const profileTarget = `${ROUTES.DEVELOPER_PROFILE}?username=${encodeURIComponent(username)}`;
 
     const topbarUserLink = document.getElementById('topbarUserLink');
     if (topbarUserLink) {

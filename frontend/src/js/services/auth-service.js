@@ -11,13 +11,7 @@ export const AuthService = {
     const res = await apiClient.post('/auth/token/', { email, password });
     if (res && (res.access || res.token)) {
       const token = res.access || res.token;
-      localStorage.setItem(APP_CONFIG.storageKeys.authToken, token);
-      if (res.user) {
-        localStorage.setItem(APP_CONFIG.storageKeys.userSession, JSON.stringify(res.user));
-      }
-      if (typeof window !== 'undefined') {
-        window.dispatchEvent(new CustomEvent('devsync:auth-changed', { detail: { authenticated: true, user: res.user } }));
-      }
+      this.setSession(token, res.user);
       return { success: true, user: res.user, token };
     }
     throw new Error(res?.detail || 'Authentication failed. Please verify your credentials.');
@@ -35,13 +29,7 @@ export const AuthService = {
     const res = await apiClient.post('/auth/register/', data);
     if (res && (res.access || res.token)) {
       const token = res.access || res.token;
-      localStorage.setItem(APP_CONFIG.storageKeys.authToken, token);
-      if (res.user) {
-        localStorage.setItem(APP_CONFIG.storageKeys.userSession, JSON.stringify(res.user));
-      }
-      if (typeof window !== 'undefined') {
-        window.dispatchEvent(new CustomEvent('devsync:auth-changed', { detail: { authenticated: true, user: res.user } }));
-      }
+      this.setSession(token, res.user);
     }
     return res;
   },

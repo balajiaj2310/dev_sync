@@ -738,14 +738,20 @@ class GoogleAuthView(APIView):
             user = None
 
         token_str = f"devsync_token_{secrets.token_hex(20)}"
-        return Response({
+        display_name = claims.get('name') or getattr(user, 'first_name', '') or getattr(user, 'username', email.split('@')[0])
+        response = Response({
             'success': True,
             'message': 'Signed in with Google successfully!',
             'token': token_str,
             'access': token_str,
             'user': {
                 'id': getattr(user, 'id', 1),
+                'name': display_name,
                 'username': getattr(user, 'username', email.split('@')[0]),
-                'email': email
+                'email': email,
+                'avatar': claims.get('picture', ''),
+                'role': 'Developer'
             }
         }, status=status.HTTP_200_OK)
+        response.set_cookie('devsync_session', token_str, max_age=2592000, path='/', samesite='Lax')
+        return response

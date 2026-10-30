@@ -1971,7 +1971,7 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
         # Single Developer Profile API Endpoint (GET /api/developers/<username>, /api/v1/developers/<username>)
         if path.startswith('/api/developers/') or path.startswith('/api/v1/developers/'):
             prefix = '/api/v1/developers/' if path.startswith('/api/v1/developers/') else '/api/developers/'
-            identifier = path[len(prefix):].strip().lower()
+            identifier = path[len(prefix):].strip().strip('/').lower()
             dev = get_developer_by_identifier(identifier)
             if not dev:
                 self.send_json(404, {'error': f'Developer @{identifier} not found'})
@@ -3419,13 +3419,21 @@ Valid for 10 minutes.
                 'user': user_summary,
                 'created': time.time()
             }
-            self.send_json(201, {
+            resp_data = json.dumps({
                 'success': True,
                 'access': token,
                 'token': token,
                 'user': user_summary,
                 'message': f"Account and developer profile created successfully! Welcome to DevSync, {new_user['name']}!"
-            })
+            }).encode('utf-8')
+            self.send_response(201)
+            self.send_header('Content-Type', 'application/json; charset=utf-8')
+            self.send_header('Content-Length', str(len(resp_data)))
+            self.send_header('Set-Cookie', f"devsync_session={token}; Path=/; SameSite=Lax; Max-Age=2592000")
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.send_header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-DevSync-User')
+            self.end_headers()
+            self.wfile.write(resp_data)
             return
 
         # Legacy Mobile OTP fallback (POST /api/v1/auth/send-otp, /api/auth/send-otp)
@@ -4148,7 +4156,7 @@ Valid for 10 minutes.
         # Profile Update API Endpoint (PATCH /api/developers/<username>, /api/v1/developers/<username>)
         if path.startswith('/api/developers/') or path.startswith('/api/v1/developers/'):
             prefix = '/api/v1/developers/' if path.startswith('/api/v1/developers/') else '/api/developers/'
-            identifier = path[len(prefix):].strip().lower()
+            identifier = path[len(prefix):].strip().strip('/').lower()
             dev = get_developer_by_identifier(identifier)
             if not dev:
                 self.send_json(404, {'error': 'Developer not found'})

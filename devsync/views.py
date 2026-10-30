@@ -73,14 +73,28 @@ def page_developer_profile(request, username: str):
 
 
 # Custom Error Handlers
-def render_custom_error(code: int, message: str = "") -> HttpResponse:
+def render_custom_error(code_or_request, code_or_message=None, message: str = "") -> HttpResponse:
+    if isinstance(code_or_request, int):
+        code = code_or_request
+        msg = code_or_message if isinstance(code_or_message, str) else message
+    elif isinstance(code_or_message, int):
+        code = code_or_message
+        msg = message
+    else:
+        try:
+            code = int(code_or_request)
+            msg = message
+        except (ValueError, TypeError):
+            code = 500
+            msg = "Internal Server Error"
+
     error_html = FRONTEND_DIR / "src" / "pages" / "errors" / f"{code}.html"
     if error_html.exists():
         with open(error_html, "r", encoding="utf-8") as f:
             content = f.read()
         return HttpResponse(content, content_type="text/html", status=code)
     return HttpResponse(
-        f"<h1>{code} Error</h1><p>{message}</p>", content_type="text/html", status=code
+        f"<h1>{code} Error</h1><p>{msg}</p>", content_type="text/html", status=code
     )
 
 

@@ -32,6 +32,19 @@ export const MockAPI = {
   // Current User & Profile
   async getCurrentUser() {
     await delay();
+    if (typeof window !== 'undefined' && window.localStorage) {
+      const raw = localStorage.getItem('devsync_user_session') ||
+                  localStorage.getItem('devsync_auth_user') ||
+                  localStorage.getItem('devsync_user');
+      if (raw) {
+        try {
+          const u = JSON.parse(raw);
+          if (u && (u.username || u.name)) {
+            return { ...mockStore.currentUser, ...u };
+          }
+        } catch (_) {}
+      }
+    }
     return { ...mockStore.currentUser };
   },
 
@@ -230,11 +243,36 @@ export const MockAPI = {
   async getDeveloperByUsername(username) {
     await delay();
     if (!username) {
-      return { ...mockStore.currentUser };
+      return await this.getCurrentUser();
     }
     const u = username.toLowerCase();
+    if (typeof window !== 'undefined' && window.localStorage) {
+      const raw = localStorage.getItem('devsync_user_session') ||
+                  localStorage.getItem('devsync_auth_user') ||
+                  localStorage.getItem('devsync_user');
+      if (raw) {
+        try {
+          const authUser = JSON.parse(raw);
+          if (authUser && authUser.username && authUser.username.toLowerCase() === u) {
+            return {
+              id: authUser.id || `dev-${authUser.username}`,
+              name: authUser.name || authUser.username,
+              username: authUser.username,
+              email: authUser.email || `${authUser.username}@devsync.dev`,
+              role: authUser.role || 'Developer',
+              avatar: authUser.avatar || '',
+              isVerified: true,
+              headline: authUser.headline || 'Developer on DevSync',
+              bio: authUser.bio || `Developer profile for @${authUser.username}`,
+              location: authUser.location || '',
+              skills: []
+            };
+          }
+        } catch (_) {}
+      }
+    }
     if (u === mockStore.currentUser.username.toLowerCase()) {
-      return { ...mockStore.currentUser };
+      return await this.getCurrentUser();
     }
     const found = mockStore.developers.find(d => d.username.toLowerCase() === u || d.id === u);
     if (found) {

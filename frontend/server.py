@@ -1709,7 +1709,7 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
         # Single Developer Profile API Endpoint (GET /api/developers/<username>, /api/v1/developers/<username>)
         if path.startswith('/api/developers/') or path.startswith('/api/v1/developers/'):
             prefix = '/api/v1/developers/' if path.startswith('/api/v1/developers/') else '/api/developers/'
-            identifier = path[len(prefix):].strip().lower()
+            identifier = path[len(prefix):].strip().strip('/').lower()
             dev = get_developer_by_identifier(identifier)
             if not dev:
                 self.send_json(404, {'error': f'Developer @{identifier} not found'})
@@ -1725,7 +1725,7 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
 
         # Canonical Developer Profile Page Routing: /developers/<username> and /developers/<username>/
         if path.startswith('/developers/') and not any(path.endswith(ext) for ext in ('.html', '.js', '.css', '.svg', '.png', '.jpg')):
-            identifier = path[len('/developers/'):].strip().lower()
+            identifier = path[len('/developers/'):].strip().strip('/').lower()
             dev = get_developer_by_identifier(identifier)
             if dev:
                 profile_html = os.path.join(FRONTEND_DIR, 'src', 'pages', 'developers', 'profile.html')
@@ -3659,7 +3659,7 @@ Valid for 10 minutes.
         # Profile Update API Endpoint (PATCH /api/developers/<username>, /api/v1/developers/<username>)
         if path.startswith('/api/developers/') or path.startswith('/api/v1/developers/'):
             prefix = '/api/v1/developers/' if path.startswith('/api/v1/developers/') else '/api/developers/'
-            identifier = path[len(prefix):].strip().lower()
+            identifier = path[len(prefix):].strip().strip('/').lower()
             dev = get_developer_by_identifier(identifier)
             if not dev:
                 self.send_json(404, {'error': 'Developer not found'})
