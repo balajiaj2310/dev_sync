@@ -42,8 +42,10 @@ export function initHeader() {
   }
 
   // Dynamic topbar session hydration
-  const currentUser = AuthService.getCurrentUserSession();
-  if (currentUser) {
+  function hydrateTopbar(user) {
+    const currentUser = user || AuthService.getCurrentUserSession();
+    if (!currentUser) return;
+
     const avatarEls = document.querySelectorAll('.user-avatar');
     avatarEls.forEach(img => {
       if (currentUser.avatar) img.src = currentUser.avatar;
@@ -62,22 +64,33 @@ export function initHeader() {
 
     const dropdownHeader = document.querySelector('.dropdown-header');
     if (dropdownHeader) {
-      dropdownHeader.textContent = `Signed in as @${currentUser.username}`;
+      dropdownHeader.textContent = Signed in as @;
     }
+
+    const profileTarget = ${ROUTES.DEVELOPER_PROFILE}?username=;
 
     const topbarUserLink = document.getElementById('topbarUserLink');
     if (topbarUserLink) {
-      topbarUserLink.href = `/developers/${encodeURIComponent(currentUser.username)}/`;
+      topbarUserLink.href = profileTarget;
     }
 
     const dropdownProfileLinks = document.querySelectorAll('.dropdown-item');
     dropdownProfileLinks.forEach(link => {
       if (link.textContent.includes('View Profile')) {
-        link.href = `/developers/${encodeURIComponent(currentUser.username)}/`;
+        link.href = profileTarget;
       }
     });
   }
 
+  hydrateTopbar();
+
+  if (typeof window !== 'undefined') {
+    window.addEventListener('devsync:auth-changed', (e) => {
+      if (e.detail && e.detail.authenticated && e.detail.user) {
+        hydrateTopbar(e.detail.user);
+      }
+    });
+  }
   // Global search shortcut (Ctrl+K / Cmd+K)
   const searchInput = document.querySelector('.topbar-search-input');
   document.addEventListener('keydown', (e) => {

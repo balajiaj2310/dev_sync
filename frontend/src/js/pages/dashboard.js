@@ -8,6 +8,7 @@ import { RepositoryService } from '../services/repository-service.js';
 import { ROUTES, navigateTo } from '../core/route-config.js';
 import { ModalManager } from '../core/modal-manager.js';
 import { toastSuccess } from '../components/toast.js';
+import { AuthService } from '../services/auth-service.js';
 
 function escapeHtml(str) {
   if (!str) return '';
@@ -20,6 +21,15 @@ function escapeHtml(str) {
 }
 
 export async function initDashboardPage() {
+  // Hydrate welcome banner with logged-in user
+  const currentUser = AuthService.getCurrentUserSession();
+  if (currentUser) {
+    const welcomeTag = document.querySelector('.dashboard-welcome-tag');
+    if (welcomeTag) {
+      welcomeTag.textContent = 'WELCOME BACK, ' + (currentUser.name || currentUser.username);
+    }
+  }
+
   // Load Dynamic Overview Metrics
   const metrics = await MockAPI.getOverviewMetrics();
   if (metrics) {

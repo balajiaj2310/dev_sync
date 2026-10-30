@@ -4,7 +4,9 @@
  */
 
 .app-sidebar {
-  width: var(--sidebar-width);
+  width: var(--sidebar-width, 240px);
+  min-width: var(--sidebar-width, 240px);
+  max-width: var(--sidebar-width, 240px);
   height: 100vh;
   position: fixed;
   top: 0;
@@ -13,17 +15,22 @@
   border-right: 1px solid var(--color-border);
   display: flex;
   flex-direction: column;
+  flex-shrink: 0;
+  box-sizing: border-box;
   z-index: var(--z-fixed);
   transition: transform var(--transition-normal);
 }
 
 .sidebar-header {
-  height: var(--topbar-height);
+  height: var(--topbar-height, 64px);
+  min-height: var(--topbar-height, 64px);
   padding: 0 var(--space-6);
   display: flex;
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+  box-sizing: border-box;
 }
 
 .sidebar-logo {
@@ -36,12 +43,15 @@
 .sidebar-logo img {
   height: 26px;
   width: auto;
+  max-height: 26px;
+  display: block;
 }
 
 .sidebar-nav-container {
-  flex: 1;
+  flex: 1 1 auto;
   padding: var(--space-4) var(--space-3);
   overflow-y: auto;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
@@ -54,20 +64,26 @@
   color: var(--color-text-secondary);
   padding: var(--space-2) var(--space-3);
   font-weight: 700;
+  line-height: 1.4;
 }
 
 .sidebar-link {
-  display: flex;
-  align-items: center;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  flex-wrap: nowrap !important;
   gap: var(--space-3);
   padding: 10px var(--space-3);
   border-radius: var(--radius-md);
   font-size: 13.5px;
   font-weight: 500;
+  line-height: 1.4;
   color: var(--color-text-secondary);
   transition: all var(--transition-fast);
   text-decoration: none;
   position: relative;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .sidebar-link:hover {
@@ -92,18 +108,34 @@
   border-radius: 0 var(--radius-xs) var(--radius-xs) 0;
 }
 
-.sidebar-icon {
-  width: 18px;
-  height: 18px;
-  flex-shrink: 0;
+/* Bulletproof sidebar icon dimensions preventing global SVG stretching */
+.sidebar-icon,
+.sidebar-link svg,
+.sidebar-link .sidebar-icon {
+  width: 18px !important;
+  height: 18px !important;
+  min-width: 18px !important;
+  min-height: 18px !important;
+  max-width: 18px !important;
+  max-height: 18px !important;
+  flex-shrink: 0 !important;
+  display: inline-block !important;
+  vertical-align: middle !important;
   stroke-width: 2px;
+  overflow: hidden;
 }
 
 .sidebar-text {
-  flex: 1;
+  flex: 1 1 auto;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.4;
 }
 
 .sidebar-badge {
+  flex-shrink: 0;
   font-size: 11px;
   font-weight: 600;
   padding: 1px 7px;
@@ -111,6 +143,7 @@
   background-color: var(--color-surface-subtle);
   border: 1px solid var(--color-border);
   color: var(--color-text-secondary);
+  line-height: 1.4;
 }
 
 .sidebar-link.active .sidebar-badge {
@@ -123,11 +156,13 @@
   height: 1px;
   background-color: var(--color-border);
   margin: var(--space-3) var(--space-2);
+  flex-shrink: 0;
 }
 
 .sidebar-footer {
   padding: var(--space-3);
   border-top: 1px solid var(--color-border);
+  flex-shrink: 0;
 }
 
 /* Mobile Drawer Backdrop */

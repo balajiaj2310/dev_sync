@@ -8,7 +8,7 @@ from drf_spectacular.views import (
     SpectacularSwaggerView,
 )
 
-from apps.ai_voice.views import AIChatView
+from apps.ai_voice.views import AIChatView, AIMentorChatView, AIMentorVoiceUploadView
 from devsync.views import (
     page_assistant,
     page_developer_profile,
@@ -44,6 +44,22 @@ urlpatterns = [
     # Compatibility shortcuts
     path("api/ai/chat", AIChatView.as_view(), name="legacy-ai-chat"),
     path("api/ai/chat/", AIChatView.as_view(), name="legacy-ai-chat-slash"),
+    path("api/ai/mentor/chat", AIMentorChatView.as_view(), name="legacy-mentor-chat"),
+    path(
+        "api/ai/mentor/chat/",
+        AIMentorChatView.as_view(),
+        name="legacy-mentor-chat-slash",
+    ),
+    path(
+        "api/ai/mentor/voice",
+        AIMentorVoiceUploadView.as_view(),
+        name="legacy-mentor-voice",
+    ),
+    path(
+        "api/ai/mentor/voice/",
+        AIMentorVoiceUploadView.as_view(),
+        name="legacy-mentor-voice-slash",
+    ),
     # Frontend Page Routes (single trailing slash policy supported)
     re_path(r"^$", page_home, name="page-home"),
     re_path(r"^home/?$", page_home, name="page-home-alias"),
@@ -73,7 +89,7 @@ urlpatterns = [
 ]
 
 # Custom Error Handlers
-handler400 = "devsync.views.handler400"
-handler403 = "devsync.views.handler403"
-handler404 = "devsync.views.handler404"
-handler500 = "devsync.views.handler500"
+handler400 = lambda request, exception=None: render_custom_error(request, 400)
+handler403 = lambda request, exception=None: render_custom_error(request, 403)
+handler404 = lambda request, exception=None: render_custom_error(request, 404)
+handler500 = lambda request: render_custom_error(request, 500)

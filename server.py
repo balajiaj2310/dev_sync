@@ -17,6 +17,8 @@ import secrets
 import time
 import re
 import hashlib
+import uuid
+import base64
 import django
 from django.conf import settings
 
@@ -224,7 +226,7 @@ def verify_google_id_token(id_token):
 
         aud = payload.get('aud', '')
         if aud != GOOGLE_CLIENT_ID:
-            return None, f"Invalid token audience. Expected {GOOGLE_CLIENT_ID}, got {aud}."
+            return None, "Invalid token audience or signature."
 
         iss = payload.get('iss', '')
         if iss not in ('accounts.google.com', 'https://accounts.google.com'):
@@ -236,6 +238,32 @@ def verify_google_id_token(id_token):
         return payload, None
     except Exception as e:
         return None, f"Google token verification error: {str(e)}"
+
+
+def verify_google_access_token(access_token):
+    """
+    Validate Google OAuth Access Token directly against Google's userinfo API.
+    Used by Google Identity Services OAuth2 popup client.
+    """
+    if not access_token:
+        return None, "Missing Google access token."
+    try:
+        url = "https://www.googleapis.com/oauth2/v3/userinfo"
+        req = urllib.request.Request(url, headers={
+            'Authorization': f'Bearer {access_token}',
+            'User-Agent': 'DevSync-Auth/1.0'
+        })
+        with urllib.request.urlopen(req, timeout=5) as response:
+            if response.status != 200:
+                return None, "Google access token verification failed."
+            payload = json.loads(response.read().decode('utf-8'))
+
+        if str(payload.get('email_verified', '')).lower() not in ('true', '1'):
+            return None, "Google account email is not verified."
+
+        return payload, None
+    except Exception as e:
+        return None, f"Google access token verification error: {str(e)}"
 
 PORT = 8000
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -1377,6 +1405,15 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
             })
             return
 
+        if path in ('/api/v1/ai/mentor/conversations', '/api/ai/mentor/conversations'):
+            self.handle_ai_mentor_list_conversations()
+            return
+
+        m_mentor_conv = re.match(r'^/api/(?:v1/)?ai/mentor/conversations/([^/]+)/?$', path)
+        if m_mentor_conv:
+            self.handle_ai_mentor_conversation_detail(m_mentor_conv.group(1))
+            return
+
         if path in ('/api/v1/auth/google/config', '/api/auth/google/config'):
             self.send_json(200, {
                 'configured': bool(GOOGLE_CLIENT_ID),
@@ -1950,7 +1987,7 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
 
         # Canonical Developer Profile Page Routing: /developers/<username> and /developers/<username>/
         if path.startswith('/developers/') and not any(path.endswith(ext) for ext in ('.html', '.js', '.css', '.svg', '.png', '.jpg')):
-            identifier = path[len('/developers/'):].strip().lower()
+            identifier = path[len('/developers/'):].strip().strip('/').lower()
             dev = get_developer_by_identifier(identifier)
             if dev:
                 profile_html = os.path.join(FRONTEND_DIR, 'src', 'pages', 'developers', 'profile.html')
@@ -2033,6 +2070,15 @@ class DevSyncHTTPHandler(http.server.SimpleHTTPRequestHandler):
                 'activeRepo': repo_id,
                 'activeBranch': branch
             })
+            return
+
+        if path in ('/api/v1/ai/mentor/conversations', '/api/ai/mentor/conversations'):
+            self.handle_ai_mentor_list_conversations()
+            return
+
+        m_mentor_conv = re.match(r'^/api/(?:v1/)?ai/mentor/conversations/([^/]+)/?$', path)
+        if m_mentor_conv:
+            self.handle_ai_mentor_conversation_detail(m_mentor_conv.group(1))
             return
 
         if path in ('/api/v1/ai/voice/synthesize', '/api/ai/voice/synthesize'):
@@ -2836,8 +2882,18 @@ Valid for 10 minutes.
         url_parts = urllib.parse.urlsplit(self.path)
         path = url_parts.path.rstrip('/')
         # AI Assistant Chat Endpoint
-        if path in ('/api/ai/chat', '/api/v1/ai/chat', '/assistant/chat', '/assistant/chat/'):
+        if path in ('/api/ai/chat', '/api/v1/ai/chat', '/assistant/chat', '/assistant/chat/',
+                    '/api/v1/ai/mentor/chat', '/api/ai/mentor/chat'):
             self.handle_ai_chat()
+            return
+
+        if path in ('/api/v1/ai/mentor/voice', '/api/ai/mentor/voice'):
+            self.handle_ai_mentor_voice()
+            return
+
+        if path in ('/api/v1/ai/mentor/conversations', '/api/ai/mentor/conversations',
+                    '/api/v1/ai/mentor/conversations/new', '/api/ai/mentor/conversations/new'):
+            self.handle_ai_mentor_new_conversation()
             return
 
         # Authentication Login Endpoint (POST /api/v1/auth/login, /api/v1/auth/token, /auth/token, /api/auth/login)
@@ -3012,11 +3068,16 @@ Valid for 10 minutes.
                 return
 
             id_token = body.get('credential') or body.get('id_token')
-            if not id_token:
-                self.send_json(400, {'error': 'Missing Credential', 'detail': 'Google credential token is required.'})
+            access_token = body.get('access_token')
+            if not id_token and not access_token:
+                self.send_json(400, {'error': 'Missing Credential', 'detail': 'Google credential token or access token is required.'})
                 return
 
-            claims, err = verify_google_id_token(id_token)
+            if id_token:
+                claims, err = verify_google_id_token(id_token)
+            else:
+                claims, err = verify_google_access_token(access_token)
+
             if err:
                 self.send_json(401, {'error': 'Authentication Failed', 'detail': err})
                 return
@@ -3032,10 +3093,13 @@ Valid for 10 minutes.
                 if u.get('google_id') == google_id:
                     matched_user = u
                     break
-                # Only link if email matches and user is verified
-                if u.get('email', '').strip().lower() == email and u.get('isVerified', False):
+                # Only link if email matches
+                if u.get('email', '').strip().lower() == email:
                     matched_user = u
                     matched_user['google_id'] = google_id
+                    matched_user['isVerified'] = True
+                    if picture and not matched_user.get('avatar'):
+                        matched_user['avatar'] = picture
                     save_database()
                     break
 
@@ -3075,12 +3139,20 @@ Valid for 10 minutes.
                 'created': time.time()
             }
 
-            self.send_json(200, {
+            resp_data = json.dumps({
                 'access': token,
                 'token': token,
                 'user': user_summary,
                 'message': f"Welcome back, {matched_user['name']}!"
-            })
+            }).encode('utf-8')
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json; charset=utf-8')
+            self.send_header('Content-Length', str(len(resp_data)))
+            self.send_header('Set-Cookie', f"devsync_session={token}; Path=/; SameSite=Lax; Max-Age=2592000")
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.send_header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-DevSync-User')
+            self.end_headers()
+            self.wfile.write(resp_data)
             return
 
         # Send Email OTP Endpoint (POST /api/v1/auth/send-email-otp, /api/auth/send-email-otp)
@@ -4264,6 +4336,10 @@ Valid for 10 minutes.
         except Exception:
             body = {}
         message = body.get('message', body.get('prompt', '')).strip()
+        conversation_id = body.get('conversationId')
+        repo_id = body.get('repo', 'devsync-core')
+        branch = body.get('branch', 'main')
+        voice_name = body.get('voiceName', 'Puck')
 
         # Build grounded context
         auth_user = self.get_authenticated_user() or get_developer_by_identifier('naveen3438') or get_developer_by_identifier('balajikumar')
@@ -4276,33 +4352,191 @@ Valid for 10 minutes.
             pulse_data=pulse_data
         )
 
-        # Try Gemini API text model first
-        gemini_reply = backend_voice_ai.generate_gemini_text_chat(message, context_instruction=context_instruction)
-        if gemini_reply:
-            self.send_json(200, {"reply": gemini_reply, "source": "gemini"})
+        global AI_MENTOR_CONVERSATIONS
+        if 'AI_MENTOR_CONVERSATIONS' not in globals():
+            globals()['AI_MENTOR_CONVERSATIONS'] = {}
+        conversations = globals()['AI_MENTOR_CONVERSATIONS']
+
+        if not conversation_id or conversation_id not in conversations:
+            conversation_id = str(uuid.uuid4())
+            conversations[conversation_id] = {
+                'id': conversation_id,
+                'title': message[:40] if message else 'New AI Mentor Session',
+                'repo': repo_id,
+                'branch': branch,
+                'messages': []
+            }
+
+        conv = conversations[conversation_id]
+        history = [
+            {'role': m.get('role', 'user'), 'content': m.get('content', '')}
+            for m in conv.get('messages', [])[-8:]
+        ]
+
+        result = backend_voice_ai.process_mentor_chat(
+            message=message,
+            history=history,
+            context_instruction=context_instruction,
+            voice_name=voice_name,
+            generate_audio=True
+        )
+
+        reply = result.get('reply') or "DevSync AI Mentor responded."
+        audio_b64 = result.get('audioBase64', '')
+        mime_type = result.get('mimeType', 'audio/wav')
+
+        conv['messages'].append({'role': 'user', 'content': message})
+        conv['messages'].append({'role': 'mentor', 'content': reply, 'audioBase64': audio_b64})
+        if conv['title'] == 'New AI Mentor Session' and message:
+            conv['title'] = message[:40] + ('...' if len(message) > 40 else '')
+
+        self.send_json(200, {
+            "ok": True,
+            "reply": reply,
+            "audioBase64": audio_b64,
+            "mimeType": mime_type,
+            "conversationId": conversation_id,
+            "source": result.get('source', 'gemini')
+        })
+
+    def handle_ai_mentor_voice(self):
+        content_type = self.headers.get('Content-Type', '')
+        content_length = int(self.headers.get('Content-Length', 0))
+        post_data = self.rfile.read(content_length) if content_length > 0 else b''
+
+        audio_bytes = None
+        mime_type = 'audio/webm'
+        conversation_id = None
+        repo_id = 'devsync-core'
+        branch = 'main'
+        voice_name = 'Puck'
+
+        if 'application/json' in content_type:
+            try:
+                body = json.loads(post_data.decode('utf-8'))
+                b64_str = str(body.get('audioBase64', ''))
+                if ',' in b64_str:
+                    header, b64_str = b64_str.split(',', 1)
+                    if 'data:' in header:
+                        mime_type = header.split(';')[0].replace('data:', '')
+                audio_bytes = base64.b64decode(b64_str)
+                conversation_id = body.get('conversationId')
+                repo_id = body.get('repo', 'devsync-core')
+                branch = body.get('branch', 'main')
+                voice_name = body.get('voiceName', 'Puck')
+            except Exception:
+                self.send_json(400, {'ok': False, 'error': 'Invalid JSON audio payload.'})
+                return
+        elif 'multipart/form-data' in content_type:
+            # Simple boundary parser for audio file
+            try:
+                boundary = content_type.split("boundary=")[1].encode('ascii')
+                parts = post_data.split(b"--" + boundary)
+                for part in parts:
+                    if b'filename=' in part and b'\r\n\r\n' in part:
+                        headers_raw, body_raw = part.split(b'\r\n\r\n', 1)
+                        audio_bytes = body_raw.rstrip(b'\r\n--')
+                        if b'Content-Type:' in headers_raw:
+                            ct_line = [l for l in headers_raw.split(b'\r\n') if b'Content-Type:' in l]
+                            if ct_line:
+                                mime_type = ct_line[0].split(b':')[1].strip().decode('ascii')
+            except Exception as e:
+                print(f"Error parsing multipart: {e}")
+                audio_bytes = post_data
+
+        if not audio_bytes:
+            audio_bytes = post_data
+
+        auth_user = self.get_authenticated_user() or get_developer_by_identifier('naveen3438') or get_developer_by_identifier('balajikumar')
+        pulse_data = calculate_contribution_intelligence(auth_user['username']) if auth_user else None
+        context_instruction = backend_voice_ai.build_system_instruction(
+            user_profile=auth_user,
+            repos=REPOSITORIES,
+            prs=backend_issues_prs_chat.PULL_REQUESTS,
+            issues=backend_issues_prs_chat.ISSUES,
+            pulse_data=pulse_data
+        )
+
+        global AI_MENTOR_CONVERSATIONS
+        if 'AI_MENTOR_CONVERSATIONS' not in globals():
+            globals()['AI_MENTOR_CONVERSATIONS'] = {}
+        conversations = globals()['AI_MENTOR_CONVERSATIONS']
+
+        if not conversation_id or conversation_id not in conversations:
+            conversation_id = str(uuid.uuid4())
+            conversations[conversation_id] = {
+                'id': conversation_id,
+                'title': 'New Spoken Session',
+                'repo': repo_id,
+                'branch': branch,
+                'messages': []
+            }
+
+        conv = conversations[conversation_id]
+        history = [
+            {'role': m.get('role', 'user'), 'content': m.get('content', '')}
+            for m in conv.get('messages', [])[-8:]
+        ]
+
+        result = backend_voice_ai.process_mentor_voice_recording(
+            audio_bytes=audio_bytes,
+            mime_type=mime_type,
+            history=history,
+            context_instruction=context_instruction,
+            voice_name=voice_name
+        )
+
+        transcription = result.get('transcription', 'Spoken question')
+        reply = result.get('reply', 'DevSync AI Mentor processed your recording.')
+        audio_b64 = result.get('audioBase64', '')
+        resp_mime = result.get('mimeType', 'audio/wav')
+
+        conv['messages'].append({'role': 'user', 'content': transcription})
+        conv['messages'].append({'role': 'mentor', 'content': reply, 'audioBase64': audio_b64})
+        if conv['title'] == 'New Spoken Session' and transcription:
+            conv['title'] = transcription[:40] + ('...' if len(transcription) > 40 else '')
+
+        self.send_json(200, {
+            "ok": True,
+            "transcription": transcription,
+            "reply": reply,
+            "audioBase64": audio_b64,
+            "mimeType": resp_mime,
+            "conversationId": conversation_id,
+            "source": result.get('source', 'gemini')
+        })
+
+    def handle_ai_mentor_list_conversations(self):
+        global AI_MENTOR_CONVERSATIONS
+        if 'AI_MENTOR_CONVERSATIONS' not in globals():
+            globals()['AI_MENTOR_CONVERSATIONS'] = {}
+        conversations = list(globals()['AI_MENTOR_CONVERSATIONS'].values())
+        self.send_json(200, {"ok": True, "conversations": conversations})
+
+    def handle_ai_mentor_new_conversation(self):
+        global AI_MENTOR_CONVERSATIONS
+        if 'AI_MENTOR_CONVERSATIONS' not in globals():
+            globals()['AI_MENTOR_CONVERSATIONS'] = {}
+        conv_id = str(uuid.uuid4())
+        conv = {
+            'id': conv_id,
+            'title': 'New AI Mentor Session',
+            'repo': 'devsync-core',
+            'branch': 'main',
+            'messages': []
+        }
+        globals()['AI_MENTOR_CONVERSATIONS'][conv_id] = conv
+        self.send_json(201, {"ok": True, "conversationId": conv_id, "title": conv['title']})
+
+    def handle_ai_mentor_conversation_detail(self, conv_id):
+        global AI_MENTOR_CONVERSATIONS
+        if 'AI_MENTOR_CONVERSATIONS' not in globals():
+            globals()['AI_MENTOR_CONVERSATIONS'] = {}
+        conv = globals()['AI_MENTOR_CONVERSATIONS'].get(conv_id)
+        if not conv:
+            self.send_json(404, {"ok": False, "error": "Conversation not found"})
             return
-
-        lower = message.lower()
-        if 'debug' in lower or 'error' in lower:
-            reply = ("Here are recommended steps to debug errors on DevSync:\n\n"
-                     "1. Check Browser Console: Inspect any unhandled JavaScript exceptions or rejected Promises.\n"
-                     "2. Verify Network Logs: Confirm status codes, MIME headers, and CORS settings on API endpoints.\n"
-                     "3. Token & Headers: Ensure Bearer authentication tokens or session cookies are present on requests.\n"
-                     "4. Path Resolution: Use absolute or canonical root-relative paths for stylesheets and scripts.")
-        elif 'pull request' in lower or 'pr' in lower or 'review' in lower:
-            reply = ("DevSync AI Pull Request Reviewer:\n\n"
-                     "• Branch Status: Check that the feature branch is cleanly rebased against main without merge conflicts.\n"
-                     "• Tests: Ensure unit and integration test suites pass in the CI/CD pipeline.\n"
-                     "• Code Quality: Keep diffs focused, maintain docstrings, and review security boundaries.")
-        elif 'explain' in lower or 'snippet' in lower or 'code' in lower or 'function' in lower:
-            reply = ("DevSync Code Assistant Analysis:\n\n"
-                     "• The codebase uses vanilla ES6 modules, CSS Custom Properties design system tokens, and decoupled services.\n"
-                     "• Functions are written to be modular, readable, and resilient against missing DOM nodes.")
-        else:
-            reply = (f"DevSync AI Assistant received your message: \"{message}\".\n\n"
-                     "I am connected and ready to help you manage repositories, review pull requests, or debug code issues across your DevSync workspace!")
-
-        self.send_json(200, {"reply": reply, "source": "local"})
+        self.send_json(200, {"ok": True, "conversation": conv})
 
     def serve_custom_error(self, code):
         error_file_map = {

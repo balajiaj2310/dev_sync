@@ -847,9 +847,7 @@
         "contributionsCount": 48,
         "pullRequestsCount": 8,
         "issuesCount": 24
-      },
-      "two_factor_enabled": false,
-      "two_factor_type": "Not Enabled"
+      }
     },
     "balajikumar": {
       "id": "dev-balaji",
@@ -971,6 +969,36 @@
       "emailVerified": true,
       "passwordLastChanged": "Recently",
       "security_audit_log": [
+        {
+          "id": "sec-69807b7692d5",
+          "action": "login",
+          "description": "Signed in successfully via Microsoft Edge / Windows",
+          "ip": "127.0.0.1",
+          "device": "Microsoft Edge / Windows",
+          "timestamp": "2026-10-30 06:22:01 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-fed1d835755a",
+          "action": "login",
+          "description": "Signed in successfully via Microsoft Edge / Windows",
+          "ip": "127.0.0.1",
+          "device": "Microsoft Edge / Windows",
+          "timestamp": "2026-10-30 06:11:07 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
+        {
+          "id": "sec-64bb590be43e",
+          "action": "login",
+          "description": "Signed in successfully via Microsoft Edge / Windows",
+          "ip": "127.0.0.1",
+          "device": "Microsoft Edge / Windows",
+          "timestamp": "2026-10-30 03:12:02 UTC",
+          "time_ago": "Just now",
+          "status": "success"
+        },
         {
           "id": "sec-a9c9a40de7c6",
           "action": "login",
@@ -1438,36 +1466,6 @@
           "ip": "127.0.0.1",
           "device": "API Client / Unknown OS",
           "timestamp": "2026-10-21 07:03:28 UTC",
-          "time_ago": "Just now",
-          "status": "success"
-        },
-        {
-          "id": "sec-5026ebd48bd9",
-          "action": "login",
-          "description": "Signed in successfully via API Client / Unknown OS",
-          "ip": "127.0.0.1",
-          "device": "API Client / Unknown OS",
-          "timestamp": "2026-10-21 07:02:34 UTC",
-          "time_ago": "Just now",
-          "status": "success"
-        },
-        {
-          "id": "sec-220dd48a1d50",
-          "action": "login",
-          "description": "Signed in successfully via API Client / Unknown OS",
-          "ip": "127.0.0.1",
-          "device": "API Client / Unknown OS",
-          "timestamp": "2026-10-21 06:28:07 UTC",
-          "time_ago": "Just now",
-          "status": "success"
-        },
-        {
-          "id": "sec-7d16a1f782ed",
-          "action": "login",
-          "description": "Signed in successfully via API Client / Unknown OS",
-          "ip": "127.0.0.1",
-          "device": "API Client / Unknown OS",
-          "timestamp": "2026-10-21 06:28:00 UTC",
           "time_ago": "Just now",
           "status": "success"
         }
@@ -6735,6 +6733,198 @@
         "pullRequestsCount": 0,
         "issuesCount": 0
       }
+    },
+    "naveen6363179": {
+      "id": "dev-naveen6363179",
+      "name": "Naveen Kumar",
+      "username": "naveen6363179",
+      "email": "naveen6363179@gmail.com",
+      "password": "demo12345",
+      "role": "Developer",
+      "isVerified": true,
+      "avatar": "https://lh3.googleusercontent.com/a/ACg8ocI4VwmIJRFJVzdiy-rTpSG5LYnfSCziDPkUtKonH1zkjQ_1Rzdt-A=s96-c",
+      "headline": "Passionate Developer building meaningful web applications and exploring modern technologies.",
+      "bio": "Hello, I am Naveen Kumar. I enjoy building software, collaborating with fellow engineers, and shipping high-quality code on DevSync.",
+      "location": "Bengaluru, India",
+      "website": "https://naveen6363179.dev",
+      "social": {
+        "github": "https://github.com/naveen6363179",
+        "linkedin": "https://linkedin.com/in/naveen6363179",
+        "instagram": "https://instagram.com/naveen6363179"
+      },
+      "collaborationStatus": "Available for collaboration",
+      "collaborationStatusType": "available",
+      "openToInvitations": true,
+      "education": {
+        "degree": "BCA Student",
+        "institution": "Bengaluru City University",
+        "location": "Bengaluru, India",
+        "field": "Computer Applications",
+        "timeline": "2022 - 2025"
+      },
+      "experience": [
+        {
+          "role": "Full Stack Contributor",
+          "organization": "DevSync Community",
+          "timeline": "2024 - Present",
+          "description": "Building open source developer collaboration tools and web applications."
+        }
+      ],
+      "skills": [
+        {
+          "name": "Python",
+          "category": "Backend",
+          "color": "blue"
+        },
+        {
+          "name": "Django",
+          "category": "Backend",
+          "color": "mint"
+        },
+        {
+          "name": "JavaScript",
+          "category": "Frontend",
+          "color": "amber"
+        },
+        {
+          "name": "React",
+          "category": "Frontend",
+          "color": "cyan"
+        },
+        {
+          "name": "Git",
+          "category": "Tool",
+          "color": "neutral"
+        },
+        {
+          "name": "GitHub",
+          "category": "Tool",
+          "color": "neutral"
+        }
+      ],
+      "pinnedProjects": [
+        "repo-naveen6363179-core"
+      ],
+      "projects": [
+        {
+          "id": "repo-naveen6363179-core",
+          "name": "naveen6363179-workspace",
+          "description": "Personal developer workspace and project repository on DevSync.",
+          "tags": [
+            {
+              "name": "Python",
+              "color": "blue"
+            },
+            {
+              "name": "JavaScript",
+              "color": "amber"
+            }
+          ],
+          "stars": 12,
+          "forks": 3,
+          "updated": "Updated recently",
+          "visibility": "Public",
+          "iconBg": "#0D9488",
+          "relationship": "Owner"
+        }
+      ],
+      "achievements": [
+        {
+          "id": "ach-1-naveen6363179",
+          "title": "First Project",
+          "description": "Created first public project",
+          "color": "green",
+          "date": "2024"
+        },
+        {
+          "id": "ach-2-naveen6363179",
+          "title": "Collaborator",
+          "description": "Worked with 5+ developers",
+          "color": "blue",
+          "date": "2024"
+        }
+      ],
+      "activities": [
+        {
+          "id": "act-1-naveen6363179",
+          "title": "Joined DevSync",
+          "description": "Created account and public profile on DevSync.",
+          "time": "Recently"
+        }
+      ],
+      "teams": [],
+      "collaborators": [],
+      "mobile": "",
+      "mobileVerified": false,
+      "emailVerified": true,
+      "passwordLastChanged": "Recently",
+      "security_audit_log": [
+        {
+          "id": "sec-67008d64",
+          "action": "account_setup",
+          "description": "DevSync developer account initialized.",
+          "ip": "127.0.0.1",
+          "device": "Web Browser",
+          "timestamp": "2026-10-30 08:10:32 UTC",
+          "time_ago": "Account setup",
+          "status": "success"
+        }
+      ],
+      "notification_preferences": {
+        "direct_messages": {
+          "in_app": true,
+          "email": true
+        },
+        "mentions": {
+          "in_app": true,
+          "email": true
+        },
+        "team_invitations": {
+          "in_app": true,
+          "email": true
+        },
+        "task_assignments": {
+          "in_app": true,
+          "email": false
+        },
+        "task_deadlines": {
+          "in_app": true,
+          "email": true
+        },
+        "weekly_digest": {
+          "in_app": false,
+          "email": false
+        }
+      },
+      "general_preferences": {
+        "language": "en",
+        "timezone": "Asia/Kolkata (IST)",
+        "theme": "light",
+        "compact_density": false,
+        "inline_diffs": true,
+        "tab_size": 2,
+        "editor_font": "JetBrains Mono",
+        "default_page": "overview"
+      },
+      "visibility_controls": {
+        "profile": "public",
+        "email": "private",
+        "mobile": "private",
+        "location": "public",
+        "website": "public",
+        "activity_graph": "public"
+      },
+      "stats": {
+        "followers": 0,
+        "following": 0,
+        "projects": 1,
+        "teams": 0,
+        "repositoriesCount": 1,
+        "contributionsCount": 0,
+        "pullRequestsCount": 0,
+        "issuesCount": 0
+      },
+      "google_id": "100048543302912273779"
     }
   },
   "repositories": {
@@ -10858,7 +11048,7 @@
       "device": "Microsoft Edge / Windows",
       "ip": "127.0.0.1",
       "created": 1792573624.3413517,
-      "last_active": 1792599698.46503
+      "last_active": 1793329920.6077135
     },
     "test-ws-http-token-balajikumar": {
       "username": "balajikumar",
@@ -11084,6 +11274,60 @@
         "location": "Bengaluru, India"
       },
       "created": 1792599444.8398185
+    },
+    "devsync_token_ff85e31fa502de8ba747a83da5608a01a68dd86c": {
+      "id": "sess_afc7a92cec5a691955e4",
+      "token": "devsync_token_ff85e31fa502de8ba747a83da5608a01a68dd86c",
+      "username": "balajikumar",
+      "user": {
+        "id": "dev-balaji",
+        "name": "Balaji",
+        "username": "balajikumar",
+        "email": "balaji@devsync.dev",
+        "role": "Core Contributor",
+        "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80",
+        "location": "Chennai, India"
+      },
+      "device": "Microsoft Edge / Windows",
+      "ip": "127.0.0.1",
+      "created": 1793329922.669391,
+      "last_active": 1793349612.8628707
+    },
+    "devsync_token_a0c49adec929c53e7aba184117652cadc1d15127": {
+      "id": "sess_7e771cfd27d62fda9187",
+      "token": "devsync_token_a0c49adec929c53e7aba184117652cadc1d15127",
+      "username": "balajikumar",
+      "user": {
+        "id": "dev-balaji",
+        "name": "Balaji",
+        "username": "balajikumar",
+        "email": "balaji@devsync.dev",
+        "role": "Core Contributor",
+        "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80",
+        "location": "Chennai, India"
+      },
+      "device": "Microsoft Edge / Windows",
+      "ip": "127.0.0.1",
+      "created": 1793340667.9022226,
+      "last_active": 1793341319.8079941
+    },
+    "devsync_token_683df777eba40cad574c93f64b63aa6d5febec83": {
+      "id": "sess_a914f987dfdedc8d2c69",
+      "token": "devsync_token_683df777eba40cad574c93f64b63aa6d5febec83",
+      "username": "balajikumar",
+      "user": {
+        "id": "dev-balaji",
+        "name": "Balaji",
+        "username": "balajikumar",
+        "email": "balaji@devsync.dev",
+        "role": "Core Contributor",
+        "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80",
+        "location": "Chennai, India"
+      },
+      "device": "Microsoft Edge / Windows",
+      "ip": "127.0.0.1",
+      "created": 1793341321.267591,
+      "last_active": 1793341321.2675917
     }
   },
   "version": "1.3.0",

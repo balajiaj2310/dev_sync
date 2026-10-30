@@ -46,12 +46,30 @@ export const AuthService = {
     return res;
   },
 
+  setSession(token, user) {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      localStorage.setItem(APP_CONFIG.storageKeys.authToken, token);
+      localStorage.setItem('devsync_auth_token', token);
+      if (user) {
+        localStorage.setItem(APP_CONFIG.storageKeys.userSession, JSON.stringify(user));
+        localStorage.setItem('devsync_auth_user', JSON.stringify(user));
+        localStorage.setItem('devsync_user', JSON.stringify(user));
+      }
+      document.cookie = 'devsync_session=' + encodeURIComponent(token) + '; path=/; max-age=2592000; SameSite=Lax';
+      window.dispatchEvent(new CustomEvent('devsync:auth-changed', { detail: { authenticated: true, user } }));
+    }
+  },
+
   async signOut() {
     try {
       await apiClient.post('/auth/logout/', {});
     } catch (e) {}
     localStorage.removeItem(APP_CONFIG.storageKeys.authToken);
     localStorage.removeItem(APP_CONFIG.storageKeys.userSession);
+    localStorage.removeItem('devsync_auth_token');
+    localStorage.removeItem('devsync_auth_user');
+    localStorage.removeItem('devsync_user');
+    document.cookie = 'devsync_session=; path=/; max-age=0; SameSite=Lax';
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new CustomEvent('devsync:auth-changed', { detail: { authenticated: false } }));
     }
@@ -60,13 +78,15 @@ export const AuthService = {
 
   isAuthenticated() {
     if (typeof window === 'undefined' || !window.localStorage) return false;
-    const token = localStorage.getItem(APP_CONFIG.storageKeys.authToken);
+    const token = localStorage.getItem(APP_CONFIG.storageKeys.authToken) || localStorage.getItem('devsync_auth_token');
     return Boolean(token && token.trim().length > 0);
   },
 
   getCurrentUserSession() {
     if (typeof window === 'undefined' || !window.localStorage) return null;
-    const raw = localStorage.getItem(APP_CONFIG.storageKeys.userSession);
+    const raw = localStorage.getItem(APP_CONFIG.storageKeys.userSession) ||
+                localStorage.getItem('devsync_auth_user') ||
+                localStorage.getItem('devsync_user');
     if (raw) {
       try { return JSON.parse(raw); } catch { return null; }
     }

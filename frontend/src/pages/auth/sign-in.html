@@ -403,7 +403,7 @@
       </p>
       <ol style="font-size: 13px; color: #334155; line-height: 1.6; padding-left: 20px;">
         <li>Create an OAuth 2.0 Client ID in the <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener" style="color: #0D9488;">Google Cloud Console</a>.</li>
-        <li>Add <code>http://localhost:8000</code> to Authorized JavaScript origins.</li>
+        <li>Add <code>http://localhost:8000</code> and <code>http://127.0.0.1:8000</code> to Authorized JavaScript origins in your Google Cloud Console OAuth 2.0 Client credentials.</li>
         <li>Set your Client ID in your terminal or <code>.env</code> file:</li>
       </ol>
       <div class="auth-modal-code">export GOOGLE_CLIENT_ID="YOUR_CLIENT_ID.apps.googleusercontent.com"</div>

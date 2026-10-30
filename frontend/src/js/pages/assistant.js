@@ -10,16 +10,17 @@ import { AssistantService } from '../services/assistant-service.js';
 import { toastSuccess, toastError, toastInfo } from '../components/toast.js';
 
 export function initAssistantPage() {
-  console.log('[DevSync AI] Initializing Voice & Coding Studio...');
+  console.log('[DevSync AI Mentor] Initializing Voice & Developer Assistant Studio...');
 
   // State
   let voiceService = null;
   let activeRepo = 'devsync-core';
   let activeBranch = 'main';
   let selectedVoice = 'Puck';
-  let selectedLanguage = 'en-US';
+  let isRecording = false;
+  let currentConversationId = localStorage.getItem('devsync_active_mentor_conv_id') || null;
 
-  // 1. Tab Switching: Voice Studio <-> AI Chat
+  // 1. Tab Switching: AI Mentor Studio <-> Chat View
   const tabVoiceBtn = document.getElementById('tabVoiceBtn');
   const tabChatBtn = document.getElementById('tabChatBtn');
   const paneVoice = document.getElementById('paneVoice');
@@ -42,35 +43,64 @@ export function initAssistantPage() {
   tabVoiceBtn?.addEventListener('click', () => switchTab('voice'));
   tabChatBtn?.addEventListener('click', () => switchTab('chat'));
 
-  // 2. Voice Studio Elements
+  // 2. DOM Elements
   const voiceOrb = document.getElementById('voiceOrb');
   const voiceOrbWrapper = document.getElementById('voiceOrbWrapper');
-  const btnVoiceAction = document.getElementById('btnVoiceAction');
-  const btnVoiceActionText = document.getElementById('btnVoiceActionText');
-  const btnToggleMute = document.getElementById('btnToggleMute');
-  const btnEndSession = document.getElementById('btnEndSession');
+  const btnPushToTalk = document.getElementById('btnPushToTalk');
+  const btnPushToTalkText = document.getElementById('btnPushToTalkText');
   const voiceStatusPill = document.getElementById('voiceStatusPill');
   const voiceStatusText = document.getElementById('voiceStatusText');
   const voiceSessionTimer = document.getElementById('voiceSessionTimer');
+  const mentorWelcomeMessage = document.getElementById('mentorWelcomeMessage');
+  const mentorErrorBox = document.getElementById('mentorErrorBox');
+  const mentorErrorText = document.getElementById('mentorErrorText');
+  const mentorRetryBtn = document.getElementById('mentorRetryBtn');
+  const mentorAudioController = document.getElementById('mentorAudioController');
+  const mentorAudioStatus = document.getElementById('mentorAudioStatus');
+  const btnPauseResumeSpeech = document.getElementById('btnPauseResumeSpeech');
+  const btnReplaySpeech = document.getElementById('btnReplaySpeech');
+  const btnStopSpeech = document.getElementById('btnStopSpeech');
   const voiceTranscriptContainer = document.getElementById('voiceTranscriptContainer');
   const transcriptEmptyState = document.getElementById('transcriptEmptyState');
   const soundwaveBars = document.querySelectorAll('.soundwave-bar');
   const voiceRepoSelect = document.getElementById('voiceRepoSelect');
   const voiceBranchSelect = document.getElementById('voiceBranchSelect');
   const voicePersonaSelect = document.getElementById('voicePersonaSelect');
-  const voiceLangSelect = document.getElementById('voiceLangSelect');
   const topActiveContextBadge = document.getElementById('topActiveContextBadge');
   const btnRefreshContext = document.getElementById('btnRefreshContext');
   const btnCopyTranscript = document.getElementById('btnCopyTranscript');
   const btnClearTranscript = document.getElementById('btnClearTranscript');
+  const btnNewChatFromTranscript = document.getElementById('btnNewChatFromTranscript');
+  const btnNewSession = document.getElementById('btnNewSession');
+  const recentSessionsList = document.getElementById('recentSessionsList');
   const quickCmdBtns = document.querySelectorAll('.quick-cmd-btn');
 
-  // Context Selectors
+  // Text Chat Tab Elements
+  const messagesContainer = document.getElementById('assistantMessages');
+  const chatInput = document.getElementById('assistantInput');
+  const sendBtn = document.getElementById('assistantSendBtn');
+  const newChatBtn = document.getElementById('btnNewChat');
+  const promptChips = document.querySelectorAll('.prompt-chip');
+  const chatHistoryList = document.getElementById('chatHistoryList');
+
+  // Helper: HTML Escaper
+  function escapeHtml(str) {
+    if (!str) return '';
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  // Update Workspace Context
   function updateContextUI() {
     activeRepo = voiceRepoSelect?.value || 'devsync-core';
     activeBranch = voiceBranchSelect?.value || 'main';
     if (topActiveContextBadge) {
       topActiveContextBadge.textContent = `Context: ${activeRepo} (${activeBranch})`;
+    }
+    if (voiceService) {
+      voiceService.options.activeRepo = activeRepo;
+      voiceService.options.activeBranch = activeBranch;
     }
   }
 
@@ -78,10 +108,10 @@ export function initAssistantPage() {
   voiceBranchSelect?.addEventListener('change', updateContextUI);
   voicePersonaSelect?.addEventListener('change', (e) => {
     selectedVoice = e.target.value;
-    toastInfo(`Voice persona changed to ${selectedVoice}.`);
-  });
-  voiceLangSelect?.addEventListener('change', (e) => {
-    selectedLanguage = e.target.value;
+    if (voiceService) {
+      voiceService.options.voiceName = selectedVoice;
+    }
+    toastInfo(`Voice persona set to ${selectedVoice}.`);
   });
 
   btnRefreshContext?.addEventListener('click', async () => {
@@ -90,7 +120,7 @@ export function initAssistantPage() {
       const res = await fetch(`/api/v1/ai/voice/context?repo=${activeRepo}&branch=${activeBranch}`);
       const data = await res.json();
       if (data.ok) {
-        toastSuccess('DevSync context refreshed.');
+        toastSuccess('Workspace context refreshed.');
       }
     } catch (e) {
       toastError('Failed to refresh context.');
@@ -99,8 +129,135 @@ export function initAssistantPage() {
     }
   });
 
-  // Transcript Rendering
-  function appendTranscript(speaker, text, isFinal = true) {
+  // Soundwave and Orb updates
+  function updateVisualizer(level) {
+    if (!voiceOrb) return;
+    const scale = 1 + (level * 0.35);
+    voiceOrb.style.setProperty('--orb-scale', scale.toFixed(3));
+
+    soundwaveBars.forEach((bar, i) => {
+      const factor = Math.sin((i / soundwaveBars.length) * Math.PI);
+      const height = Math.max(6, Math.min(28, (level * 36 * factor) + (Math.random() * 4)));
+      bar.style.height = `${height}px`;
+    });
+  }
+
+  // Visual State Manager (IDLE, LISTENING, PROCESSING/THINKING, SPEAKING, ERROR)
+  function handleStateChange(state, detail) {
+    console.log('[DevSync AI Mentor State]:', state, detail);
+
+    voiceOrb?.classList.remove('state-idle', 'state-listening', 'state-thinking', 'state-speaking', 'state-error');
+    voiceStatusPill?.classList.remove('status-connected', 'status-speaking', 'status-error');
+    mentorErrorBox?.classList.add('d-none');
+
+    switch (state) {
+      case 'idle':
+      case 'ended':
+        isRecording = false;
+        voiceOrb?.classList.add('state-idle');
+        voiceOrbWrapper?.classList.remove('is-listening');
+        btnPushToTalk?.classList.remove('is-recording');
+        if (btnPushToTalkText) btnPushToTalkText.textContent = 'Tap to Speak';
+        if (voiceStatusText) voiceStatusText.textContent = "Hey! I'm your DevSync AI Mentor.";
+        if (mentorWelcomeMessage) mentorWelcomeMessage.textContent = 'Tap the microphone to speak, or type your question below.';
+        mentorAudioController?.classList.add('d-none');
+        updateVisualizer(0);
+        break;
+
+      case 'requesting_mic':
+        voiceOrb?.classList.add('state-thinking');
+        if (voiceStatusText) voiceStatusText.textContent = 'Requesting Microphone Permission...';
+        break;
+
+      case 'listening':
+        isRecording = true;
+        voiceOrb?.classList.add('state-listening');
+        voiceOrbWrapper?.classList.add('is-listening');
+        voiceStatusPill?.classList.add('status-connected');
+        btnPushToTalk?.classList.add('is-recording');
+        if (btnPushToTalkText) btnPushToTalkText.textContent = 'Stop Recording';
+        if (voiceStatusText) voiceStatusText.textContent = 'Listening...';
+        if (mentorWelcomeMessage) mentorWelcomeMessage.textContent = 'Speaking now... Click again when finished.';
+        mentorAudioController?.classList.add('d-none');
+        break;
+
+      case 'thinking':
+        isRecording = false;
+        voiceOrb?.classList.add('state-thinking');
+        voiceOrbWrapper?.classList.remove('is-listening');
+        btnPushToTalk?.classList.remove('is-recording');
+        if (btnPushToTalkText) btnPushToTalkText.textContent = 'Thinking...';
+        if (voiceStatusText) voiceStatusText.textContent = 'Thinking...';
+        if (mentorWelcomeMessage) mentorWelcomeMessage.textContent = 'Analyzing question and formulating mentor solution...';
+        mentorAudioController?.classList.add('d-none');
+        updateVisualizer(0);
+        break;
+
+      case 'speaking':
+        isRecording = false;
+        voiceOrb?.classList.add('state-speaking');
+        voiceOrbWrapper?.classList.remove('is-listening');
+        voiceStatusPill?.classList.add('status-speaking');
+        btnPushToTalk?.classList.remove('is-recording');
+        if (btnPushToTalkText) btnPushToTalkText.textContent = 'Tap to Speak';
+        if (voiceStatusText) voiceStatusText.textContent = 'Speaking Answer...';
+        if (mentorWelcomeMessage) mentorWelcomeMessage.textContent = 'AI Mentor is speaking aloud. You can pause or stop below.';
+        mentorAudioController?.classList.remove('d-none');
+        if (mentorAudioStatus) mentorAudioStatus.textContent = 'Speaking answer...';
+        break;
+
+      case 'paused':
+        if (mentorAudioStatus) mentorAudioStatus.textContent = 'Speech paused.';
+        break;
+
+      case 'error':
+        isRecording = false;
+        voiceOrb?.classList.add('state-idle');
+        voiceOrbWrapper?.classList.remove('is-listening');
+        voiceStatusPill?.classList.add('status-error');
+        btnPushToTalk?.classList.remove('is-recording');
+        if (btnPushToTalkText) btnPushToTalkText.textContent = 'Tap to Speak';
+        if (voiceStatusText) voiceStatusText.textContent = 'Connection or Microphone Notice';
+        if (mentorErrorBox) {
+          mentorErrorBox.classList.remove('d-none');
+          if (mentorErrorText) mentorErrorText.textContent = detail || 'An error occurred. Please try again.';
+        }
+        mentorAudioController?.classList.add('d-none');
+        updateVisualizer(0);
+        break;
+    }
+  }
+
+  // Audio Playback Controller Buttons
+  btnPauseResumeSpeech?.addEventListener('click', () => {
+    if (!voiceService) return;
+    if (voiceService.state === 'speaking') {
+      voiceService.pauseSpeech();
+    } else {
+      voiceService.resumeSpeech();
+    }
+  });
+
+  btnReplaySpeech?.addEventListener('click', () => {
+    if (voiceService) {
+      voiceService.replayLastSpeech();
+    }
+  });
+
+  btnStopSpeech?.addEventListener('click', () => {
+    if (voiceService) {
+      voiceService.stopAudioPlayback();
+      toastInfo('Speech playback stopped.');
+    }
+  });
+
+  mentorRetryBtn?.addEventListener('click', () => {
+    mentorErrorBox?.classList.add('d-none');
+    handleStateChange('idle');
+  });
+
+  // Append Message to Unified Transcript
+  function appendTranscript(speaker, text, isFinal = true, audioBase64 = null) {
     if (!voiceTranscriptContainer || !text) return;
 
     if (transcriptEmptyState && transcriptEmptyState.parentElement) {
@@ -109,21 +266,142 @@ export function initAssistantPage() {
 
     const msg = document.createElement('div');
     msg.className = `transcript-message speaker-${speaker}`;
+
+    let audioActionHtml = '';
+    if (speaker === 'ai' && audioBase64) {
+      audioActionHtml = `
+        <div class="msg-audio-actions">
+          <button class="msg-replay-btn" data-audio="${audioBase64}">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            <span>Play Audio</span>
+          </button>
+          <button class="msg-copy-btn" title="Copy response">Copy</button>
+        </div>
+      `;
+    }
+
     msg.innerHTML = `
-      <span class="transcript-speaker-tag">${speaker === 'user' ? 'You' : 'DevSync AI'}</span>
-      <div style="white-space: pre-wrap;">${escapeHtml(text)}</div>
+      <span class="transcript-speaker-tag">${speaker === 'user' ? 'You' : 'DevSync AI Mentor'}</span>
+      <div style="white-space: pre-wrap; line-height: 1.55;">${escapeHtml(text)}</div>
+      ${audioActionHtml}
     `;
+
+    const replayBtn = msg.querySelector('.msg-replay-btn');
+    if (replayBtn) {
+      replayBtn.addEventListener('click', () => {
+        const b64 = replayBtn.getAttribute('data-audio');
+        if (voiceService && b64) {
+          voiceService.playSpeechAudio(b64, 'audio/wav');
+        }
+      });
+    }
+
+    const copyBtn = msg.querySelector('.msg-copy-btn');
+    if (copyBtn) {
+      copyBtn.addEventListener('click', () => {
+        navigator.clipboard.writeText(text);
+        copyBtn.textContent = 'Copied!';
+        setTimeout(() => copyBtn.textContent = 'Copy', 1500);
+      });
+    }
 
     voiceTranscriptContainer.appendChild(msg);
     voiceTranscriptContainer.scrollTop = voiceTranscriptContainer.scrollHeight;
+
+    // Synchronize into Chat View tab as well
+    if (messagesContainer) {
+      const bubble = document.createElement('div');
+      bubble.className = speaker === 'user' ? 'assistant-bubble-user' : 'assistant-bubble-ai';
+      bubble.innerHTML = `<div style="white-space: pre-wrap;">${escapeHtml(text)}</div>`;
+      messagesContainer.appendChild(bubble);
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
   }
 
-  function escapeHtml(str) {
-    const div = document.createElement('div');
-    div.textContent = str;
-    return div.innerHTML;
+  // Initialize Voice Service Instance
+  function getVoiceService() {
+    if (!voiceService) {
+      voiceService = new DevSyncVoiceService({
+        activeRepo,
+        activeBranch,
+        voiceName: selectedVoice,
+        onStateChange: handleStateChange,
+        onAudioLevel: updateVisualizer,
+        onTranscript: appendTranscript,
+        onError: (err) => {
+          handleStateChange('error', err);
+        },
+        onTimerTick: (timeStr) => {
+          if (voiceSessionTimer) voiceSessionTimer.textContent = timeStr;
+        }
+      });
+    }
+    return voiceService;
   }
 
+  // Push-to-Talk Toggle Interaction
+  async function togglePushToTalk() {
+    const service = getVoiceService();
+    if (isRecording) {
+      // User tapped to finish speaking
+      await service.stopRecording();
+    } else {
+      // User tapped to start speaking
+      await service.startRecording();
+    }
+  }
+
+  btnPushToTalk?.addEventListener('click', togglePushToTalk);
+  voiceOrb?.addEventListener('click', togglePushToTalk);
+
+  // Transcript Bar: Text Question Submission
+  const voiceTranscriptForm = document.getElementById('voiceTranscriptForm');
+  const voiceTranscriptInput = document.getElementById('voiceTranscriptInput');
+  const btnVoiceTranscriptSend = document.getElementById('btnVoiceTranscriptSend');
+
+  async function handleTranscriptTextSubmit(e) {
+    if (e) e.preventDefault();
+    const text = voiceTranscriptInput?.value?.trim();
+    if (!text) return;
+
+    voiceTranscriptInput.value = '';
+    appendTranscript('user', text, true);
+
+    const service = getVoiceService();
+    if (btnVoiceTranscriptSend) {
+      btnVoiceTranscriptSend.disabled = true;
+      btnVoiceTranscriptSend.innerHTML = '<span class="btn-spinner"></span>';
+    }
+
+    try {
+      await service.sendSpokenCommand(text);
+    } catch (err) {
+      toastError('Failed to communicate with DevSync AI Mentor.');
+    } finally {
+      if (btnVoiceTranscriptSend) {
+        btnVoiceTranscriptSend.disabled = false;
+        btnVoiceTranscriptSend.innerHTML = `
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          <span>Send</span>
+        `;
+      }
+      voiceTranscriptInput?.focus();
+    }
+  }
+
+  voiceTranscriptForm?.addEventListener('submit', handleTranscriptTextSubmit);
+
+  // Quick Mentor Questions
+  quickCmdBtns.forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const command = btn.getAttribute('data-command') || btn.innerText.trim();
+      appendTranscript('user', command, true);
+      const service = getVoiceService();
+      await service.sendSpokenCommand(command);
+    });
+  });
+
+  // Transcript Tools (Copy & Clear)
   btnCopyTranscript?.addEventListener('click', () => {
     const messages = voiceTranscriptContainer?.querySelectorAll('.transcript-message');
     if (!messages || messages.length === 0) {
@@ -144,280 +422,112 @@ export function initAssistantPage() {
     if (voiceTranscriptContainer) {
       voiceTranscriptContainer.innerHTML = `
         <div class="transcript-empty-state" id="transcriptEmptyState">
-          <div>Transcript cleared. Start speaking to record.</div>
+          <div>Hey! I'm your DevSync AI Mentor.<br/>Tap the mic to speak or type a question below to begin!</div>
         </div>
       `;
       toastInfo('Transcript cleared.');
     }
   });
 
-  // Soundwave and Orb updates
-  function updateVisualizer(level) {
-    if (!voiceOrb) return;
-    const scale = 1 + (level * 0.35);
-    voiceOrb.style.setProperty('--orb-scale', scale.toFixed(3));
-
-    soundwaveBars.forEach((bar, i) => {
-      const factor = Math.sin((i / soundwaveBars.length) * Math.PI);
-      const height = Math.max(6, Math.min(28, (level * 36 * factor) + (Math.random() * 4)));
-      bar.style.height = `${height}px`;
-    });
-  }
-
-  // Voice State Transitions
-  function handleVoiceStateChange(state, detail) {
-    console.log('[DevSync Voice State]:', state, detail);
-
-    // Reset orb classes
-    voiceOrb?.classList.remove('state-idle', 'state-connecting', 'state-listening', 'state-thinking', 'state-speaking', 'state-muted', 'state-interrupted');
-    voiceStatusPill?.classList.remove('status-connected', 'status-speaking', 'status-muted', 'status-error');
-
-    switch (state) {
-      case 'idle':
-      case 'ended':
-        voiceOrb?.classList.add('state-idle');
-        voiceOrbWrapper?.classList.remove('is-listening');
-        if (voiceStatusText) voiceStatusText.textContent = 'Ready to Connect';
-        if (btnVoiceActionText) btnVoiceActionText.textContent = 'Start Voice Assistant';
-        btnVoiceAction?.classList.remove('active');
-        if (btnToggleMute) btnToggleMute.disabled = true;
-        if (btnEndSession) btnEndSession.disabled = true;
-        updateVisualizer(0);
-        break;
-
-      case 'requesting_mic':
-        voiceOrb?.classList.add('state-connecting');
-        if (voiceStatusText) voiceStatusText.textContent = 'Requesting Microphone...';
-        break;
-
-      case 'connecting':
-        voiceOrb?.classList.add('state-connecting');
-        if (voiceStatusText) voiceStatusText.textContent = 'Connecting to Gemini Live...';
-        break;
-
-      case 'listening':
-        voiceOrb?.classList.add('state-listening');
-        voiceOrbWrapper?.classList.add('is-listening');
-        voiceStatusPill?.classList.add('status-connected');
-        if (voiceStatusText) voiceStatusText.textContent = detail || 'Listening to your voice...';
-        if (btnVoiceActionText) btnVoiceActionText.textContent = 'Voice Assistant Active';
-        btnVoiceAction?.classList.add('active');
-        if (btnToggleMute) btnToggleMute.disabled = false;
-        if (btnEndSession) btnEndSession.disabled = false;
-        break;
-
-      case 'thinking':
-        voiceOrb?.classList.add('state-thinking');
-        voiceOrbWrapper?.classList.remove('is-listening');
-        if (voiceStatusText) voiceStatusText.textContent = 'DevSync AI is thinking...';
-        break;
-
-      case 'speaking':
-        voiceOrb?.classList.add('state-speaking');
-        voiceOrbWrapper?.classList.remove('is-listening');
-        voiceStatusPill?.classList.add('status-speaking');
-        if (voiceStatusText) voiceStatusText.textContent = 'DevSync AI Speaking...';
-        break;
-
-      case 'muted':
-        voiceOrb?.classList.add('state-muted');
-        voiceOrbWrapper?.classList.remove('is-listening');
-        voiceStatusPill?.classList.add('status-muted');
-        if (voiceStatusText) voiceStatusText.textContent = 'Microphone Muted';
-        btnToggleMute?.classList.add('active');
-        break;
-
-      case 'interrupted':
-        voiceOrb?.classList.add('state-interrupted');
-        voiceOrbWrapper?.classList.remove('is-listening');
-        if (voiceStatusText) voiceStatusText.textContent = 'Interrupted (Barge-in)';
-        break;
-
-      case 'error':
-        voiceStatusPill?.classList.add('status-error');
-        if (voiceStatusText) voiceStatusText.textContent = detail || 'Connection Error';
-        break;
-    }
-  }
-
-  // Start / Stop Session Handler
-  async function toggleVoiceSession() {
-    if (voiceService && (voiceService.state === 'listening' || voiceService.state === 'speaking' || voiceService.state === 'connecting')) {
-      voiceService.stopSession();
-      toastInfo('Voice session ended.');
-      return;
-    }
-
-    voiceService = new DevSyncVoiceService({
-      activeRepo,
-      activeBranch,
-      voiceName: selectedVoice,
-      language: selectedLanguage,
-      onStateChange: handleVoiceStateChange,
-      onAudioLevel: updateVisualizer,
-      onTranscript: appendTranscript,
-      onError: (err) => {
-        toastError(err);
-        appendTranscript('ai', 'Microphone access is not available in this browser. You can type your doubts in the input bar below or tap any Quick Voice Command to communicate!');
-      },
-      onTimerTick: (timeStr) => {
-        if (voiceSessionTimer) voiceSessionTimer.textContent = timeStr;
-      }
-    });
-
-    await voiceService.startSession();
-    appendTranscript('ai', 'DevSync Voice AI is active and ready. Speak through your microphone or type your doubts below!');
-  }
-
-  btnVoiceAction?.addEventListener('click', toggleVoiceSession);
-  voiceOrb?.addEventListener('click', toggleVoiceSession);
-
-  btnToggleMute?.addEventListener('click', () => {
-    if (!voiceService) return;
-    const newMute = !voiceService.isMuted;
-    voiceService.setMute(newMute);
-    btnToggleMute.classList.toggle('active', newMute);
-    toastInfo(newMute ? 'Microphone muted.' : 'Microphone unmuted.');
-  });
-
-  btnEndSession?.addEventListener('click', () => {
+  // Start New Conversation
+  async function startNewConversation() {
     if (voiceService) {
-      voiceService.stopSession();
-      toastInfo('Voice session ended.');
+      voiceService.stopAudioPlayback();
     }
-  });
+    const res = await AssistantService.newConversation({
+      repo: activeRepo,
+      branch: activeBranch,
+      title: 'New AI Mentor Session'
+    });
+    currentConversationId = res.conversationId;
+    btnClearTranscript?.click();
+    if (messagesContainer) {
+      messagesContainer.innerHTML = `
+        <div class="assistant-bubble-ai">
+          <strong>Hey! I'm your DevSync AI Mentor.</strong> Ask me anything about programming, Django, JavaScript, code reviews, or software architecture.
+        </div>
+      `;
+    }
+    loadRecentConversations();
+    toastSuccess('New conversation started.');
+  }
 
-  // 2.5 Transcript Text Bar Input (Type doubts directly in Voice Studio)
-  const voiceTranscriptForm = document.getElementById('voiceTranscriptForm');
-  const voiceTranscriptInput = document.getElementById('voiceTranscriptInput');
-  const btnVoiceTranscriptSend = document.getElementById('btnVoiceTranscriptSend');
+  btnNewSession?.addEventListener('click', startNewConversation);
+  btnNewChatFromTranscript?.addEventListener('click', startNewConversation);
+  newChatBtn?.addEventListener('click', startNewConversation);
 
-  async function handleTranscriptSubmit(e) {
-    if (e) e.preventDefault();
-    const text = voiceTranscriptInput?.value?.trim();
-    if (!text) return;
+  // Load Recent Conversations
+  async function loadRecentConversations() {
+    try {
+      const convs = await AssistantService.listConversations();
+      if (!recentSessionsList) return;
 
-    voiceTranscriptInput.value = '';
-    appendTranscript('user', text, true);
+      if (!convs || convs.length === 0) {
+        recentSessionsList.innerHTML = `<div style="font-size: 12px; color: var(--color-text-secondary); padding: 4px 0;">No prior sessions</div>`;
+        return;
+      }
 
-    if (!voiceService || voiceService.state === 'idle' || voiceService.state === 'ended') {
-      voiceService = new DevSyncVoiceService({
-        activeRepo,
-        activeBranch,
-        voiceName: selectedVoice,
-        language: selectedLanguage,
-        onStateChange: handleVoiceStateChange,
-        onAudioLevel: updateVisualizer,
-        onTranscript: appendTranscript,
-        onError: (err) => toastError(err),
-        onTimerTick: (timeStr) => {
-          if (voiceSessionTimer) voiceSessionTimer.textContent = timeStr;
+      recentSessionsList.innerHTML = '';
+      if (chatHistoryList) chatHistoryList.innerHTML = '';
+
+      convs.forEach(c => {
+        const item = document.createElement('button');
+        item.className = `btn btn-ghost btn-sm text-left w-100 ${c.id === currentConversationId ? 'active' : ''}`;
+        item.style.fontSize = '12px';
+        item.style.whiteSpace = 'nowrap';
+        item.style.overflow = 'hidden';
+        item.style.textOverflow = 'ellipsis';
+        item.textContent = c.title || 'Session';
+        item.title = c.title;
+
+        item.addEventListener('click', async () => {
+          currentConversationId = c.id;
+          localStorage.setItem('devsync_active_mentor_conv_id', c.id);
+          await loadConversationHistory(c.id);
+          loadRecentConversations();
+        });
+
+        recentSessionsList.appendChild(item);
+
+        if (chatHistoryList) {
+          const chatItem = item.cloneNode(true);
+          chatItem.addEventListener('click', async () => {
+            currentConversationId = c.id;
+            localStorage.setItem('devsync_active_mentor_conv_id', c.id);
+            await loadConversationHistory(c.id);
+            loadRecentConversations();
+          });
+          chatHistoryList.appendChild(chatItem);
         }
       });
-    }
-
-    if (btnVoiceTranscriptSend) {
-      btnVoiceTranscriptSend.disabled = true;
-      btnVoiceTranscriptSend.innerHTML = '<span class="btn-spinner"></span>';
-    }
-
-    try {
-      await voiceService.sendSpokenCommand(text);
-    } catch (err) {
-      console.error('Error sending transcript text:', err);
-      toastError('Failed to communicate with DevSync AI.');
-    } finally {
-      if (btnVoiceTranscriptSend) {
-        btnVoiceTranscriptSend.disabled = false;
-        btnVoiceTranscriptSend.innerHTML = `
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-          <span>Send</span>
-        `;
-      }
-      voiceTranscriptInput?.focus();
+    } catch (e) {
+      console.warn('Error loading conversations:', e);
     }
   }
 
-  voiceTranscriptForm?.addEventListener('submit', handleTranscriptSubmit);
-
-  // Quick Voice Commands
-  quickCmdBtns.forEach(btn => {
-    btn.addEventListener('click', async () => {
-      const command = btn.getAttribute('data-command') || btn.innerText.trim();
-      appendTranscript('user', command, true);
-
-      if (!voiceService || voiceService.state === 'idle' || voiceService.state === 'ended') {
-        // Initialize voice service in fallback / command execution mode
-        voiceService = new DevSyncVoiceService({
-          activeRepo,
-          activeBranch,
-          voiceName: selectedVoice,
-          language: selectedLanguage,
-          onStateChange: handleVoiceStateChange,
-          onAudioLevel: updateVisualizer,
-          onTranscript: appendTranscript,
-          onError: (err) => toastError(err),
-          onTimerTick: (timeStr) => {
-            if (voiceSessionTimer) voiceSessionTimer.textContent = timeStr;
-          }
-        });
-      }
-
-      await voiceService.sendSpokenCommand(command);
-    });
-  });
-
-  // =========================================================================
-  // 3. AI TEXT CHAT TAB LOGIC (Preserved & Enhanced)
-  // =========================================================================
-  const messagesContainer = document.getElementById('assistantMessages');
-  const chatInput = document.getElementById('assistantInput');
-  const sendBtn = document.getElementById('assistantSendBtn');
-  const newChatBtn = document.getElementById('btnNewChat');
-  const promptChips = document.querySelectorAll('.prompt-chip');
-
-  async function handleTextSend(text) {
-    if (!text || !messagesContainer) return;
-
-    // Append User Message
-    const userBubble = document.createElement('div');
-    userBubble.className = 'assistant-bubble-user';
-    userBubble.textContent = text;
-    messagesContainer.appendChild(userBubble);
-
-    // Append Loading Indicator
-    const loadingBubble = document.createElement('div');
-    loadingBubble.className = 'assistant-bubble-ai';
-    loadingBubble.innerHTML = `<span class="btn-spinner"></span> DevSync AI is thinking...`;
-    messagesContainer.appendChild(loadingBubble);
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
-
+  async function loadConversationHistory(convId) {
     try {
-      const res = await AssistantService.sendMessage(text, { repo: activeRepo, branch: activeBranch });
-      loadingBubble.innerHTML = `
-        <div style="white-space: pre-wrap;">${escapeHtml(res.reply || res.text || 'DevSync AI responded.')}</div>
-        ${res.code ? `
-          <div class="ai-code-block">
-            <button class="ai-code-copy-btn">Copy</button>
-            <code>${escapeHtml(res.code)}</code>
-          </div>
-        ` : ''}
-      `;
+      const data = await AssistantService.getConversation(convId);
+      if (!data || !data.messages) return;
 
-      const copyBtn = loadingBubble.querySelector('.ai-code-copy-btn');
-      if (copyBtn) {
-        copyBtn.addEventListener('click', () => {
-          navigator.clipboard.writeText(res.code);
-          copyBtn.textContent = 'Copied!';
-          toastSuccess('Code copied to clipboard.');
-          setTimeout(() => copyBtn.textContent = 'Copy', 1500);
-        });
-      }
+      if (voiceTranscriptContainer) voiceTranscriptContainer.innerHTML = '';
+      if (messagesContainer) messagesContainer.innerHTML = '';
+
+      data.messages.forEach(m => {
+        appendTranscript(m.role === 'user' ? 'user' : 'ai', m.content, true, m.audioBase64);
+      });
+      toastSuccess(`Loaded "${data.title || 'Session'}"`);
     } catch (e) {
-      loadingBubble.innerHTML = `<div>DevSync AI Assistant is currently processing. Please try again.</div>`;
+      console.warn('Error loading conversation history:', e);
     }
+  }
 
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  // 3. AI Text Chat Tab Event Listeners
+  async function handleTextSend(text) {
+    if (!text) return;
+    appendTranscript('user', text, true);
+    const service = getVoiceService();
+    await service.sendSpokenCommand(text);
   }
 
   sendBtn?.addEventListener('click', () => {
@@ -445,15 +555,9 @@ export function initAssistantPage() {
     });
   });
 
-  newChatBtn?.addEventListener('click', () => {
-    if (messagesContainer) {
-      messagesContainer.innerHTML = `
-        <div class="assistant-bubble-ai">
-          <strong>DevSync AI Coding Assistant</strong><br />
-          Ask me anything about your repositories, code reviews, debugging, or database schemas.
-        </div>
-      `;
-      toastSuccess('Conversation reset.');
-    }
-  });
+  // Load existing history and conversations on boot
+  loadRecentConversations();
+  if (currentConversationId) {
+    loadConversationHistory(currentConversationId);
+  }
 }

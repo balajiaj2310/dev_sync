@@ -375,31 +375,135 @@ export function initAuthPage() {
     });
   }
 
+  function loadGoogleIdentityScript() {
+    return new Promise((resolve, reject) => {
+      if (window.google && window.google.accounts) {
+        return resolve(window.google);
+      }
+      const existing = document.querySelector('script[src*="accounts.google.com/gsi/client"]');
+      if (existing) {
+        existing.addEventListener('load', () => resolve(window.google));
+        existing.addEventListener('error', reject);
+        return;
+      }
+      const script = document.createElement('script');
+      script.src = 'https://accounts.google.com/gsi/client';
+      script.async = true;
+      script.defer = true;
+      script.onload = () => resolve(window.google);
+      script.onerror = () => reject(new Error('Failed to load Google Identity Services'));
+      document.head.appendChild(script);
+    });
+  }
+
+  async function handleGoogleAuthPayload(payload) {
+    toastInfo('Verifying Google credentials with DevSync...');
+    try {
+      const res = await apiClient.post('/auth/google', payload);
+      const token = res?.access || res?.token;
+      if (token) {
+        AuthService.setSession(token, res.user);
+        toastSuccess(res.message || 'Signed in with Google successfully!');
+        setTimeout(() => {
+          const dest = new URLSearchParams(window.location.search).get('redirect') || ROUTES.OVERVIEW;
+          navigateTo(dest);
+        }, 400);
+      } else {
+        toastDanger(res?.error || res?.detail || 'Google authentication failed.');
+      }
+    } catch (err) {
+      toastDanger(err.message || 'Google authentication verification failed.');
+    }
+  }
+
+  async function handleGoogleCredentialResponse(response) {
+    if (!response || !response.credential) {
+      toastDanger('Google Sign-In credential was not provided.');
+      return;
+    }
+    await handleGoogleAuthPayload({ credential: response.credential });
+  }
+
+  // Pre-load Google Identity script in background
+  loadGoogleIdentityScript().catch(() => {});
+
   if (googleBtn) {
     googleBtn.addEventListener('click', async () => {
       try {
         const config = await apiClient.get('/auth/google/config').catch(() => ({ configured: false }));
 
         if (config && config.configured && config.clientId) {
-          toastInfo('Connecting to Google Identity Services...');
-          if (window.google && window.google.accounts) {
-            window.google.accounts.id.prompt((notification) => {
-              if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-                toastDanger('Google Sign-In was cancelled or not completed.');
-              }
-            });
-          } else {
-            toastInfo('Google Identity client initialized.');
+          toastInfo('Opening Google Sign-In...');
+          await loadGoogleIdentityScript();
+
+          if (!window.google || !window.google.accounts) {
+            throw new Error('Google Identity Services unavailable in this browser session.');
           }
+
+          // Method 1: Google OAuth2 Token Client (Opens direct popup window on user click!)
+          if (window.google.accounts.oauth2) {
+            try {
+              const tokenClient = window.google.accounts.oauth2.initTokenClient({
+                client_id: config.clientId,
+                scope: 'email profile openid',
+                prompt: 'select_account',
+                callback: async (tokenResponse) => {
+                  if (tokenResponse.error) {
+                    if (tokenResponse.error === 'access_denied') {
+                      toastInfo('Google sign-in was cancelled.');
+                    } else if (String(tokenResponse.error).includes('origin')) {
+                      toastDanger('Origin mismatch: Add ' + window.location.origin + ' to Google Cloud Console Authorized Origins.');
+                      openGoogleModal();
+                    } else {
+                      toastDanger('Google Sign-In: ' + tokenResponse.error);
+                    }
+                    return;
+                  }
+                  if (tokenResponse.access_token) {
+                    await handleGoogleAuthPayload({ access_token: tokenResponse.access_token });
+                  }
+                },
+                error_callback: (err) => {
+                  console.warn('[Google OAuth Error Callback]:', err);
+                  toastDanger('Origin not allowed for this Client ID. Ensure ' + window.location.origin + ' is authorized in Google Cloud Console.');
+                  openGoogleModal();
+                }
+              });
+
+              tokenClient.requestAccessToken();
+              return;
+            } catch (oauthErr) {
+              console.warn('[Google TokenClient error, falling back to One-Tap]:', oauthErr);
+            }
+          }
+
+          // Method 2: Google ID One-Tap fallback
+          window.google.accounts.id.initialize({
+            client_id: config.clientId,
+            callback: handleGoogleCredentialResponse,
+            auto_select: false,
+            cancel_on_tap_outside: true
+          });
+
+          window.google.accounts.id.prompt((notification) => {
+            if (notification.isNotDisplayed()) {
+              const reason = notification.getNotDisplayedReason();
+              console.warn('Google One-Tap not displayed:', reason);
+              toastDanger('Google One-Tap popup was blocked (' + reason + '). Please check your browser popup/cookie settings.');
+              openGoogleModal();
+            }
+          });
+
         } else {
           openGoogleModal();
-          toastInfo('Google OAuth requires GOOGLE_CLIENT_ID configuration.');
         }
       } catch (err) {
+        console.error('[Google Sign-In Trigger Error]:', err);
         openGoogleModal();
       }
     });
   }
+
 
   // Sign In / Sign Up Form Submission
   const authForm = document.getElementById('signInForm') || document.getElementById('signUpForm');
